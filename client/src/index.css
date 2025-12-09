@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+@theme {
+  --font-family-irish: 'Irish Grover', cursive;
+}

@@ -1,0 +1,34 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/userSlice/userSlice';
+import { toast } from 'react-toastify';
+import { authApi } from '../../../services/api/auth';
+import { handleApiError } from '../../../lib/utils/handleApiError';
+import { publicFrontendRoutes } from '../../../constants/frontendRoutes/publicFrontendRoutes';
+
+const LogoutPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const performLogout = async () => {
+      try {
+        const res = await authApi.logout();
+        console.log('logout res: ', res);
+        toast.success(res.data?.message);
+      } catch (err) {
+        handleApiError(err);
+      } finally {
+        dispatch(logout());
+        navigate(publicFrontendRoutes.landing, { replace: true });
+      }
+    };
+
+    performLogout();
+  }, [dispatch, navigate]);
+
+  return null;
+};
+
+export default LogoutPage;
