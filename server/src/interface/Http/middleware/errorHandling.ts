@@ -22,10 +22,12 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
         return;
     }
 
-    //unexpected error
+    
     res.status(500).json({
         success: false,
         message: generalMessages.ERROR.INTERNAL_SERVER_ERROR,
     });
     return;
+
+    next()
 }

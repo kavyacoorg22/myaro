@@ -41,7 +41,7 @@ export interface Beautician {
   verifiedAt?: Date;
 
  
-  homeservicecount: number;
+  homeserviceCount: number;
 
   createdAt: Date;
   updatedAt: Date;

@@ -1,6 +1,6 @@
 
 import { VerifyOtpUseCase } from "./verifyOtpUsecase";
-import { RegisterUserUseCase, RegisterInput, SafeUser } from "./registerUserUseCase";
+import { RegisterUserUseCase, RegisterInput } from "./registerUserUseCase";
 import { ConflictError } from "../../../domain/errors/systemError";
 import { verifySignupToken } from "../../../services/tokenService"; 
 
@@ -16,7 +16,6 @@ export class CompleteSignupUseCase {
     if (!signupToken) throw new Error("Missing signup token");
     if (!otp) throw new Error("Missing otp");
 
-    // Decode token first to obtain email (used for OTP lookup)
     const payload = verifySignupToken(signupToken);
     if (!payload || typeof payload !== "object" || !("email" in payload)) {
       throw new Error("Invalid or expired signup token");

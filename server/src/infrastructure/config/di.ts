@@ -44,8 +44,7 @@ import { ViewBeauticianDetailUseCase } from "../../application/usecases/admin/ma
 import { ApproveBeauticianUseCase } from "../../application/usecases/admin/management/approveBeauticianUseCase";
 import { RejectBeauticianUseCase } from "../../application/usecases/admin/management/rejectBeauticianUseCase";
 import { BeauticianUpdateRegistartionUseCase } from "../../application/usecases/beautician/beauticianregistationUpdateUsecase";
-import { AdminModel } from "../database/models/admin/adminModel";
-import { UserModel } from "../database/models/user/UserModel";
+
 import { GoogleLoginUseCase } from "../../application/usecases/auth/googleLoginUseCase";
 import { GoogleAuthService } from "../service/googleAuthService";
 import { GoogleLoginController } from "../../interface/Http/controllers/auth/googleLoginController";
@@ -126,7 +125,7 @@ export const profileController=new ProfileController(ownProfileUseCase,profileIm
 const beauticianRegisterUC=new BeauticianRegistrationUseCase(beauticianRepo,fileUpload)
 const beauticianVerificationStatusUC=new BeauticianVerificationStatusUseCase(beauticianRepo)
 const beauticianUpdateRegistartionUC=new BeauticianUpdateRegistartionUseCase(beauticianRepo,userRepo)
-const beauticianViewEditProfileUC=new BeauticianViewEditProfileUseCase(beauticianRepo)
+const beauticianViewEditProfileUC=new BeauticianViewEditProfileUseCase(beauticianRepo,userRepo)
 const beauticianEditProfileUC=new BeauticianEditProfileUseCase(beauticianRepo,userRepo)
 const searchResultUC=new SearchResultUseCase(userRepo)
 const beauticianController=new BeauticianController(beauticianRegisterUC,beauticianVerificationStatusUC,

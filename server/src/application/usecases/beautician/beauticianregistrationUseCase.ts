@@ -1,11 +1,10 @@
-import { Beautician, ShopAddressVO } from "../../../domain/entities/Beautician";
+import { Beautician } from "../../../domain/entities/Beautician";
 import { VerificationStatus } from "../../../domain/enum/beauticianEnum";
 import { AppError } from "../../../domain/errors/appError";
-import { IBeauticianRepository, IRegisterDto } from "../../../domain/repositoryInterface/IBeauticianRepository";
+import { IBeauticianRepository, } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IFileUploader } from "../../../domain/serviceInterface/IFileUploadService";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IBeauticianRegisterUseCase } from "../../interface/beautician/IBeauticianRegisterUseCase";
-import { IFileStorage } from "../../interface/IFileStorage";
 import { IBeauticianRegistartionOutput, IBeauticianRegistrationInput } from "../../interfaceType/beauticianType";
 
 
@@ -37,7 +36,7 @@ export class BeauticianRegistrationUseCase implements IBeauticianRegisterUseCase
       return paths??[];
     };
 
-      let portfolioPaths: string[] = [];
+      const portfolioPaths: string[] = [];
     let certificatePaths: string[] | undefined;
     let shopPhotosPaths: string[] | undefined;
     let shopLicencePaths: string[] | undefined;
@@ -67,7 +66,7 @@ export class BeauticianRegistrationUseCase implements IBeauticianRegisterUseCase
     
 
     
-  const registerDto: IRegisterDto = {
+  const registerDto: Omit<Beautician, "id" | "createdAt" | "updatedAt"|"homeserviceCount"> = {
       userId: data.userId,
       yearsOfExperience: data.yearsOfExperience,
       about: data.about,

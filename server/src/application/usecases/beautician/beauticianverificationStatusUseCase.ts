@@ -1,7 +1,6 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { userMessages } from "../../../shared/constant/message/userMessage";
-import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IBeauticianVerificationUseCase } from "../../interface/beautician/IbeauticianVerificationStatusUseCase";
 import { IBeauticianStatusOutPut } from "../../interfaceType/beauticianType";
 import { toVerificationStatusOutputDto } from "../../mapper/beauticianMapper";

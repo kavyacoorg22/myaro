@@ -160,7 +160,7 @@ export const validatePaymentDetails = (
     }
 
   
-    if (upiId&&( typeof upiId !== "string" || !/^[\w.\-]+@[\w.\-]+$/.test(upiId.trim()))) {
+    if (upiId&&( typeof upiId !== "string" || !/^[\w.-]+@[\w.-]+$/.test(upiId.trim()))) {
       throw new AppError(
         "Invalid UPI ID format (e.g., username@bank)",
         HttpStatus.BAD_REQUEST

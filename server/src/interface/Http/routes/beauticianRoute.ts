@@ -4,7 +4,6 @@ import { authenticateBeautician, authenticateCustomer, beauticianController } fr
 import { uploadFields } from '../middleware/multer';
 import { validateBeauticianFiles } from '../validator/validateFileUpload';
 import { validatePaymentDetails,validateBeauticianData } from '../middleware/validateBeauticianINput';
-import { BeauticianController } from '../controllers/beautician/beauticianController';
 
 
 router.post('/register',authenticateCustomer,uploadFields(['portfolioImage', 'certificateImage', 'shopPhotos', 'shopLicence']),validateBeauticianFiles,validateBeauticianData,beauticianController.beauticianRegistration)

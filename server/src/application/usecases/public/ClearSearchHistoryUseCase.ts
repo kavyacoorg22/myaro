@@ -4,7 +4,6 @@ import { generalMessages } from "../../../shared/constant/message/generalMessage
 import { userMessages } from "../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IClearSeachHistoryUseCase } from "../../interface/public/IClearSearchHistoryUseCase";
-import { IRemoveSearchHistoryUseCase } from "../../interface/public/IRemoveSearchHistoryUseCase";
 import { IResponse } from "../../interfaceType/authtypes";
 
 

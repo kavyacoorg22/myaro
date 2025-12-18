@@ -1,14 +1,13 @@
-import { IBeauticianDTO, IBeauticianProfileDTO, IBeauticianViewEditProfileDTO, ISearchBeauticianResultDto } from "../../application/dtos/beautician";
-import { IBeauticianEditProfileInput, IBeauticianViewEditProfileOutput } from "../../application/interfaceType/beauticianType";
-import { Beautician, ID } from "../entities/Beautician";
+
+import { Beautician} from "../entities/Beautician";
 import { VerificationStatus, VerificationStatusFilter } from "../enum/beauticianEnum";
 import { SortFilter } from "../enum/sortFilterEnum";
 
-export type IRegisterDto = Omit<Beautician, "id" | "createdAt" | "updatedAt">;
+
 export interface IVerificationUpdate {
   verificationStatus?: VerificationStatus; 
-  verifiedBy?: string | null; 
-  verifiedAt?: Date | null;
+  verifiedBy?: string ; 
+  verifiedAt?: Date ;
 }
 
 export interface IAddPaymentDetailsDto {
@@ -20,24 +19,22 @@ export interface IAddPaymentDetailsDto {
 }
 
 export interface IBeauticianRepository{
-  create(data:IRegisterDto):Promise<Beautician>
+  create(data:Omit<Beautician, "id" | "createdAt" | "updatedAt"|"homeserviceCount">):Promise<Beautician>
   findByUserId(userId:string):Promise<Beautician|null>
    findAll(params: {
           sort?: SortFilter;
           verificationStatus?: VerificationStatusFilter;
           skip: number;
           limit: number
-      }): Promise<IBeauticianDTO[]>
+      }): Promise<Beautician[]>
        countAll(params?: {
             verificationStatus?:VerificationStatusFilter;
         }): Promise<number>
 
-    findProfileByUserId(userId:string):Promise<IBeauticianProfileDTO|null>  
-    updateVerificationByUserId(userId: string, update: IVerificationUpdate): Promise<Beautician | null>;  
-    addPaymentDetails(userId: string, data: IAddPaymentDetailsDto): Promise<Beautician | null>;
-    updateByUserId(userId: string, data: IRegisterDto): Promise<Beautician|null>;
-    findProfileDeatilsById(userId:string):Promise<Beautician|null>
-    updateProfileDetailById(userId:string,data:Partial<IBeauticianEditProfileInput>):Promise<boolean|null>
+    updateVerificationByUserId(userId: string, update: Partial<Beautician>): Promise<Beautician | null>;  
+    addPaymentDetails(userId: string, data: Partial<Beautician>): Promise<Beautician | null>;
+    updateByUserId(userId: string, data: Omit<Beautician, "id" | "createdAt" | "updatedAt"|"homeserviceCount">): Promise<Beautician|null>;
+    updateProfileDetailById(userId:string,data:Partial<Beautician>):Promise<boolean|null>
      
     
 }

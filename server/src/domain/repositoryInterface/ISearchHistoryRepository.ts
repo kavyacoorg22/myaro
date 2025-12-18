@@ -1,5 +1,4 @@
-import { ISearchBeauticianResultDto } from "../../application/dtos/beautician";
-import { Beautician } from "../entities/Beautician";
+
 import { SearchHistory } from "../entities/searchHistory";
 
 export interface ISearchHistoryRepository {

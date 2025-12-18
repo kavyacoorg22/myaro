@@ -9,7 +9,6 @@ export type SignupTokenPayload = {
   };
 
 const JWT_SECRET = process.env.JWT_SECRET
-const JWT_EXP = process.env.SIGNUP_JWT_EXP 
 
 
 
@@ -23,6 +22,7 @@ export function verifySignupToken(token: string): SignupTokenPayload | null {
     }
     return null;
   } catch (err) {
+    console.log(err)
     return null;
   }
 }

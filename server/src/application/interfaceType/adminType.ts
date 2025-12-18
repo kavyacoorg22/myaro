@@ -1,8 +1,8 @@
 import { ShopAddressVO } from "../../domain/entities/Beautician";
-import { VerificationStatus, VerificationStatusFilter } from "../../domain/enum/beauticianEnum";
+import {  VerificationStatusFilter } from "../../domain/enum/beauticianEnum";
 import { SortFilter } from "../../domain/enum/sortFilterEnum";
-import { UserFilterRole, UserRoleFilter } from "../../domain/enum/userEnum";
-import { IBeauticianDTO, IBeauticianProfileDTO } from "../dtos/beautician";
+import { UserRoleFilter } from "../../domain/enum/userEnum";
+import { IBeauticianDTO} from "../dtos/beautician";
 import { IUserDto } from "../dtos/user";
 
 

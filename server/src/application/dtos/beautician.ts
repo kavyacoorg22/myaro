@@ -42,18 +42,18 @@ export interface IBankDetailsDTO {
 }
 
 export interface IBeauticianViewEditProfileDTO {
-  profileImg: string;
+  profileImg?: string;
   userName: string;
   fullName:string,
   yearsOfExperience: number;
   shopName?: string;
   about: string;
   shopAddress?: Partial<ShopAddressVO>,
-   accountHolderName: string;
-    accountNumber: string;
-    ifscCode: string;
-    bankName: string;
-    upiId: string;
+   accountHolderName?: string;
+    accountNumber?: string;
+    ifscCode?: string;
+    bankName?: string;
+    upiId?: string;
 }
 
 

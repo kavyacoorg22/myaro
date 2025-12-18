@@ -1,5 +1,4 @@
 import { AppError } from '../../../domain/errors/appError';
-import { fileMessages } from '../../../shared/constant/message/fileMessages';
 import { HttpStatus } from '../../../shared/enum/httpStatus';
 import { Request, Response, NextFunction } from 'express';
 

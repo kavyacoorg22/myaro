@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { ITokenService } from '../../domain/serviceInterface/ItokenService';
+import { appConfig } from '../config/config';
 
 export class JwtTokenService implements ITokenService {
     private _accessTokenSecret: string;
@@ -11,11 +12,11 @@ export class JwtTokenService implements ITokenService {
     }
 
     generateAccessToken(userId: string, role: string, email: string, isActive: boolean): string {
-        return jwt.sign({ userId, role, email, isActive }, this._accessTokenSecret, { expiresIn: '5m' });
+        return jwt.sign({ userId, role, email, isActive }, this._accessTokenSecret, { expiresIn: appConfig.jwt.accessTokenExpireTime } as any);
     }
 
     generateRefreshToken(userId: string, role: string, email: string, isActive: boolean): string {
-        return jwt.sign({ userId, role, email, isActive }, this._refreshTokenSecret, { expiresIn: '7d' });
+        return jwt.sign({ userId, role, email, isActive }, this._refreshTokenSecret, { expiresIn: appConfig.jwt.refreshTokenExpireTime } as any);
     }
 
     verifyRefreshToken(token: string): { userId: string; role: string; email: string; isActive: boolean } | null {

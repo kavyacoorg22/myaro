@@ -23,7 +23,7 @@ export class ResendOtpUseCase {
     const otpHash = await hashOtp(otp);
     const expiresAt = new Date(Date.now() + this.OTP_TTL_MS);
 
-    const updated = await this.otpRepo.updateOtp(pending._id.toString(), {
+    await this.otpRepo.updateOtp(pending._id.toString(), {
       otpHash,
       expiresAt,
       resendCount: (pending.resendCount ?? 0) + 1,

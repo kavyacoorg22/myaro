@@ -2,7 +2,6 @@ import { AdminDoc, AdminModel } from "../../database/models/admin/adminModel";
 import { UserRole } from "../../../domain/enum/userEnum";
 import { Admin } from "../../../domain/entities/admin";
 import { IAdminRepository } from "../../../domain/repositoryInterface/IAdminRepository";
-import { GenericRepository } from "../genericRepository";
 
 export class MongoAdminRepository implements IAdminRepository {
 

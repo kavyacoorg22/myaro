@@ -37,7 +37,7 @@ export type BeauticianDoc =Document & {
   verifiedAt?: Date;
 
   remark?: string;
-  homeservicecount?: number;
+  homeserviceCount?: number;
 
   createdAt: Date;
   updatedAt: Date;
@@ -92,7 +92,7 @@ const BeauticianSchema = new Schema<BeauticianDoc>(
     verifiedAt: { type: Date },
 
 
-    homeservicecount: { type: Number, default: 0 },
+    homeserviceCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

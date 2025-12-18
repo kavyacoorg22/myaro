@@ -2,7 +2,6 @@ import { NextFunction ,Request,Response} from "express";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { UserLoginUseCase } from "../../../../application/usecases/auth/userLoginUseCase";
-import { User } from "../../../../domain/entities/User";
 
 export class Logincontroller{
   constructor(private LoginUseCase:UserLoginUseCase){}

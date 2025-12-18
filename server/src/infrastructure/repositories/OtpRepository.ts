@@ -1,4 +1,3 @@
-// src/infrastructure/repositories/MongoOtpRepository.ts
 import { IOtpRepository, CreateOtpDTO } from "../../domain/repositoryInterface/IOtpRepository";
 import OtpModel, { OtpDoc } from "../database/models/user/OtpModel";
 

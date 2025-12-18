@@ -2,7 +2,6 @@ import { NextFunction ,Request,Response} from "express";
 import { OwnProfileUseCase } from "../../../../application/usecases/public/ownProfileUseCase";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { userMessages } from "../../../../shared/constant/message/userMessage";
-import { UserRole } from "../../../../domain/enum/userEnum";
 import { AppError } from "../../../../domain/errors/appError";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
@@ -63,7 +62,7 @@ changeProfileImage=async(req:Request, res: Response, next: NextFunction): Promis
     })
   }catch(err)
   {
-     next()
+     next(err)
   }
 }
 

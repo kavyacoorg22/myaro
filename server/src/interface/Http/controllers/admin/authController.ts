@@ -3,7 +3,6 @@ import { IAdminLoginUseCase } from '../../../../application/interface/admin/auth
 import { IAdminLogoutUseCase } from '../../../../application/interface/admin/auth/ILogoutUseCase'
 import { authMessages } from '../../../../shared/constant/message/authMessages';
 import { HttpStatus } from '../../../../shared/enum/httpStatus';
-import { appConfig } from '../../../../infrastructure/config/config';
 
 export class AdminAuthController {
     private _adminLoginUseCase: IAdminLoginUseCase;

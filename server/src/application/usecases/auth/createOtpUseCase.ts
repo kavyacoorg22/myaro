@@ -5,7 +5,7 @@ import { generateOtp, hashOtp } from "../../../utils/otpUtils";
 import { NodemailerOtpService } from "../../../infrastructure/service/sendEmail";
 
 export class CreateOtpUseCase {
-  private OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
+  private OTP_TTL_MS = 1* 60 * 1000; 
 
   constructor(private otpRepo: IOtpRepository,private otpService:NodemailerOtpService) {}
 
@@ -19,7 +19,7 @@ export class CreateOtpUseCase {
 
     await this.otpRepo.deleteByEmail(email, signupToken);
 
-    const created = await this.otpRepo.create({
+     await this.otpRepo.create({
       email,
       signupToken,
       otpHash,

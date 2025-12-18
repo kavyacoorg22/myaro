@@ -1,4 +1,4 @@
-import { BooleanSchemaDefinition } from "mongoose";
+
 import { UserRole } from "../../domain/enum/userEnum"
 
 export interface ILoginInput{

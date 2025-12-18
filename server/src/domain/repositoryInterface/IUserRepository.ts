@@ -16,7 +16,7 @@ export interface CreateUserDTO{
 
 
 export interface IUserRepository{
-   create(dto:User):Promise<User>
+   create(dto: Omit<User, 'id' | 'createdAt' | 'updatedAt'|'isVerified'>):Promise<User>
    findByEmail(email:string):Promise<User|null>
    findByUserName(userName:string):Promise<User|null>
    findByUserId(id:string):Promise<User|null>
@@ -37,7 +37,8 @@ export interface IUserRepository{
    updateRoleAndVerification(userId: string, role: UserRole, isVerified: boolean): Promise<User | null>;
     updateById(id: string, data: Partial<User>): Promise<boolean>
    updateProfileImageById(id:string,profileImg:string):Promise<User|null> 
-    searchBeauticians(query: string): Promise<ISearchBeauticianResultDto[]>;
-    getBeauticianById(id:string[]):Promise<User[]>;
+    update(id: string, data: Partial<User>): Promise<User | null>;
+    searchBeauticians(query: string): Promise<User[]>;
+    getBeauticiansById(id:string[]):Promise<User[]>;
 }
 

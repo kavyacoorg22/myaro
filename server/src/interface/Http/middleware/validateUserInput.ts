@@ -1,7 +1,5 @@
-import { error } from "console";
 import { Request, Response, NextFunction } from "express";
-import { HttpStatus } from "../../../shared/enum/httpStatus";
-import { AppError } from "../../../domain/errors/appError";
+
 
 export function validateUserInput(req:Request,res:Response,next:NextFunction)
 {

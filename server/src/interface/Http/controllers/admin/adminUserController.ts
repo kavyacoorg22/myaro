@@ -27,7 +27,7 @@ export class AdminUserManagementController{
   constructor(getAllUsersUC:IGetAllUserUseCase,toggleUserUSeCase:IToggleUserStatusUseCase,getAllBeauticianUC:IGetAllBeauticianUseCase,
     viewprofile:IViewBeauticianDetailsUseCase,approveBeautician:IApproveBeauticianUseCase,rejectBeautician:IRejectBeauticianUseCase)
   {
-    this._getAllUsersUC=getAllUsersUC,
+    this._getAllUsersUC=getAllUsersUC
     this._toggleUserStatusUC=toggleUserUSeCase
     this._getAllbeauticianUC=getAllBeauticianUC
     this._viewBeauticianUC=viewprofile

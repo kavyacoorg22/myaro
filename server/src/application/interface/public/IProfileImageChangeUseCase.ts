@@ -1,4 +1,4 @@
-import { IProfileImageChangeInput, IProfileImageChangeOutput } from "../../interfaceType/publicType";
+import { IProfileImageChangeOutput } from "../../interfaceType/publicType";
 
 
 export interface IProfileImageChangeUseCase{

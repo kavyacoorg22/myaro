@@ -13,7 +13,7 @@ export class ResetPasswordController{
 
   constructor(forgotPassword:ForgotPasswordUseCase,resetPassword:ResetPasswordUseCase)
   {
-    this._forgotPassword=forgotPassword,
+    this._forgotPassword=forgotPassword
     this._resetPassword=resetPassword
   }
 
@@ -26,7 +26,7 @@ export class ResetPasswordController{
       {
         throw new Error(generalMessages.ERROR.BAD_REQUEST)
       }
-      const user=await this._forgotPassword.execute({email})
+      await this._forgotPassword.execute({email})
 
       res.status(HttpStatus.OK).json({
         success:true,
@@ -54,7 +54,7 @@ export class ResetPasswordController{
       })
     }catch(err)
     {
-         next()
+         next(err)
     }
   }
 }

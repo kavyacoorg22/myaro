@@ -1,11 +1,11 @@
 
-import { CreateUserDTO, IUserRepository } from "../../domain/repositoryInterface/IUserRepository";
+import {  IUserRepository } from "../../domain/repositoryInterface/IUserRepository";
 import { User } from "../../domain/entities/User";
 import { UserModel,UserDoc } from "../database/models/user/UserModel";
 import { SortFilter } from "../../domain/enum/sortFilterEnum";
 import { UserRole, UserRoleFilter } from "../../domain/enum/userEnum";
 import { Types } from "mongoose";
-import { types } from "util";
+
 
 
 export function toObjectId(id: string): Types.ObjectId | null {
@@ -15,7 +15,7 @@ export function toObjectId(id: string): Types.ObjectId | null {
 
 export class MongoUserRepository implements IUserRepository{
     
-  async create(dto:User):Promise<User>
+  async create(dto:Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isVerified'>):Promise<User>
   {
     const created=await UserModel.create(dto)
     return this.toDomain(created)
@@ -51,15 +51,11 @@ async updateById(userId: string, data: Partial<User>): Promise<boolean> {
     const userOid = toObjectId(userId);
     if (!userOid) return false;
 
-    const updateFields = this.mapToPersistence(data);
     
-    if (Object.keys(updateFields).length === 0) {
-      return true;
-    }
 
     const result = await UserModel.updateOne(
       { _id: userOid },
-      { $set: updateFields }
+      { $set: data }
     );
 
     return result.matchedCount > 0;
@@ -155,6 +151,26 @@ async isUserBlocked(userId: string): Promise<boolean> {
     return updated ? this.toDomain(updated) : null;
   }
 
+   async update(id: string, data: Partial<User>): Promise<User | null> {
+    if (!Types.ObjectId.isValid(id)) {
+      return null;
+    }
+
+    const updateData: any = { ...data };
+    
+    
+    delete updateData.id;
+    delete updateData.createdAt;
+    delete updateData.updatedAt;
+
+    const doc = await UserModel.findByIdAndUpdate(
+      new Types.ObjectId(id),
+      { $set: updateData },
+      { new: true }
+    ).exec();
+
+    return doc ? this.toDomain(doc) : null;
+  }
 
   async updateProfileImageById(id: string, profileImg: string): Promise<User | null> {
     if(!Types.ObjectId.isValid(id)) return null;
@@ -165,7 +181,7 @@ async isUserBlocked(userId: string): Promise<boolean> {
 
 
 
-async searchBeauticians(query: string): Promise<any[]> {
+async searchBeauticians(query: string): Promise<User[]> {
   const escaped = escapeRegex(query);
   const regex = new RegExp(escaped, 'i');
 
@@ -180,12 +196,12 @@ async searchBeauticians(query: string): Promise<any[]> {
   })
   .select('_id userName fullName profileImg')
   .limit(20)
-  .lean()
+  
 
-  return users.map(u => this.toDomain(u as any));
+  return users.map(u => this.toDomain(u));
 }
 
-async getBeauticianById(id: string[]): Promise<User[]> {
+async getBeauticiansById(id: string[]): Promise<User[]> {
   const users = await UserModel.find({
     _id:id,
     isVerified: true,
@@ -195,9 +211,9 @@ async getBeauticianById(id: string[]): Promise<User[]> {
   })
   .select('_id userName fullName profileImg')
   .limit(20)
-  .lean()
+  
 
-   return users.map(u => this.toDomain(u as any));
+   return users.map(u => this.toDomain(u));
 }
 
   private toDomain(doc:UserDoc):User{
@@ -216,14 +232,7 @@ async getBeauticianById(id: string[]): Promise<User[]> {
     }
   }
 
-  private mapToPersistence(domain: Partial<User>): Record<string, any> {
-    const fields: Record<string, any> = {};
-
-    if (domain.userName !== undefined) fields.userName = domain.userName;
-    if (domain.fullName !== undefined) fields.fullName = domain.fullName;
-    
-    return fields;
-  }
+  
 }
 
 function escapeRegex(input:string):string{

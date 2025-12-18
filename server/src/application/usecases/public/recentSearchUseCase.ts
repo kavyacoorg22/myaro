@@ -27,7 +27,7 @@ export class RecentSearchesUseCase implements IRecentSearchUseCase {
     }
     
   try {
-    // 1. Get search histories
+    
     const searchHistories = await this._searchHistoryRepo.getRecentSearches(userId);
     
     if (searchHistories.length === 0) {
@@ -38,13 +38,13 @@ export class RecentSearchesUseCase implements IRecentSearchUseCase {
       };
     }
     
-    // 2. Extract beautician IDs
+  
     const beauticianIds = searchHistories.map(sh => sh.beauticianId);
     
-    // 3. Get beautician details - Add null check
-    const beauticians = await this._userRepo.getBeauticianById(beauticianIds);
     
-    // Handle case where getUsersByIds returns undefined or empty
+    const beauticians = await this._userRepo.getBeauticiansById(beauticianIds);
+    
+  
     if (!beauticians || beauticians.length === 0) {
       return {
         success: true,

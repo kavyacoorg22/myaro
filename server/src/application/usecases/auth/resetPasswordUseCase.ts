@@ -1,10 +1,8 @@
-import { User } from "../../../domain/entities/User";
 import { AppError } from "../../../domain/errors/appError";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { authMessages } from "../../../shared/constant/message/authMessages";
-import { IForgotUseCase } from "../../interface/auth/IForgotUseCase";
 import { IResetPassword } from "../../interface/auth/IResetPassword";
-import { IForgotPasswordInput, IResetPasswordInput, IResponse } from "../../interfaceType/authtypes";
+import {  IResetPasswordInput, IResponse } from "../../interfaceType/authtypes";
 import bcrypt from "bcrypt"
 
 

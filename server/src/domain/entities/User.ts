@@ -10,7 +10,7 @@ export interface User{
   userName:string,
   passwordHash?:string,
   role:UserRole,
-  profileImg:string,
+  profileImg?:string,
   isVerified:boolean,
   isActive:boolean
   googleId?: string;

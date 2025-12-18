@@ -4,7 +4,7 @@ import { IFileUploader } from "../../../domain/serviceInterface/IFileUploadServi
 import { userMessages } from "../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IProfileImageChangeUseCase } from "../../interface/public/IProfileImageChangeUseCase";
-import { IProfileImageChangeInput, IProfileImageChangeOutput } from "../../interfaceType/publicType";
+import { IProfileImageChangeOutput } from "../../interfaceType/publicType";
 import { toProfileImageChangeDto } from "../../mapper/userMapper";
 
 

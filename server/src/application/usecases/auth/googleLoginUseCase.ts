@@ -76,7 +76,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         counter++;
       }
 
-      const newUser: Omit<User, 'id' | 'createdAt' | 'updatedAt'> = {
+      const newUser: Omit<User, 'id' | 'createdAt' | 'updatedAt'|'isVerified'> = {
         userName,
         email,
         fullName: name || email.split('@')[0],

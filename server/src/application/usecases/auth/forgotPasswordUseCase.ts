@@ -1,4 +1,3 @@
-import { User } from "../../../domain/entities/User";
 import { AppError } from "../../../domain/errors/appError";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { authMessages } from "../../../shared/constant/message/authMessages";

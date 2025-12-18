@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express"
 import { validateEmail, validatePassword, validateUserInput } from "../middleware/validateUserInput";
-import { authenticateUser, completeSignupController, googleLoginController, loginController, logoutController, otpController, preSignupController, refreshTokenController, registerController, resetPasswordController } from "../../../infrastructure/config/di";
-import { RefreshTokenController } from "../controllers/auth/refreshTokenController";
+import { completeSignupController, googleLoginController, loginController, logoutController, otpController, preSignupController, refreshTokenController, registerController, resetPasswordController } from "../../../infrastructure/config/di";
 const router=Router()
 
 

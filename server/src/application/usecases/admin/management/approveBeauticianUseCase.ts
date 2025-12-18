@@ -6,10 +6,8 @@ import { IBeauticianRepository, IVerificationUpdate } from "../../../../domain/r
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { userMessages } from "../../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
-import {  IVerificationStatusDto } from "../../../dtos/beautician";
 import { IApproveBeauticianUseCase } from "../../../interface/admin/management/IApproveBeauticianUseCase";
 import { IResponse } from "../../../interfaceType/authtypes";
-import {  toVerificationStatusOutputDto } from "../../../mapper/beauticianMapper";
 
 export class ApproveBeauticianUseCase implements IApproveBeauticianUseCase {
     private _beauticianRepo: IBeauticianRepository;
@@ -21,24 +19,25 @@ export class ApproveBeauticianUseCase implements IApproveBeauticianUseCase {
     async execute(input: { userId: string; adminId?: string }): Promise<IResponse> {
     const { userId, adminId } = input;
 
-    // validate input early
+    
     if (!userId) {
       throw new AppError(userMessages.ERROR.MISSING_PARAMETERS, HttpStatus.BAD_REQUEST);
     }
+ 
 
-    // confirm beautician exists
     const beautician = await this._beauticianRepo.findByUserId(userId);
     if (!beautician) {
       throw new AppError(userMessages.ERROR.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    // Build the typed update and let the repo persist it (repo has no business logic)
+   
     const update: IVerificationUpdate = {
       verificationStatus: VerificationStatus.VERIFIED,
-      verifiedBy: adminId ?? null,
+      verifiedBy :adminId,
       verifiedAt: new Date(),
     };
 
+  
     const updated = await this._beauticianRepo.updateVerificationByUserId(userId, update);
 
     if (!updated) {

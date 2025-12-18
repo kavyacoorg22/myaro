@@ -1,4 +1,4 @@
-import { UserRole } from "../../domain/enum/userEnum";
+
 
 
 export interface IOwnProfileOutput{

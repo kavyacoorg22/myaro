@@ -2,9 +2,7 @@ import { Request, Response } from "express";
 import { ITokenBlacklistService } from "../../../domain/serviceInterface/ITokenBlackListService";
 import { ITokenService } from "../../../domain/serviceInterface/ItokenService";
 import { ILogoutUseCase } from "../../interface/auth/logoutUseCase";
-import { AppError } from "../../../domain/errors/appError";
-import { authMessages } from "../../../shared/constant/message/authMessages";
-import { HttpStatus } from "../../../shared/enum/httpStatus";
+
 import { appConfig } from "../../../infrastructure/config/config";
 
 
@@ -33,7 +31,7 @@ export class LogoutUseCase implements ILogoutUseCase{
 
         try {
             payload = this._tokenService.verifyAccessToken(refreshToken);
-        } catch (error: any) {
+        } catch (error:any) {
             if (error.name === 'TokenExpiredError') {
                 
                 payload = null;

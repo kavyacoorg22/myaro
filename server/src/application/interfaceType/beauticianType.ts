@@ -63,16 +63,16 @@ export interface IBeauticianEditProfileInput{
 
 
 export interface IBeauticianViewEditProfileOutput{
-    userName:string,
-  fullName:string;
-  about:string,
-  shopName?:string,
-  shopAddress?:Partial<ShopAddressVO>,
-  yearsOfExperience:number,
-  profileImg:string,
-  accountHolderName: string;
-    accountNumber: string;
-    ifscCode: string;
-    bankName: string;
-    upiId: string;
+  profileImg?: string;
+  userName: string;
+  fullName:string,
+  yearsOfExperience: number;
+  shopName?: string;
+  about: string;
+  shopAddress?: Partial<ShopAddressVO>,
+   accountHolderName?: string;
+    accountNumber?: string;
+    ifscCode?: string;
+    bankName?: string;
+    upiId?: string;
 }

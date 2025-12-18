@@ -157,7 +157,7 @@ export class BeauticianController {
           })
  
   }catch(err){
-    next()
+    next(err)
  }
 
 }

@@ -1,7 +1,6 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
-import { generalMessages } from "../../../shared/constant/message/generalMessage";
 import { userMessages } from "../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IOwnProfileUseCase } from "../../interface/public/IProfileUsecase";
@@ -59,7 +58,7 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
           hasShop: beautician.hasShop,
           shopName: beautician.shopName,
           shopAddress: beautician.shopAddress,
-          homeservicecount: beautician.homeservicecount ?? 0,
+          homeservicecount: beautician.homeserviceCount ?? 0,
           verificationStatus: beautician.verificationStatus
         };
       } else {

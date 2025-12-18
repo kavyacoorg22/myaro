@@ -1,8 +1,5 @@
-import { ISearchBeauticianResultDto } from '../../../application/dtos/beautician';
-import { toBeauticianSearchDto } from '../../../application/mapper/domain/beauticianDomainMapper';
 import { SearchHistory } from '../../../domain/entities/searchHistory';
 import { ISearchHistoryRepository } from '../../../domain/repositoryInterface/ISearchHistoryRepository';
-import { BeauticianModel } from '../../database/models/beautician/BeauticianModel';
 import { SearchHistoryDoc, SearchHistoryModel } from '../../database/models/user/searchModel';
 
 
@@ -78,6 +75,4 @@ export class SearchHistoryRepository implements ISearchHistoryRepository {
 }
 
 
-function escapeRegex(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+

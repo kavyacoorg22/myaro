@@ -5,7 +5,6 @@ import { IRefreshTokenUseCase } from '../../interface/auth/IrefreshToken';
 import { authMessages } from '../../../shared/constant/message/authMessages';
 import { HttpStatus } from '../../../shared/enum/httpStatus';
 import { userMessages } from '../../../shared/constant/message/userMessage';
-import { UserRole } from '../../../domain/enum/userEnum';
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     private _tokenService: ITokenService;

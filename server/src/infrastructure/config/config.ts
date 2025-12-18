@@ -32,6 +32,14 @@ export const appConfig = {
             'SIGNUP_TOKEN_SECRET',
             process.env.JWT_SECRET,
         ),
+        accessTokenExpireTime:required(
+            'ACCESS_TOKEN_EXPIRETIME',
+       process.env.ACCESS_TOKEN_EXPIRETIME
+        ) as string,
+         refreshTokenExpireTime:required(
+            'REFRESH_TOKEN_EXPIRETIME',
+       process.env.REFRESH_TOKEN_EXPIRETIME
+        ) as string
     },
 
     db: {
@@ -63,25 +71,9 @@ export const appConfig = {
         ),
     },
 
-    // google: {
-    //     clientId: required('GOOGLE_CLIENT_ID', process.env.GOOGLE_CLIENT_ID),
-    // },
+    google: {
+        clientId: required('GOOGLE_CLIENT_ID', process.env.GOOGLE_CLIENT_ID),
+    },
 
-    // stripe: {
-    //     secretKey: required('STRIPE_SECRET_KEY', process.env.STRIPE_SECRET_KEY),
-    //     webhookSecret: required(
-    //         'STRIPE_WEBHOOK_SECRET',
-    //         process.env.STRIPE_WEBHOOK_SECRET,
-    //     ),
-    //     currency: process.env.CURRENCY || 'usd',
-    //     frontendSuccessUrl: required(
-    //         'FRONTEND_SUCCESS_URL',
-    //         process.env.FRONTEND_SUCCESS_URL,
-    //     ),
-    //     frontendCancelUrl: required(
-    //         'FRONTEND_CANCEL_URL',
-    //         process.env.FRONTEND_CANCEL_URL,
-    //     ),
-    //     commissionPercentage: Number(process.env.COMMISSION_PERCENTAGE) || 20,
-    // },
+ 
 };

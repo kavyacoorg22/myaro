@@ -2,7 +2,6 @@ import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { generalMessages } from "../../../shared/constant/message/generalMessage";
-import { userMessages } from "../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IBeauticianViewEditProfileUseCase } from "../../interface/beautician/IBeauticianViewEditProfileUseCase";
 import { IBeauticianViewEditProfileOutput } from "../../interfaceType/beauticianType";
@@ -22,7 +21,7 @@ export class BeauticianViewEditProfileUseCase implements IBeauticianViewEditProf
 
   async execute(userId: string): Promise<IBeauticianViewEditProfileOutput> {
     
-    const beautician=await this._beauticianRepo.findProfileDeatilsById(userId)
+    const beautician=await this._beauticianRepo.findByUserId(userId)
 
     console.log(`usecase output ${beautician}`)
     

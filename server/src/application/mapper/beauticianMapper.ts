@@ -3,7 +3,6 @@ import { SearchHistory } from "../../domain/entities/searchHistory";
 import { User } from "../../domain/entities/User";
 import { IBeauticianDTO, IBeauticianProfileDTO, IBeauticianViewEditProfileDTO, ISearchBeauticianResultDto, IUpdateRegistrationDTO, IVerificationStatusDto } from "../dtos/beautician";
 import { IRecentSearchDto } from "../dtos/user";
-import { IBeauticianViewEditProfileOutput } from "../interfaceType/beauticianType";
 
 
 export function toVerificationStatusOutputDto(beautician:Beautician): IVerificationStatusDto {
@@ -25,11 +24,11 @@ export function toBeauticianDeatilDto(beautician:IBeauticianDTO):IBeauticianDTO{
   }
 }
 
-export function toBeauticianProfileDto(beautician: IBeauticianProfileDTO): IBeauticianProfileDTO{
+export function toBeauticianProfileDto(beautician:Beautician,user:User): IBeauticianProfileDTO{
     return {
         userId: beautician.userId,
-        profileImg: beautician.profileImg || '',
-        userName: beautician.userName || '',
+        profileImg: user.profileImg || '',
+        userName: user.userName || '',
         yearsOfExperience: beautician.yearsOfExperience,
         shopName: beautician.shopName,
         city: beautician.shopAddress?.city,

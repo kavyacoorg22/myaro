@@ -1,4 +1,3 @@
-import { IUserRepository } from "../../domain/repositoryInterface/IUserRepository";
 
 import nodemailer from 'nodemailer'
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
