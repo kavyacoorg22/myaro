@@ -32,8 +32,7 @@ export class Logincontroller{
           maxAge: 7 * 24 * 60 * 60 * 1000, 
         });
 
-       res.cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 5 * 60 * 1000 });
-      res.cookie("refreshToken", refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
     
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       res.setHeader('Pragma', 'no-cache');

@@ -2,6 +2,7 @@ import { IUserRepository,CreateUserDTO } from "../../../domain/repositoryInterfa
 import { User } from "../../../domain/entities/User";
 import bcrypt from "bcrypt"
 import { ConflictError } from "../../../domain/errors/systemError";
+import { UserRole } from "../../../domain/enum/userEnum";
 
 export type RegisterInput={
   email:string,
@@ -36,13 +37,13 @@ export class RegisterUserUseCase{
       userName:input.userName,
       fullName:input.fullName,
       passwordHash,
-      role:"customer",
-      isVerified:false
+      role:UserRole.CUSTOMER,
+      isVerified:false,
+      isActive:true
     }
 
     await this.userRepo.create(dto)
-    // const {passwordHash:_,...safeUser}=created
-    // return safeUser
+   
     return { success: true, message: "user created" };
   }
 } 

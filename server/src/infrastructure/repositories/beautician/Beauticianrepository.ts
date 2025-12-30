@@ -18,18 +18,18 @@ export class mongoBeauticianRepository extends GenericRepository<Beautician,Beau
         super(BeauticianModel);
     }
 
-  async create(data:Omit<Beautician, "id" | "createdAt" | "updatedAt"|'homeserviceCount'>): Promise<Beautician> {
+  async create(data:Omit<Beautician, "id" | "createdAt" | "updatedAt">): Promise<Beautician> {
     const created=await BeauticianModel.create(data)
-    return this.toDomain(created)
+    return this.map(created)
   }
   
    async findByUserId(userId: string): Promise<Beautician | null> {
     const doc = await BeauticianModel.findOne({ userId });
-    return doc ? this.toDomain(doc) : null;
+    return doc ? this.map(doc) : null;
   }
    async findById(id: string): Promise<Beautician | null> {
     const doc = await BeauticianModel.findById(id); 
-    return doc ? this.toDomain(doc) : null;
+    return doc ? this.map(doc) : null;
   }
 
 
@@ -56,7 +56,7 @@ async findAll(params: {
   .limit(params.limit)
   .exec()
   
-   return docs.map((doc)=>this.toDomain(doc))
+   return docs.map((doc)=>this.map(doc))
 }
 
 
@@ -109,7 +109,7 @@ if (update.verifiedBy !== undefined && update.verifiedBy && ObjectId.isValid(upd
     { new: true }
   ).exec();
 
-  return updatedDoc ? this.toDomain(updatedDoc) :null;
+  return updatedDoc ? this.map(updatedDoc) :null;
 }
 
 
@@ -137,7 +137,7 @@ async addPaymentDetails(
     { new: true }
   ).exec();
 
-  return updatedDoc ? this.toDomain(updatedDoc) : null;
+  return updatedDoc ? this.map(updatedDoc) : null;
 }
 
 
@@ -151,7 +151,7 @@ async updateByUserId(userId: string, data: Omit<Beautician, "id" | "createdAt" |
     { new: true }
   ).exec();
 
-  return updatedDoc ? this.toDomain(updatedDoc) : null;
+  return updatedDoc ? this.map(updatedDoc) : null;
 }
 
 
@@ -182,7 +182,7 @@ async updateProfileDetailById(
 
 
 
-  private toDomain(doc:BeauticianDoc):Beautician{
+  protected map(doc:BeauticianDoc):Beautician{
     return {
       id: doc._id.toString(),
       userId: doc.userId.toString(),

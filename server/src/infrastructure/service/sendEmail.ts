@@ -2,17 +2,11 @@
 import nodemailer from 'nodemailer'
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { otpEmailTemplate } from "../../shared/emailTemplate";
-import { IOtpRepository } from "../../domain/repositoryInterface/IOtpRepository";
 import logger from "../../utils/logger";
 import { IOtpService } from "../../domain/serviceInterface/mailService";
 
 export class NodemailerOtpService implements IOtpService{
-   private _otpRepo:IOtpRepository
-
-   constructor(otpRepo:IOtpRepository)
-   {
-    this._otpRepo=otpRepo
-   }
+   
    
     private _transporter=nodemailer.createTransport({
      host:process.env.SMTP_HOST,

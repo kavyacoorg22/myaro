@@ -5,6 +5,7 @@ import { UserModel,UserDoc } from "../database/models/user/UserModel";
 import { SortFilter } from "../../domain/enum/sortFilterEnum";
 import { UserRole, UserRoleFilter } from "../../domain/enum/userEnum";
 import { Types } from "mongoose";
+import { GenericRepository } from "./genericRepository";
 
 
 
@@ -13,27 +14,30 @@ export function toObjectId(id: string): Types.ObjectId | null {
 }
 
 
-export class MongoUserRepository implements IUserRepository{
+export class MongoUserRepository extends GenericRepository<User,UserDoc> implements IUserRepository{
     
-  async create(dto:Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isVerified'>):Promise<User>
+  constructor(){
+    super(UserModel)
+  }
+  async create(dto:Omit<User, 'id' | 'createdAt' | 'updatedAt' >):Promise<User>
   {
     const created=await UserModel.create(dto)
-    return this.toDomain(created)
+    return this.map(created)
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const doc=await UserModel.findOne({email}).exec();
-    return doc?this.toDomain(doc):null
+    return doc?this.map(doc):null
   }
 
   async findByUserName(userName: string): Promise<User | null> {
     const doc=await UserModel.findOne({userName}).exec();
-    return doc?this.toDomain(doc):null
+    return doc?this.map(doc):null
   }
 
   async findByUserId(id: string): Promise<User | null> {
     const doc=await UserModel.findOne({_id:id}).exec()
-    return doc?this.toDomain(doc):null
+    return doc?this.map(doc):null
   }
 
  async updatePassword(email: string, newPassword: string):Promise<User|null> {
@@ -43,11 +47,11 @@ export class MongoUserRepository implements IUserRepository{
     { new: true }                     
   );
 
-  return doc ? this.toDomain(doc) : null;
+  return doc ? this.map(doc) : null;
 }
 
 
-async updateById(userId: string, data: Partial<User>): Promise<boolean> {
+async updateByUserId(userId: string, data: Partial<User>): Promise<boolean> {
     const userOid = toObjectId(userId);
     if (!userOid) return false;
 
@@ -94,7 +98,7 @@ async findAll(params: {
         .skip(params.skip)
         .limit(params.limit);
 
-    return users.map(u => this.toDomain(u));
+    return users.map(u => this.map(u));
 }
 
 async countAll(params?: {
@@ -130,7 +134,7 @@ async isUserBlocked(userId: string): Promise<boolean> {
 
   async updateStatus(id: string, isActive: boolean):Promise<User|null>{
         const doc=await UserModel.findByIdAndUpdate(id, { isActive }, { new: true });
-         return doc ? this.toDomain(doc) : null;
+         return doc ? this.map(doc) : null;
     }
 
   
@@ -148,7 +152,7 @@ async isUserBlocked(userId: string): Promise<boolean> {
       { new: true }
     ).exec();
 
-    return updated ? this.toDomain(updated) : null;
+    return updated ? this.map(updated) : null;
   }
 
    async update(id: string, data: Partial<User>): Promise<User | null> {
@@ -169,14 +173,14 @@ async isUserBlocked(userId: string): Promise<boolean> {
       { new: true }
     ).exec();
 
-    return doc ? this.toDomain(doc) : null;
+    return doc ? this.map(doc) : null;
   }
 
   async updateProfileImageById(id: string, profileImg: string): Promise<User | null> {
     if(!Types.ObjectId.isValid(id)) return null;
 
     const updated=await UserModel.findByIdAndUpdate(id,{profileImg},{new:true})
-    return updated?this.toDomain(updated):null
+    return updated?this.map(updated):null
   }
 
 
@@ -198,7 +202,7 @@ async searchBeauticians(query: string): Promise<User[]> {
   .limit(20)
   
 
-  return users.map(u => this.toDomain(u));
+  return users.map(u => this.map(u));
 }
 
 async getBeauticiansById(id: string[]): Promise<User[]> {
@@ -213,10 +217,10 @@ async getBeauticiansById(id: string[]): Promise<User[]> {
   .limit(20)
   
 
-   return users.map(u => this.toDomain(u));
+   return users.map(u => this.map(u));
 }
 
-  private toDomain(doc:UserDoc):User{
+  protected map(doc:UserDoc):User{
     return{
       id:doc._id.toString(),
       email:doc.email,

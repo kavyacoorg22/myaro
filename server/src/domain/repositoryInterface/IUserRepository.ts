@@ -6,12 +6,13 @@ import { UserRole, UserRoleFilter } from "../enum/userEnum";
 
 export interface CreateUserDTO{
    email:string,
-   fullName?:string,
+   fullName:string,
    userName:string,
    passwordHash?:string,
    role:UserRole,
    profileImg?:string,
    isVerified?:boolean
+   isActive:boolean
 }
 
 
@@ -35,7 +36,7 @@ export interface IUserRepository{
      isUserBlocked(userId: string): Promise<boolean>
    updateStatus(id: string,isActive: boolean): Promise<User|null>
    updateRoleAndVerification(userId: string, role: UserRole, isVerified: boolean): Promise<User | null>;
-    updateById(id: string, data: Partial<User>): Promise<boolean>
+    updateByUserId(id: string, data: Partial<User>): Promise<boolean>
    updateProfileImageById(id:string,profileImg:string):Promise<User|null> 
     update(id: string, data: Partial<User>): Promise<User | null>;
     searchBeauticians(query: string): Promise<User[]>;

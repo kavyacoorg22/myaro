@@ -1,33 +1,21 @@
 
-import { IOtpRepository } from "../../../domain/repositoryInterface/IOtpRepository";
-import { generateOtp, hashOtp } from "../../../utils/otpUtils";
-
+import { generateOtp,} from "../../../utils/otpUtils";
 import { NodemailerOtpService } from "../../../infrastructure/service/sendEmail";
+import { IOtpService } from "../../../domain/serviceInterface/IOtpService";
 
 export class CreateOtpUseCase {
-  private OTP_TTL_MS = 1* 60 * 1000; 
 
-  constructor(private otpRepo: IOtpRepository,private otpService:NodemailerOtpService) {}
+  constructor(private otpService: IOtpService,private mailService:NodemailerOtpService) {}
 
   async execute(opts: { email: string; signupToken?: string | null;  }) {
     const { email, signupToken = null } = opts;
 
   
     const otp = generateOtp(4);
-    const otpHash = await hashOtp(otp);
-    const expiresAt = new Date(Date.now() + this.OTP_TTL_MS);
-
-    await this.otpRepo.deleteByEmail(email, signupToken);
-
-     await this.otpRepo.create({
-      email,
-      signupToken,
-      otpHash,
-      expiresAt,
-      });
-     
     
-    await this.otpService.sendOtp(email,otp);
+    await this.otpService.setOtp(email,otp)
+    
+    await this.mailService.sendOtp(email,otp);
 
     return { success: true, message: "OTP sent" };
   }

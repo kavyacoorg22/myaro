@@ -1,9 +1,10 @@
 import { Document, FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
+import { IGenericRepository } from '../../domain/repositoryInterface/IGenericRepository';
 
 export class GenericRepository<
   T extends { id?: string },
   D extends Document & { _id: Types.ObjectId }
-> {
+>implements IGenericRepository<T, D>  {
   private _model: Model<D>;
 
   constructor(model: Model<D>) {
@@ -53,7 +54,7 @@ export class GenericRepository<
     return docs.map(doc => this.map(doc));
   }
 
-  async create(data: Omit<T, 'id'>): Promise<T> {
+  async create(data: Omit<T, 'id'|'createdAt'|'updatedAt'>): Promise<T> {
     const doc = await this._model.create(data);
     return this.map(doc);
   }

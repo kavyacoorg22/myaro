@@ -1,36 +1,28 @@
 
-import { IOtpRepository } from "../../../domain/repositoryInterface/IOtpRepository";
-import { generateOtp, hashOtp } from "../../../utils/otpUtils";
+import { generateOtp } from "../../../utils/otpUtils";
 import { NodemailerOtpService } from "../../../infrastructure/service/sendEmail";
+import { IOtpService } from "../../../domain/serviceInterface/IOtpService";
 
 export class ResendOtpUseCase {
-  private OTP_TTL_MS = 5 * 60 * 1000;
-  private MAX_RESENDS = 5;
+  
 
-  constructor(private otpRepo: IOtpRepository,private otpService:NodemailerOtpService) {}
+  constructor(private otpService: IOtpService,private mailService:NodemailerOtpService) {}
 
   async execute(opts: { email: string; signupToken?: string | null; }) {
     const { email, signupToken = null,} = opts;
-    const pending = await this.otpRepo.findLatestByEmail(email, signupToken);
+   
+    const canResend=  await this.otpService.resendOtp(email)
 
-    if (!pending) throw new Error("No pending OTP for this email");
-
-    if ((pending.resendCount ?? 0) >= this.MAX_RESENDS) {
-      throw new Error("Too many resend attempts try again after some time");
+    if(!canResend)
+    {
+      return {success:false,message:"Resend limit reached. Try later."}
     }
 
     const otp = generateOtp(4);
-    const otpHash = await hashOtp(otp);
-    const expiresAt = new Date(Date.now() + this.OTP_TTL_MS);
+    await this.otpService.setOtp(email, otp);
+  
 
-    await this.otpRepo.updateOtp(pending._id.toString(), {
-      otpHash,
-      expiresAt,
-      resendCount: (pending.resendCount ?? 0) + 1,
-      attempts: 0,
-    });
-
-    await this.otpService.sendOtp(email,otp);
+    await this.mailService.sendOtp(email,otp);
 
     return { success: true, message: "OTP resent" };
   }

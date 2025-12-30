@@ -19,7 +19,7 @@ export interface IAddPaymentDetailsDto {
 }
 
 export interface IBeauticianRepository{
-  create(data:Omit<Beautician, "id" | "createdAt" | "updatedAt"|"homeserviceCount">):Promise<Beautician>
+  create(data:Omit<Beautician, "id" | "createdAt" | "updatedAt">):Promise<Beautician>
   findByUserId(userId:string):Promise<Beautician|null>
    findAll(params: {
           sort?: SortFilter;

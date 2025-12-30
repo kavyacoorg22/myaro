@@ -59,6 +59,7 @@ import { SearchHistoryRepository } from "../repositories/public/SearchHistoryRep
 import { RecentSearchesUseCase } from "../../application/usecases/public/recentSearchUseCase";
 import { RemoveSearchHistoryUseCase } from "../../application/usecases/public/RemoveSeachHistoryUseCase";
 import { ClearSearchHistoryUseCase } from "../../application/usecases/public/ClearSearchHistoryUseCase";
+import { OtpService } from "../service/otpService";
 
 
 
@@ -72,10 +73,11 @@ const preSignupController=new PreSignupController(preSignupUseCase)
 //otp
 
 const otpRepo = new MongoOtpRepository();
-const otpService=new NodemailerOtpService(otpRepo)
-const createOtpUC = new CreateOtpUseCase(otpRepo,otpService);
-const resendOtpUC = new ResendOtpUseCase(otpRepo,otpService);
-const verifyOtpUC = new VerifyOtpUseCase(otpRepo);
+const mailService=new NodemailerOtpService()
+const otpService=new OtpService()
+const createOtpUC = new CreateOtpUseCase(otpService,mailService);
+const resendOtpUC = new ResendOtpUseCase(otpService,mailService);
+const verifyOtpUC = new VerifyOtpUseCase(otpService);
 const otpController = new OtpController(createOtpUC, resendOtpUC, verifyOtpUC);
 
 const completeSignupUC = new CompleteSignupUseCase(verifyOtpUC, registerUseCase);
@@ -144,7 +146,7 @@ const adminController=new AdminAuthController(adminLoginUseCase,adminLogoutUseCa
 const userListUC=new GetAllUserUseCase(userRepo)
 const toggleUserStatusUC=new ToggleUserStatusUseCase(userRepo,new RedisTokenBlacklistService)
 const getAllBeauticianUseCase=new GetAllBeauticianUseCase(beauticianRepo)
-const viewBeauticianDetailsUseCase=new ViewBeauticianDetailUseCase(beauticianRepo)
+const viewBeauticianDetailsUseCase=new ViewBeauticianDetailUseCase(beauticianRepo,userRepo)
 const approveBeauticianUseCase=new ApproveBeauticianUseCase(beauticianRepo)
 const rejectBeauticianUseCase=new RejectBeauticianUseCase(beauticianRepo)
 const adminUserManagementController=new AdminUserManagementController(userListUC,toggleUserStatusUC,getAllBeauticianUseCase,viewBeauticianDetailsUseCase,approveBeauticianUseCase,rejectBeauticianUseCase)

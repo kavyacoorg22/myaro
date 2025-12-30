@@ -66,7 +66,7 @@ export class BeauticianRegistrationUseCase implements IBeauticianRegisterUseCase
     
 
     
-  const registerDto: Omit<Beautician, "id" | "createdAt" | "updatedAt"|"homeserviceCount"> = {
+  const registerDto: Omit<Beautician, "id" | "createdAt" | "updatedAt"> = {
       userId: data.userId,
       yearsOfExperience: data.yearsOfExperience,
       about: data.about,
@@ -78,6 +78,7 @@ export class BeauticianRegistrationUseCase implements IBeauticianRegisterUseCase
       shopPhotos: shopPhotosPaths,
       shopLicence: shopLicencePaths,
       verificationStatus: VerificationStatus.PENDING,
+      homeserviceCount:0
     };
 
    
