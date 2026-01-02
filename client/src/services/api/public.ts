@@ -2,55 +2,36 @@
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
 import {type BackendResponse } from "../../types/api/api";
 import {type ISearchResult, type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse } from "../../types/api/public";
-import { fetchWrapper } from "../fetchWrapper";
-
+import api,{ axiosWrapper} from "../axiosWrapper";
 
 export const publicAPi={
   ownProfile: async () => {
-    return await fetchWrapper<profileResponce>(publicApiRoutes.ownProfile, {
-      method: 'GET',
-    });
+    return await axiosWrapper<profileResponce>(api.get(publicApiRoutes.ownProfile));
   },
   callById:async(id:string)=>{
-    return await fetchWrapper<profileResponce>(publicApiRoutes.profileByUserId.replace(':id',id),{
-      method:'GET'
-    })
+    return await axiosWrapper<profileResponce>(api.get(publicApiRoutes.profileByUserId.replace(':id',id)))
   },
   changeProfilePhoto:async(formData:FormData)=>{
-    return await fetchWrapper<IProfilePhotoChangeResponse>(publicApiRoutes.profileImage,{
-      method:'PATCH',
-      body:formData
-    })
+    return await axiosWrapper<IProfilePhotoChangeResponse>(api.patch(publicApiRoutes.profileImage,formData))
   },
    getProfile: async (id:string) => {
-    return await fetchWrapper<profileResponce>(publicApiRoutes.profileByUserId.replace(":id",id), {
-      method: 'GET',
-    });
+    return await axiosWrapper<profileResponce>(api.get(publicApiRoutes.profileByUserId.replace(":id",id)));
   },
   getSearchResult:async(query:string)=>{
-    return await fetchWrapper<ISearchResponse>(publicApiRoutes.search,{
-      method:'GET',
+    return await axiosWrapper<ISearchResponse>(api.get(publicApiRoutes.search,{
       params:{query}
-    })
+    }))
   },
   addSearchHistory:async(beauticianId:string)=>{
-    return await fetchWrapper<BackendResponse>(publicApiRoutes.addSearchHistory.replace(':id',beauticianId),{
-     method:"POST"
-    })
+    return await axiosWrapper<BackendResponse>(api.post(publicApiRoutes.addSearchHistory.replace(':id',beauticianId)))
   },
   getSearchHistory:async()=>{
-    return await fetchWrapper<IRecentSearchResponse>(publicApiRoutes.searchHistory,{
-     method:"GET"
-    })
+    return await axiosWrapper<IRecentSearchResponse>(api.get(publicApiRoutes.searchHistory))
   },
   removeSearchHistory:async(searchHistoryId:string)=>{
-    return await fetchWrapper<BackendResponse>(publicApiRoutes.removeSearchHistory.replace(':id',searchHistoryId),{
-     method:'DELETE'
-    })
+    return await axiosWrapper<BackendResponse>(api.delete(publicApiRoutes.removeSearchHistory.replace(':id',searchHistoryId)))
   },
   clearSearchHistory:async()=>{
-    return await fetchWrapper<BackendResponse>(publicApiRoutes.clearSearchHistory,{
-      method:'DELETE'
-    })
+    return await axiosWrapper<BackendResponse>(api.delete(publicApiRoutes.clearSearchHistory))
   }
 }

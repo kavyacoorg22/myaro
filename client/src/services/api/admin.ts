@@ -1,56 +1,41 @@
 import { adminApiRoute } from "../../constants/apiRoutes/adminRoutes";
 import type { IAdminLoginRequest, IApproveResponse, IBeauticianProfileResponse, IGetAllUserResponse, IGetBeauticianRequest, IGetBeauticianResponse, IGetUserListRequest, IRejectResponse, IToggleStatusRequest } from "../../types/api/admin";
 import type { BackendResponse } from "../../types/api/api";
-import { fetchWrapper } from "../fetchWrapper";
+import api,{ axiosWrapper} from "../axiosWrapper";
 
 
 
 
 export const adminApi={
   login:async(data:IAdminLoginRequest)=>{
-    return await fetchWrapper<BackendResponse>(adminApiRoute.adminLogin, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    return await axiosWrapper<BackendResponse>(api.post(adminApiRoute.adminLogin,data) );
   },
   getUsers:async(data:IGetUserListRequest)=>{
-    return await fetchWrapper<IGetAllUserResponse>(adminApiRoute.getAllUser, {
-      method: 'GET',
+    return await axiosWrapper<IGetAllUserResponse>(api.get(adminApiRoute.getAllUser, {
       params:data
-    });
+    }));
   },
 
     toggleStatus:async(data:IToggleStatusRequest,id:string)=>{
-    return await fetchWrapper<BackendResponse>(adminApiRoute.toggleUser.replace(':id',id), {
-      method: 'PATCH',
-      body:JSON.stringify(data)
-    });
+    return await axiosWrapper<BackendResponse>(api.patch(adminApiRoute.toggleUser.replace(':id',id),data));
   },
 
    getBeautician:async(data:IGetBeauticianRequest)=>{
-    return await fetchWrapper<IGetBeauticianResponse>(adminApiRoute.getBeautician, {
-      method: 'GET',
+    return await axiosWrapper<IGetBeauticianResponse>(api.get(adminApiRoute.getBeautician, {
       params:data
-    });
+    }));
   },
  
     viewProfile:async(id:string)=>{
-    return await fetchWrapper<IBeauticianProfileResponse>(adminApiRoute.viewBeautician.replace(':id',id), {
-      method: 'GET',
-    
-    });
+    return await axiosWrapper<IBeauticianProfileResponse>(api.get(adminApiRoute.viewBeautician.replace(':id',id)) );
   },
 
   
     approveBeautician:async(id:string)=>{
-    return await fetchWrapper<IApproveResponse>(adminApiRoute.approveBeautician.replace(':id',id), {
-      method: 'PATCH',
-    });
+    return await axiosWrapper<IApproveResponse>(api.patch(adminApiRoute.approveBeautician.replace(':id',id)));
   },
     rejectBeautician:async(id:string)=>{
-    return await fetchWrapper<IRejectResponse>(adminApiRoute.rejectBeautician.replace(':id',id), {
-      method: 'PATCH',
-    });
+    return await axiosWrapper<IRejectResponse>(api.patch(adminApiRoute.rejectBeautician.replace(':id',id)) );
   },
   
 }

@@ -2,7 +2,7 @@
 import { toast } from "react-toastify";
 import type { FieldValues, Path, UseFormSetError } from "react-hook-form";
 import type { BackendFieldError } from "../../types/api/api";
-import { ApiError } from "../../services/fetchWrapper"; 
+import { ApiError } from "../../services/axiosWrapper"; 
 
 export function handleApiError<T extends FieldValues = FieldValues>(
   err: unknown,

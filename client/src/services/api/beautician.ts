@@ -2,36 +2,23 @@ import { beauticianApi } from "../../constants/apiRoutes/beauticianRoutes";
 import {type IBeauticianProfileResponse } from "../../types/api/admin";
 import type { BackendResponse } from "../../types/api/api";
 import type { IBeauticianPaymentDeatilRequest, IBeauticianPaymentDetailResponse, IBeauticianProfileUpdate, IEditProfileResponse, IRegisterRequest, IVerificationStatusResponse } from "../../types/api/beautician";
-import { fetchWrapper } from "../fetchWrapper";
+import api,{ axiosWrapper} from "../axiosWrapper";
 
 export const BeauticianApi = {
   beauticianRegister: async (formData:FormData) => {
-    return await fetchWrapper<BackendResponse>(beauticianApi.register, {
-      method: 'POST',
-      body: formData,
-    });
+    return await axiosWrapper<BackendResponse>(api.post(beauticianApi.register,formData));
   },
   getStatus: async () => {
-    return await fetchWrapper<IVerificationStatusResponse>(beauticianApi.getStatus, {
-      method: 'GET',
-    });
+    return await axiosWrapper<IVerificationStatusResponse>(api.get(beauticianApi.getStatus));
   },
    updateRegister: async (data:IBeauticianPaymentDeatilRequest) => {
-    return await fetchWrapper<IBeauticianPaymentDetailResponse>(beauticianApi.register, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
+    return await axiosWrapper<IBeauticianPaymentDetailResponse>(api.patch(beauticianApi.register,data));
   },
   viewProfile:async()=>{
-    return await fetchWrapper<IEditProfileResponse>(beauticianApi.profile,{
-      method:'GET'
-    })
+    return await axiosWrapper<IEditProfileResponse>(api.get(beauticianApi.profile))
   },
   updateProfile:async(data:IBeauticianProfileUpdate)=>{
-    return await fetchWrapper<BackendResponse>(beauticianApi.profile,{
-     method:'PATCH',
-     body:JSON.stringify(data)
-    })
+    return await axiosWrapper<BackendResponse>(api.patch(beauticianApi.profile,data))
   },
  
 
