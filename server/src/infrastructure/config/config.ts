@@ -70,7 +70,13 @@ export const appConfig = {
             process.env.CLOUDINARY_API_SECRET,
         ),
     },
-
+     
+    aws:{
+        region:required('REGION',process.env.REGION),
+        bucketName:required('BUCKET_NAME',process.env.BUCKET_NAME),
+        awsAccessKeyId:required('AWS_ACCESS_KEY',process.env.AWS_ACCESS_KEY),
+        awsSecretAccessKey:required('AWS_SECRET_ACCESS_KEY',process.env.AWS_SECRET_ACCESS_KEY)
+    },
     google: {
         clientId: required('GOOGLE_CLIENT_ID', process.env.GOOGLE_CLIENT_ID),
     },

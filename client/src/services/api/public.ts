@@ -1,7 +1,7 @@
 
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
 import {type BackendResponse } from "../../types/api/api";
-import {type ISearchResult, type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse } from "../../types/api/public";
+import {type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse } from "../../types/api/public";
 import api,{ axiosWrapper} from "../axiosWrapper";
 
 export const publicAPi={

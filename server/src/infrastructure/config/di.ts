@@ -37,7 +37,7 @@ import { AdminLogoutUseCase } from "../../application/usecases/admin/logoutUseCa
 import { GetAllUserUseCase } from "../../application/usecases/admin/management/getAllUserUseCase";
 import { AdminUserManagementController } from "../../interface/Http/controllers/admin/adminUserController";
 import { ToggleUserStatusUseCase } from "../../application/usecases/admin/management/toggleUserUseCase";
-import { CloudinaryStorage } from "../fileStorage/cloudinaryStorage";
+import { S3Storage } from "../fileStorage/s3Storage";
 import { BeauticianVerificationStatusUseCase } from "../../application/usecases/beautician/beauticianverificationStatusUseCase";
 import { GetAllBeauticianUseCase } from "../../application/usecases/admin/management/getAllBeauticianUseCase";
 import { ViewBeauticianDetailUseCase } from "../../application/usecases/admin/management/viewBeauticianUseCase";
@@ -105,7 +105,7 @@ const googleLoginController=new GoogleLoginController(googleLoginUseCase)
 //cloudinary
 
 
-const fileStorage = new CloudinaryStorage();
+const fileStorage = new S3Storage();
 const fileUpload=new FileUploadService(fileStorage)
 //middleware
 export const authenticateCustomer=authMiddleware(new JwtTokenService,new RedisTokenBlacklistService,['customer'])

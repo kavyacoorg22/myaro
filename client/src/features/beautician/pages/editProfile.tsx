@@ -93,7 +93,7 @@ const BeauticianProfileForm = () => {
     
       setProfileData(prev => ({
         ...prev,
-        profileImg: response.data?.data?.profileImg
+        profileImg: response.data.data?.profileImg
       }));
 
   
@@ -126,8 +126,6 @@ const BeauticianProfileForm = () => {
       }
 
       
-      const previewUrl = URL.createObjectURL(file);
-      setProfileData((prev) => ({ ...prev, profileImg: previewUrl }));
       
       
       handleProfileImageUpload(file);

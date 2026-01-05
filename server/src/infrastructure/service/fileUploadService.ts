@@ -51,6 +51,6 @@ export class FileUploadService implements IFileUploader {
     throw new Error("No profile image provided");
   }
 
-  return this.fileStorage.upload(file.buffer,file.originalname,'/profile/profile-image')
+  return this.fileStorage.upload(file.buffer,file.originalname,'profile/profile-image')
  }
 }

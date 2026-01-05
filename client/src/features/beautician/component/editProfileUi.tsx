@@ -1,9 +1,9 @@
-import { ArrowLeft, Camera, } from "lucide-react";
+import {  Camera, } from "lucide-react";
 import { FormControl, FormField, FormLabel, FormMessage } from "../../../components/ui/form";
 import { FormProvider, useForm } from "react-hook-form";
 import {  ProfileSchema, type ProfileType,  } from "../../../lib/validations/user/validateProfileData";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type {  IProfileUpdateRequest, IProfileViewData } from "../../../types/api/beautician";
+import type { IProfileViewData } from "../../../types/api/beautician";
 import { useEffect } from "react";
 
 

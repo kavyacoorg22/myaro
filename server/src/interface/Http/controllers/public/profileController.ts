@@ -41,8 +41,15 @@ export class ProfileController{
 
 changeProfileImage=async(req:Request, res: Response, next: NextFunction): Promise<void>=>{
   try{
+    console.log("change profile image controller reached.....................")
     const id=req.user?.id
     const profileImg=req.file
+    console.log('📸 Profile image change requested:', {
+  userId: id,
+  hasFile: !!profileImg,
+  filename: profileImg?.originalname,
+  size: profileImg?.size
+});
     if(!id)
     {
       throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)

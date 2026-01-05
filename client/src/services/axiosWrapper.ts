@@ -25,9 +25,9 @@ const API_BASE = isDev
 const api = axios.create({
   baseURL: `${API_BASE}/api`,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
 });
 
 //interceptor
@@ -46,7 +46,7 @@ api.interceptors.response.use(
     const isAuthEndpoint =
       endpoint.includes(authRoutes.login) ||
       endpoint.includes(authRoutes.preSignup) ||
-      endpoint.includes(adminApiRoute.adminLogin)|| endpoint.include(authRoutes.completeSignup)||endpoint.include(authRoutes.sendOtp)||endpoint.include(authRoutes.verifyOtp)||endpoint.include(authRoutes.reSendOtp);
+      endpoint.includes(adminApiRoute.adminLogin)|| endpoint.includes(authRoutes.completeSignup)||endpoint.includes(authRoutes.sendOtp)||endpoint.includes(authRoutes.verifyOtp)||endpoint.includes(authRoutes.reSendOtp);
 
     if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;

@@ -9,11 +9,12 @@
     "start": "node dist/main.js",
     "build": "tsc",
     "lint": "eslint .",
-  "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix"
   },
   "author": "kavya",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.962.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "cloudinary": "^2.8.0",

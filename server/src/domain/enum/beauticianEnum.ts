@@ -5,3 +5,8 @@ export enum VerificationStatus {
 }
 
 export type VerificationStatusFilter=VerificationStatus|"all"
+
+export enum ScheduleStatus{
+  AVAILABLE="available",
+  UNAVAILABLE="unAvailable"
+}
