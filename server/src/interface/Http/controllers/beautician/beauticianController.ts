@@ -1,55 +1,63 @@
-import { NextFunction ,Request,Response} from "express";
-import {  BeauticianRegistrationUseCase } from "../../../../application/usecases/beautician/beauticianregistrationUseCase";
+import { NextFunction, Request, Response } from "express";
 import { userMessages } from "../../../../shared/constant/message/userMessage";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { AppError } from "../../../../domain/errors/appError";
-import { BeauticianVerificationStatusUseCase } from "../../../../application/usecases/beautician/beauticianverificationStatusUseCase";
 import { IBeauticianUpdateRegistrationUseCase } from "../../../../application/interface/beautician/IbeauticianUpdateUseCase";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { IBeauticianViewEditProfileUseCase } from "../../../../application/interface/beautician/IBeauticianViewEditProfileUseCase";
 import { IBeauticianEditProfileUseCase } from "../../../../application/interface/beautician/IBeauticianEditProfileUseCase";
 import { ISearchResultUseCase } from "../../../../application/interface/public/ISearchResultUseCase";
-
-
+import { IBeauticianRegisterUseCase } from "../../../../application/interface/beautician/IBeauticianRegisterUseCase";
+import { IBeauticianVerificationUseCase } from "../../../../application/interface/beautician/IbeauticianVerificationStatusUseCase";
 
 export class BeauticianController {
-  private _beauticianRegistrationUC: BeauticianRegistrationUseCase;
-  private _beauticianVerificationStatusUseCase:BeauticianVerificationStatusUseCase
+  private _beauticianRegistrationUC:IBeauticianRegisterUseCase;
+  private _beauticianVerificationStatusUseCase: IBeauticianVerificationUseCase;
   private _updateRegistrationUseCase: IBeauticianUpdateRegistrationUseCase;
-  private _beauticianViewEditProfileUC:IBeauticianViewEditProfileUseCase
-  private _beauticianEditProfileUC:IBeauticianEditProfileUseCase
-  private _beauticianSearchUC:ISearchResultUseCase
+  private _beauticianViewEditProfileUC: IBeauticianViewEditProfileUseCase;
+  private _beauticianEditProfileUC: IBeauticianEditProfileUseCase;
+  private _beauticianSearchUC: ISearchResultUseCase;
 
-  constructor(beauticianRegistrationUC: BeauticianRegistrationUseCase,verificationStatusUC:BeauticianVerificationStatusUseCase,
-    updateRegistrationUseCase: IBeauticianUpdateRegistrationUseCase,beauticianViewEditProfileUC:IBeauticianViewEditProfileUseCase,
-     beauticianEditProfileUS:IBeauticianEditProfileUseCase,beauticianSeachUC:ISearchResultUseCase
+  constructor(
+    beauticianRegistrationUC: IBeauticianRegisterUseCase,
+    verificationStatusUC: IBeauticianVerificationUseCase,
+    updateRegistrationUseCase: IBeauticianUpdateRegistrationUseCase,
+    beauticianViewEditProfileUC: IBeauticianViewEditProfileUseCase,
+    beauticianEditProfileUS: IBeauticianEditProfileUseCase,
+    beauticianSeachUC: ISearchResultUseCase
   ) {
     this._beauticianRegistrationUC = beauticianRegistrationUC;
-    this._beauticianVerificationStatusUseCase=verificationStatusUC
-    this._updateRegistrationUseCase=updateRegistrationUseCase
-    this._beauticianViewEditProfileUC=beauticianViewEditProfileUC
-    this._beauticianEditProfileUC=beauticianEditProfileUS
-    this._beauticianSearchUC=beauticianSeachUC
+    this._beauticianVerificationStatusUseCase = verificationStatusUC;
+    this._updateRegistrationUseCase = updateRegistrationUseCase;
+    this._beauticianViewEditProfileUC = beauticianViewEditProfileUC;
+    this._beauticianEditProfileUC = beauticianEditProfileUS;
+    this._beauticianSearchUC = beauticianSeachUC;
   }
 
-  beauticianRegistration = async (  req: Request,  res: Response,  next: NextFunction): Promise<void> => {
+  beauticianRegistration = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const userId = req.user?.id;
-      console.log(`backend userId ${userId}`)
+      console.log(`backend userId ${userId}`);
       if (!userId) {
-        throw new AppError(userMessages.ERROR.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+        throw new AppError(
+          userMessages.ERROR.UNAUTHORIZED_ACCESS,
+          HttpStatus.UNAUTHORIZED
+        );
       }
-    const dto = (req as any).body.validatedData;
-     
-    if (!dto) {
-      throw new AppError(
-        "Validated request data missing",
-        HttpStatus.BAD_REQUEST
-      );
-    }
-    dto.userId = userId
-      
+      const dto = (req as any).body.validatedData;
+
+      if (!dto) {
+        throw new AppError(
+          "Validated request data missing",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      dto.userId = userId;
 
       const beautician = await this._beauticianRegistrationUC.execute(dto);
 
@@ -63,17 +71,23 @@ export class BeauticianController {
     }
   };
 
-  
-  verifiedStatus= async (  req: Request,  res: Response,  next: NextFunction): Promise<void> => {
+  verifiedStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const userId = req.user?.id;
-      console.log(`backend userId ${userId}`)
+      console.log(`backend userId ${userId}`);
       if (!userId) {
-        throw new AppError(userMessages.ERROR.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+        throw new AppError(
+          userMessages.ERROR.UNAUTHORIZED_ACCESS,
+          HttpStatus.UNAUTHORIZED
+        );
       }
 
-
-      const beauticianStatus = await this._beauticianVerificationStatusUseCase.execute(userId);
+      const beauticianStatus =
+        await this._beauticianVerificationStatusUseCase.execute(userId);
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -85,15 +99,20 @@ export class BeauticianController {
     }
   };
 
- updateRegistration = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  updateRegistration = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const userId = req.user?.id;
       const paymentDetails = req.body;
 
-      
-
       if (!userId) {
-        throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+        throw new AppError(
+          authMessages.ERROR.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED
+        );
       }
 
       const result = await this._updateRegistrationUseCase.execute(
@@ -101,8 +120,7 @@ export class BeauticianController {
         paymentDetails
       );
 
-
-      console.log(`backend repsonse update registration.........${result}`)
+      console.log(`backend repsonse update registration.........${result}`);
       res.status(HttpStatus.OK).json({
         success: true,
         message: generalMessages.SUCCESS.OPERATION_SUCCESS,
@@ -113,78 +131,94 @@ export class BeauticianController {
     }
   };
 
- viewEditProfile=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-      try{
-        const userId=req.user?.id
-        if(!userId)
-        {
-         throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED)
-        }
-        
-
-        const profileData=await this._beauticianViewEditProfileUC.execute(userId)
-        console.log('backend response edit profile data',profileData)
-
-        res.status(HttpStatus.OK).json({
-          success:true,
-          message:generalMessages.SUCCESS.OPERATION_SUCCESS,
-          data:profileData
-        })
-
-      }catch(err)
-      {
-        next(err)
-      }
- }
-
- updateProfileData=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-  try{
-          const userId=req.user?.id
-          const data=req.body;
-          if(!userId)
-          {
-            throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
-          }
-          if(!data)
-          {
-            throw new AppError(userMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
-          }
-
-          await this._beauticianEditProfileUC.execute(userId,data)
-          res.status(HttpStatus.OK).json({
-            success:true,
-            message:generalMessages.SUCCESS.OPERATION_SUCCESS
-          })
- 
-  }catch(err){
-    next(err)
- }
-
-}
-
-searchBeautician=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-  try{
-    const  query = req.query.query; 
-    
-      if (!query || typeof query !== 'string') {
-        throw new AppError(userMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
+  viewEditProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new AppError(
+          authMessages.ERROR.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED
+        );
       }
 
-      const beauticians=await  this._beauticianSearchUC.execute(query)
-      console.log(`search beatician controller output ${JSON.stringify(beauticians)}`)
+      const profileData = await this._beauticianViewEditProfileUC.execute(
+        userId
+      );
+      console.log("backend response edit profile data", profileData);
+
       res.status(HttpStatus.OK).json({
-        success:true,
-        message:generalMessages.SUCCESS.OPERATION_SUCCESS,
-        data:{
-          beautician:beauticians
-        }
-      })
-  }catch(err)
-  {
-    next(err)
-  }
-      
+        success: true,
+        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+        data: profileData,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
 
-}
+  updateProfileData = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const userId = req.user?.id;
+      const data = req.body;
+      if (!userId) {
+        throw new AppError(
+          authMessages.ERROR.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+      if (!data) {
+        throw new AppError(
+          userMessages.ERROR.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
+        );
+      }
 
+      await this._beauticianEditProfileUC.execute(userId, data);
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  searchBeautician = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const query = req.query.query;
+
+      if (!query || typeof query !== "string") {
+        throw new AppError(
+          userMessages.ERROR.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      const beauticians = await this._beauticianSearchUC.execute(query);
+      console.log(
+        `search beatician controller output ${JSON.stringify(beauticians)}`
+      );
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+        data: {
+          beautician: beauticians,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

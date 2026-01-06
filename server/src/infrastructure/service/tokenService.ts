@@ -12,11 +12,11 @@ export class JwtTokenService implements ITokenService {
     }
 
     generateAccessToken(userId: string, role: string, email: string, isActive: boolean): string {
-        return jwt.sign({ userId, role, email, isActive }, this._accessTokenSecret, { expiresIn: appConfig.jwt.accessTokenExpireTime } as any);
+        return jwt.sign({ userId, role, email, isActive }, this._accessTokenSecret, { expiresIn: `${appConfig.jwt.accessTokenExpireTime}m` } as any);
     }
 
     generateRefreshToken(userId: string, role: string, email: string, isActive: boolean): string {
-        return jwt.sign({ userId, role, email, isActive }, this._refreshTokenSecret, { expiresIn: appConfig.jwt.refreshTokenExpireTime } as any);
+        return jwt.sign({ userId, role, email, isActive }, this._refreshTokenSecret, { expiresIn: `${appConfig.jwt.refreshTokenExpireTime}d` } as any);
     }
 
     verifyRefreshToken(token: string): { userId: string; role: string; email: string; isActive: boolean } | null {

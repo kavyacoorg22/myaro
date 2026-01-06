@@ -6,30 +6,26 @@ import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IClearSeachHistoryUseCase } from "../../interface/public/IClearSearchHistoryUseCase";
 import { IResponse } from "../../interfaceType/authtypes";
 
+export class ClearSearchHistoryUseCase implements IClearSeachHistoryUseCase {
+  private _searchHistoryRepo: ISearchHistoryRepository;
 
-
-export class ClearSearchHistoryUseCase implements IClearSeachHistoryUseCase{
-    private _searchHistoryRepo:ISearchHistoryRepository
-
-    constructor(searchHistoryRepo:ISearchHistoryRepository)
-    {
-      this._searchHistoryRepo=searchHistoryRepo
-    }
+  constructor(searchHistoryRepo: ISearchHistoryRepository) {
+    this._searchHistoryRepo = searchHistoryRepo;
+  }
 
   async execute(userId: string): Promise<IResponse> {
-    
-    if(!userId)
-    {
-      throw new AppError(userMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
+    if (!userId) {
+      throw new AppError(
+        userMessages.ERROR.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
+      );
     }
 
-    await this._searchHistoryRepo.clearAllSearchHistory(userId)
+    await this._searchHistoryRepo.clearAllSearchHistory(userId);
 
-    
-    
     return {
-      success:true,
-      message:generalMessages.SUCCESS.OPERATION_SUCCESS
-    }
+      success: true,
+      message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+    };
   }
 }

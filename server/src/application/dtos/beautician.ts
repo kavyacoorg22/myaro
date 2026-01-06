@@ -9,7 +9,7 @@ export interface IVerificationStatusDto{
 
 export interface IBeauticianDTO{
   userId:string,
-  profileImg:string,
+  profileImg?:string,
   userName:string,
   verificationStatus:VerificationStatus,
   yearsOfExperience:number,

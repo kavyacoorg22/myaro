@@ -220,9 +220,18 @@ async getBeauticiansById(id: string[]): Promise<User[]> {
    return users.map(u => this.map(u));
 }
 
+async findUsersByIds(userIds: string[]): Promise<User[]> {
+  const users=await UserModel.find({
+    _id:{$in:userIds}
+  }).exec()
+
+  return users.map((u)=>this.map(u))
+}
+
   protected map(doc:UserDoc):User{
+    const base = super.map(doc) as any;
     return{
-      id:doc._id.toString(),
+      id:base.id,
       email:doc.email,
       userName:doc.userName,
       fullName:doc.fullName,

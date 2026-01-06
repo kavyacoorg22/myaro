@@ -11,15 +11,15 @@ export function toVerificationStatusOutputDto(beautician:Beautician): IVerificat
     };
 };
 
-export function toBeauticianDeatilDto(beautician:IBeauticianDTO):IBeauticianDTO{
+export function toBeauticianDeatilDto(beautician:Beautician,user?:User):IBeauticianDTO{
   return{
     userId:beautician.userId,
-    profileImg:beautician.profileImg,
-    userName:beautician.userName,
+    profileImg:user?.profileImg?? '',
+    userName:user?.userName??'',
     verificationStatus:beautician.verificationStatus,
     yearsOfExperience:beautician.yearsOfExperience,
     shopName:beautician.shopName,
-    city:beautician.city
+    city:beautician.shopAddress?.city
 
   }
 }
@@ -103,5 +103,5 @@ export function toRecentSearchHistoryResultDtos(
       fullName: user.fullName ?? '',
       profileImg: user.profileImg ?? '',
     };
-  }).filter((dto): dto is IRecentSearchDto => dto !== null); // Remove null entries
+  }).filter((dto): dto is IRecentSearchDto => dto !== null); 
 }

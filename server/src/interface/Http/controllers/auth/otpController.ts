@@ -1,26 +1,24 @@
-// src/controllers/OtpController.ts
 import { Request, Response } from "express";
-import { CreateOtpUseCase } from "../../../../application/usecases/auth/createOtpUseCase";
-import { ResendOtpUseCase } from "../../../../application/usecases/auth/resendOtpUseCase";
-import { VerifyOtpUseCase } from "../../../../application/usecases/auth/verifyOtpUsecase";
+
+import { ICreateOtpUseCase } from "../../../../application/interface/auth/ICreateOtpUseCase";
+import { IResendOtpUseCase } from "../../../../application/interface/auth/IResendOtpUseCase";
+import { IVerifyOtpUseCase } from "../../../../application/interface/auth/IVerifyOtpUseCase";
 
 export class OtpController {
   constructor(
-    private createOtpUC: CreateOtpUseCase,
-    private resendOtpUC: ResendOtpUseCase,
-    private verifyOtpUC: VerifyOtpUseCase
+    private createOtpUC: ICreateOtpUseCase,
+    private resendOtpUC: IResendOtpUseCase,
+    private verifyOtpUC: IVerifyOtpUseCase
   ) {}
 
   async sendOtp(req: Request, res: Response) {
     try {
+      const { email, signupToken = null } = req.body;
 
-      const { email, signupToken=null } = req.body;
-    
       await this.createOtpUC.execute({ email, signupToken });
-     
+
       return res.json({ success: true, message: "OTP sent" });
     } catch (err: any) {
-       
       return res.status(400).json({ success: false, error: err.message });
     }
   }
@@ -39,11 +37,9 @@ export class OtpController {
     try {
       const { email, signupToken, otp } = req.body;
 
-
       await this.verifyOtpUC.execute({ email, signupToken, otp });
 
       return res.json({ success: true, message: "OTP verified" });
-
     } catch (err: any) {
       return res.status(400).json({ success: false, error: err.message });
     }

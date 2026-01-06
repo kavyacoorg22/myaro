@@ -10,13 +10,6 @@ export interface IVerificationUpdate {
   verifiedAt?: Date ;
 }
 
-export interface IAddPaymentDetailsDto {
-  accountHolderName: string;
-  accountNumber: string;
-  ifscCode: string;
-  bankName: string;
-  upiId?: string;
-}
 
 export interface IBeauticianRepository{
   create(data:Omit<Beautician, "id" | "createdAt" | "updatedAt">):Promise<Beautician>

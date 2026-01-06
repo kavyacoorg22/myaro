@@ -2,10 +2,10 @@ import { NextFunction ,Request,Response} from "express";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 
-import { LogoutUseCase } from "../../../../application/usecases/auth/logoutUseCase";
+import { ILogoutUseCase } from "../../../../application/interface/auth/logoutUseCase";
 
 export class LogoutController{
-  constructor(private logoutUseCase:LogoutUseCase){}
+  constructor(private logoutUseCase:ILogoutUseCase){}
 
   async handle(req:Request,res:Response,next:NextFunction){
     try{

@@ -1,18 +1,17 @@
-
-
 import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
-import { IAddPaymentDetailsDto } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { UserRole } from "../../../domain/enum/userEnum";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IBeauticianUpdateRegistrationUseCase } from "../../interface/beautician/IbeauticianUpdateUseCase";
 import { userMessages } from "../../../shared/constant/message/userMessage";
 import { toUpdateRegistrationDto } from "../../mapper/beauticianMapper";
 import { IBeauticianPaymentDeatilOutput } from "../../interfaceType/beauticianType";
+import { BankDetailsVO } from "../../../domain/entities/Beautician";
 
-
-export class BeauticianUpdateRegistartionUseCase implements IBeauticianUpdateRegistrationUseCase{
+export class BeauticianUpdateRegistartionUseCase
+  implements IBeauticianUpdateRegistrationUseCase
+{
   private beauticianRepo: IBeauticianRepository;
   private userRepo: IUserRepository;
 
@@ -24,7 +23,10 @@ export class BeauticianUpdateRegistartionUseCase implements IBeauticianUpdateReg
     this.userRepo = userRepo;
   }
 
-  async execute( userId: string, payment: IAddPaymentDetailsDto ): Promise<IBeauticianPaymentDeatilOutput> {
+  async execute(
+    userId: string,
+    payment: BankDetailsVO
+  ): Promise<IBeauticianPaymentDeatilOutput> {
     if (!userId || !payment) {
       throw new AppError(
         userMessages.ERROR.MISSING_PARAMETERS,
@@ -33,7 +35,7 @@ export class BeauticianUpdateRegistartionUseCase implements IBeauticianUpdateReg
     }
     const updatedBeautician = await this.beauticianRepo.addPaymentDetails(
       userId,
-      payment
+      { bankDetails: payment }
     );
 
     if (!updatedBeautician) {
@@ -43,7 +45,6 @@ export class BeauticianUpdateRegistartionUseCase implements IBeauticianUpdateReg
       );
     }
 
-  
     const updatedUser = await this.userRepo.updateRoleAndVerification(
       userId,
       UserRole.BEAUTICIAN,
@@ -57,9 +58,6 @@ export class BeauticianUpdateRegistartionUseCase implements IBeauticianUpdateReg
       );
     }
 
-    
-
-    return toUpdateRegistrationDto(updatedUser)
-   
+    return toUpdateRegistrationDto(updatedUser);
   }
 }

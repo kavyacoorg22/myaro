@@ -1,4 +1,3 @@
-import { ISearchBeauticianResultDto } from "../../application/dtos/beautician";
 import { User } from "../entities/User";
 import { SortFilter } from "../enum/sortFilterEnum";
 import { UserRole, UserRoleFilter } from "../enum/userEnum";
@@ -41,5 +40,6 @@ export interface IUserRepository{
     update(id: string, data: Partial<User>): Promise<User | null>;
     searchBeauticians(query: string): Promise<User[]>;
     getBeauticiansById(id:string[]):Promise<User[]>;
+    findUsersByIds(id:string[]):Promise<User[]>
 }
 

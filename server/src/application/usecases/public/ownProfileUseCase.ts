@@ -19,9 +19,8 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
   }
 
   async execute(id: string): Promise<IOwnProfileOutput> {
-    console.log('🔍 OwnProfileUseCase - Fetching profile for userId:', id);
+    console.log("🔍 OwnProfileUseCase - Fetching profile for userId:", id);
 
-    
     const user = await this._userRepo.findByUserId(id);
 
     if (!user) {
@@ -31,7 +30,6 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
       );
     }
 
-  
     const userDetail: IOwnProfileOutput = {
       userId: user.id.toString(),
       userName: user.userName,
@@ -41,17 +39,14 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
       role: user.role,
     };
 
-    
-    if (user.role === 'beautician') {
-      console.log('👤 User is beautician, fetching beautician data...');
-      
+    if (user.role === "beautician") {
+      console.log("👤 User is beautician, fetching beautician data...");
+
       const beautician = await this._beauticianRepo.findByUserId(id);
 
-      
-
       if (beautician) {
-        console.log('✅ Beautician data found');
-        
+        console.log("✅ Beautician data found");
+
         userDetail.beauticianData = {
           yearsOfExperience: beautician.yearsOfExperience,
           about: beautician.about,
@@ -59,15 +54,15 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
           shopName: beautician.shopName,
           shopAddress: beautician.shopAddress,
           homeservicecount: beautician.homeserviceCount ?? 0,
-          verificationStatus: beautician.verificationStatus
+          verificationStatus: beautician.verificationStatus,
         };
       } else {
-        console.log('⚠️ No beautician data found for this user');
+        console.log("⚠️ No beautician data found for this user");
       }
     }
 
-    console.log('✅ Profile fetched successfully');
-    console.log(`backend user detail ${userDetail}`)
+    console.log("✅ Profile fetched successfully");
+    console.log(`backend user detail ${userDetail}`);
     return userDetail;
   }
 }

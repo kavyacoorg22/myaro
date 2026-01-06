@@ -3,9 +3,9 @@ import nodemailer from 'nodemailer'
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { otpEmailTemplate } from "../../shared/emailTemplate";
 import logger from "../../utils/logger";
-import { IOtpService } from "../../domain/serviceInterface/mailService";
+import { ISendMailService } from '../../domain/serviceInterface/mailService';
 
-export class NodemailerOtpService implements IOtpService{
+export class NodemailerOtpService implements ISendMailService{
    
    
     private _transporter=nodemailer.createTransport({

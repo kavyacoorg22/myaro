@@ -1,5 +1,5 @@
 import {  IResetPasswordInput, IResponse } from "../../interfaceType/authtypes";
 
-export interface IResetPassword{
+export interface IResetPasswordUseCase{
   execute(data:IResetPasswordInput):Promise<IResponse>
 } 

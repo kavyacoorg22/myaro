@@ -3,7 +3,6 @@ import { RegisterUserController } from "../../interface/Http/controllers/auth/re
 import { RegisterUserUseCase } from "../../application/usecases/auth/registerUserUseCase";
 import { PreSignupController } from "../../interface/Http/controllers/auth/preSignupController";
 import { PreSignupUseCase } from "../../application/usecases/auth/preSignupUseCase";
-import { MongoOtpRepository } from "../repositories/OtpRepository";
 import { CreateOtpUseCase } from "../../application/usecases/auth/createOtpUseCase";
 import { ResendOtpUseCase } from "../../application/usecases/auth/resendOtpUseCase";
 import { VerifyOtpUseCase } from "../../application/usecases/auth/verifyOtpUsecase";
@@ -60,6 +59,7 @@ import { RecentSearchesUseCase } from "../../application/usecases/public/recentS
 import { RemoveSearchHistoryUseCase } from "../../application/usecases/public/RemoveSeachHistoryUseCase";
 import { ClearSearchHistoryUseCase } from "../../application/usecases/public/ClearSearchHistoryUseCase";
 import { OtpService } from "../service/otpService";
+import { appConfig } from "./config";
 
 
 
@@ -68,11 +68,10 @@ const adminRepo=new MongoAdminRepository()
 const userRepo=new MongoUserRepository();
 const registerUseCase=new RegisterUserUseCase(userRepo)
 const registerController=new RegisterUserController(registerUseCase)
-const preSignupUseCase = new PreSignupUseCase(process.env.JWT_SECRET!, "10m",userRepo);
+const preSignupUseCase = new PreSignupUseCase(process.env.JWT_SECRET!,userRepo);
 const preSignupController=new PreSignupController(preSignupUseCase)
 //otp
 
-const otpRepo = new MongoOtpRepository();
 const mailService=new NodemailerOtpService()
 const otpService=new OtpService()
 const createOtpUC = new CreateOtpUseCase(otpService,mailService);
@@ -145,7 +144,7 @@ const adminController=new AdminAuthController(adminLoginUseCase,adminLogoutUseCa
 
 const userListUC=new GetAllUserUseCase(userRepo)
 const toggleUserStatusUC=new ToggleUserStatusUseCase(userRepo,new RedisTokenBlacklistService)
-const getAllBeauticianUseCase=new GetAllBeauticianUseCase(beauticianRepo)
+const getAllBeauticianUseCase=new GetAllBeauticianUseCase(beauticianRepo,userRepo)
 const viewBeauticianDetailsUseCase=new ViewBeauticianDetailUseCase(beauticianRepo,userRepo)
 const approveBeauticianUseCase=new ApproveBeauticianUseCase(beauticianRepo)
 const rejectBeauticianUseCase=new RejectBeauticianUseCase(beauticianRepo)

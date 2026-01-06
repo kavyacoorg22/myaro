@@ -1,41 +1,35 @@
-import jwt from 'jsonwebtoken';
-import { ConflictError } from '../../../domain/errors/systemError';
-import { IUserRepository } from '../../../domain/repositoryInterface/IUserRepository';
+import jwt, { SignOptions } from "jsonwebtoken";
+import { ConflictError } from "../../../domain/errors/systemError";
+import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
+import {
+  IPreSignupInput,
+  IPreSignupOutput,
+} from "../../interfaceType/authtypes";
+import { IPresignupUseCase } from "../../interface/auth/IPreSignupUsecase";
+import { appConfig } from "../../../infrastructure/config/config";
 
-export interface PreSignupInput{
-  email:string,
-  fullName:string,
-  userName:string,
-  password:string,
-  confirmPassword:string
-}
+export class PreSignupUseCase implements IPresignupUseCase {
+  constructor(private jwtSecret: string, private userRepo: IUserRepository) {}
 
-export interface PreSignupOutput{
-  signupToken:string
-}
+  async execute(input: IPreSignupInput): Promise<IPreSignupOutput> {
+    const { email, userName, fullName, password } = input;
 
+    const existingByEmail = await this.userRepo.findByEmail(input.email);
+    if (existingByEmail) {
+      throw new ConflictError("Email alredy registered");
+    }
 
-export class PreSignupUseCase
-{
-  constructor(private jwtSecret:string,private jwtExpire:"10m",private userRepo:IUserRepository){}
+    const existByUserName = await this.userRepo.findByUserName(input.userName);
+    if (existByUserName) {
+      throw new ConflictError("User Name already taken");
+    }
 
-  async execute(input:PreSignupInput):Promise<PreSignupOutput> {
-   
-    const {email,userName,fullName,password}=input
-   
-       const existingByEmail=await this.userRepo.findByEmail(input.email)
-        if(existingByEmail)
-        {
-          throw new ConflictError("Email alredy registered")
-        }
-    
-        const existByUserName=await this.userRepo.findByUserName(input.userName)
-        if(existByUserName)
-        {
-          throw new ConflictError("User Name already taken")
-        }
-    const signupToken=jwt.sign({email,userName,fullName,password},this.jwtSecret,{expiresIn:this.jwtExpire})
+    const signupToken = jwt.sign(
+      { email, userName, fullName, password },
+      this.jwtSecret,
+      { expiresIn: `${appConfig.jwt.accessTokenExpireTime}m` } as any
+    );
 
-    return {signupToken}
+    return { signupToken };
   }
 }

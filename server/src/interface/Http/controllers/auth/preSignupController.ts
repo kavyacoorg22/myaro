@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { PreSignupUseCase } from "../../../../application/usecases/auth/preSignupUseCase";
+import { IPresignupUseCase } from "../../../../application/interface/auth/IPreSignupUsecase";
 
 export class PreSignupController {
-  constructor(private preSignupUseCase: PreSignupUseCase) {}
+  constructor(private preSignupUseCase: IPresignupUseCase) {}
 
   async handle(req: Request, res: Response) {
     try {
@@ -13,7 +13,6 @@ export class PreSignupController {
         success: true,
         data: result,
       });
-
     } catch (err: any) {
       return res.status(400).json({
         success: false,

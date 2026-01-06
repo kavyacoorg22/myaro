@@ -35,11 +35,11 @@ export const appConfig = {
         accessTokenExpireTime:required(
             'ACCESS_TOKEN_EXPIRETIME',
        process.env.ACCESS_TOKEN_EXPIRETIME
-        ) as string,
+        ) ,
          refreshTokenExpireTime:required(
             'REFRESH_TOKEN_EXPIRETIME',
        process.env.REFRESH_TOKEN_EXPIRETIME
-        ) as string
+        ) 
     },
 
     db: {
@@ -59,17 +59,7 @@ export const appConfig = {
         emailPassword: required('SMTP_PASS', process.env.SMTP_PASS),
     },
 
-    cloudinary: {
-        cloudName: required(
-            'CLOUDINARY_CLOUD_NAME',
-            process.env.CLOUDINARY_CLOUD_NAME,
-        ),
-        apiKey: required('CLOUDINARY_API_KEY', process.env.CLOUDINARY_API_KEY),
-        apiSecret: required(
-            'CLOUDINARY_API_SECRET',
-            process.env.CLOUDINARY_API_SECRET,
-        ),
-    },
+
      
     aws:{
         region:required('REGION',process.env.REGION),

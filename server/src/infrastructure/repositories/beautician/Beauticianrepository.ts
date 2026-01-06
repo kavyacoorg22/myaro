@@ -183,8 +183,9 @@ async updateProfileDetailById(
 
 
   protected map(doc:BeauticianDoc):Beautician{
+    const base = super.map(doc) as any;
     return {
-      id: doc._id.toString(),
+      id: base.id,
       userId: doc.userId.toString(),
 
       yearsOfExperience: doc.yearsOfExperience,

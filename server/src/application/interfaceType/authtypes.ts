@@ -39,3 +39,38 @@ export interface IGoogleLoginInput {
     credential: string;
     role: UserRole;
 }
+
+export interface IVerifyOtpInput{
+  email:string,
+  signupToken?:string|null,
+  otp:string
+}
+
+export  interface ISendOtpInput{
+  email:string,
+  signupToken?:string|null
+}
+
+export type IRegisterInput={
+  email:string,
+  userName:string,
+  fullName:string,
+  password:string,
+}
+
+export interface IPreSignupInput{
+  email:string,
+  fullName:string,
+  userName:string,
+  password:string,
+  confirmPassword:string
+}
+
+export interface IPreSignupOutput{
+  signupToken:string
+}
+
+export interface ICompleteSignupInput{
+  signupToken:string,
+  otp:string
+}
