@@ -38,6 +38,8 @@ export type BeauticianDoc =Document & {
 
   remark?: string;
   homeserviceCount?: number;
+    pamhletUrl: string;
+  
 
   createdAt: Date;
   updatedAt: Date;
@@ -93,6 +95,8 @@ const BeauticianSchema = new Schema<BeauticianDoc>(
 
 
     homeserviceCount: { type: Number, default: 0 },
+      pamhletUrl: { type: String },
+
   },
   { timestamps: true }
 );

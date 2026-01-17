@@ -1,8 +1,9 @@
+import { CategoryServiceType } from "../enum/serviceEnum";
 
 export interface Category{
   id:string,
   name:string,
-  type:CategoryType,
+  type:CategoryServiceType,
   createdBy:string,
   isActive:boolean,
   description:string,

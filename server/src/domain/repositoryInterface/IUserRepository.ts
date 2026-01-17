@@ -33,7 +33,6 @@ export interface IUserRepository{
         role?: UserRoleFilter;
     }): Promise<number>
      isUserBlocked(userId: string): Promise<boolean>
-   updateStatus(id: string,isActive: boolean): Promise<User|null>
    updateRoleAndVerification(userId: string, role: UserRole, isVerified: boolean): Promise<User | null>;
     updateByUserId(id: string, data: Partial<User>): Promise<boolean>
    updateProfileImageById(id:string,profileImg:string):Promise<User|null> 

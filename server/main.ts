@@ -9,6 +9,7 @@ import publicRoutes from './src/interface/Http/routes/publicRoutes';
 import beauticianRoute from './src/interface/Http/routes/beauticianRoute';
 import redisClient from "./src/infrastructure/redis/redisClient";
 import adminRoutes from "./src/interface/Http/routes/adminRoutes"
+import { Server } from "http";
 
 const app = express();
 
@@ -38,7 +39,7 @@ app.use('/api/admin',adminRoutes)
 
 app.use(errorHandler);
 
-let server: any;
+let server: Server;
 
 async function startServer() {
   try {

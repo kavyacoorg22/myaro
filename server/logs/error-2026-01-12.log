@@ -1,0 +1,219 @@
+2026-01-12 09:23:42 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 10:52:40 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 13:37:42 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 17:42:42 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 18:04:44 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 18:04:44 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:04:44 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:04:45 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:04:45 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:04:46 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:04:47 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:04:49 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:04:52 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:14:16 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 18:14:16 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:14:16 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:14:16 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 18:14:17 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 20:09:45 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 21:00:43 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 21:00:48 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:00:53 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:00:58 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:01:03 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:01:09 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:01:15 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:01:17 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:19 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:21 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:23 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:25 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:27 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:29 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:31 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:34 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:36 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:43 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:01:45 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:47 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:49 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:51 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:53 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:55 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:57 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:01:59 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:07 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:02:14 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:02:21 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:02:27 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:29 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:31 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:34 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:36 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:43 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:02:45 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:47 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:49 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:51 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:02:58 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:03:05 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:03:07 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:03:09 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:03:11 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:03:13 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:03:16 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:03:18 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:03:25 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:03:32 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:03:38 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-12 21:03:45 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-12 21:04:35 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-12 21:06:56 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}

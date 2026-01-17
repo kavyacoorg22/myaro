@@ -32,7 +32,6 @@ import { ResetPasswordController } from "../../interface/Http/controllers/auth/R
 import { MongoAdminRepository } from "../repositories/admin/AdminRepository";
 import { AdminLoginUseCase } from "../../application/usecases/admin/loginUseCase";
 import { AdminAuthController } from "../../interface/Http/controllers/admin/authController";
-import { AdminLogoutUseCase } from "../../application/usecases/admin/logoutUseCase";
 import { GetAllUserUseCase } from "../../application/usecases/admin/management/getAllUserUseCase";
 import { AdminUserManagementController } from "../../interface/Http/controllers/admin/adminUserController";
 import { ToggleUserStatusUseCase } from "../../application/usecases/admin/management/toggleUserUseCase";
@@ -59,7 +58,28 @@ import { RecentSearchesUseCase } from "../../application/usecases/public/recentS
 import { RemoveSearchHistoryUseCase } from "../../application/usecases/public/RemoveSeachHistoryUseCase";
 import { ClearSearchHistoryUseCase } from "../../application/usecases/public/ClearSearchHistoryUseCase";
 import { OtpService } from "../service/otpService";
-import { appConfig } from "./config";
+import { AddCategoryUseCase } from "../../application/usecases/admin/management/services/addCategoryUseCase";
+import { UpdateCategoryUseCase } from "../../application/usecases/admin/management/services/updateCategoryUseCase";
+import { toggleActiveStatusUseCase } from "../../application/usecases/admin/management/services/toggleActiveStatusUseCase";
+
+import { AddServiceUseCase } from "../../application/usecases/admin/management/services/addServiceUseCase";
+import { UpdateServiceUseCase } from "../../application/usecases/admin/management/services/updateServiceUseCase";
+import { GetServiceUseCase } from "../../application/usecases/admin/management/services/getServiceUseCase";
+import {  AddCustomServiceCategoryUseCase } from "../../application/usecases/admin/management/services/addCustomService";
+import { ServiceRepository } from "../repositories/service/serviceRepository";
+import { CategoryRepository } from "../repositories/service/CategoryRepository";
+import { CustomServiceRepository } from "../repositories/service/customServiceRepository";
+import { BeauticianServiceRepository } from "../repositories/service/BeauticianServiceRepository";
+import { GetBeauticianServiceSelectionUseCase } from "../../application/usecases/admin/management/services/GetBeauticianServiceSelectionUseCase";
+import { BeauticianServiceController } from "../../interface/Http/controllers/service/beauticianServiceController";
+import { UpsertBeauticianService } from "../../application/usecases/admin/management/services/upsertBeauticianService";
+import { ServiceController } from "../../interface/Http/controllers/service/serviceController";
+import { CategoryController } from "../../interface/Http/controllers/service/categoryController";
+import { CustomServiceController } from "../../interface/Http/controllers/service/customServiceController";
+import { GetBeauticianServicesListUseCase } from "../../application/usecases/admin/management/services/getServiceList";
+import { UploadPamphletUseCase } from "../../application/usecases/admin/management/services/uploadPamphletUseCase";
+import { DeletePamphletImageUseCase } from "../../application/usecases/admin/management/services/deletePamphlet";
+import { GetPamphletUseCase } from "../../application/usecases/admin/management/services/getPamphlet";
 
 
 
@@ -139,11 +159,10 @@ export  {beauticianController}
 
 
 const adminLoginUseCase=new AdminLoginUseCase(adminRepo,new JwtTokenService,new BcryptAuthService )
-const adminLogoutUseCase=new  AdminLogoutUseCase()
-const adminController=new AdminAuthController(adminLoginUseCase,adminLogoutUseCase)
+const adminController=new AdminAuthController(adminLoginUseCase)
 
 const userListUC=new GetAllUserUseCase(userRepo)
-const toggleUserStatusUC=new ToggleUserStatusUseCase(userRepo,new RedisTokenBlacklistService)
+const toggleUserStatusUC=new ToggleUserStatusUseCase(userRepo,new RedisTokenBlacklistService,userRepo)
 const getAllBeauticianUseCase=new GetAllBeauticianUseCase(beauticianRepo,userRepo)
 const viewBeauticianDetailsUseCase=new ViewBeauticianDetailUseCase(beauticianRepo,userRepo)
 const approveBeauticianUseCase=new ApproveBeauticianUseCase(beauticianRepo)
@@ -158,3 +177,32 @@ const recentSearchHistoryUC=new RecentSearchesUseCase(searchHistoryRepo,userRepo
 const removeSearchHistoryUC=new RemoveSearchHistoryUseCase(searchHistoryRepo)
 const clearSearchHistoryUC=new   ClearSearchHistoryUseCase(searchHistoryRepo)
 export const searchHistoryController=new SearchHistoryController(addSearchHistoryUC,recentSearchHistoryUC,removeSearchHistoryUC,clearSearchHistoryUC)
+
+
+//category
+const categoryRepo=new CategoryRepository()
+const addCategoryUseCase=new AddCategoryUseCase(categoryRepo)
+const updateCategoryUseCase=new UpdateCategoryUseCase(categoryRepo)
+const toggleCategoryActiveStatusUseCase=new toggleActiveStatusUseCase(categoryRepo)
+const categoryController=new CategoryController(addCategoryUseCase,updateCategoryUseCase,toggleCategoryActiveStatusUseCase)
+//serivice
+const serviceRepo=new ServiceRepository()
+const addServiceUC=new AddServiceUseCase(serviceRepo,categoryRepo)
+const updateServiceUC=new UpdateServiceUseCase(serviceRepo)
+const getServiceUC=new GetServiceUseCase(serviceRepo)
+const toggleServiceActiveStatusUC=new toggleActiveStatusUseCase(serviceRepo)
+const serviceController=new ServiceController(addServiceUC,updateServiceUC,getServiceUC,toggleServiceActiveStatusUC)
+//custom service
+const customServiceRepo=new CustomServiceRepository()
+const beauticianServiceRepo=new BeauticianServiceRepository()
+const addCustomServiceUC=new AddCustomServiceCategoryUseCase(customServiceRepo,categoryRepo,beauticianServiceRepo)
+const getBeauticianSelectionUC=new GetBeauticianServiceSelectionUseCase(serviceRepo,categoryRepo,beauticianServiceRepo)
+const customServiceController=new CustomServiceController(addCustomServiceUC)
+//beautician service
+const upsertBeauticianService=new UpsertBeauticianService(beauticianServiceRepo,serviceRepo,categoryRepo)
+const getBeauticianServiceList=new GetBeauticianServicesListUseCase(beauticianServiceRepo)
+const uploadPampletUC=new UploadPamphletUseCase(beauticianRepo,fileUpload)
+const deletePampletUC=new DeletePamphletImageUseCase(beauticianRepo,fileUpload)
+const getPamphletUC=new GetPamphletUseCase(beauticianRepo)
+const beauticianServiceController=new BeauticianServiceController(getBeauticianSelectionUC,upsertBeauticianService,getBeauticianServiceList,uploadPampletUC,deletePampletUC,getPamphletUC)
+export {categoryController,serviceController,customServiceController,beauticianServiceController}

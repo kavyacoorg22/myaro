@@ -26,7 +26,7 @@ export interface IBeauticianRepository{
 
     updateVerificationByUserId(userId: string, update: Partial<Beautician>): Promise<Beautician | null>;  
     addPaymentDetails(userId: string, data: Partial<Beautician>): Promise<Beautician | null>;
-    updateByUserId(userId: string, data: Omit<Beautician, "id" | "createdAt" | "updatedAt"|"homeserviceCount">): Promise<Beautician|null>;
+    updateByUserId(userId: string, data: Partial<Omit<Beautician, "id" | "createdAt" | "updatedAt"|"homeserviceCount">>): Promise<Beautician|null>;
     updateProfileDetailById(userId:string,data:Partial<Beautician>):Promise<boolean|null>
      
     

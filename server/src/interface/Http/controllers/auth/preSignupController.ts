@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { IPresignupUseCase } from "../../../../application/interface/auth/IPreSignupUsecase";
+import { getErrorMessage } from "../../../../domain/errors/systemError";
 
 export class PreSignupController {
   constructor(private preSignupUseCase: IPresignupUseCase) {}
@@ -13,10 +14,10 @@ export class PreSignupController {
         success: true,
         data: result,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       return res.status(400).json({
         success: false,
-        error: err.message,
+        error: getErrorMessage(err),
       });
     }
   }

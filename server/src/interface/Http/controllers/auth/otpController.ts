@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { ICreateOtpUseCase } from "../../../../application/interface/auth/ICreateOtpUseCase";
 import { IResendOtpUseCase } from "../../../../application/interface/auth/IResendOtpUseCase";
 import { IVerifyOtpUseCase } from "../../../../application/interface/auth/IVerifyOtpUseCase";
+import { getErrorMessage } from "../../../../domain/errors/systemError";
 
 export class OtpController {
   constructor(
@@ -18,8 +19,10 @@ export class OtpController {
       await this.createOtpUC.execute({ email, signupToken });
 
       return res.json({ success: true, message: "OTP sent" });
-    } catch (err: any) {
-      return res.status(400).json({ success: false, error: err.message });
+    } catch (err: unknown) {
+      return res
+        .status(400)
+        .json({ success: false, error: getErrorMessage(err) });
     }
   }
 
@@ -28,8 +31,10 @@ export class OtpController {
       const { email, signupToken } = req.body;
       await this.resendOtpUC.execute({ email, signupToken });
       return res.json({ success: true, message: "OTP resent" });
-    } catch (err: any) {
-      return res.status(400).json({ success: false, error: err.message });
+    } catch (err: unknown) {
+      return res
+        .status(400)
+        .json({ success: false, error: getErrorMessage(err) });
     }
   }
 
@@ -40,8 +45,10 @@ export class OtpController {
       await this.verifyOtpUC.execute({ email, signupToken, otp });
 
       return res.json({ success: true, message: "OTP verified" });
-    } catch (err: any) {
-      return res.status(400).json({ success: false, error: err.message });
+    } catch (err: unknown) {
+      return res
+        .status(400)
+        .json({ success: false, error: getErrorMessage(err) });
     }
   }
 }

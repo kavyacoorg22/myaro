@@ -45,7 +45,7 @@ export class ResetPasswordController {
   ): Promise<void> => {
     try {
       const { email, password } = req.body;
-      console.log("backend request", email, password);
+      
       if (!email || !password) {
         throw new Error(generalMessages.ERROR.BAD_REQUEST);
       }

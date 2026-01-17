@@ -51,7 +51,7 @@ export interface IBeauticianEditProfileInput{
   fullName:string;
   about:string,
   shopName?:string,
-  shopAddress?:Partial<ShopAddressVO>,
+  shopAddress:Partial<ShopAddressVO>,
   yearsOfExperience:number,
     accountHolderName: string;
     accountNumber: string;

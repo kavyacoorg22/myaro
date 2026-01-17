@@ -1,9 +1,6 @@
 import mongoose, { Document, Model, Schema, Types } from "mongoose";
 import { UserRole } from "../../../../domain/enum/userEnum";
 
-
-
-
 export type UserDoc=Document &{
   _id:Types.ObjectId
   email:string,

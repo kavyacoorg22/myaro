@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\.a6a61dbf2f5247f7b3eca6af1546cbf265933742-audit.json",
+    "files": [
+        {
+            "date": 1767770366056,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\app-2026-01-07.log",
+            "hash": "08a6891332427d97942f5389351350280a7dfa68b1aea44525b3f705df9ea4e4"
+        },
+        {
+            "date": 1768186710678,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\app-2026-01-12.log",
+            "hash": "e81cb5666518e9af7a9f55a96359af83229dac75675e386ef2dbe86dbc839994"
+        }
+    ],
+    "hashType": "sha256"
+}

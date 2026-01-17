@@ -63,7 +63,7 @@ export const authMiddleware = (
             throw new AppError(authMessages.ERROR.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
         }
 
-        // ✅ Check if user is blocked
+      //check us4r blocked
         const userBlocked = await blacklistService.isUserBlocked(payload.userId);
         if (userBlocked) {
             throw new AppError(authMessages.ERROR.BLOCKED_USER, HttpStatus.FORBIDDEN);
@@ -71,17 +71,17 @@ export const authMiddleware = (
 
         const userRole = payload.role as UserRole;
 
-        // ✅ Check role permissions
+        
         if (!allowedRoles.includes(userRole)) {
             throw new AppError(authMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
         }
 
-        // ✅ Check if account is active
+        
         if (payload.isActive === false) {
             throw new AppError(authMessages.ERROR.BLOCKED_USER, HttpStatus.FORBIDDEN);
         }
 
-        // ✅ Set user in request
+        
         req.user = {
             id: payload.userId,
             email: payload.email,
@@ -89,20 +89,14 @@ export const authMiddleware = (
             isActive: payload.isActive,
         };
 
-        console.log('✅ Auth successful, user:', req.user.id);
-        console.log('request reached');
-        console.log('user', req.user);
         
         next();
         
     } catch (err: unknown) {
-        // ✅ Pass AppError to error handler
+        
         if (err instanceof AppError) {
             return next(err);
         }
-        
-        // ✅ Convert unknown errors to AppError
-        console.log('💥 Unexpected error in auth middleware:', err);
         return next(new AppError(generalMessages.ERROR.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR));
     }
 };

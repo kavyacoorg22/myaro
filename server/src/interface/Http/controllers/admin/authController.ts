@@ -1,20 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { IAdminLoginUseCase } from "../../../../application/interface/admin/auth/ILoginUseCase";
-import { IAdminLogoutUseCase } from "../../../../application/interface/admin/auth/ILogoutUseCase";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { appConfig } from "../../../../infrastructure/config/config";
 
 export class AdminAuthController {
   private _adminLoginUseCase: IAdminLoginUseCase;
-  private _adminLogoutUseCase: IAdminLogoutUseCase;
 
   constructor(
     adminLoginUseCase: IAdminLoginUseCase,
-    adminLogoutUseCase: IAdminLogoutUseCase
+    
   ) {
     this._adminLoginUseCase = adminLoginUseCase;
-    this._adminLogoutUseCase = adminLogoutUseCase;
+   
   }
 
   login = async (
@@ -62,25 +60,5 @@ export class AdminAuthController {
     }
   };
 
-  logout = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      await this._adminLogoutUseCase.execute(req, res);
-      res.setHeader(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, private"
-      );
-      res.setHeader("Pragma", "no-cache");
-      res.setHeader("Expires", "0");
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: authMessages.SUCCESS.LOGOUT,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
+ 
 }

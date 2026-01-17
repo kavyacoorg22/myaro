@@ -4,6 +4,7 @@ import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IFileUploader } from "../../../domain/serviceInterface/IFileUploadService";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
+import logger from "../../../utils/logger";
 import { IBeauticianRegisterUseCase } from "../../interface/beautician/IBeauticianRegisterUseCase";
 import {
   IBeauticianRegistartionOutput,
@@ -48,13 +49,13 @@ export class BeauticianRegistrationUseCase
       return paths ?? [];
     };
 
-    const portfolioPaths: string[] = [];
+    let portfolioPaths: string[] = [];
     let certificatePaths: string[] | undefined;
     let shopPhotosPaths: string[] | undefined;
     let shopLicencePaths: string[] | undefined;
 
     try {
-      await tryUpload(() =>
+     portfolioPaths= await tryUpload(() =>
         this._fileUploader.uploadPortfolioImages(data.files.portfolioImage)
       );
 
@@ -79,7 +80,9 @@ export class BeauticianRegistrationUseCase
     } catch (err) {
       try {
         await this._fileUploader.deleteFiles(newlyUploaded);
-      } catch {}
+      } catch(err) {
+        logger.error(err)
+      }
       throw err;
     }
 
@@ -122,7 +125,9 @@ export class BeauticianRegistrationUseCase
     } catch (dbErr) {
       try {
         await this._fileUploader.deleteFiles(newlyUploaded);
-      } catch {}
+      } catch(err) {
+        logger.error(err)
+      }
       throw dbErr;
     }
 
@@ -133,7 +138,9 @@ export class BeauticianRegistrationUseCase
           await this._fileUploader.deleteFiles(oldFiles.certificate);
           await this._fileUploader.deleteFiles(oldFiles.shopPhotos);
           await this._fileUploader.deleteFiles(oldFiles.shopLicence);
-        } catch {}
+        } catch(err) {
+          logger.error(err)
+        }
       })();
     }
 

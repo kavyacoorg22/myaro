@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { ConflictError } from "../../../../domain/errors/systemError";
+import { ConflictError, getErrorMessage } from "../../../../domain/errors/systemError";
 import { ICompleteSignupUseCase } from "../../../../application/interface/auth/ICompleteSignupUseCase";
+import { error } from "console";
 
 export class CompleteSignupController {
   constructor(private completeSignupUC: ICompleteSignupUseCase) {}
@@ -11,12 +12,14 @@ export class CompleteSignupController {
       const user = await this.completeSignupUC.execute({ signupToken, otp });
 
       return res.status(201).json({ success: true, data: user });
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (err instanceof ConflictError) {
         return res.status(409).json({ success: false, error: err.message });
       }
-
-      const msg = err?.message ?? "Server error";
+     
+       const msg = getErrorMessage(error) ?? "Server error";
+     
+     
       const isClientError = [
         "Invalid OTP",
         "OTP expired",

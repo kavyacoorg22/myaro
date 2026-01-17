@@ -1,0 +1,19 @@
+2026-01-07 14:19:11 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-07 18:16:54 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-07 19:54:48 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-07 20:55:51 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-07 20:55:53 error: Error: getaddrinfo ENOTFOUND redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-18482.crce182.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-01-07 20:55:59 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:633:28)
+    at Socket.emit (node:events:519:28)
+    at Socket._onTimeout (node:net:591:8)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)
+2026-01-07 21:22:44 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}

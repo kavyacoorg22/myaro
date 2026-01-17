@@ -42,6 +42,8 @@ export interface Beautician {
 
  
   homeserviceCount: number;
+    pamphletUrl?:string,
+
 
   createdAt: Date;
   updatedAt: Date;

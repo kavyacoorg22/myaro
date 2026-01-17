@@ -53,4 +53,13 @@ export class FileUploadService implements IFileUploader {
 
   return this.fileStorage.upload(file.buffer,file.originalname,'profile/profile-image')
  }
+ async uploadPamphletImage(file: Express.Multer.File): Promise<string> {
+     if (!file || !file.buffer) {
+    throw new Error("No pamphlet image provided");
+  }
+  return this.fileStorage.upload(file.buffer,file.originalname,'service/pamphlet-image')
+ }
+ async deletePamphletImage(path: string): Promise<void> {
+  await this.fileStorage.delete(path)
+ }
 }

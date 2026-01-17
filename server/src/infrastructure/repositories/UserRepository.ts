@@ -6,6 +6,7 @@ import { SortFilter } from "../../domain/enum/sortFilterEnum";
 import { UserRole, UserRoleFilter } from "../../domain/enum/userEnum";
 import { Types } from "mongoose";
 import { GenericRepository } from "./genericRepository";
+import { IToggleActiveStatusRepository } from "../../domain/repositoryInterface/IToggleActiveRepository";
 
 
 
@@ -14,7 +15,7 @@ export function toObjectId(id: string): Types.ObjectId | null {
 }
 
 
-export class MongoUserRepository extends GenericRepository<User,UserDoc> implements IUserRepository{
+export class MongoUserRepository extends GenericRepository<User,UserDoc> implements IUserRepository,IToggleActiveStatusRepository{
     
   constructor(){
     super(UserModel)
@@ -132,9 +133,9 @@ async isUserBlocked(userId: string): Promise<boolean> {
     return user.isActive === false;
 }
 
-  async updateStatus(id: string, isActive: boolean):Promise<User|null>{
+  async toggleActive(id: string, isActive: boolean):Promise<boolean>{
         const doc=await UserModel.findByIdAndUpdate(id, { isActive }, { new: true });
-         return doc ? this.map(doc) : null;
+         return doc !==null;
     }
 
   

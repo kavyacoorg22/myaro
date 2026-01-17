@@ -1,4 +1,5 @@
-import { BankDetailsVO } from "../../../domain/entities/Beautician";
+import { BankDetailsVO, Beautician, ShopAddressVO } from "../../../domain/entities/Beautician";
+import { User } from "../../../domain/entities/User";
 import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
@@ -7,6 +8,9 @@ import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IBeauticianEditProfileUseCase } from "../../interface/beautician/IBeauticianEditProfileUseCase";
 import { IResponse } from "../../interfaceType/authtypes";
 import { IBeauticianEditProfileInput } from "../../interfaceType/beauticianType";
+
+type UserUpdateDto = Partial<Pick<User, 'userName' | 'fullName'>>;
+type BeauticianUpdateDto = Partial<Omit<Beautician, 'id' | 'createdAt' | 'updatedAt'|'homeserviceCount'>>
 
 export class BeauticianEditProfileUseCase
   implements IBeauticianEditProfileUseCase
@@ -26,20 +30,28 @@ export class BeauticianEditProfileUseCase
     userId: string,
     data: IBeauticianEditProfileInput
   ): Promise<IResponse> {
+    
     const existing = await this._beauticianRepo.findByUserId(userId);
     if (!existing) {
       throw new AppError("Beautician not found", HttpStatus.NOT_FOUND);
     }
 
-    const userUpdate: any = {};
+    const userUpdate: UserUpdateDto = {};
     if (data.userName !== undefined) userUpdate.userName = data.userName;
     if (data.fullName !== undefined) userUpdate.fullName = data.fullName;
 
-    const beauticianUpdate: any = {};
+    const beauticianUpdate: BeauticianUpdateDto= {};
     if (data.about !== undefined) beauticianUpdate.about = data.about;
     if (data.shopName !== undefined) beauticianUpdate.shopName = data.shopName;
     if (data.shopAddress !== undefined)
-      beauticianUpdate.shopAddress = data.shopAddress;
+    {
+          const existingAddress = existing.shopAddress || {};
+      beauticianUpdate.shopAddress = {
+        ...existingAddress,
+        ...data.shopAddress,
+      } as ShopAddressVO;
+    }
+   
     if (data.yearsOfExperience !== undefined) {
       beauticianUpdate.yearsOfExperience = Number(data.yearsOfExperience);
     }

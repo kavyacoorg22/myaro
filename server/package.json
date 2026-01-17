@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "kill": "taskkill /F /IM node.exe",
-    "dev": "concurrently \"npm run dev:server\" \"npm run lint:watch\"",
+   "dev": "npm run lint && concurrently \"npm run dev:server\"",
     "dev:server": "ts-node-dev --respawn --transpile-only --clear main.ts",
     "start": "node dist/main.js",
     "build": "tsc",
@@ -32,7 +32,8 @@
     "passport-google-oauth20": "^2.0.0",
     "redis": "^5.9.0",
     "validator": "^13.15.23",
-    "winston": "^3.18.3",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "winston-mongodb": "^7.0.1"
   },
   "devDependencies": {

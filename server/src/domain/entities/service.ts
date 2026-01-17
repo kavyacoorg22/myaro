@@ -6,7 +6,6 @@ export interface Service{
   categoryId:string,
   suggestedPrice:number,
   isActive:boolean,
-  createdBy:string,
   createdAt:Date,
   updatedAt:Date
 }

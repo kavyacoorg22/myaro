@@ -5,4 +5,6 @@ export interface IFileUploader {
   uploadShopLicences(files?: Express.Multer.File[]): Promise<string[] | undefined>;
   deleteFiles(paths: string[]): Promise<void>;
   uploadProfileImage(file:Express.Multer.File):Promise<string>
+  uploadPamphletImage(file:Express.Multer.File):Promise<string>
+  deletePamphletImage(path:string):Promise<void>
 }

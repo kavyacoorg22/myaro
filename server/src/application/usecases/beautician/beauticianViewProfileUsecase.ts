@@ -24,7 +24,7 @@ export class BeauticianViewEditProfileUseCase
   async execute(userId: string): Promise<IBeauticianViewEditProfileOutput> {
     const beautician = await this._beauticianRepo.findByUserId(userId);
 
-    console.log(`usecase output ${beautician}`);
+    
 
     if (!beautician) {
       throw new AppError(generalMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);

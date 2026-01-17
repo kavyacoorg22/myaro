@@ -1,4 +1,10 @@
-export const enum CategoryType{
+export  enum CategoryServiceType{
    SYSTEM="system",
-   BEAUTICIAN="beautician"
+   CUSTOM="custom"
+}
+
+export  enum CustomServiceStatus{
+   PENDING="pending",
+   APPORVED="approved",
+   REJECTED="rejected"
 }

@@ -64,7 +64,7 @@ async countAll(params?: {
     verificationStatus?: VerificationStatusFilter;
 }): Promise<number> {
 
-    const filter: any = {};
+    const filter: any= {};
 
     if (params?.verificationStatus && params.verificationStatus !== "all") {
         filter.verificationStatus = params.verificationStatus;
@@ -141,7 +141,7 @@ async addPaymentDetails(
 }
 
 
-async updateByUserId(userId: string, data: Omit<Beautician, "id" | "createdAt" | "updatedAt"|'homeServiceCount'>): Promise<Beautician | null> {
+async updateByUserId(userId: string, data: Partial<Omit<Beautician, "id" | "createdAt" | "updatedAt"|'homeServiceCount'>>): Promise<Beautician | null> {
   const userOid = toObjectId(userId);
   if (!userOid) return null;
 
@@ -222,7 +222,7 @@ async updateProfileDetailById(
       verifiedAt: doc.verifiedAt,
 
       homeserviceCount: doc.homeserviceCount ?? 0,
-
+      pamphletUrl:doc.pamhletUrl,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

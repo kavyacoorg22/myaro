@@ -17,14 +17,14 @@ export const adminRoutes:RouteObject[]=[
     </PrivateRoute>
   )
   },
-  //  {
-  //   path:adminFrontendRoute.checkUser,
-  //   element:(
-  //     <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
-  //   <UsersList/>
-  //   </PrivateRoute>
-  // )
-  // },
+   {
+    path:adminFrontendRoute.checkUser,
+    element:(
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
+    <UsersList/>
+    </PrivateRoute>
+  )
+  },
 
     {
     path:adminFrontendRoute.checkBeautician,

@@ -42,14 +42,14 @@ export class BeauticianController {
   ): Promise<void> => {
     try {
       const userId = req.user?.id;
-      console.log(`backend userId ${userId}`);
+   
       if (!userId) {
         throw new AppError(
           userMessages.ERROR.UNAUTHORIZED_ACCESS,
           HttpStatus.UNAUTHORIZED
         );
       }
-      const dto = (req as any).body.validatedData;
+      const dto = req.body.validatedData;
 
       if (!dto) {
         throw new AppError(
@@ -78,7 +78,7 @@ export class BeauticianController {
   ): Promise<void> => {
     try {
       const userId = req.user?.id;
-      console.log(`backend userId ${userId}`);
+      
       if (!userId) {
         throw new AppError(
           userMessages.ERROR.UNAUTHORIZED_ACCESS,
@@ -120,7 +120,7 @@ export class BeauticianController {
         paymentDetails
       );
 
-      console.log(`backend repsonse update registration.........${result}`);
+  
       res.status(HttpStatus.OK).json({
         success: true,
         message: generalMessages.SUCCESS.OPERATION_SUCCESS,
@@ -148,7 +148,7 @@ export class BeauticianController {
       const profileData = await this._beauticianViewEditProfileUC.execute(
         userId
       );
-      console.log("backend response edit profile data", profileData);
+     
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -207,9 +207,7 @@ export class BeauticianController {
       }
 
       const beauticians = await this._beauticianSearchUC.execute(query);
-      console.log(
-        `search beatician controller output ${JSON.stringify(beauticians)}`
-      );
+     
       res.status(HttpStatus.OK).json({
         success: true,
         message: generalMessages.SUCCESS.OPERATION_SUCCESS,

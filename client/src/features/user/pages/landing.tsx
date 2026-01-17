@@ -65,7 +65,7 @@ export const Landing = () => {
           </div>
 
       
-          {/* <div className="px-4 pb-3 flex items-center gap-2">
+          {<div className="px-4 pb-3 flex items-center gap-2">
             <MapPin className="w-4 h-4 text-red-500" />
             <span className="text-sm text-gray-600">{locationText}</span>
             <button
@@ -76,7 +76,7 @@ export const Landing = () => {
             >
               <RefreshCw className={`w-4 h-4 text-gray-500 ${location.isLoading ? 'animate-spin' : ''}`} />
             </button>
-          </div> */}
+          </div> }
         </div>
         
         <div className="p-6">

@@ -24,9 +24,7 @@ router.post("/complete-signup", (req:Request, res:Response) => completeSignupCon
 
 router.post('/login',(req:Request,res:Response,next:NextFunction)=>
 {
-    console.log('📥 Login endpoint hit');
-  console.log('Body:', req.body);
-  console.log('Cookies:', req.cookies);
+    
   loginController.handle(req,res,next)})
   
   ;

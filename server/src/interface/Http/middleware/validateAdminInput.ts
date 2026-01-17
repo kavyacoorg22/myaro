@@ -22,3 +22,93 @@ export function valiadteAdminAuthInput(req:Request,res:Response,next:NextFunctio
   }
   next()
 }
+
+export function ValidateAdminCategoryInput(req:Request,res:Response,next:NextFunction){
+  const {name,description}=req.body;
+  if(!name)
+  {
+    return res.status(400).json({error:"Enter name of the category"})
+  }
+
+  if(name.trim()===''|| (description && description.trim()===''))
+  {
+    return res.status(400).json({error: "Name or Description can't be empty or only spaces"})
+  }
+  
+   const nameRegex = /^[A-Za-z\s]+$/;
+
+  if (!nameRegex.test(name)) {
+    return res.status(400).json({
+      error: "Name must contain only characters (A-Z, a-z)",
+    });
+  }
+ 
+  next()
+}
+
+export function ValidateCategoryUpdateInput(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { name, description } = req.body;
+
+  if (!name && !description) {
+    return res.status(400).json({
+      error: "At least one field is required to update",
+    });
+  }
+
+  if (name && typeof name !== "string") {
+    return res.status(400).json({
+      error: "Name must be a string",
+    });
+  }
+
+  if (description && typeof description !== "string") {
+    return res.status(400).json({
+      error: "Description must be a string",
+    });
+  }
+
+  if (name && name.trim() === "") {
+    return res.status(400).json({
+      error: "Name can't be empty or only spaces",
+    });
+  }
+
+  if (description && description.trim() === "") {
+    return res.status(400).json({
+      error: "Description can't be empty or only spaces",
+    });
+  }
+
+  const nameRegex = /^[A-Za-z\s]+$/;
+
+  if (name && !nameRegex.test(name)) {
+    return res.status(400).json({
+      error: "Name must contain only characters (A-Z, a-z)",
+    });
+  }
+
+  next();
+}
+
+export function ValidateAdminServiceInput(req:Request,res:Response,next:NextFunction){
+  const {name}=req.body
+   if (name && typeof name !== "string") {
+    return res.status(400).json({
+      error: "Name must be a string",
+    });
+  }
+    const nameRegex = /^[A-Za-z\s]+$/;
+
+  if (name && !nameRegex.test(name)) {
+    return res.status(400).json({
+      error: "Name must contain only characters (A-Z, a-z)",
+    });
+  }
+ 
+  next()
+}
+

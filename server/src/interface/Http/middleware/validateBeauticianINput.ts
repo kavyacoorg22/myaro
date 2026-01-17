@@ -322,3 +322,69 @@ export const validateEditBeauticianProfile = (
     next(error);
   }
 };
+
+
+
+export function validateAddCustomServiceInput(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { category, service } = req.body;
+
+  if (!category || typeof category !== "object") {
+    return res.status(400).json({
+      error: "Category is required",
+    });
+  }
+
+  if (!category.categoryId && !category.name) {
+    return res.status(400).json({
+      error: "Either categoryId or category name is required",
+    });
+  }
+
+  if (category.name && typeof category.name !== "string") {
+    return res.status(400).json({
+      error: "Category name must be a string",
+    });
+  }
+
+  if (!service || typeof service !== "object") {
+    return res.status(400).json({
+      error: "Service details are required",
+    });
+  }
+
+  if (!service.name || typeof service.name !== "string") {
+    return res.status(400).json({
+      error: "Service name is required and must be a string",
+    });
+  }
+
+  const nameRegex = /^[A-Za-z\s]+$/;
+  if (!nameRegex.test(service.name)) {
+    return res.status(400).json({
+      error: "Service name must contain only letters and spaces",
+    });
+  }
+
+  if (
+    service.price === undefined ||
+    typeof service.price !== "number" ||
+    service.price <= 0
+  ) {
+    return res.status(400).json({
+      error: "Service price must be a number greater than 0",
+    });
+  }
+
+  if (typeof service.isHomeServiceAvailable !== "boolean") {
+    return res.status(400).json({
+      error: "isHomeServiceAvailable must be a boolean",
+    });
+  }
+
+  next();
+}
+

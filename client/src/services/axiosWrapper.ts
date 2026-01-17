@@ -31,44 +31,44 @@ const api = axios.create({
 });
 
 //interceptor
-// api.interceptors.response.use(
-//   (response) => response,
+api.interceptors.response.use(
+  (response) => response,
 
-//   async (error: AxiosError) => {
-//     if (!error.response) {
-//       throw new Error("Network error");
-//     }
+  async (error: AxiosError) => {
+    if (!error.response) {
+      throw new Error("Network error");
+    }
 
-//     const status = error.response.status;
-//     const originalRequest: any = error.config;
-//     const endpoint = originalRequest?.url || "";
+    const status = error.response.status;
+    const originalRequest: any = error.config;
+    const endpoint = originalRequest?.url || "";
 
-//     const isAuthEndpoint =
-//       endpoint.includes(authRoutes.login) ||
-//       endpoint.includes(authRoutes.preSignup) ||
-//       endpoint.includes(adminApiRoute.adminLogin)|| endpoint.includes(authRoutes.completeSignup)||endpoint.includes(authRoutes.sendOtp)||endpoint.includes(authRoutes.verifyOtp)||endpoint.includes(authRoutes.reSendOtp);
+    const isAuthEndpoint =
+      endpoint.includes(authRoutes.login) ||
+      endpoint.includes(authRoutes.preSignup) ||
+      endpoint.includes(adminApiRoute.adminLogin)|| endpoint.includes(authRoutes.completeSignup)||endpoint.includes(authRoutes.sendOtp)||endpoint.includes(authRoutes.verifyOtp)||endpoint.includes(authRoutes.reSendOtp);
 
-//     if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
-//       originalRequest._retry = true;
+    if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+      originalRequest._retry = true;
 
-//       const isAdminRequest = endpoint.startsWith("/admin");
-//       const refreshEndpoint = isAdminRequest
-//         ? authRoutes.adminRefresh
-//         : authRoutes.refresh;
+      const isAdminRequest = endpoint.startsWith("/admin");
+      const refreshEndpoint = isAdminRequest
+        ? authRoutes.adminRefresh
+        : authRoutes.refresh;
 
-//       try {
-//         await api.post(refreshEndpoint);
-//         return api(originalRequest); 
-//       } catch {
-//         const loginPath = isAdminRequest ? adminApiRoute.adminLogin : authRoutes.login;
-//         window.location.href = loginPath;
-//         throw new Error("Session expired");
-//       }
-//     }
+      try {
+        await api.post(refreshEndpoint);
+        return api(originalRequest); 
+      } catch {
+        const loginPath = isAdminRequest ? adminApiRoute.adminLogin : authRoutes.login;
+        window.location.href = loginPath;
+        throw new Error("Session expired");
+      }
+    }
 
-//     throw new ApiError(status, error.response.data);
-//   }
-// );
+    throw new ApiError(status, error.response.data);
+  }
+);
 
 //wrapper
 export type ApiResponse<T> = {
