@@ -5,6 +5,12 @@ export  enum CategoryServiceType{
 
 export  enum CustomServiceStatus{
    PENDING="pending",
-   APPORVED="approved",
+   APPROVED="approved",
    REJECTED="rejected"
+}
+
+export enum CustomServiceFilter{
+   TODAY="today",
+   YESTERDAY='yesterday',
+   EARLIER='earlier'
 }

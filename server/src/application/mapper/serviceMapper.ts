@@ -1,7 +1,10 @@
 import { Beautician } from "../../domain/entities/Beautician";
 import { BeauticianService } from "../../domain/entities/beauticianService";
+import { CustomService } from "../../domain/entities/customService";
 import { Service } from "../../domain/entities/service";
-import { ICategoryServiceSelectionDto, IGetBeauticianServicesListDto, IGetPamphletDto, IGetServiceDto, IServiceSelectionDto } from "../dtos/services";
+import { User } from "../../domain/entities/User";
+import { CustomServiceStatus } from "../../domain/enum/serviceEnum";
+import { ICategoryServiceSelectionDto, IGetBeauticianServicesListDto, IGetCustomServiceDto, IGetPamphletDto, IGetServiceDto, IServiceSelectionDto } from "../dtos/services";
 
 export function toGetServicesOutputDto(service:Service):IGetServiceDto{
  return {
@@ -74,3 +77,25 @@ export function toGetPamphletDto(beautician:Beautician):IGetPamphletDto
     pamphletUrl:beautician?.pamphletUrl??''
   }
 }
+
+export function toGetAllCustomServiceDto(custom:CustomService,user?:User):IGetCustomServiceDto{
+return{
+   beauticianId:custom.beauticianId,
+   beauticianName:user?.userName??'',
+   type:custom.type,
+   profileImg:user?.profileImg??'',
+   customServiceId:custom.id,
+   category:{
+    categoryId:custom.category.categoryId,
+    name:custom.category.name
+   },
+   service:{
+    name:custom.service.name,
+    price:custom.service.price,
+    isHomeServiceAvailable:custom.service.isHomeServiceAvailable
+   },
+   status:custom.status,
+   createdAt:custom.createdAt
+}
+}
+

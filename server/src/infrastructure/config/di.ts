@@ -80,6 +80,10 @@ import { GetBeauticianServicesListUseCase } from "../../application/usecases/adm
 import { UploadPamphletUseCase } from "../../application/usecases/admin/management/services/uploadPamphletUseCase";
 import { DeletePamphletImageUseCase } from "../../application/usecases/admin/management/services/deletePamphlet";
 import { GetPamphletUseCase } from "../../application/usecases/admin/management/services/getPamphlet";
+import { GetAllCustomServiceUSeCase } from "../../application/usecases/admin/management/services/getAllCustomServiceUseCase";
+import { GetCustomServiceDetailUseCase } from "../../application/usecases/admin/management/services/getCustomServiceDetailUseCase";
+import { ApproveCustomServiceUseCase } from "../../application/usecases/admin/management/services/approveCustomService";
+import { RejectCustomServiceUseCase } from "../../application/usecases/admin/management/services/rejectCustomServiceUseCase";
 
 
 
@@ -197,7 +201,11 @@ const customServiceRepo=new CustomServiceRepository()
 const beauticianServiceRepo=new BeauticianServiceRepository()
 const addCustomServiceUC=new AddCustomServiceCategoryUseCase(customServiceRepo,categoryRepo,beauticianServiceRepo)
 const getBeauticianSelectionUC=new GetBeauticianServiceSelectionUseCase(serviceRepo,categoryRepo,beauticianServiceRepo)
-const customServiceController=new CustomServiceController(addCustomServiceUC)
+const getAllCustomServiceUC=new GetAllCustomServiceUSeCase(customServiceRepo,userRepo)
+const getCustomServiceDetailUC=new GetCustomServiceDetailUseCase(customServiceRepo,userRepo)
+const approveCustomServiceUC=new ApproveCustomServiceUseCase(customServiceRepo,serviceRepo,categoryRepo)
+const rejectCustomServiceUC=new RejectCustomServiceUseCase(customServiceRepo)
+const customServiceController=new CustomServiceController(addCustomServiceUC,getAllCustomServiceUC,getCustomServiceDetailUC,approveCustomServiceUC,rejectCustomServiceUC)
 //beautician service
 const upsertBeauticianService=new UpsertBeauticianService(beauticianServiceRepo,serviceRepo,categoryRepo)
 const getBeauticianServiceList=new GetBeauticianServicesListUseCase(beauticianServiceRepo)

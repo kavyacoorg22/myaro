@@ -1,3 +1,6 @@
+import { CategoryVO, ServiceVO } from "../../domain/entities/customService";
+import { CategoryServiceType, CustomServiceStatus } from "../../domain/enum/serviceEnum";
+
 export interface IGetServiceDto
 {
   id:string,
@@ -55,4 +58,16 @@ export interface ICustomCategoryServiceSelectionDto {
 
 export interface IGetPamphletDto{
   pamphletUrl:string
+}
+
+export interface IGetCustomServiceDto{
+  beauticianId?:string,
+  beauticianName:string,
+  type:CategoryServiceType,
+  profileImg:string,
+  customServiceId:string,
+  category:CategoryVO,
+  service:ServiceVO,
+  status:CustomServiceStatus,
+  createdAt:string
 }

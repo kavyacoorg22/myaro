@@ -23,8 +23,8 @@ export interface CustomService{
   category:CategoryVO,
   service:ServiceVO,
   status:CustomServiceStatus,
-  reviewdBy?:string,
-  reviewdAt?:Date,
+  reviewedBy?:string,
+  reviewedAt?:Date,
   result?:ResultVO,
   createdAt:string,
   updatedAt:string
