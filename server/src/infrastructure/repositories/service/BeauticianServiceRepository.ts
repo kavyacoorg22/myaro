@@ -1,3 +1,4 @@
+import { FilterQuery, Types } from "mongoose";
 import { BeauticianService } from "../../../domain/entities/beauticianService";
 import { IBeauticianServiceRepository } from "../../../domain/repositoryInterface/IBeauticianServiceRepository";
 import {
@@ -5,6 +6,8 @@ import {
   BeauticianServiceModel,
 } from "../../database/models/service/BeauticianServiceModel";
 import { GenericRepository } from "../genericRepository";
+import { Beautician } from "../../../domain/entities/Beautician";
+import { BeauticianDoc } from "../../database/models/beautician/BeauticianModel";
 
 export class BeauticianServiceRepository
   extends GenericRepository<BeauticianService, BeauticianServiceDoc>
@@ -19,12 +22,12 @@ export class BeauticianServiceRepository
   ): Promise<BeauticianService> {
     const filter = data.serviceId
       ? {
-          beauticianId: data.beauticianId,
+          beauticianId: new Types.ObjectId(data.beauticianId),
           serviceId: data.serviceId,
         }
       : {
-          beauticianId: data.beauticianId,
-          submissionId: data.submissionId,
+          beauticianId: new Types.ObjectId(data.beauticianId),
+          submissionId: new Types.ObjectId(data.submissionId),
         };
 
     const doc = await BeauticianServiceModel.findOneAndUpdate(
@@ -39,7 +42,10 @@ export class BeauticianServiceRepository
 
   async findByBeauticianId(beauticianId: string,options?: { homeServiceOnly?: boolean }): Promise<BeauticianService[]> {
  
-  const query: any = { beauticianId };
+  const query:FilterQuery<BeauticianServiceDoc> = {
+  beauticianId: new Types.ObjectId(beauticianId),
+   };
+
 
   if (options?.homeServiceOnly === true) {
     query.isHomeServiceAvailable = true;

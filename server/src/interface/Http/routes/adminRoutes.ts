@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { adminController, adminUserManagementController, authenticateAdmin, refreshTokenController, categoryController, serviceController } from "../../../infrastructure/config/di";
+import { adminController, adminUserManagementController, authenticateAdmin, refreshTokenController, categoryController, serviceController, customServiceController } from "../../../infrastructure/config/di";
 import { valiadteAdminAuthInput, ValidateAdminCategoryInput, ValidateAdminServiceInput, ValidateCategoryUpdateInput } from "../middleware/validateAdminInput";
 const router =Router()
 
@@ -20,6 +20,9 @@ router.post('/service',authenticateAdmin,ValidateAdminServiceInput,serviceContro
 router.patch('/service/:id',authenticateAdmin,ValidateAdminServiceInput,serviceController.updateService)
 router.patch('/service/:id/status',authenticateAdmin,serviceController.toggleServiceStatus)
 router.get('/category/:categoryId/services',authenticateAdmin,serviceController.getServices)
-
+//customservice
+router.get('/custom-services',authenticateAdmin,customServiceController.getAllCustomServices)
+router.get('/custom-services/:id',authenticateAdmin,customServiceController.getCustomServiceDetail)
+router.patch('/custom-services/:id/status',authenticateAdmin,customServiceController.updateCustomServiceStatus)
 
 export  default router

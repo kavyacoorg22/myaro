@@ -3,7 +3,7 @@ import { ICategoryRepository } from "../../../../../domain/repositoryInterface/I
 import { adminMessages } from "../../../../../shared/constant/message/adminMessages";
 import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IUpdateCategoryUseCase } from "../../../../interface/admin/management/services/IUpdateCategory";
+import { IUpdateCategoryUseCase } from "../../../../interface/beauticianService/IUpdateCategory";
 import { ICategoryRequest } from "../../../../interfaceType/serviceType";
 
 export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
@@ -17,7 +17,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
     if (!id) {
       throw new AppError(
         generalMessages.ERROR.BAD_REQUEST,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -26,9 +26,8 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
     if (!result) {
       throw new AppError(
         adminMessages.ERROR.UPDATION_FAILED,
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
   }
 }

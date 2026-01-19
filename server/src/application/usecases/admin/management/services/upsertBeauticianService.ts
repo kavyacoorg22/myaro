@@ -4,12 +4,10 @@ import { IBeauticianServiceRepository } from "../../../../../domain/repositoryIn
 import { ICategoryRepository } from "../../../../../domain/repositoryInterface/ICategoryRepository";
 import { IServiceRepository } from "../../../../../domain/repositoryInterface/IServiceRepository";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IUpsertBeauticianServiceUseCase } from "../../../../interface/admin/management/services/IUpsertBeauticianService";
+import { IUpsertBeauticianServiceUseCase } from "../../../../interface/beauticianService/IUpsertBeauticianService";
 import { IUpsertBeauticianServiceRequest } from "../../../../interfaceType/serviceType";
 
-export class UpsertBeauticianService
-  implements IUpsertBeauticianServiceUseCase
-{
+export class UpsertBeauticianService implements IUpsertBeauticianServiceUseCase {
   private _beauticianServiceRepo: IBeauticianServiceRepository;
   private _serviceRepo: IServiceRepository;
   private _categoryRepo: ICategoryRepository;
@@ -17,10 +15,10 @@ export class UpsertBeauticianService
   constructor(
     beauticianServiceRepo: IBeauticianServiceRepository,
     serviceRepo: IServiceRepository,
-    categoryRepo: ICategoryRepository
+    categoryRepo: ICategoryRepository,
   ) {
     this._beauticianServiceRepo = beauticianServiceRepo;
-    (this._serviceRepo = serviceRepo), (this._categoryRepo = categoryRepo);
+    ((this._serviceRepo = serviceRepo), (this._categoryRepo = categoryRepo));
   }
 
   async execute(input: IUpsertBeauticianServiceRequest): Promise<void> {

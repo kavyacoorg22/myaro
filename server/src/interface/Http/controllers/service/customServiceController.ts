@@ -1,14 +1,21 @@
 import { NextFunction, Request, Response } from "express";
-import { IAddCustomServiceUseCase } from "../../../../application/interface/admin/management/services/IAddCustomService";
+import { IAddCustomServiceUseCase } from "../../../../application/interface/beauticianService/IAddCustomService";
 import { AppError } from "../../../../domain/errors/appError";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
-import { IGetAllCustomServiceUseCase } from "../../../../application/interface/admin/management/services/IGetCustomService";
-import { IGetCustomServiceDetailsUseCase } from "../../../../application/interface/admin/management/services/IGetCustomServiceDetails";
-import { IRejectCustomServiceUseCase } from "../../../../application/interface/admin/management/services/IRejectCustomServiceUseCase";
-import { IApproveCustomServiceUseCase } from "../../../../application/interface/admin/management/services/IApproveCustomServiceUseCase";
-import { CustomServiceFilter } from "../../../../domain/enum/serviceEnum";
+import { IGetAllCustomServiceUseCase } from "../../../../application/interface/beauticianService/IGetCustomService";
+import { IGetCustomServiceDetailsUseCase } from "../../../../application/interface/beauticianService/IGetCustomServiceDetails";
+import { IRejectCustomServiceUseCase } from "../../../../application/interface/beauticianService/IRejectCustomServiceUseCase";
+import { IApproveCustomServiceUseCase } from "../../../../application/interface/beauticianService/IApproveCustomServiceUseCase";
+import {
+  CustomServiceFilter,
+  CustomServiceStatus,
+} from "../../../../domain/enum/serviceEnum";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
+
+type CustomServiceAction =
+  | CustomServiceStatus.APPROVED
+  | CustomServiceStatus.REJECTED;
 
 export class CustomServiceController {
   private _addCustomServiceUC: IAddCustomServiceUseCase;
@@ -111,7 +118,7 @@ export class CustomServiceController {
     }
   };
 
-  approveCustomService = async (
+  updateCustomServiceStatus = async (
     req: Request,
     res: Response,
     next: NextFunction,
@@ -119,54 +126,37 @@ export class CustomServiceController {
     try {
       const customServiceId = req.params.id;
       const adminId = req.user?.id;
-      if (!customServiceId) {
+      const { status } = req.body as {
+        status: CustomServiceAction;
+      };
+
+      if (!customServiceId || !adminId) {
         throw new AppError(
           generalMessages.ERROR.BAD_REQUEST,
           HttpStatus.BAD_REQUEST,
         );
       }
-      if (!adminId) {
-        throw new AppError(
-          authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED,
-        );
+
+      const handlerMap: Record<
+        CustomServiceAction,
+        {
+          execute: (adminId: string, serviceId: string) => Promise<void>;
+        }
+      > = {
+        approved: this._approveCustomServiceUC,
+        rejected: this._rejectCustomServiceUC,
+      };
+      const handler = handlerMap[status];
+
+      if (!handler) {
+        throw new AppError("Invalid status", HttpStatus.BAD_REQUEST);
       }
 
-      await this._approveCustomServiceUC.execute(adminId, customServiceId);
+      await handler.execute(adminId, customServiceId);
+
       res.status(HttpStatus.OK).json({
         success: true,
-        message: "custom service approved",
-      });
-    } catch (err) {
-      next(err);
-    }
-  };
-
-  rejectCustomService = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const customServiceId = req.params.id;
-      const adminId = req.user?.id;
-      if (!customServiceId) {
-        throw new AppError(
-          generalMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      if (!adminId) {
-        throw new AppError(
-          authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-
-      await this._rejectCustomServiceUC.execute(adminId, customServiceId);
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: "custom service rejected",
+        message: `Custom service ${status} successfully`,
       });
     } catch (err) {
       next(err);

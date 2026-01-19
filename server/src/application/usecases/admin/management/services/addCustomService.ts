@@ -9,7 +9,7 @@ import { IBeauticianServiceRepository } from "../../../../../domain/repositoryIn
 import { ICategoryRepository } from "../../../../../domain/repositoryInterface/ICategoryRepository";
 import { ICustomServiceRepository } from "../../../../../domain/repositoryInterface/ICustomService";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IAddCustomServiceUseCase } from "../../../../interface/admin/management/services/IAddCustomService";
+import { IAddCustomServiceUseCase } from "../../../../interface/beauticianService/IAddCustomService";
 import { IAddCustomServiceRequest } from "../../../../interfaceType/serviceType";
 
 export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase {
@@ -20,10 +20,10 @@ export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase
   constructor(
     customServiceRepo: ICustomServiceRepository,
     categoryRepo: ICategoryRepository,
-    beauticianServiceRepo: IBeauticianServiceRepository
+    beauticianServiceRepo: IBeauticianServiceRepository,
   ) {
-    (this._customServiceRepo = customServiceRepo),
-      (this._categoryRepo = categoryRepo);
+    ((this._customServiceRepo = customServiceRepo),
+      (this._categoryRepo = categoryRepo));
     this._beauticianServiceRepo = beauticianServiceRepo;
   }
   async execute(input: IAddCustomServiceRequest): Promise<void> {
@@ -33,7 +33,7 @@ export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase
 
     if (input.category.categoryId) {
       const existingCategory = await this._categoryRepo.findById(
-        input.category.categoryId
+        input.category.categoryId,
       );
 
       if (existingCategory === null) {
@@ -60,9 +60,8 @@ export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase
       status: CustomServiceStatus.PENDING,
     };
     //creating custom service
-    const createdCustomService = await this._customServiceRepo.create(
-      customServiceDto
-    );
+    const createdCustomService =
+      await this._customServiceRepo.create(customServiceDto);
 
     const beauticianCustomServiceDto: Omit<
       BeauticianService,
@@ -76,9 +75,9 @@ export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase
       isHomeServiceAvailable: input.service.isHomeServiceAvailable,
       submissionId: createdCustomService.id,
     };
-     //adding  custom service into beautician collection
+    //adding  custom service into beautician collection
     await this._beauticianServiceRepo.createOrUpdate(
-      beauticianCustomServiceDto
+      beauticianCustomServiceDto,
     );
   }
 }

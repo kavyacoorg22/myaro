@@ -3,7 +3,7 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { ICustomServiceRepository } from "../../../../../domain/repositoryInterface/ICustomService";
 import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IRejectCustomServiceUseCase } from "../../../../interface/admin/management/services/IRejectCustomServiceUseCase";
+import { IRejectCustomServiceUseCase } from "../../../../interface/beauticianService/IRejectCustomServiceUseCase";
 
 export class RejectCustomServiceUseCase implements IRejectCustomServiceUseCase {
   private _customServiceRepo: ICustomServiceRepository;

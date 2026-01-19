@@ -7,7 +7,7 @@ import { ICustomServiceRepository } from "../../../../../domain/repositoryInterf
 import { IUserRepository } from "../../../../../domain/repositoryInterface/IUserRepository";
 import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IGetAllCustomServiceUseCase } from "../../../../interface/admin/management/services/IGetCustomService";
+import { IGetAllCustomServiceUseCase } from "../../../../interface/beauticianService/IGetCustomService";
 import { IGetAllCustomServiceResponse } from "../../../../interfaceType/serviceType";
 import { toGetAllCustomServiceDto } from "../../../../mapper/serviceMapper";
 
@@ -68,7 +68,7 @@ export class GetAllCustomServiceUSeCase implements IGetAllCustomServiceUseCase {
       };
     }
 
-    const {data,total}= await this._customserviceRepo.fetchAllService(
+    const { data, total } = await this._customserviceRepo.fetchAllService(
       query,
       skip,
       limit,
@@ -88,7 +88,7 @@ export class GetAllCustomServiceUSeCase implements IGetAllCustomServiceUseCase {
     );
     return {
       customService: mapped,
-        pagination: {
+      pagination: {
         total,
         page,
         limit,

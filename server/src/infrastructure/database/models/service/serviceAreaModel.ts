@@ -1,22 +1,17 @@
 import mongoose, { Document, Model, Schema, Types } from "mongoose";
 
+export type LocationSubDoc = {
+  placeId: string;
+  city: string;
+  lat: number;
+  lng: number;
+  formattedString: string;
+};
 export type ServiceAreaDoc = Document & {
   _id: Types.ObjectId;
   beauticianId: Types.ObjectId;
-  homeServiceLocation: {
-    placeId: string;
-    city: string;
-    lat: number;
-    log: number;
-    formattedString: string;
-  };
-  serviceLocation: {
-    placeId: string;
-    city: string;
-    lat: number;
-    log: number;
-    formattedString: string;
-  };
+  homeServiceLocation:LocationSubDoc[];
+  serviceLocation: LocationSubDoc[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -32,8 +27,8 @@ const LocationSchema = new Schema({
 export const ServiceAreaSchema = new Schema<ServiceAreaDoc>(
   {
     beauticianId: { type: Schema.Types.ObjectId },
-    homeServiceLocation: { type: LocationSchema },
-    serviceLocation: { type: LocationSchema },
+    homeServiceLocation: { type: [LocationSchema],default:[] },
+    serviceLocation: { type:[ LocationSchema], default:[] },
   },
   { timestamps: true }
 );

@@ -3,7 +3,7 @@ import { CategoryServiceType } from "../../../../../domain/enum/serviceEnum";
 import { AppError } from "../../../../../domain/errors/appError";
 import { ICategoryRepository } from "../../../../../domain/repositoryInterface/ICategoryRepository";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IAddCategoryUseCase } from "../../../../interface/admin/management/services/IAddCategoryUseCase";
+import { IAddCategoryUseCase } from "../../../../interface/beauticianService/IAddCategoryUseCase";
 import { ICategoryRequest } from "../../../../interfaceType/serviceType";
 
 export class AddCategoryUseCase implements IAddCategoryUseCase {
@@ -34,7 +34,5 @@ export class AddCategoryUseCase implements IAddCategoryUseCase {
     };
 
     await this._categoryRepo.create(categoryDto);
-
-   
   }
 }

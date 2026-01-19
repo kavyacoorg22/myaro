@@ -8,7 +8,7 @@ import { ICustomServiceRepository } from "../../../../../domain/repositoryInterf
 import { IServiceRepository } from "../../../../../domain/repositoryInterface/IServiceRepository";
 import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IApproveCustomServiceUseCase } from "../../../../interface/admin/management/services/IApproveCustomServiceUseCase";
+import { IApproveCustomServiceUseCase } from "../../../../interface/beauticianService/IApproveCustomServiceUseCase";
 
 export class ApproveCustomServiceUseCase implements IApproveCustomServiceUseCase {
   private _customServiceRepo: ICustomServiceRepository;

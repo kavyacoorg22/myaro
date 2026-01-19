@@ -7,7 +7,7 @@ export interface Slot{
 export interface Schedule{
   id:string,
   beauticianId:string,
-  slot:Slot,
+  slots:Slot[],
   date:Date,
   createdAt:Date,
   updatedAt:Date

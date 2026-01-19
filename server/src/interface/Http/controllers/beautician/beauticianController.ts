@@ -10,14 +10,19 @@ import { IBeauticianEditProfileUseCase } from "../../../../application/interface
 import { ISearchResultUseCase } from "../../../../application/interface/public/ISearchResultUseCase";
 import { IBeauticianRegisterUseCase } from "../../../../application/interface/beautician/IBeauticianRegisterUseCase";
 import { IBeauticianVerificationUseCase } from "../../../../application/interface/beautician/IbeauticianVerificationStatusUseCase";
+import { IGetServiceAreaUseCase } from "../../../../application/interface/beautician/location/IGetServiceAreaUseCase";
+import { IAddServiceAreaUseCase } from "../../../../application/interface/beautician/location/IaddServiceAreaUseCase";
+import { IAddServiceAreaRequest } from "../../../../application/interfaceType/beauticianType";
 
 export class BeauticianController {
-  private _beauticianRegistrationUC:IBeauticianRegisterUseCase;
+  private _beauticianRegistrationUC: IBeauticianRegisterUseCase;
   private _beauticianVerificationStatusUseCase: IBeauticianVerificationUseCase;
   private _updateRegistrationUseCase: IBeauticianUpdateRegistrationUseCase;
   private _beauticianViewEditProfileUC: IBeauticianViewEditProfileUseCase;
   private _beauticianEditProfileUC: IBeauticianEditProfileUseCase;
   private _beauticianSearchUC: ISearchResultUseCase;
+  private _getServiceAreaUC: IGetServiceAreaUseCase;
+  private _addServiceAreaUC: IAddServiceAreaUseCase;
 
   constructor(
     beauticianRegistrationUC: IBeauticianRegisterUseCase,
@@ -25,7 +30,9 @@ export class BeauticianController {
     updateRegistrationUseCase: IBeauticianUpdateRegistrationUseCase,
     beauticianViewEditProfileUC: IBeauticianViewEditProfileUseCase,
     beauticianEditProfileUS: IBeauticianEditProfileUseCase,
-    beauticianSeachUC: ISearchResultUseCase
+    beauticianSeachUC: ISearchResultUseCase,
+    getServiceAreaUC: IGetServiceAreaUseCase,
+    addServiceAreaUC: IAddServiceAreaUseCase,
   ) {
     this._beauticianRegistrationUC = beauticianRegistrationUC;
     this._beauticianVerificationStatusUseCase = verificationStatusUC;
@@ -33,20 +40,22 @@ export class BeauticianController {
     this._beauticianViewEditProfileUC = beauticianViewEditProfileUC;
     this._beauticianEditProfileUC = beauticianEditProfileUS;
     this._beauticianSearchUC = beauticianSeachUC;
+    this._getServiceAreaUC = getServiceAreaUC;
+    this._addServiceAreaUC = addServiceAreaUC;
   }
 
   beauticianRegistration = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.user?.id;
-   
+
       if (!userId) {
         throw new AppError(
           userMessages.ERROR.UNAUTHORIZED_ACCESS,
-          HttpStatus.UNAUTHORIZED
+          HttpStatus.UNAUTHORIZED,
         );
       }
       const dto = req.body.validatedData;
@@ -54,7 +63,7 @@ export class BeauticianController {
       if (!dto) {
         throw new AppError(
           "Validated request data missing",
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
       dto.userId = userId;
@@ -74,15 +83,15 @@ export class BeauticianController {
   verifiedStatus = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.user?.id;
-      
+
       if (!userId) {
         throw new AppError(
           userMessages.ERROR.UNAUTHORIZED_ACCESS,
-          HttpStatus.UNAUTHORIZED
+          HttpStatus.UNAUTHORIZED,
         );
       }
 
@@ -102,7 +111,7 @@ export class BeauticianController {
   updateRegistration = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.user?.id;
@@ -111,16 +120,15 @@ export class BeauticianController {
       if (!userId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED
+          HttpStatus.UNAUTHORIZED,
         );
       }
 
       const result = await this._updateRegistrationUseCase.execute(
         userId,
-        paymentDetails
+        paymentDetails,
       );
 
-  
       res.status(HttpStatus.OK).json({
         success: true,
         message: generalMessages.SUCCESS.OPERATION_SUCCESS,
@@ -134,21 +142,19 @@ export class BeauticianController {
   viewEditProfile = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.user?.id;
       if (!userId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED
+          HttpStatus.UNAUTHORIZED,
         );
       }
 
-      const profileData = await this._beauticianViewEditProfileUC.execute(
-        userId
-      );
-     
+      const profileData =
+        await this._beauticianViewEditProfileUC.execute(userId);
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -163,7 +169,7 @@ export class BeauticianController {
   updateProfileData = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.user?.id;
@@ -171,13 +177,13 @@ export class BeauticianController {
       if (!userId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED
+          HttpStatus.UNAUTHORIZED,
         );
       }
       if (!data) {
         throw new AppError(
           userMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
 
@@ -194,7 +200,7 @@ export class BeauticianController {
   searchBeautician = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const query = req.query.query;
@@ -202,18 +208,101 @@ export class BeauticianController {
       if (!query || typeof query !== "string") {
         throw new AppError(
           userMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
 
       const beauticians = await this._beauticianSearchUC.execute(query);
-     
+
       res.status(HttpStatus.OK).json({
         success: true,
         message: generalMessages.SUCCESS.OPERATION_SUCCESS,
         data: {
           beautician: beauticians,
         },
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  addServiceArea = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const beauticianId = req.user?.id;
+      const { homeServiceLocation, serviceLocation }: IAddServiceAreaRequest =
+        req.body;
+      if (!beauticianId) {
+        throw new AppError(
+          authMessages.ERROR.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      if (!homeServiceLocation && !serviceLocation) {
+        throw new AppError(
+          "At least one location must be provided",
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      await this._addServiceAreaUC.execute(beauticianId, {
+        homeServiceLocation,
+        serviceLocation,
+      });
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  getServiceArea = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const beauticianId = req.user?.id;
+      if (!beauticianId) {
+        throw new AppError(
+          authMessages.ERROR.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      const data = await this._getServiceAreaUC.execute(beauticianId);
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+        data: data,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  getServiceAreaForUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const beauticianId = req.params.id;
+      if (!beauticianId) {
+        throw new AppError(
+          generalMessages.ERROR.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const data = await this._getServiceAreaUC.execute(beauticianId);
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+        data: data,
       });
     } catch (err) {
       next(err);

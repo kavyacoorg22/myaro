@@ -84,6 +84,14 @@ import { GetAllCustomServiceUSeCase } from "../../application/usecases/admin/man
 import { GetCustomServiceDetailUseCase } from "../../application/usecases/admin/management/services/getCustomServiceDetailUseCase";
 import { ApproveCustomServiceUseCase } from "../../application/usecases/admin/management/services/approveCustomService";
 import { RejectCustomServiceUseCase } from "../../application/usecases/admin/management/services/rejectCustomServiceUseCase";
+import { ScheduleRepository } from "../repositories/beautician/scheduleRepository";
+import { AddAvailabilityUseCase } from "../../application/usecases/beautician/schedule/addAvailabilityUseCase";
+import { DeleteAvailibilitySlotUseCase } from "../../application/usecases/beautician/schedule/deleteAvailablitySlotUseCase";
+import { GetAvaialableUseCase } from "../../application/usecases/beautician/schedule/getAvailableUSeCase";
+import { ScheduleController } from "../../interface/Http/controllers/beautician/scheduleController";
+import { ServiceAreaRepository } from "../repositories/beautician/serviceAreaRepository";
+import { AddServiceAreaUseCase } from "../../application/usecases/beautician/location/addServiceAreaUsecase";
+import { getServiceAreaUseCase } from "../../application/usecases/beautician/location/getServiceAreaUseCase";
 
 
 
@@ -153,8 +161,12 @@ const beauticianUpdateRegistartionUC=new BeauticianUpdateRegistartionUseCase(bea
 const beauticianViewEditProfileUC=new BeauticianViewEditProfileUseCase(beauticianRepo,userRepo)
 const beauticianEditProfileUC=new BeauticianEditProfileUseCase(beauticianRepo,userRepo)
 const searchResultUC=new SearchResultUseCase(userRepo)
+//location
+const serviceAreaRepo=new ServiceAreaRepository()
+const addServiceAreaUC=new AddServiceAreaUseCase(serviceAreaRepo)
+const getServiceAreaUC=new getServiceAreaUseCase(serviceAreaRepo)
 const beauticianController=new BeauticianController(beauticianRegisterUC,beauticianVerificationStatusUC,
-  beauticianUpdateRegistartionUC,beauticianViewEditProfileUC,beauticianEditProfileUC,searchResultUC)
+  beauticianUpdateRegistartionUC,beauticianViewEditProfileUC,beauticianEditProfileUC,searchResultUC,getServiceAreaUC,addServiceAreaUC)
 
 export  {beauticianController}
 
@@ -214,3 +226,12 @@ const deletePampletUC=new DeletePamphletImageUseCase(beauticianRepo,fileUpload)
 const getPamphletUC=new GetPamphletUseCase(beauticianRepo)
 const beauticianServiceController=new BeauticianServiceController(getBeauticianSelectionUC,upsertBeauticianService,getBeauticianServiceList,uploadPampletUC,deletePampletUC,getPamphletUC)
 export {categoryController,serviceController,customServiceController,beauticianServiceController}
+
+//slot availbility
+const scheduleRepo=new ScheduleRepository()
+const addAvailabilityUC=new AddAvailabilityUseCase(scheduleRepo)
+const deleteAvailabilitySlotUC=new DeleteAvailibilitySlotUseCase(scheduleRepo)
+const getAvailabilityUC=new GetAvaialableUseCase(scheduleRepo)
+const scheduleController=new ScheduleController(addAvailabilityUC,deleteAvailabilitySlotUC,getAvailabilityUC)
+export {scheduleController}
+

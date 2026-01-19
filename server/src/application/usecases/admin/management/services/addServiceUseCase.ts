@@ -3,7 +3,7 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { ICategoryRepository } from "../../../../../domain/repositoryInterface/ICategoryRepository";
 import { IServiceRepository } from "../../../../../domain/repositoryInterface/IServiceRepository";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IAddServiceUseCase } from "../../../../interface/admin/management/services/IAddService";
+import { IAddServiceUseCase } from "../../../../interface/beauticianService/IAddService";
 import { IAddServiceRequest } from "../../../../interfaceType/serviceType";
 
 export class AddServiceUseCase implements IAddServiceUseCase {
@@ -11,7 +11,7 @@ export class AddServiceUseCase implements IAddServiceUseCase {
   private _categoryrepository: ICategoryRepository;
   constructor(
     serviceRepo: IServiceRepository,
-    categoryRepository: ICategoryRepository
+    categoryRepository: ICategoryRepository,
   ) {
     this._serviceRepo = serviceRepo;
     this._categoryrepository = categoryRepository;
@@ -19,9 +19,8 @@ export class AddServiceUseCase implements IAddServiceUseCase {
 
   async execute(input: IAddServiceRequest): Promise<void> {
     const { name, categoryId } = input;
-    const existingCategory = await this._categoryrepository.findById(
-      categoryId
-    );
+    const existingCategory =
+      await this._categoryrepository.findById(categoryId);
     if (!existingCategory) {
       throw new AppError("Category is not exists", HttpStatus.BAD_REQUEST);
     }
@@ -40,6 +39,5 @@ export class AddServiceUseCase implements IAddServiceUseCase {
     };
 
     await this._serviceRepo.create(ServiceDto);
-    
   }
 }

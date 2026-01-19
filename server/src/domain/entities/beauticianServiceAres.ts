@@ -7,11 +7,11 @@ export interface LocationVO{
   formattedString:string
 }
 
-export interface BeauticianServiceArea {
+export interface ServiceArea {
   id: string;
   beauticianId: string;
-  homeServiceLocation:LocationVO,
-  serviceLocation:LocationVO,
+  homeServiceLocation:LocationVO[],
+  serviceLocation:LocationVO[],
   createdAt: Date;
   updatedAt: Date;
 }

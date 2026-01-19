@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { Service } from "../../../domain/entities/service";
 import { IServiceRepository } from "../../../domain/repositoryInterface/IServiceRepository";
 import { IToggleActiveStatusRepository } from "../../../domain/repositoryInterface/IToggleActiveRepository";
@@ -33,7 +34,7 @@ async updateServiceById(id: string, name:string): Promise<boolean> {
 }
 
 async findByCategoryId(id: string): Promise<Service[]> {
-  const docs=await ServiceModel.find({categoryId:id,isActive:true})
+  const docs=await ServiceModel.find({categoryId:new Types.ObjectId(id),isActive:true})
   return docs.map((doc)=>this.map(doc as ServiceDoc))
 }
 

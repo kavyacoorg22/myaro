@@ -2,7 +2,7 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { IToggleActiveStatusRepository } from "../../../../../domain/repositoryInterface/IToggleActiveRepository";
 import { adminMessages } from "../../../../../shared/constant/message/adminMessages";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { ITogggleActiveStatusUseCase } from "../../../../interface/admin/management/services/IToggleActiveStatus";
+import { ITogggleActiveStatusUseCase } from "../../../../interface/beauticianService/IToggleActiveStatus";
 
 export class toggleActiveStatusUseCase implements ITogggleActiveStatusUseCase {
   private _repository: IToggleActiveStatusRepository;
@@ -16,9 +16,8 @@ export class toggleActiveStatusUseCase implements ITogggleActiveStatusUseCase {
     if (!result) {
       throw new AppError(
         adminMessages.ERROR.UPDATION_FAILED,
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
   }
 }

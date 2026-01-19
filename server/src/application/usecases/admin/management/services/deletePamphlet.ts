@@ -3,7 +3,7 @@ import { IBeauticianRepository } from "../../../../../domain/repositoryInterface
 import { IFileUploader } from "../../../../../domain/serviceInterface/IFileUploadService";
 import { authMessages } from "../../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IDeletePamphletUseCase } from "../../../../interface/admin/management/services/IDeletePamphletUseCase";
+import { IDeletePamphletUseCase } from "../../../../interface/beauticianService/IDeletePamphletUseCase";
 
 export class DeletePamphletImageUseCase implements IDeletePamphletUseCase {
   private _beauticianRepo: IBeauticianRepository;
@@ -11,7 +11,7 @@ export class DeletePamphletImageUseCase implements IDeletePamphletUseCase {
 
   constructor(
     beauticianRepo: IBeauticianRepository,
-    fileUploader: IFileUploader
+    fileUploader: IFileUploader,
   ) {
     this._beauticianRepo = beauticianRepo;
     this._fileUploader = fileUploader;
@@ -21,7 +21,7 @@ export class DeletePamphletImageUseCase implements IDeletePamphletUseCase {
     if (!beautician) {
       throw new AppError(
         authMessages.ERROR.UNAUTHORIZED,
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
 
@@ -34,7 +34,7 @@ export class DeletePamphletImageUseCase implements IDeletePamphletUseCase {
     } catch {
       throw new AppError(
         "Failed to delete pamphlet image",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -45,7 +45,7 @@ export class DeletePamphletImageUseCase implements IDeletePamphletUseCase {
     if (!updated) {
       throw new AppError(
         "Failed to update beautician data",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

@@ -3,10 +3,10 @@ import mongoose, { Document, Model, Schema, Types } from "mongoose";
 export type ScheduleDoc=Document & {
   _id:Types.ObjectId,
   beauticianId:Types.ObjectId,
-  slot:{
+  slots:{
     startTime:string,
-    endTime:String,
-  },
+    endTime:string,
+  }[],
   date:Date,
   createdAt:Date,
   updatedAt:Date,
@@ -19,7 +19,7 @@ const slotSchema=new Schema({
 
 export const ScheduleSchema=new Schema<ScheduleDoc>({
   beauticianId:{type:Schema.Types.ObjectId},
-  slot:{type:slotSchema},
+  slots:{type:[slotSchema],default:[]},
   date:{type:Date},
 },{timestamps:true})
 

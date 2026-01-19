@@ -2,7 +2,7 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { IServiceRepository } from "../../../../../domain/repositoryInterface/IServiceRepository";
 import { adminMessages } from "../../../../../shared/constant/message/adminMessages";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IUpdateServiceUseCase } from "../../../../interface/admin/management/services/IUpdateService";
+import { IUpdateServiceUseCase } from "../../../../interface/beauticianService/IUpdateService";
 
 export class UpdateServiceUseCase implements IUpdateServiceUseCase {
   private _serviceRepo: IServiceRepository;
@@ -16,9 +16,8 @@ export class UpdateServiceUseCase implements IUpdateServiceUseCase {
     if (!result) {
       throw new AppError(
         adminMessages.ERROR.UPDATION_FAILED,
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
   }
 }

@@ -3,7 +3,7 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { IServiceRepository } from "../../../../../domain/repositoryInterface/IServiceRepository";
 import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IGetServicesUseCase } from "../../../../interface/admin/management/services/IGetServices";
+import { IGetServicesUseCase } from "../../../../interface/beauticianService/IGetServices";
 import { IGetServiceResponse } from "../../../../interfaceType/serviceType";
 import { toGetServicesOutputDto } from "../../../../mapper/serviceMapper";
 

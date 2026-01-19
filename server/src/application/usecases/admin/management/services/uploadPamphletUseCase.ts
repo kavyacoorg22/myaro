@@ -4,14 +4,14 @@ import { IUserRepository } from "../../../../../domain/repositoryInterface/IUser
 import { IFileUploader } from "../../../../../domain/serviceInterface/IFileUploadService";
 import { authMessages } from "../../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
-import { IUploadPamphletUseCase } from "../../../../interface/admin/management/services/IPamphletUploadUseCase";
+import { IUploadPamphletUseCase } from "../../../../interface/beauticianService/IPamphletUploadUseCase";
 
 export class UploadPamphletUseCase implements IUploadPamphletUseCase {
   private _beauticianRepo: IBeauticianRepository;
   private _uploadService: IFileUploader;
   constructor(
     beauticianRepo: IBeauticianRepository,
-    fileUploadService: IFileUploader
+    fileUploadService: IFileUploader,
   ) {
     this._beauticianRepo = beauticianRepo;
     this._uploadService = fileUploadService;
@@ -21,7 +21,7 @@ export class UploadPamphletUseCase implements IUploadPamphletUseCase {
     if (!beautician) {
       throw new AppError(
         authMessages.ERROR.UNAUTHORIZED,
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
     let pamphletUrl: string;
@@ -30,7 +30,7 @@ export class UploadPamphletUseCase implements IUploadPamphletUseCase {
     } catch (err) {
       throw new AppError(
         "Failed to upload pamphlet image",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -40,7 +40,7 @@ export class UploadPamphletUseCase implements IUploadPamphletUseCase {
     if (!beauticianData) {
       throw new AppError(
         "Failed to update beautician data",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
