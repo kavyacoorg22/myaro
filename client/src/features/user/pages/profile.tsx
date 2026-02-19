@@ -12,40 +12,52 @@ import { customerFrontendRoutes } from '../../../constants/frontendRoutes/custom
 import { VerificationStatusBanner } from '../component/verificationStatus';
 import { BeauticianStatus, type BeauticianStatusType } from '../../../constants/types/beautician';
 import { BeauticianApi } from '../../../services/api/beautician';
-import { UserRole } from '../../../constants/types/User';
 import { ProfileTab } from '../component/profile/profileTab';
 import { beauticianFrontendRoutes } from '../../../constants/frontendRoutes/beauticianFrontendRoutes';
+import type { TimeSlot } from '../../types/schedule';
+import type { IAddAvailabilityRequest } from '../../../types/api/beautician';
+import { toast } from 'react-toastify';
+import { CalendarModal } from '../../beautician/component/calenderUI';
 
 interface BeauticianInfo {
   isBeautician: boolean;
   verificationStatus?: BeauticianStatusType;
 }
 
-export const ProfilePage = () => {
+const ProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
   const [profileData, setProfileData] = useState<IUserProfile | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [beauticianInfo, setBeauticianInfo] = useState<BeauticianInfo>({
     isBeautician: false
   });
+  
+  // Simplified state - only what's needed
+  const [selectedDates, setSelectedDates] = useState<number[]>([]);
 
   const currentUser = useSelector((store: RootState) => store.user.currentUser);
 
+  // Determine viewMode early so it can be used in functions
+  const isOwnProfile = currentUser?.userId === profileData?.userId;
+  const viewMode = isOwnProfile 
+    ? (currentUser?.role === 'beautician' ? 'own-beautician' : 'own-customer')
+    : (profileData?.role === 'beautician' ? 'view-beautician' : 'view-customer');
+
   useEffect(() => {
     const loadProfile = async () => {
-       if(!id && currentUser)
-    {
-      fetchBeauticianStatus();
-    }
+      if (!id && currentUser) {
+        fetchBeauticianStatus();
+      }
       try {
         setLoading(true);
         setError(null);
 
         if (id) {
-          console.log(`use param id in fromtend ${id}`)
+          console.log(`use param id in frontend ${id}`);
           const profile = await publicAPi.callById(id);
           if (profile?.data?.data) {
             setProfileData(profile.data?.data);
@@ -70,10 +82,7 @@ export const ProfilePage = () => {
     };
 
     loadProfile();
-  }, [id,currentUser]);
-
- 
-  
+  }, [id, currentUser]);
 
   const fetchBeauticianStatus = async () => {
     try {
@@ -92,12 +101,70 @@ export const ProfilePage = () => {
     }
   };
 
+  // Save availability - simplified (no loading state needed, handled in modal)
+  const handleSaveAvailability = async (request: IAddAvailabilityRequest): Promise<void> => {
+    try {
+      console.log('📤 Sending to API:', request);
+      
+      const response = await BeauticianApi.addAvailabilitySchedule(request);
+      
+      console.log('✅ Availability saved successfully:', response);
+      
+      toast.success('Availability saved successfully!');
+    } catch (error) {
+      console.error('❌ Error saving availability:', error);
+      handleApiError(error);
+      throw error;
+    }
+  };
+
+  // Delete specific slot - simplified
+  const handleDeleteSlot = async (slotToDelete: TimeSlot): Promise<void> => {
+    try {
+      console.log('🗑️ Deleting slot:', slotToDelete);
+      
+      // Extract scheduleId from the slot
+      const scheduleId = slotToDelete.scheduleId;
+      
+      if (!scheduleId) {
+        console.error('No schedule ID in slot');
+        toast.error('No schedule ID available');
+        return;
+      }
+
+      // Convert TimeSlot to Slot format (remove scheduleId)
+      const slotsToDelete = {
+        startTime: slotToDelete.startTime,
+        endTime: slotToDelete.endTime
+      };
+
+      const response = await BeauticianApi.deleteAvailabilitySlot(
+        slotsToDelete,
+        scheduleId
+      );
+      
+      console.log('✅ Slot deleted successfully:', response);
+      
+      toast.success('Slot deleted successfully!');
+    } catch (error) {
+      console.error('❌ Error deleting slot:', error);
+      handleApiError(error);
+      toast.error('Failed to delete slot');
+      throw error;
+    }
+  };
+
   const handleCompleteSetup = () => {
     navigate(customerFrontendRoutes.register, { state: { startAtStep: 3 } });
   };
 
   const handleResubmit = () => {
     navigate(customerFrontendRoutes.register);
+  };
+
+  const handleCalendarClick = () => {
+    if (viewMode === 'own-customer' || viewMode === 'view-customer') return;
+    setIsCalendarOpen(true);
   };
 
   // Loading state
@@ -111,7 +178,6 @@ export const ProfilePage = () => {
     );
   }
 
- 
   if (error) {
     return (
       <div className="container mx-auto p-6">
@@ -145,11 +211,6 @@ export const ProfilePage = () => {
     );
   }
 
-  const isOwnProfile = currentUser?.userId === profileData?.userId;
-  const viewMode = isOwnProfile 
-    ? (currentUser.role === 'beautician' ? 'own-beautician' : 'own-customer')
-    : (profileData?.role === 'beautician' ? 'view-beautician' : 'view-customer');
-
   const shouldHideButtons = beauticianInfo.isBeautician && 
     (beauticianInfo.verificationStatus === BeauticianStatus.PENDING || 
      beauticianInfo.verificationStatus === BeauticianStatus.VERIFIED ||
@@ -159,7 +220,6 @@ export const ProfilePage = () => {
     <>
       <SaidBar />
       <div className="min-h-screen bg-white ml-60 w-9.5/12">
-        {/* Profile Header */}
         <ProfileHeader
           viewMode={viewMode}
           userName={profileData.userName}
@@ -171,22 +231,17 @@ export const ProfilePage = () => {
           shopAddress={profileData.beauticianData?.shopAddress?.address}
           shopCity={profileData.beauticianData?.shopAddress?.city}
           homeServiceCount={profileData.beauticianData?.homeservicecount}
-          
-          isVerified={profileData.isVerified }
-        
-          
+          isVerified={profileData.isVerified}
           hideButtons={shouldHideButtons}
           onEditProfile={() => navigate(beauticianFrontendRoutes.editProfile)}
-          onCalender={() => navigate('/calendar')}
+          onCalender={handleCalendarClick}
           onRegisterAsBeautician={() => navigate(customerFrontendRoutes.register)}
-          onServicePage={() => navigate(`/beautician/${profileData.userId}/services`)}
+          onServicePage={() => navigate(`/beautician/services`,{state: { beauticianId: profileData.userId }})}
           onMessage={() => navigate(`/messages/${profileData.userId}`)}
           onFollow={() => console.log('Follow clicked')}
           onBookService={() => navigate(`/book/${profileData.userId}`)}
-          
         />
 
-        
         {beauticianInfo.isBeautician && beauticianInfo.verificationStatus && (
           <div className="px-6 mt-6">
             <VerificationStatusBanner
@@ -197,19 +252,41 @@ export const ProfilePage = () => {
           </div>
         )}
 
-        
         <div className="mt-0">
-         <ProfileTab
-         viewMode={viewMode}
-          isVerified={profileData.isVerified }
-         onUpload={() => navigate(`/beautician/${profileData.userId}/upload`)}
-          onPosts={() => navigate(`/profile/${profileData.userId}/posts`)}
-          onTips={() => navigate(`/profile/${profileData.userId}/tips`)}
-          onRent={() => navigate(`/profile/${profileData.userId}/rent`)}
-         />
-
+          <ProfileTab
+            viewMode={viewMode}
+            isVerified={profileData.isVerified}
+            onUpload={() => navigate(`/beautician/${profileData.userId}/upload`)}
+            onPosts={() => navigate(`/profile/${profileData.userId}/posts`)}
+            onTips={() => navigate(`/profile/${profileData.userId}/tips`)}
+            onRent={() => navigate(`/profile/${profileData.userId}/rent`)}
+          />
         </div>
+
+        {/* Calendar Modal */}
+        {isCalendarOpen && (
+          <CalendarModal
+            isOpen={isCalendarOpen}
+            onClose={() => {
+              setIsCalendarOpen(false);
+              setSelectedDates([]);
+            }}
+            viewMode={viewMode}
+            profileName={profileData.userName}
+            profileUsername={profileData.fullName}
+            profileImage={profileData.profileImg}
+            initialDate={new Date()}
+            initialSelectedDates={selectedDates}
+            onDateSelect={setSelectedDates}
+            existingSlots={[]} 
+            onSaveSlots={handleSaveAvailability}
+            onDeleteSlot={handleDeleteSlot}
+            beauticianId={viewMode === 'view-beautician' ? profileData.userId : undefined}
+          />
+        )}
       </div>
     </>
   );
 };
+
+export default ProfilePage

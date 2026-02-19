@@ -26,7 +26,12 @@ async updateById(id: string, data: Partial<Omit<Schedule, "id">>): Promise<Sched
 }
 
 async findByBeauticianAndDate(id: string, date: Date): Promise<Schedule | null> {
-    const normalizedDate = this.normalizeDate(date);
+   const normalizedDate = new Date(date);
+  normalizedDate.setUTCHours(0, 0, 0, 0);
+  
+    const startOfDay = new Date(normalizedDate);
+  const endOfDay = new Date(normalizedDate);
+  endOfDay.setUTCHours(23, 59, 59, 999);
 
   const doc=await ScheduleModel.findOne(
     {beauticianId:new Types.ObjectId(id),date: normalizedDate}

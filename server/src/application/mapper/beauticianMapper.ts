@@ -1,10 +1,8 @@
 import { Beautician } from "../../domain/entities/Beautician";
-import { ServiceArea } from "../../domain/entities/beauticianServiceAres";
 import { SearchHistory } from "../../domain/entities/searchHistory";
 import { User } from "../../domain/entities/User";
 import { IBeauticianDTO, IBeauticianProfileDTO, IBeauticianViewEditProfileDTO, IGetServiceAreaDto, ISearchBeauticianResultDto, IUpdateRegistrationDTO, IVerificationStatusDto } from "../dtos/beautician";
 import { IRecentSearchDto } from "../dtos/user";
-import { IGetServiceAreaResponse } from "../interfaceType/beauticianType";
 
 
 export function toVerificationStatusOutputDto(beautician:Beautician): IVerificationStatusDto {
@@ -108,9 +106,9 @@ export function toRecentSearchHistoryResultDtos(
   }).filter((dto): dto is IRecentSearchDto => dto !== null); 
 }
 
-export function toGetServiceAreaDto(location:ServiceArea):IGetServiceAreaDto{
+export function toGetServiceAreaDto(location:Beautician):IGetServiceAreaDto{
 return{
-  serviceLocation:location.serviceLocation??[],
-  homeServiceLocation:location.homeServiceLocation??[]
+  serviceableLocation:location.serviceableLocation??[],
+  homeServiceableLocation:location.homeServiceableLocation??[]
 }
 }

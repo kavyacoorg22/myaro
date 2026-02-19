@@ -13,6 +13,8 @@ import { IBeauticianVerificationUseCase } from "../../../../application/interfac
 import { IGetServiceAreaUseCase } from "../../../../application/interface/beautician/location/IGetServiceAreaUseCase";
 import { IAddServiceAreaUseCase } from "../../../../application/interface/beautician/location/IaddServiceAreaUseCase";
 import { IAddServiceAreaRequest } from "../../../../application/interfaceType/beauticianType";
+import { IViewEditProfileUseCase } from "../../../../application/interface/customer/IViewEditProfileUseCase";
+import { ICustomerEditProfileUseCase } from "../../../../application/interface/customer/IEditProfileUseCase";
 
 export class BeauticianController {
   private _beauticianRegistrationUC: IBeauticianRegisterUseCase;
@@ -23,6 +25,8 @@ export class BeauticianController {
   private _beauticianSearchUC: ISearchResultUseCase;
   private _getServiceAreaUC: IGetServiceAreaUseCase;
   private _addServiceAreaUC: IAddServiceAreaUseCase;
+  private _customerViewProfileUseCase:IViewEditProfileUseCase
+  private _CustomerEditProfileUC:ICustomerEditProfileUseCase
 
   constructor(
     beauticianRegistrationUC: IBeauticianRegisterUseCase,
@@ -33,6 +37,8 @@ export class BeauticianController {
     beauticianSeachUC: ISearchResultUseCase,
     getServiceAreaUC: IGetServiceAreaUseCase,
     addServiceAreaUC: IAddServiceAreaUseCase,
+    viewProfileUC:IViewEditProfileUseCase,
+    customerEditProfile:ICustomerEditProfileUseCase
   ) {
     this._beauticianRegistrationUC = beauticianRegistrationUC;
     this._beauticianVerificationStatusUseCase = verificationStatusUC;
@@ -42,6 +48,8 @@ export class BeauticianController {
     this._beauticianSearchUC = beauticianSeachUC;
     this._getServiceAreaUC = getServiceAreaUC;
     this._addServiceAreaUC = addServiceAreaUC;
+    this._customerViewProfileUseCase=viewProfileUC
+    this._CustomerEditProfileUC=customerEditProfile
   }
 
   beauticianRegistration = async (
@@ -145,16 +153,21 @@ export class BeauticianController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
+      const {id,role} = req?.user!;
+      if (!id) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
           HttpStatus.UNAUTHORIZED,
         );
       }
+        if (role === "customer") {
+    const result = await this._customerViewProfileUseCase.execute(id);
+     res.status(HttpStatus.OK).json({ data: result });
+     return
+     }
 
       const profileData =
-        await this._beauticianViewEditProfileUC.execute(userId);
+        await this._beauticianViewEditProfileUC.execute(id);
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -172,9 +185,9 @@ export class BeauticianController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const userId = req.user?.id;
+      const {id,role}= req.user!;
       const data = req.body;
-      if (!userId) {
+      if (!id) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
           HttpStatus.UNAUTHORIZED,
@@ -186,8 +199,17 @@ export class BeauticianController {
           HttpStatus.BAD_REQUEST,
         );
       }
+      if(role==='customer')
+      {
+        await this._CustomerEditProfileUC.execute(id,data)
+        res.status(HttpStatus.OK).json({
+             success: true,
+        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+        })
+        return
+      }
 
-      await this._beauticianEditProfileUC.execute(userId, data);
+      await this._beauticianEditProfileUC.execute(id, data);
       res.status(HttpStatus.OK).json({
         success: true,
         message: generalMessages.SUCCESS.OPERATION_SUCCESS,
@@ -233,7 +255,7 @@ export class BeauticianController {
   ): Promise<void> => {
     try {
       const beauticianId = req.user?.id;
-      const { homeServiceLocation, serviceLocation }: IAddServiceAreaRequest =
+      const { homeServiceableLocation, serviceableLocation }: IAddServiceAreaRequest =
         req.body;
       if (!beauticianId) {
         throw new AppError(
@@ -241,7 +263,7 @@ export class BeauticianController {
           HttpStatus.UNAUTHORIZED,
         );
       }
-      if (!homeServiceLocation && !serviceLocation) {
+      if (!homeServiceableLocation && !serviceableLocation) {
         throw new AppError(
           "At least one location must be provided",
           HttpStatus.BAD_REQUEST,
@@ -249,12 +271,12 @@ export class BeauticianController {
       }
 
       await this._addServiceAreaUC.execute(beauticianId, {
-        homeServiceLocation,
-        serviceLocation,
+        homeServiceableLocation,
+        serviceableLocation,
       });
       res.status(HttpStatus.OK).json({
         success: true,
-        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+        message: "Location Saved",
       });
     } catch (err) {
       next(err);

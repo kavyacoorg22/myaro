@@ -17,11 +17,13 @@ export class CustomServiceRepository
   async create(
     data: Omit<CustomService, "id" | "createdAt" | "updatedAt">,
   ): Promise<CustomService> {
+     
     const doc = await CustomServiceModel.create(data);
     return this.map(doc);
   }
 
   async findById(id: string): Promise<CustomService | null> {
+
     const doc = await CustomServiceModel.findById(id);
     return doc ? this.map(doc) : null;
   }

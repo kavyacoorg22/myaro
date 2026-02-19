@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../redux/appStore";
 import { Navigate, useLocation } from "react-router-dom";
 import { UserRole } from "../../constants/types/User";
+import { adminFrontendRoute } from "../../constants/frontendRoutes/adminFrontenRoutes";
 
 
 
@@ -37,7 +38,7 @@ const PublicRoute=({children}:PublicRouteProps)=>{
       case UserRole.CUSTOMER:
         return <Navigate to={publicFrontendRoutes.landing} replace/>
       case UserRole.ADMIN:
-        return <Navigate to={publicFrontendRoutes.adminLogin} replace/>
+        return <Navigate to={adminFrontendRoute.dashboard} replace/>
       default :
       return <Navigate to={publicFrontendRoutes.landing} replace/>
     }

@@ -6,9 +6,11 @@ import {
   BeauticianServiceModel,
 } from "../../database/models/service/BeauticianServiceModel";
 import { GenericRepository } from "../genericRepository";
-import { Beautician } from "../../../domain/entities/Beautician";
-import { BeauticianDoc } from "../../database/models/beautician/BeauticianModel";
+import { PriceFilter } from "../../../application/interfaceType/serviceType";
 
+function escapeRegex(text: string) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 export class BeauticianServiceRepository
   extends GenericRepository<BeauticianService, BeauticianServiceDoc>
   implements IBeauticianServiceRepository
@@ -40,7 +42,7 @@ export class BeauticianServiceRepository
   }
 
 
-  async findByBeauticianId(beauticianId: string,options?: { homeServiceOnly?: boolean }): Promise<BeauticianService[]> {
+  async findByBeauticianId(beauticianId: string,options?: { homeServiceOnly?: boolean,priceFilter:PriceFilter}): Promise<BeauticianService[]> {
  
   const query:FilterQuery<BeauticianServiceDoc> = {
   beauticianId: new Types.ObjectId(beauticianId),
@@ -51,12 +53,50 @@ export class BeauticianServiceRepository
     query.isHomeServiceAvailable = true;
   }
 
-  const docs = await BeauticianServiceModel
-    .find(query)
-    .sort({ createdAt: -1 });
+  if(options?.priceFilter && options.priceFilter!=='all')
+  {
+    switch(options.priceFilter)
+    {
+      case 'under-500':
+        query.price={$lt:500}
+        break;
+      case '500-1000':
+        query.price={$gte:500,$lte:1000}
+        break;
+      case '1000-2000':
+        query.price={$gte:1000,$lte:2000}
+        break;
+      case 'above-2000':
+        query.price={$gt:2000}
+       break
+    }
+  }
+
+  let queryBuilder= BeauticianServiceModel.find(query)
+  if(options?.priceFilter==='low-high')
+  {
+    queryBuilder=queryBuilder.sort({price:1})
+  }else if(options?.priceFilter==='high-low')
+  {
+    queryBuilder=queryBuilder.sort({price:-1})
+  }else{
+    queryBuilder = queryBuilder.sort({ createdAt: -1 })
+  }
+
+  const docs =await queryBuilder
 
   return docs.map(doc => this.map(doc));
   }
+
+  async findByServiceName(beauticianId: string, name: string): Promise<BeauticianService | null> {
+    const escapedName=escapeRegex(name)
+    const data=await BeauticianServiceModel.findOne({
+      beauticianId:new Types.ObjectId(beauticianId),
+      serviceName:{$regex:`^${escapedName}$`,$options:'i'}
+    })
+    return data?this.map(data):null
+  }
+
   protected map(doc: BeauticianServiceDoc): BeauticianService {
     const base = super.map(doc) as any;
     return {

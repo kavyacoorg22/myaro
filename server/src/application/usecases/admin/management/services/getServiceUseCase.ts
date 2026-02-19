@@ -14,7 +14,7 @@ export class GetServiceUseCase implements IGetServicesUseCase {
     this._serviceRepo = serviceRepo;
   }
   async execute(categoryId: string): Promise<IGetServiceResponse> {
-    const services = await this._serviceRepo.findByCategoryId(categoryId);
+    const services = await this._serviceRepo.findAllServiceByCategoryId(categoryId);
     if (!services) {
       throw new AppError(generalMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
     }

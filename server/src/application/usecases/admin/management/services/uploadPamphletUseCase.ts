@@ -26,7 +26,14 @@ export class UploadPamphletUseCase implements IUploadPamphletUseCase {
     }
     let pamphletUrl: string;
     try {
-      pamphletUrl = await this._uploadService.uploadPamphletImage(pamphletImg);
+      if (beautician.pamphletUrl) {
+  try {
+    await this._uploadService.deletePamphletImage(beautician.pamphletUrl);
+  } catch(err) {
+    console.log(err)
+  }
+}
+pamphletUrl = await this._uploadService.uploadPamphletImage(pamphletImg);
     } catch (err) {
       throw new AppError(
         "Failed to upload pamphlet image",

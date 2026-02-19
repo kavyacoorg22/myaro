@@ -1,6 +1,4 @@
 
-
-
 import { useSelector } from "react-redux"
 import { SaidBar } from "../component/saidBar/saidbar"
 import type { RootState } from "../../../redux/appStore"

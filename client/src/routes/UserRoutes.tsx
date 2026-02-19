@@ -1,15 +1,19 @@
 import type { RouteObject } from "react-router";
 import { publicFrontendRoutes } from "../constants/frontendRoutes/publicFrontendRoutes";
-import { ProfilePage } from "../features/user/pages/profile";
 import PrivateRoute from "../components/routes/privateRoute";
 import { UserRole } from "../constants/types/User";
 import { customerFrontendRoutes } from "../constants/frontendRoutes/customerFrontendRoutes";
-import BeauticianRegistration from "../features/user/pages/beauticianRegistration";
 import { beauticianFrontendRoutes } from "../constants/frontendRoutes/beauticianFrontendRoutes";
-import { BeauticianAgreementScreen } from "../features/user/component/aggrement";
-import BeauticianProfileForm from "../features/beautician/pages/editProfile"
+import { lazy } from "react";
 
 
+const  ProfilePage=lazy(()=>import('../features/user/pages/profile'))
+const  BeauticianRegistration=lazy(()=>import('../features/user/pages/beauticianRegistration'))
+const  BeauticianAgreementScreen=lazy(()=>import('../features/user/component/aggrement'))
+const  BeauticianProfileForm=lazy(()=>import('../features/shared/profileService'))
+const  ServicePageList=lazy(()=>import('../features/service/pages/serviceListPage'))
+const  ServiceLocationForm=lazy(()=>import('../features/service/pages/locationPage'))
+const  ServicePageListForUser=lazy(()=>import('../features/user/component/viewServicePage'))
 
 export const userRoutes:RouteObject[]=[
   {
@@ -48,11 +52,34 @@ export const userRoutes:RouteObject[]=[
   {
      path:beauticianFrontendRoutes.editProfile,
       element:(
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
-        <BeauticianProfileForm />
+      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN,UserRole.CUSTOMER]}>
+        <BeauticianProfileForm/>
       </PrivateRoute>
     )
-  }
-  
+  },
+   {
+     path:beauticianFrontendRoutes.serviceList,
+      element:(
+      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
+        <ServicePageList/>
+      </PrivateRoute>
+    )
+  },
+   {
+     path:beauticianFrontendRoutes.Location,
+      element:(
+      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
+        <ServiceLocationForm/>
+      </PrivateRoute>
+    )
+  },
+    {
+     path:publicFrontendRoutes.getServiceList,
+      element:(
+      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN,UserRole.CUSTOMER]}>
+        <ServicePageListForUser/>
+      </PrivateRoute>
+    )
+  },
   
 ]

@@ -6,14 +6,34 @@
     "auditLog": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\.ad1dca12d372684d5e8d2d27f245936a7bf8674a-audit.json",
     "files": [
         {
-            "date": 1767770366062,
-            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\error-2026-01-07.log",
-            "hash": "faac365854680b2de58b0c6d0d8c4fb5ad2e5a24eb311597bf44a436e6eb0a36"
+            "date": 1768956208876,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\error-2026-01-21.log",
+            "hash": "56b06f45f8c5cd69cbfc1e4793a726782fd9a07818bd2c5fb85881e7aedeacb5"
         },
         {
-            "date": 1768186710683,
-            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\error-2026-01-12.log",
-            "hash": "a897780286c10cfcfbd749ffe044fdbf26fee559b11c40b8b6b4ea9537bd75c1"
+            "date": 1769146533658,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\error-2026-01-23.log",
+            "hash": "d83ea8c35e4d33d40631948781ade72b41f874d9c490fd150e1c6a3385e83467"
+        },
+        {
+            "date": 1769561778859,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\error-2026-01-28.log",
+            "hash": "2fbebfbdc2f7f70faa83cf4902c3677063b1952f871716bb5043fbf9b0c47578"
+        },
+        {
+            "date": 1771296469063,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\error-2026-02-17.log",
+            "hash": "d108ff6c1fff1600dd12768465004b0c989c7eb2e7ba458e7ca2112289690f2a"
+        },
+        {
+            "date": 1771380814193,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\error-2026-02-18.log",
+            "hash": "6efcf7d364fcf7d43a83b00cae5b07bc1ab164df9fbfa0ce5ba28625165d7c29"
+        },
+        {
+            "date": 1771470333533,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\error-2026-02-19.log",
+            "hash": "1d484f05f946a4e6b129303542e80ea3815b6c71d468a9772b46e8f74f55a895"
         }
     ],
     "hashType": "sha256"

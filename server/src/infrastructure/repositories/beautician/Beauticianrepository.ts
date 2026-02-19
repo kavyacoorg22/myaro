@@ -178,6 +178,19 @@ async updateProfileDetailById(
 }
 
 
+async removePamphlet(userId: string): Promise<Beautician | null> {
+  const userOid = toObjectId(userId);
+  if (!userOid) return null;
+
+  const updatedDoc = await BeauticianModel.findOneAndUpdate(
+    { userId: userOid },
+    { $unset: { pamphletUrl: "" } },  
+    { new: true }
+  ).exec();
+
+  return updatedDoc ? this.map(updatedDoc) : null;
+}
+
 
 
 
@@ -222,7 +235,9 @@ async updateProfileDetailById(
       verifiedAt: doc.verifiedAt,
 
       homeserviceCount: doc.homeserviceCount ?? 0,
-      pamphletUrl:doc.pamhletUrl,
+      pamphletUrl:doc.pamphletUrl,
+      homeServiceableLocation:doc.homeServiceableLocation,
+      serviceableLocation:doc.serviceableLocation,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

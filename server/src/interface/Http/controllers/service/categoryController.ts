@@ -6,20 +6,24 @@ import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IUpdateCategoryUseCase } from "../../../../application/interface/beauticianService/IUpdateCategory";
 import { ITogggleActiveStatusUseCase } from "../../../../application/interface/beauticianService/IToggleActiveStatus";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
+import { IGetCategoryUseCase } from "../../../../application/interface/beauticianService/IGetCategoryUseCase";
 
 export class CategoryController {
   private _addCategoryUseCase: IAddCategoryUseCase;
   private _updateCategoryUC: IUpdateCategoryUseCase;
   private _toggleActiveStatusUC: ITogggleActiveStatusUseCase;
+  private _getCategoryUC:IGetCategoryUseCase
 
   constructor(
     addCategoryUseCase: IAddCategoryUseCase,
     updateCategoryUC: IUpdateCategoryUseCase,
     toggleActiveStatusUC: ITogggleActiveStatusUseCase,
+    getCategoryUC:IGetCategoryUseCase
   ) {
     this._addCategoryUseCase = addCategoryUseCase;
     this._updateCategoryUC = updateCategoryUC;
     this._toggleActiveStatusUC = toggleActiveStatusUC;
+    this._getCategoryUC=getCategoryUC
   }
 
   addCategory = async (
@@ -30,6 +34,7 @@ export class CategoryController {
     try {
       const id = req.user?.id;
       const { name, description } = req.body;
+      console.log('category body',req.body)
 
       if (!id) {
         throw new AppError(
@@ -104,4 +109,23 @@ export class CategoryController {
       next(err);
     }
   };
+
+  getCategory= async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+  const data=await this._getCategoryUC.execute()
+  res.status(HttpStatus.OK).json({
+        success: true,
+        message: "Category fetched",
+        data:data
+      });
+  }catch(err)
+  {
+    next(err)
+  }
+
+}
 }

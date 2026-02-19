@@ -12,6 +12,7 @@ import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IAddCustomServiceUseCase } from "../../../../interface/beauticianService/IAddCustomService";
 import { IAddCustomServiceRequest } from "../../../../interfaceType/serviceType";
 
+
 export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase {
   private _customServiceRepo: ICustomServiceRepository;
   private _categoryRepo: ICategoryRepository;
@@ -27,7 +28,14 @@ export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase
     this._beauticianServiceRepo = beauticianServiceRepo;
   }
   async execute(input: IAddCustomServiceRequest): Promise<void> {
-    const { beauticianId, category } = input;
+    const { beauticianId, category,service} = input;
+
+    const existingService=await this._beauticianServiceRepo.findByServiceName(beauticianId,service.name)
+
+    if(existingService)
+    {
+      throw new AppError("service is already added",HttpStatus.CONFLICT)
+    }
 
     let categoryName = category?.name;
 
@@ -40,6 +48,13 @@ export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase
         throw new AppError("category not exists", HttpStatus.CONFLICT);
       }
       categoryName = existingCategory.name;
+    }else if(input.category.name){
+        const existingCategory = await this._categoryRepo.findByName(
+        input.category.name
+      );
+        if (existingCategory) {
+        throw new AppError("category already exists", HttpStatus.CONFLICT);
+      }
     }
 
     const customServiceDto: Omit<

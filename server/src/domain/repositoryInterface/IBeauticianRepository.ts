@@ -28,6 +28,6 @@ export interface IBeauticianRepository{
     addPaymentDetails(userId: string, data: Partial<Beautician>): Promise<Beautician | null>;
     updateByUserId(userId: string, data: Partial<Omit<Beautician, "id" | "createdAt" | "updatedAt"|"homeserviceCount">>): Promise<Beautician|null>;
     updateProfileDetailById(userId:string,data:Partial<Beautician>):Promise<boolean|null>
-     
+     removePamphlet(userId:string):Promise<Beautician|null>
     
 }

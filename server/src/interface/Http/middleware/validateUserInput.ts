@@ -93,6 +93,25 @@ export function validatePassword(req:Request,res:Response,next:NextFunction){
   next()
 }
 
+export function validateChangePassword(req:Request,res:Response,next:NextFunction){
+console.log(req.body)
+   const {oldPassword,newPassword,confirmPassword}=req.body.input
+    const regexPassword=/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+  if(!regexPassword.test(newPassword))
+  {
+    return res.status(400).json({error:
+      "Password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special symbol"
+    });
+  }
+
+  if(newPassword!==confirmPassword)
+  {
+    return res.status(400).json({error:"password do not match"})
+  }
+  next()
+}
+
+
 
 
 

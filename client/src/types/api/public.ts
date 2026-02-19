@@ -53,6 +53,11 @@ export interface IRecentSearch{
   profileImg: string;
 }
 
+export interface IChangePasswordRequest{
+  oldPassword:string,
+  newPassword:string,
+  confirmPassword:string
+}
 
 export type profileResponce=BackendResponse<profileResponseData>
 export type IProfilePhotoChangeResponse=BackendResponse<IProfilePhotoChangeRespnseData>

@@ -1,7 +1,9 @@
 
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
 import {type BackendResponse } from "../../types/api/api";
-import {type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse } from "../../types/api/public";
+import type { IGetAvailabilitySlotResponse } from "../../types/api/beautician";
+import {type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse, type IChangePasswordRequest } from "../../types/api/public";
+import type{  IGetBeauticianServicesListResponse, IGetCategoryResponse, IGetPamphletResponse, IGetServiceResponse, PriceFilter } from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
 
 export const publicAPi={
@@ -33,5 +35,30 @@ export const publicAPi={
   },
   clearSearchHistory:async()=>{
     return await axiosWrapper<BackendResponse>(api.delete(publicApiRoutes.clearSearchHistory))
-  }
+  },
+   getCategory:async()=>{
+    return await axiosWrapper<IGetCategoryResponse>(api.get(publicApiRoutes.getCategory))
+  },
+   getService:async(categoryId:string)=>{
+    return await axiosWrapper<IGetServiceResponse>(api.get(publicApiRoutes.getService.replace(':categoryId',categoryId)))
+  },
+   getAvailbilitySchedule:async(beauticianId:string,date:string)=>{
+      return await axiosWrapper<IGetAvailabilitySlotResponse>(api.get(publicApiRoutes.getAvailabilityOfBeautician.replace(':id',beauticianId),{
+        params:{date}
+      }))
+     },
+       getServiceList:async(filter:string,priceFilter:PriceFilter,beauticianId:string)=>{
+         return await axiosWrapper<IGetBeauticianServicesListResponse>(api.get(publicApiRoutes.getBeauticianServiceList.replace(':id',beauticianId),{
+           params:{filter,priceFilter}
+         })
+       )},
+     getPamphlet:async(id:string)=>{
+        return await axiosWrapper<IGetPamphletResponse>(api.get(publicApiRoutes.getPamplet.replace(':beauticianId',id)))
+       },
+      changePassword:async(input:IChangePasswordRequest)=>{
+        return await axiosWrapper<BackendResponse>(api.patch(publicApiRoutes.changePassword,{
+          input
+        }))
+      }
+    
 }

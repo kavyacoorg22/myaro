@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express"
-import { validateEmail, validatePassword, validateUserInput } from "../middleware/validateUserInput";
-import { completeSignupController, googleLoginController, loginController, logoutController, otpController, preSignupController, refreshTokenController, registerController, resetPasswordController } from "../../../infrastructure/config/di";
+import { validateChangePassword, validateEmail, validatePassword, validateUserInput } from "../middleware/validateUserInput";
+import { authenticateUser, completeSignupController, googleLoginController, loginController, logoutController, otpController, preSignupController, refreshTokenController, registerController, resetPasswordController } from "../../../infrastructure/config/di";
 const router=Router()
 
 
@@ -38,6 +38,5 @@ router.post('/forgotPassword',validateEmail,(req:Request,res:Response,next:NextF
 router.patch('/resetPassword',validatePassword,(req:Request,res:Response,next:NextFunction)=>
   resetPasswordController.resetPassword(req,res,next)
 )
-
 
 export default router

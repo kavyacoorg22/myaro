@@ -5,7 +5,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from ".
 import type { IUserDto } from "../../../types/dtos/user";
 import { SaidBar } from "../../user/component/saidBar/saidbar";
 
-/** User type definition */
+
 
 
 type UsersDetailDesignProps = {

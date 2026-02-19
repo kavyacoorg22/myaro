@@ -44,7 +44,9 @@ export class CategoryRepository extends GenericRepository<Category,CategoryDoc> 
   }
 
   async findById(id: string): Promise<Category | null> {
-    const doc=await categoryModel.findById({id,isActive:true})
+    const doc=await categoryModel.findOne({
+      _id:id,
+      isActive:true})
     return doc?this.map(doc):null
   }
 

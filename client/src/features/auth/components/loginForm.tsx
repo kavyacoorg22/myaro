@@ -2,7 +2,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { LoginSchema, type LoginType } from "../../../lib/validations/user/validateLogin"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormField,FormControl,FormLabel,FormMessage } from "../../../components/ui/form"
-import { Link, replace, useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { publicFrontendRoutes } from "../../../constants/frontendRoutes/publicFrontendRoutes"
 import { useEffect, useState } from "react"
 import {EyeClosed,Eye} from 'lucide-react'

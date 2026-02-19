@@ -1,23 +1,24 @@
+import { lazy } from "react";
+import "./App.css";
+import AppRoute from "./routes/AppRoutes";
 
-import './App.css'
-import AppRoute from './routes/AppRoutes'
-import { ToastContainer } from 'react-toastify';
+const ToastContainer = lazy(() =>
+  import("react-toastify").then((m) => ({ default: m.ToastContainer })),
+);
 
 function App() {
-  
-
   return (
     <>
-    <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
         closeOnClick
         pauseOnHover
       />
-     <AppRoute/>
+      <AppRoute />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, X, Clock, MapPin, Briefcase } from 'lucide-react';
+import { Clock, MapPin, Briefcase } from 'lucide-react';
 import { type IBeauticianDTO } from '../../../types/api/admin';
 import {
   Card,

@@ -71,3 +71,10 @@ export interface IGetCustomServiceDto{
   status:CustomServiceStatus,
   createdAt:string
 }
+
+export interface IGetCategoryDto{
+  categoryId:string,
+  name:string,
+  isActive:boolean,
+  description:string
+}

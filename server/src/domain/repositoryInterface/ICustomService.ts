@@ -1,5 +1,6 @@
 import { CustomService } from "../entities/customService";
 
+
 export interface ICustomServiceRepository {
   create(
     data: Omit<CustomService, "id" | "createdAt" | "updatedAt">,
@@ -14,4 +15,6 @@ export interface ICustomServiceRepository {
     id: string,
     data: Partial<Omit<CustomService, "id">>,
   ): Promise<CustomService | null>;
+  
+  
 }

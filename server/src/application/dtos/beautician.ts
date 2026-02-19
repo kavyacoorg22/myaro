@@ -70,11 +70,12 @@ export interface ISearchBeauticianResultDto {
 }
 
 export interface IGetAvailabilitySlotDto {
+  scheduleId:string,
   slots: Slot[];
   date: Date;
 }
 
 export interface IGetServiceAreaDto {
-  homeServiceLocation?: LocationVO[];
-  serviceLocation?: LocationVO[];
+  homeServiceableLocation?: string[];
+  serviceableLocation?: string[];
 }

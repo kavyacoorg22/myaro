@@ -1,10 +1,11 @@
 import { Beautician } from "../../domain/entities/Beautician";
 import { BeauticianService } from "../../domain/entities/beauticianService";
+import { Category } from "../../domain/entities/category";
 import { CustomService } from "../../domain/entities/customService";
 import { Service } from "../../domain/entities/service";
 import { User } from "../../domain/entities/User";
 import { CustomServiceStatus } from "../../domain/enum/serviceEnum";
-import { ICategoryServiceSelectionDto, IGetBeauticianServicesListDto, IGetCustomServiceDto, IGetPamphletDto, IGetServiceDto, IServiceSelectionDto } from "../dtos/services";
+import { ICategoryServiceSelectionDto, IGetBeauticianServicesListDto, IGetCategoryDto, IGetCustomServiceDto, IGetPamphletDto, IGetServiceDto, IServiceSelectionDto } from "../dtos/services";
 
 export function toGetServicesOutputDto(service:Service):IGetServiceDto{
  return {
@@ -98,4 +99,15 @@ return{
    createdAt:custom.createdAt
 }
 }
+
+export function toGetCategoryDto(category:Category):IGetCategoryDto{
+  return{
+    categoryId:category.id,
+    name:category.name,
+    isActive:category.isActive,
+    description:category.description
+    
+  }
+}
+
 

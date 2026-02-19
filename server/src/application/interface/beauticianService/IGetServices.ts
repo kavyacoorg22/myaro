@@ -1,4 +1,3 @@
-import { Service } from "../../../domain/entities/service";
 import { IGetServiceResponse } from "../../interfaceType/serviceType";
 
 export interface IGetServicesUseCase {

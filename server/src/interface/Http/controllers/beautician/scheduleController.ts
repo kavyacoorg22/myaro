@@ -87,9 +87,11 @@ export class ScheduleController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      console.log("get availability controller reachedddd")
       const beauticianId = req.user?.id;
 
       const dateParam = req.query.date;
+      console.log('params date',dateParam)
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -104,6 +106,7 @@ export class ScheduleController {
         );
       }
         const date = new Date(dateParam)
+        date.setUTCHours(0, 0, 0, 0);
       const data = await this._getAvailabilityUC.execute(beauticianId, date);
 
       res.status(HttpStatus.OK).json({
@@ -122,6 +125,7 @@ export class ScheduleController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      console.log("reacheddd availability controller")
       const beauticianId = req.params.id;
 
       const dateParam = req.query.date;

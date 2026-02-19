@@ -14,13 +14,18 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
   }
 
   async execute(id: string, input: ICategoryRequest): Promise<void> {
+    const {name}=input
     if (!id) {
       throw new AppError(
         generalMessages.ERROR.BAD_REQUEST,
         HttpStatus.BAD_REQUEST,
       );
     }
-
+    const existingCategory = await this._categoryRepo.findByName(name);
+   
+       if (existingCategory) {
+         throw new AppError("category already exists", HttpStatus.CONFLICT);
+       }
     const result = await this._categoryRepo.updateCategoryById(id, input);
 
     if (!result) {

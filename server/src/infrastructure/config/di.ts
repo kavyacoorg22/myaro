@@ -92,6 +92,11 @@ import { ScheduleController } from "../../interface/Http/controllers/beautician/
 import { ServiceAreaRepository } from "../repositories/beautician/serviceAreaRepository";
 import { AddServiceAreaUseCase } from "../../application/usecases/beautician/location/addServiceAreaUsecase";
 import { getServiceAreaUseCase } from "../../application/usecases/beautician/location/getServiceAreaUseCase";
+import { GetCategoryUseCase } from "../../application/usecases/admin/management/services/getCategoryUseCase";
+import { ChangePasswordController } from "../../interface/Http/controllers/auth/changePasswordController";
+import { ChangePasswordUseCase } from "../../application/usecases/auth/changePasswordUseCase";
+import { CustomerViewProfileUseCase } from "../../application/usecases/customer/viewEditProfileUseCase";
+import { CustomerEditProfileUseCase } from "../../application/usecases/customer/editProfileUseCase";
 
 
 
@@ -102,6 +107,8 @@ const registerUseCase=new RegisterUserUseCase(userRepo)
 const registerController=new RegisterUserController(registerUseCase)
 const preSignupUseCase = new PreSignupUseCase(process.env.JWT_SECRET!,userRepo);
 const preSignupController=new PreSignupController(preSignupUseCase)
+const changePasswordUseCase=new ChangePasswordUseCase(userRepo)
+export const changePasswordController=new ChangePasswordController(changePasswordUseCase)
 //otp
 
 const mailService=new NodemailerOtpService()
@@ -143,6 +150,8 @@ export const authenticateCustomer=authMiddleware(new JwtTokenService,new RedisTo
 export const authenticateAdmin=authMiddleware(new JwtTokenService,new RedisTokenBlacklistService,['admin'])
 export const authenticateBeautician=authMiddleware(new JwtTokenService,new RedisTokenBlacklistService,['beautician'])
 export const authenticateUser=authMiddleware(new JwtTokenService,new RedisTokenBlacklistService,['customer','beautician'])
+export const authenticateAll=authMiddleware(new JwtTokenService,new RedisTokenBlacklistService,['admin','customer','beautician'])
+
 //beautician repo
 const beauticianRepo=new mongoBeauticianRepository()
 export {registerController,preSignupController,otpController,completeSignupController,
@@ -163,10 +172,13 @@ const beauticianEditProfileUC=new BeauticianEditProfileUseCase(beauticianRepo,us
 const searchResultUC=new SearchResultUseCase(userRepo)
 //location
 const serviceAreaRepo=new ServiceAreaRepository()
-const addServiceAreaUC=new AddServiceAreaUseCase(serviceAreaRepo)
-const getServiceAreaUC=new getServiceAreaUseCase(serviceAreaRepo)
+const addServiceAreaUC=new AddServiceAreaUseCase(beauticianRepo)
+const getServiceAreaUC=new getServiceAreaUseCase(beauticianRepo)
+const customerViewEditProfile=new CustomerViewProfileUseCase(userRepo)
+const customerEditProfileUseCase=new CustomerEditProfileUseCase(userRepo)
 const beauticianController=new BeauticianController(beauticianRegisterUC,beauticianVerificationStatusUC,
-  beauticianUpdateRegistartionUC,beauticianViewEditProfileUC,beauticianEditProfileUC,searchResultUC,getServiceAreaUC,addServiceAreaUC)
+  beauticianUpdateRegistartionUC,beauticianViewEditProfileUC,
+  beauticianEditProfileUC,searchResultUC,getServiceAreaUC,addServiceAreaUC,customerViewEditProfile,customerEditProfileUseCase)
 
 export  {beauticianController}
 
@@ -200,7 +212,8 @@ const categoryRepo=new CategoryRepository()
 const addCategoryUseCase=new AddCategoryUseCase(categoryRepo)
 const updateCategoryUseCase=new UpdateCategoryUseCase(categoryRepo)
 const toggleCategoryActiveStatusUseCase=new toggleActiveStatusUseCase(categoryRepo)
-const categoryController=new CategoryController(addCategoryUseCase,updateCategoryUseCase,toggleCategoryActiveStatusUseCase)
+const getCategoryUC=new GetCategoryUseCase(categoryRepo)
+const categoryController=new CategoryController(addCategoryUseCase,updateCategoryUseCase,toggleCategoryActiveStatusUseCase,getCategoryUC)
 //serivice
 const serviceRepo=new ServiceRepository()
 const addServiceUC=new AddServiceUseCase(serviceRepo,categoryRepo)

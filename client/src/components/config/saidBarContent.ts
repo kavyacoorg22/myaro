@@ -3,6 +3,9 @@ import { HouseIcon,MagnifyingGlassIcon,PaperPlaneTiltIcon,UserIcon,
 import { publicFrontendRoutes } from "../../constants/frontendRoutes/publicFrontendRoutes";
 import { beauticianFrontendRoutes } from "../../constants/frontendRoutes/beauticianFrontendRoutes";
 import { adminFrontendRoute } from "../../constants/frontendRoutes/adminFrontenRoutes";
+import { SquarePlusIcon } from "lucide-react";
+import { Wrench } from "lucide-react";
+
 
 
 export type Role="customer"|"beautician"|"admin"
@@ -24,11 +27,12 @@ export const saidBarContent:SidebarContentType[]=[
     {label:"Profile",icon:UserIcon, path:publicFrontendRoutes.profile,showWhenAuthenticatedOnly:true,},
      {label:"Notification",icon:BellIcon,path:publicFrontendRoutes.notification,showWhenAuthenticatedOnly:true,},
       {label:"Tips&Tricks",icon:CameraRotateIcon,path:publicFrontendRoutes.tipsRent,},
-      {label:"Bookings",icon:CalendarDotsIcon,path:beauticianFrontendRoutes.booking,roles:['beautician']},
+      {label:"Bookings",icon:CalendarDotsIcon,path:beauticianFrontendRoutes.Location,roles:['beautician']},
        {label:"Dashboard",icon:HouseIcon,path:adminFrontendRoute.dashboard,roles:['admin']},
   {label:"Users",icon:UserIcon,path:adminFrontendRoute.checkUser,roles:['admin']},
-  {label:"Beautician",icon:UserListIcon,path:adminFrontendRoute.checkBeautician,roles:['admin']}
-  
+  {label:"Beautician",icon:UserListIcon,path:adminFrontendRoute.checkBeautician,roles:['admin']},
+  {label:"Service",icon:SquarePlusIcon,path:adminFrontendRoute.services,roles:['admin']},
+  {label:"Custom Services",icon:Wrench,path:adminFrontendRoute.customService,roles:['admin']}
     
     
 

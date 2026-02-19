@@ -1,0 +1,122 @@
+2026-01-23 12:51:46 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-23 13:46:23 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-23 15:11:05 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-23 15:59:56 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-23 19:37:19 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-23 19:43:13 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:220:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 19:43:13 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:220:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 20:24:22 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-23 20:56:08 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-01-23 20:56:51 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:220:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 20:56:51 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:220:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 21:07:03 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:220:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 21:07:03 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:220:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 21:13:38 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:220:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 21:13:39 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:220:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 21:14:48 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:223:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 21:14:48 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:223:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 21:36:47 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:223:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-23 21:36:48 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at BeauticianServiceRepository.findByBeauticianId (C:\Users\User\Desktop\week23\myaro\server\src\infrastructure\repositories\service\BeauticianServiceRepository.ts:45:17)
+    at GetBeauticianServicesListUseCase.execute (C:\Users\User\Desktop\week23\myaro\server\src\application\usecases\admin\management\services\getServiceList.ts:15:56)
+    at BeauticianServiceController.getBeauticianServiceListForCustomer (C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\controllers\service\beauticianServiceController.ts:223:59)
+    at Layer.handleRequest (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)

@@ -81,12 +81,10 @@ export class CustomServiceController {
         limit,
         filter,
       );
-
       res.status(HttpStatus.OK).json({
         success: true,
         message: "Custom services fetched successfully",
-        data: result.customService,
-        pagination: result.pagination,
+        data: result
       });
     } catch (err) {
       next(err);
@@ -129,6 +127,8 @@ export class CustomServiceController {
       const { status } = req.body as {
         status: CustomServiceAction;
       };
+
+      console.log('custom service status',status)
 
       if (!customServiceId || !adminId) {
         throw new AppError(

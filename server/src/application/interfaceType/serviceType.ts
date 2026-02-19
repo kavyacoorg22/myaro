@@ -1,5 +1,5 @@
 import { CategoryVO, ServiceVO } from "../../domain/entities/customService"
-import { ICategoryServiceSelectionDto, ICustomCategoryServiceSelectionDto, ICustomServiceSelectionDto, IGetBeauticianServicesListDto, IGetCustomServiceDto, IGetServiceDto } from "../dtos/services"
+import { ICategoryServiceSelectionDto, ICustomCategoryServiceSelectionDto, IGetBeauticianServicesListDto, IGetCustomServiceDto, IGetServiceDto ,IGetCategoryDto} from "../dtos/services"
 
 export interface ICategoryRequest{
   name:string,
@@ -24,6 +24,9 @@ export interface IGetServiceResponse{
   services:IGetServiceDto[]
 }
 
+export interface IGetCategoryResponse{
+  category:IGetCategoryDto[]
+}
 export interface IUpsertBeauticianServiceRequest{
   beauticianId:string,
   serviceId:string,
@@ -66,3 +69,12 @@ export interface IGetAllCustomServiceResponse{
 export interface IGetCustomServiceDetailResponse{
   customService:IGetCustomServiceDto
 }
+
+export type PriceFilter = 
+  | "all" 
+  | "low-high" 
+  | "high-low" 
+  | "under-500" 
+  | "500-1000" 
+  | "1000-2000" 
+  | "above-2000";

@@ -1,5 +1,6 @@
 import type { BeauticianStatusType } from "../../constants/types/beautician";
 import type { UserRoleType } from "../../constants/types/User";
+import type { IGetAvailabilitySlotDto, IGetServiceAreaDto } from "../dtos/beautician";
 import type { BackendResponse } from "./api";
 
 export interface ShopAddressVO {
@@ -81,10 +82,32 @@ export interface IProfileViewData extends IProfileUpdateRequest {
   profileImg?: string;
 }
 
+export interface IAddAvailabilityRequest {
+  dates: string[];
+  slots: Slot[];
+}
 
+export interface Slot{
+ startTime:string,
+ endTime:string
+}
 
+export interface IGetAvailabilitySlotResponseData{
+  availability:IGetAvailabilitySlotDto
+}
+
+export interface IAddServiceAreaRequest {
+  homeServiceableLocation?: string[];
+  serviceableLocation?: string[];
+}
+
+export interface IGetServiceAreaResponseData {
+  locations: IGetServiceAreaDto;
+}
 export type IBeauticianProfileUpdate = Partial<IProfileUpdateRequest> & Partial<IBankDeatilUpdateRequest>;
 
 export type IVerificationStatusResponse=BackendResponse<IVerificationStatusResponseData>
 export type IBeauticianPaymentDetailResponse=BackendResponse<IBeauticianPaymentDetailResponseData>
 export type IEditProfileResponse=BackendResponse<IEditProfileResponseData>
+export type IGetAvailabilitySlotResponse=BackendResponse<IGetAvailabilitySlotResponseData>
+export type IGetServiceAreaResponse=BackendResponse<IGetServiceAreaResponseData>

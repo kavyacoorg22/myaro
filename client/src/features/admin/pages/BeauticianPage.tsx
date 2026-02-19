@@ -10,7 +10,7 @@ import { adminApi } from '../../../services/api/admin';
 import { toast } from 'react-toastify';
 import { handleApiError } from '../../../lib/utils/handleApiError';
 
-export const BeauticianListPage = () => {
+ const BeauticianListPage = () => {
   const navigate = useNavigate();
   const [beauticians, setBeauticians] = useState<IBeauticianDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -198,3 +198,5 @@ export const BeauticianListPage = () => {
     </>
   );
 };
+
+export default BeauticianListPage

@@ -13,18 +13,23 @@ export class GetAvaialableUseCase implements IGetAvailbilityUseCase {
     beauticianId: string,
     date: Date,
   ): Promise<IGetAvailabilitySlotResponse> {
+    console.log('usecase reached.....')
     const schedule = await this._scheduleRepo.findByBeauticianAndDate(
       beauticianId,
       date,
     );
+    console.log(schedule)
+
     if (!schedule) {
       return {
         availability: {
+          scheduleId:'',
           slots: [],
           date,
         },
       };
     }
+    console.log(schedule)
     const mapped = toGetAvailabilitySlotDto(schedule);
     return {
       availability: mapped,

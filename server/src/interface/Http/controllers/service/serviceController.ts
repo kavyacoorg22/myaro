@@ -27,6 +27,8 @@ export class ServiceController {
   addService = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, categoryId } = req.body;
+      console.log(`service request body name--${name},categoryId--${categoryId}`)
+      console.log(typeof categoryId)
 
       if (!name || !categoryId) {
         throw new AppError(
@@ -34,6 +36,9 @@ export class ServiceController {
           HttpStatus.BAD_REQUEST,
         );
       }
+        if (typeof categoryId !== 'string') {
+    throw new AppError('categoryId must be a string', HttpStatus.BAD_REQUEST);
+  }
 
       const input = { name, categoryId };
       await this._addServiceUC.execute(input);
@@ -68,7 +73,9 @@ export class ServiceController {
   };
   getServices = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { categoryId } = req.body;
+      const categoryId= req.params.categoryId;
+         console.log(`get service request body categoryId--${categoryId}`)
+      console.log(typeof categoryId)
       if (!categoryId) {
         throw new AppError(
           generalMessages.ERROR.BAD_REQUEST,
@@ -92,6 +99,7 @@ export class ServiceController {
   ) => {
     try {
       const { isActive } = req.body;
+      console.log('isActive backend req.body..',isActive)
       const id = req.params.id;
       if (!id) {
         throw new AppError(

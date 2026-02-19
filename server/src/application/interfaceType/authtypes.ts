@@ -74,3 +74,8 @@ export interface ICompleteSignupInput{
   signupToken:string,
   otp:string
 }
+
+export interface IChangePasswordInput{
+  oldPassword:string,
+  newPassword:string
+}

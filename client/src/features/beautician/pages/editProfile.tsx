@@ -1,23 +1,25 @@
 
 import React, { useState, useRef, useEffect } from "react";
-
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { handleApiError } from "../../../lib/utils/handleApiError";
-
-import type { ProfileType, BankDetailsType } from "../../../lib/validations/user/validateProfileData";
+import type {
+  ProfileType,
+  BankDetailsType,
+  ChangePasswordType,
+  CustomerProfileType,
+} from "../../../lib/validations/user/validateProfileData";
 import BeauticianEditProfileUI from "../component/editProfileUi";
 import { BeauticianEditBankDetailsUi } from "../component/editBankDetails";
 import { BeauticianApi } from "../../../services/api/beautician";
 import type { IBeauticianProfileUpdate } from "../../../types/api/beautician";
-import { Header } from "../../public";
 import { publicAPi } from "../../../services/api/public";
+import { ChangePasswordUi } from "../component/changePasswordUI";
+import { publicFrontendRoutes } from "../../../constants/frontendRoutes/publicFrontendRoutes";
 
-const BeauticianProfileForm = () => {
+export const ProfileEditPage = ({ isCustomer = false }: { isCustomer?: boolean }) => {
   const navigate = useNavigate();
- const fileInputRef = useRef<HTMLInputElement >(null!);
-
-  const [activeTab, setActiveTab] = useState<"profile" | "service">("profile");
+  const fileInputRef = useRef<HTMLInputElement>(null!);
   const [showAccountNumber, setShowAccountNumber] = useState(false);
 
   const [profileData, setProfileData] = useState({
@@ -39,7 +41,6 @@ const BeauticianProfileForm = () => {
     upiId: "",
   });
 
-
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -47,27 +48,22 @@ const BeauticianProfileForm = () => {
   const fetchProfileData = async () => {
     try {
       const response = await BeauticianApi.viewProfile();
-     
       const data = response.data?.data;
-         console.log('✅ Extracted data:', data);
-    console.log('✅ Bank details check:', {
-      accountHolderName: data?.accountHolderName,
-      accountNumber: data?.accountNumber,
-      ifscCode: data?.ifscCode,
-      bankName: data?.bankName,
-      upiId: data?.upiId
-    });
 
       setProfileData({
-        userName: data?.userName|| "",
-        fullName: data?.fullName|| "",
+        userName: data?.userName || "",
+        fullName: data?.fullName || "",
         about: data?.about || "",
         shopName: data?.shopName || "",
-        shopAddress: data?.shopAddress||{ address: "", city: "", pincode: "" } ,
+        shopAddress: data?.shopAddress || {
+          address: "",
+          city: "",
+          pincode: "",
+        },
         yearsOfExperience: String(data?.yearsOfExperience || 1),
         profileImg: data?.profileImg,
       });
-      console.log('profileData',profileData)
+
       setBankData({
         accountHolderName: data?.accountHolderName || "",
         accountNumber: data?.accountNumber || "",
@@ -84,37 +80,33 @@ const BeauticianProfileForm = () => {
   const handleProfileImageUpload = async (file: File) => {
     try {
       const formData = new FormData();
-      formData.append('profileImg', file);
+      formData.append("profileImg", file);
 
       const loadingToast = toast.loading("Uploading profile image...");
 
       const response = await publicAPi.changeProfilePhoto(formData);
-      
-    
-      setProfileData(prev => ({
+
+      setProfileData((prev) => ({
         ...prev,
-        profileImg: response.data.data?.profileImg
+        profileImg: response.data.data?.profileImg,
       }));
 
-  
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
 
       toast.dismiss(loadingToast);
       toast.success("Profile image updated successfully!");
-      fetchProfileData()
+      navigate(publicFrontendRoutes.profile)
     } catch (error) {
       toast.dismiss();
       handleApiError(error);
     }
   };
 
-
-   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-     
       if (file.size > 5 * 1024 * 1024) {
         toast.error("Image size must be less than 5MB");
         return;
@@ -125,31 +117,30 @@ const BeauticianProfileForm = () => {
         return;
       }
 
-      
-      
-      
       handleProfileImageUpload(file);
     }
   };
 
- const handleSaveProfile = async (data: ProfileType) => {
+const handleSaveProfile = async (data: ProfileType | CustomerProfileType) => {
   try {
     const payload: IBeauticianProfileUpdate = {
       userName: data.userName,
       fullName: data.fullName,
-      about: data.about,
-      shopName: data.shopName || "",
-      shopAddress: data.shopAddress ? {
-        address: data.shopAddress.address,
-        city: data.shopAddress.city, 
-        pincode: ""
-      } : undefined,
-      yearsOfExperience: data.yearsOfExperience,
+      about: "about" in data ? data.about : undefined,
+      shopName: "shopName" in data ? data.shopName || "" : undefined,
+      shopAddress: "shopAddress" in data && data.shopAddress
+        ? {
+            address: data.shopAddress.address,
+            city: data.shopAddress.city,
+            pincode: "",
+          }
+        : undefined,
+      yearsOfExperience: "yearsOfExperience" in data ? data.yearsOfExperience : undefined,
     };
 
     await BeauticianApi.updateProfile(payload);
     toast.success("Profile saved successfully!");
-    await fetchProfileData();
+    navigate(publicFrontendRoutes.profile)
   } catch (error) {
     handleApiError(error);
   }
@@ -170,7 +161,7 @@ const BeauticianProfileForm = () => {
       });
 
       toast.success("Bank details saved successfully!");
-      await fetchProfileData(); 
+      await fetchProfileData();
     } catch (error) {
       handleApiError(error);
     }
@@ -180,31 +171,39 @@ const BeauticianProfileForm = () => {
     navigate(-1);
   };
 
-  const handleTabChange = (tab: "profile" | "service") => {
-    setActiveTab(tab);
-  };
+  const handleChangePassword = async (data: ChangePasswordType) => {
+  try {
+    await publicAPi.changePassword({
+      oldPassword: data.oldPassword,
+      newPassword: data.newPassword,
+      confirmPassword:data.confirmPassword
+    });
+    toast.success("Password updated successfully!");
+    navigate(publicFrontendRoutes.profile)
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
   return (
     <>
-    <Header/>
-    <BeauticianEditProfileUI
-      profileData={profileData}
-      activeTab={activeTab}
-      handleFileChange={handleFileChange}
-      handleSaveProfile={handleSaveProfile}
-      handleCancelProfile={handleCancelProfile}
-      handleBack={handleBack}
-      handleTabChange={handleTabChange}
-      fileInputRef={fileInputRef}
-    />
-    <BeauticianEditBankDetailsUi
-     bankData={bankData}
-     showAccountNumber={showAccountNumber}
-     handleSaveBankDetails={handleSaveBankDetails}
-      setShowAccountNumber={setShowAccountNumber}
-    />
+      <BeauticianEditProfileUI
+        profileData={profileData}
+        handleFileChange={handleFileChange}
+        handleSaveProfile={handleSaveProfile}
+        handleCancelProfile={handleCancelProfile}
+        handleBack={handleBack}
+        fileInputRef={fileInputRef}
+        isCustomer={isCustomer}
+      />
+          {!isCustomer && (
+      <BeauticianEditBankDetailsUi
+        bankData={bankData}
+        showAccountNumber={showAccountNumber}
+        handleSaveBankDetails={handleSaveBankDetails}
+        setShowAccountNumber={setShowAccountNumber}
+      />)}
+        <ChangePasswordUi onSubmit={handleChangePassword} />
     </>
   );
 };
-
-export default BeauticianProfileForm;

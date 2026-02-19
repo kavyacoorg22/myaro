@@ -1,8 +1,8 @@
-// 
+//shows button according the roleee
 
 import React from 'react';
 import { type ProfileActions } from './types';
-import { UserRole, type UserRoleType } from '../../../../constants/types/User';
+import { type UserRoleType } from '../../../../constants/types/User';
 import { Upload, Camera, Lightbulb, Home } from 'lucide-react';
 
 // Beautician Own Buttons - Horizontal layout below username
@@ -31,7 +31,6 @@ export const BeauticianOwnButtons: React.FC<
   </div>
 );
 
-// Tab Section (unchanged)
 export const BeauticianTabSection: React.FC<
   Pick<ProfileActions, 'onUpload' | 'onPosts' | 'onTips' | 'onRent'>
 > = ({
@@ -76,14 +75,24 @@ export const BeauticianTabSection: React.FC<
 
 // Customer Own Button
 export const CustomerOwnButtons: React.FC<ProfileActions> = ({ 
+  onEditProfile,
   onRegisterAsBeautician 
+
 }) => (
+  <div>
+   <button
+      onClick={onEditProfile}
+      className="px-6 py-2 mr-9 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium"
+    >
+      Edit Profile
+    </button>
   <button 
     onClick={onRegisterAsBeautician} 
     className="px-6 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
   >
     Register as Beautician
   </button>
+  </div>
 );
 
 // View Beautician Buttons - Vertical stack on the right

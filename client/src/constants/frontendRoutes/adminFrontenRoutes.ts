@@ -3,5 +3,7 @@ export const adminFrontendRoute={
   login:'/admin/login',
     checkUser:'/admin/user',
    checkBeautician:'/admin/beautician',
-   viewBeautician:'/admin/beautician/view'
+   viewBeautician:'/admin/beautician/view',
+   services:'/admin/services',
+   customService:'/admin/customService'
 }

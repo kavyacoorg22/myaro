@@ -8,6 +8,8 @@ import { IGetBeauticianServicesListUseCase } from "../../../../application/inter
 import { IUploadPamphletUseCase } from "../../../../application/interface/beauticianService/IPamphletUploadUseCase";
 import { IDeletePamphletUseCase } from "../../../../application/interface/beauticianService/IDeletePamphletUseCase";
 import { IGetPamphletUseCase } from "../../../../application/interface/beauticianService/IGetPamphlet";
+import { generalMessages } from "../../../../shared/constant/message/generalMessage";
+import { PriceFilter } from "../../../../application/interfaceType/serviceType";
 
 export class BeauticianServiceController {
   private _getBeauticianServiceSelectionUC: IGetBeauticianServiceSelectionUseCase;
@@ -38,7 +40,10 @@ export class BeauticianServiceController {
   ): Promise<void> => {
     try {
       const beauticianId = req.user?.id;
-
+        console.log('req.user:', req.user);
+    console.log('req.user?.id:', req.user?.id);
+    console.log('Type:', typeof req.user?.id);
+    console.log('beautician Id',beauticianId)
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -80,7 +85,7 @@ export class BeauticianServiceController {
       await this._upsertBeauticianServiceUC.execute(data);
       res.status(HttpStatus.CREATED).json({
         success: true,
-        message: "Services fetched",
+        message: "Services Added",
       });
     } catch (err) {
       next(err);
@@ -96,6 +101,7 @@ export class BeauticianServiceController {
       const beauticianId = req.user?.id;
 
       const filter = (req.query.filter as string) || "all";
+      const priceFilter=(req.query.priceFilter as PriceFilter)||' all'
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -103,10 +109,23 @@ export class BeauticianServiceController {
         );
       }
       const validFilter = filter === "home" ? "home" : "all";
+        const validPriceFilters: PriceFilter[] = [
+      "all",
+      "low-high",
+      "high-low",
+      "under-500",
+      "500-1000",
+      "1000-2000",
+      "above-2000"
+    ];
+       const validPriceFilter: PriceFilter= validPriceFilters.includes(priceFilter as PriceFilter)
+      ? (priceFilter as PriceFilter)
+      : "all";
 
       const data = await this._getBeauticianServiceListUC.execute(
         beauticianId,
         validFilter,
+       validPriceFilter
       );
 
       res.status(HttpStatus.OK).json({
@@ -125,13 +144,19 @@ export class BeauticianServiceController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const pamphletImg = req.body;
+      console.log('pamplet controller reached')
+      const pamphletImg = req.file;
       const id = req.user?.id;
       if (!id) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
           HttpStatus.UNAUTHORIZED,
         );
+      }
+      console.log('pamplet img',pamphletImg?.originalname)
+      if(!pamphletImg)
+      {
+        throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
       }
       await this._uploadPamphletUC.execute(id, pamphletImg);
       res.status(HttpStatus.OK).json({
@@ -201,7 +226,8 @@ export class BeauticianServiceController {
     try {
       const beauticianId = req.params.id;
 
-      const filter = (req.query.filter as string) || "all";
+     const filter = (req.query.filter as string) || "all";
+      const priceFilter=(req.query.priceFilter as PriceFilter)||' all'
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -209,10 +235,23 @@ export class BeauticianServiceController {
         );
       }
       const validFilter = filter === "home" ? "home" : "all";
+        const validPriceFilters: PriceFilter[] = [
+      "all",
+      "low-high",
+      "high-low",
+      "under-500",
+      "500-1000",
+      "1000-2000",
+      "above-2000"
+    ];
+       const validPriceFilter: PriceFilter= validPriceFilters.includes(priceFilter as PriceFilter)
+      ? (priceFilter as PriceFilter)
+      : "all";
 
       const data = await this._getBeauticianServiceListUC.execute(
         beauticianId,
         validFilter,
+       validPriceFilter
       );
 
       res.status(HttpStatus.OK).json({
@@ -231,7 +270,8 @@ export class BeauticianServiceController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const beauticianId = req.params.id;
+      console.log("controller of pamplet for customer reacheddddd........")
+      const beauticianId = req.params.beauticianId;
 
       if (!beauticianId) {
         throw new AppError(

@@ -1,6 +1,6 @@
 import { SaidBar } from "../../user/component/saidBar/saidbar"
 
-export const Dashboard=()=>{
+ const Dashboard=()=>{
   return(
     <>
     <SaidBar/>
@@ -11,3 +11,5 @@ export const Dashboard=()=>{
     </>
   )
 }
+
+export default Dashboard

@@ -1,9 +1,18 @@
-export const adminApiRoute={
-  adminLogin:'/admin/login',
-  getAllUser:'/admin/users',
-  toggleUser:'/admin/users/:id/status',
-  getBeautician:"/admin/beautician",
-  viewBeautician:"/admin/beautician/:id",
-  approveBeautician:"/admin/beautician/:id/approve",
-  rejectBeautician:"/admin/beautician/:id/reject"
-}
+export const adminApiRoute = {
+  adminLogin: "/admin/login",
+  getAllUser: "/admin/users",
+  toggleUser: "/admin/users/:id/status",
+  getBeautician: "/admin/beautician",
+  viewBeautician: "/admin/beautician/:id",
+  approveBeautician: "/admin/beautician/:id/approve",
+  rejectBeautician: "/admin/beautician/:id/reject",
+  addCategory: "/admin/category",
+  updateCategory: "/admin/category/:id",
+  toggleCategory: "/admin/category/:id/status",
+  addService: "/admin/service",
+  updateService: "/admin/service/:id",
+  toggleService: "/admin/service/:id/status",
+  getAllCustomService: "/admin/custom-services",
+  getCustomServiceDetail: "/admin/custom-services/:id",
+  changeCustomServiceStatus: "/admin/custom-services/:id/status",
+};

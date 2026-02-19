@@ -12,6 +12,11 @@ export class UpdateServiceUseCase implements IUpdateServiceUseCase {
   }
 
   async execute(id: string, name: string): Promise<void> {
+      const existingService = await this._serviceRepo.findByName(name);
+
+    if (existingService) {
+      throw new AppError("Service is already exists", HttpStatus.BAD_REQUEST);
+    }
     const result = await this._serviceRepo.updateServiceById(id, name);
     if (!result) {
       throw new AppError(

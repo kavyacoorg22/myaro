@@ -75,8 +75,8 @@ export interface IBeauticianViewEditProfileOutput {
 }
 
 export interface IAddServiceAreaRequest {
-  homeServiceLocation?: LocationVO[];
-  serviceLocation?: LocationVO[];
+  homeServiceableLocation?: string[];
+  serviceableLocation?: string[];
 }
 
 export interface IGetServiceAreaResponse {

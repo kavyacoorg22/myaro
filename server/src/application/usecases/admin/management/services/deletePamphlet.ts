@@ -38,9 +38,7 @@ export class DeletePamphletImageUseCase implements IDeletePamphletUseCase {
       );
     }
 
-    const updated = await this._beauticianRepo.updateByUserId(id, {
-      pamphletUrl: undefined,
-    });
+    const updated = await this._beauticianRepo.removePamphlet(id);
 
     if (!updated) {
       throw new AppError(

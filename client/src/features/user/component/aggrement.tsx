@@ -1,7 +1,3 @@
-
-
-
-
 import React from 'react';
 import { AlertTriangle, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +5,7 @@ import { publicFrontendRoutes } from '../../../constants/frontendRoutes/publicFr
 
 import { Header } from '../../public';
 
-export const BeauticianAgreementScreen: React.FC = () => {
+ const BeauticianAgreementScreen: React.FC = () => {
   const navigate = useNavigate();
   const handleContinue = () => navigate(publicFrontendRoutes.profile,{replace:true});
 
@@ -143,3 +139,5 @@ export const BeauticianAgreementScreen: React.FC = () => {
     </>
   );
 };
+
+export  default BeauticianAgreementScreen

@@ -1,7 +1,7 @@
 import { beauticianApi } from "../../constants/apiRoutes/beauticianRoutes";
-import {type IBeauticianProfileResponse } from "../../types/api/admin";
 import type { BackendResponse } from "../../types/api/api";
-import type { IBeauticianPaymentDeatilRequest, IBeauticianPaymentDetailResponse, IBeauticianProfileUpdate, IEditProfileResponse, IRegisterRequest, IVerificationStatusResponse } from "../../types/api/beautician";
+import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse, type IRegisterRequest, type IVerificationStatusResponse, type Slot } from "../../types/api/beautician";
+import { type IGetPamphletResponse, type IAddCustomServiceRequest, type IBeauticianServiceSelectionResponse, type IGetBeauticianServicesListResponse, type IUpsertBeauticianServiceRequest, type PriceFilter,} from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
 
 export const BeauticianApi = {
@@ -20,7 +20,48 @@ export const BeauticianApi = {
   updateProfile:async(data:IBeauticianProfileUpdate)=>{
     return await axiosWrapper<BackendResponse>(api.patch(beauticianApi.profile,data))
   },
- 
+  getServiceList:async(filter:string,priceFilter:PriceFilter)=>{
+    return await axiosWrapper<IGetBeauticianServicesListResponse>(api.get(beauticianApi.getServiceLists,{
+      params:{filter,priceFilter}
+    })
+  )},
+   getServiceSeletion:async()=>{
+    return await axiosWrapper<IBeauticianServiceSelectionResponse>(api.get(beauticianApi.getServiceSelection))
+  },
+   uploadPamphlet:async(pamphletImg:FormData)=>{
+    return await axiosWrapper<BackendResponse>(api.patch(beauticianApi.addPamphlet,pamphletImg))
+   },
+   deletePamphlet:async()=>{
+    return await axiosWrapper<BackendResponse>(api.delete(beauticianApi.deletePamphlet))
+   },
+   getPamphlet:async()=>{
+    return await axiosWrapper<IGetPamphletResponse>(api.get(beauticianApi.getPamphlet))
+   },
+   upsertSelectedService:async(data:IUpsertBeauticianServiceRequest)=>{
+    return await axiosWrapper<BackendResponse>(api.put(beauticianApi.upsertSelectedService,data))
+   },
+   addCustomService:async(data:IAddCustomServiceRequest)=>{
+    return await axiosWrapper<BackendResponse>(api.post(beauticianApi.addCustomService,data))
+   },
+   addAvailabilitySchedule:async(data:IAddAvailabilityRequest)=>{
+    return await axiosWrapper<BackendResponse>(api.put(beauticianApi.addSchedule,data))
+   },
+   getAvailbilitySchedule:async(date:string)=>{
+    return await axiosWrapper<IGetAvailabilitySlotResponse>(api.get(beauticianApi.getSchedule,{
+      params:{date}
+    }))
+   },
+   deleteAvailabilitySlot:async(slotToDelete:Slot,scheduleId:string)=>{
+    return await axiosWrapper<BackendResponse>(api.delete(beauticianApi.deleteSchedule.replace(':id',scheduleId),{
+      data:{slotToDelete}
+    }))
+   },
+   addLocation:async(input:IAddServiceAreaRequest)=>{
+    return await axiosWrapper<BackendResponse>(api.patch(beauticianApi.addLocation,input))
+   },
+   getLocation:async()=>{
+    return await axiosWrapper<IGetServiceAreaResponse>(api.get(beauticianApi.getLocation))
+   }
 
 
 };

@@ -1,5 +1,4 @@
 export const locationService = {
-  // Get user's current location using browser geolocation
   async getCurrentLocation(): Promise<GeolocationCoordinates> {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -14,8 +13,7 @@ export const locationService = {
       );
     });
   },
-
-  // Reverse geocoding: Convert coordinates to location name
+// Reverse geocoding: Convert coordinates to location name
   async getLocationName(lat: number, lon: number): Promise<{
     city: string;
     state: string;
@@ -58,7 +56,8 @@ export const locationService = {
       const response = await fetch('https://ipapi.co/json/');
       const data = await response.json();
       
-      return {
+      return {  // Reverse geocoding: Convert coordinates to location name
+
         city: data.city || 'Unknown',
         state: data.region || '',
         country: data.country_name || 'Unknown',

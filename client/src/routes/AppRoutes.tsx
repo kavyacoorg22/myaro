@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { publicRoutes } from "./PublicRoutes"
 import { userRoutes } from "./UserRoutes"
 import { adminRoutes } from "./adminRoute"
-
+import { Suspense } from "react"
 
 const AppRouters=()=>{
 
@@ -31,7 +31,9 @@ const AppRouters=()=>{
 
  const AppRoute=()=>(
   <BrowserRouter>
+  <Suspense fallback={<div>Loading...</div>}>
    <AppRouters/>
+   </Suspense>
   </BrowserRouter>
 )
 

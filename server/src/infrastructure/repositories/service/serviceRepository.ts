@@ -38,6 +38,11 @@ async findByCategoryId(id: string): Promise<Service[]> {
   return docs.map((doc)=>this.map(doc as ServiceDoc))
 }
 
+async findAllServiceByCategoryId(id: string): Promise<Service[]> {
+  const docs=await ServiceModel.find({categoryId:new Types.ObjectId(id)})
+  return docs.map((doc)=>this.map(doc as ServiceDoc))
+}
+
 async toggleActive(id: string, isActive: boolean): Promise<boolean> {
   const doc=await ServiceModel.findByIdAndUpdate(id,{isActive},{new:true})
   return !!doc
@@ -50,6 +55,11 @@ async findById(id: string): Promise<Service | null> {
 
   async findAllActive(): Promise<Service[]> {
     const docs=await ServiceModel.find({isActive:true})
+    return docs.map((doc)=>this.map(doc as ServiceDoc))
+  }
+
+   async findAllService(): Promise<Service[]> {
+    const docs=await ServiceModel.find()
     return docs.map((doc)=>this.map(doc as ServiceDoc))
   }
 

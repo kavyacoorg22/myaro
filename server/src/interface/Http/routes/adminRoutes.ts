@@ -19,7 +19,6 @@ router.patch('/category/:id/status',authenticateAdmin,categoryController.toggleC
 router.post('/service',authenticateAdmin,ValidateAdminServiceInput,serviceController.addService)
 router.patch('/service/:id',authenticateAdmin,ValidateAdminServiceInput,serviceController.updateService)
 router.patch('/service/:id/status',authenticateAdmin,serviceController.toggleServiceStatus)
-router.get('/category/:categoryId/services',authenticateAdmin,serviceController.getServices)
 //customservice
 router.get('/custom-services',authenticateAdmin,customServiceController.getAllCustomServices)
 router.get('/custom-services/:id',authenticateAdmin,customServiceController.getCustomServiceDetail)

@@ -1,6 +1,21 @@
 import { z } from "zod";
 
 
+export const CustomerProfileSchema = z.object({
+  userName: z
+    .string()
+    .min(3, { message: "Username must be at least 3 characters" })
+    .regex(/^[a-zA-Z0-9_]+$/, {
+      message: "Username can only contain letters, numbers, and underscores",
+    }),
+  fullName: z
+    .string()
+    .min(2, { message: "Full name must be at least 2 characters" })
+    .regex(/^[a-zA-Z\s]+$/, {
+      message: "Full name can only contain letters and spaces",
+    }),
+});
+
 export const ProfileSchema = z.object({
   userName: z
     .string()
@@ -8,24 +23,20 @@ export const ProfileSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, {
       message: "Username can only contain letters, numbers, and underscores",
     }),
-
   fullName: z
     .string()
     .min(2, { message: "Full name must be at least 2 characters" })
     .regex(/^[a-zA-Z\s]+$/, {
       message: "Full name can only contain letters and spaces",
     }),
-
-  about: z
-    .string()
-    .min(10, { message: "Bio must be at least 10 characters" }),
-
+  about: z.string().min(10, { message: "Bio must be at least 10 characters" }),
   shopName: z.string().trim().optional(),
- shopAddress: z.object({
-    address: z.string(),
-    city: z.string(),
-  }).optional(),
-
+  shopAddress: z
+    .object({
+      address: z.string(),
+      city: z.string(),
+    })
+    .optional(),
   yearsOfExperience: z.string(),
 });
 
@@ -71,5 +82,20 @@ export const BankDetailsSchema = z
   });
 
 
+  export const ChangePasswordSchema=z.object({
+    oldPassword:z.string().min(1,'current password is required'),
+    newPassword:z.string()
+     .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+      .regex(/[0-9]/, "Must contain at least one number"),
+    confirmPassword: z.string().min(1, "Please confirm your new password"),
+  })
+  .refine((data)=>data.newPassword===data.confirmPassword,{
+    message:"passwords don't match",
+   path:['confirmPassword']
+  })
+
+export type ChangePasswordType = z.infer<typeof ChangePasswordSchema>;
+export type CustomerProfileType = z.infer<typeof CustomerProfileSchema>;
 export type ProfileType = z.infer<typeof ProfileSchema>;
 export type BankDetailsType = z.infer<typeof BankDetailsSchema>;

@@ -11,6 +11,7 @@ export const publicFrontendRoutes={
   profile:'/profile',
   profileByid:'/profile/:id',
   notification:'/notifiaction',
-  adminLogin:'/admin/login'
+  adminLogin:'/admin/login',
+  getServiceList:'/beautician/services'
  
 }
