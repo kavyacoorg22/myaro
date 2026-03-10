@@ -19,6 +19,21 @@
             "date": 1771470333525,
             "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\app-2026-02-19.log",
             "hash": "fdc1557c50783cc07c182cf616a05cf074206be1eba5664256b043546d91eff2"
+        },
+        {
+            "date": 1771668019921,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\app-2026-02-21.log",
+            "hash": "56891c6469841cbc005055161a89dfb8b294caa6834dde6b9043a8e7779f22cb"
+        },
+        {
+            "date": 1771770208800,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\app-2026-02-22.log",
+            "hash": "28f817aaa9f1d66e61e722c06e888435bcf46da315594851ffb46a20f5073813"
+        },
+        {
+            "date": 1771812887952,
+            "name": "C:\\Users\\User\\Desktop\\week23\\myaro\\server\\logs\\app-2026-02-23.log",
+            "hash": "f505ae4b80eb0e3216097021c633e319a05e08106803dbf0f56397e071921ac8"
         }
     ],
     "hashType": "sha256"

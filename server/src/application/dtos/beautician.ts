@@ -1,8 +1,9 @@
 import { ShopAddressVO } from "../../domain/entities/Beautician";
 import { LocationVO } from "../../domain/entities/beauticianServiceAres";
 import { Slot } from "../../domain/entities/schedule";
-import { VerificationStatus } from "../../domain/enum/beauticianEnum";
-import { UserRole } from "../../domain/enum/userEnum";
+import { scheduleSourceType, ScheduleType, VerificationStatus } from "../../domain/enum/beauticianEnum";
+import { PostType, UserRole } from "../../domain/enum/userEnum";
+import { location } from "../interfaceType/beauticianType";
 
 export interface IVerificationStatusDto {
   verificationStatus: VerificationStatus;
@@ -73,9 +74,39 @@ export interface IGetAvailabilitySlotDto {
   scheduleId:string,
   slots: Slot[];
   date: Date;
+  source:scheduleSourceType
+  type:ScheduleType
 }
 
 export interface IGetServiceAreaDto {
-  homeServiceableLocation?: string[];
-  serviceableLocation?: string[];
+  homeServiceableLocation?: location[];
+  serviceableLocation?: location[];
+}
+
+
+export interface IGetBeauticianPostsDto{
+  id:string,
+   description?:string,
+   postType:PostType,
+   location?:LocationVO,
+   media:string[],
+   likesCount?:number,
+   commentsCount?:number,
+   timeAgo:string,
+  
+}
+
+export interface IGetAllPostsDto{
+   id:string,
+   beauticianId:string,
+   userName:string,
+   fullName:string,
+   profileImg:string,
+   description?:string,
+   postType:PostType,
+   location?:LocationVO,
+   media:string[],
+   likesCount?:number,
+   commentsCount?:number,
+  timeAgo:string
 }

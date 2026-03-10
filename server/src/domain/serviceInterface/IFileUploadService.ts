@@ -7,4 +7,5 @@ export interface IFileUploader {
   uploadProfileImage(file:Express.Multer.File):Promise<string>
   uploadPamphletImage(file:Express.Multer.File):Promise<string>
   deletePamphletImage(path:string):Promise<void>
+    uploadPostMedia(files: Express.Multer.File[]): Promise<string[]>;
 }

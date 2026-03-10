@@ -1,5 +1,5 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAdmin, authenticateAll, authenticateUser, beauticianController, categoryController, changePasswordController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAdmin, authenticateAll, authenticateUser, beauticianController, categoryController, changePasswordController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword } from "../middleware/validateUserInput";
@@ -17,5 +17,7 @@ router.delete('/search/history',authenticateUser,searchHistoryController.clearSe
 router.get('/category/:categoryId/services',authenticateAll,serviceController.getServices)
 router.get('/category',authenticateAll,categoryController.getCategory)
 router.patch('/change-password',authenticateUser,validateChangePassword,(req:Request,res:Response,next:NextFunction)=>{changePasswordController.handle(req,res,next)})
-
+//feed
+router.get('/home',postController.getHomefeed)
+router.get('/tipsRent',postController.getTipsRentfeed)
 export default router

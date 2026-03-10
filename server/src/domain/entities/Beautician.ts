@@ -43,8 +43,7 @@ export interface Beautician {
  
   homeserviceCount: number;
    pamphletUrl?:string,
-  homeServiceableLocation?:string[]
-  serviceableLocation?:string[]
+
 
   createdAt: Date;
   updatedAt: Date;

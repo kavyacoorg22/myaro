@@ -36,3 +36,7 @@
     at next (C:\Users\User\Desktop\week23\myaro\server\node_modules\router\lib\route.js:157:13)
     at C:\Users\User\Desktop\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:93:9
     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-02-18 19:03:15 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-02-18 20:20:46 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}

@@ -1,3 +1,4 @@
+import { ScheduleType } from "../enum/beauticianEnum"
 
 export interface Slot{
  startTime:string,
@@ -9,6 +10,7 @@ export interface Schedule{
   beauticianId:string,
   slots:Slot[],
   date:Date,
+  type:ScheduleType,
   createdAt:Date,
   updatedAt:Date
 }

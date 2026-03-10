@@ -1,0 +1,24 @@
+2026-03-10 14:52:08 error: TypeError: Cannot convert object to primitive value
+    at PostController.createPost (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\public\postController.ts:26:43)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at validateCreatePostInput (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\middleware\validateBeauticianINput.ts:463:3)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at validatePostMedia (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\validator\validatePostUpload.ts:44:3)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at done (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\multer\lib\make-middleware.js:59:7)
+2026-03-10 18:26:41 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-03-10 18:51:27 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-03-10 18:51:32 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:622:28)
+    at Socket.emit (node:events:508:28)
+    at Socket._onTimeout (node:net:604:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at processTimers (node:internal/timers:541:7)
+2026-03-10 20:03:28 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}

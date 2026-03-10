@@ -236,8 +236,7 @@ async removePamphlet(userId: string): Promise<Beautician | null> {
 
       homeserviceCount: doc.homeserviceCount ?? 0,
       pamphletUrl:doc.pamphletUrl,
-      homeServiceableLocation:doc.homeServiceableLocation,
-      serviceableLocation:doc.serviceableLocation,
+      
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

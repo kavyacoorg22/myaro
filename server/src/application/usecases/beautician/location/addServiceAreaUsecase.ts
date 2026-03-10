@@ -1,13 +1,17 @@
-import { Beautician } from "../../../../domain/entities/Beautician";
 import { AppError } from "../../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../../domain/repositoryInterface/IBeauticianRepository";
+import { IServiceAreaRepository } from "../../../../domain/repositoryInterface/IBeauticianServiceAreaRepository";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IAddServiceAreaUseCase } from "../../../interface/beautician/location/IaddServiceAreaUseCase";
 import { IAddServiceAreaRequest } from "../../../interfaceType/beauticianType";
+import { LocationVO } from "../../../../domain/entities/beauticianServiceAres";
 
 export class AddServiceAreaUseCase implements IAddServiceAreaUseCase {
-  constructor(private readonly beauticianRepo: IBeauticianRepository) {}
+  constructor(
+    private readonly beauticianRepo: IBeauticianRepository,
+    private readonly serviceAreaRepo: IServiceAreaRepository, // ← add this
+  ) {}
 
   async execute(
     beauticianId: string,
@@ -21,27 +25,20 @@ export class AddServiceAreaUseCase implements IAddServiceAreaUseCase {
       );
     }
 
-    const updateData: Partial<
-      Omit<Beautician, "id" | "createdAt" | "updatedAt" | "homeServiceCount">
-    > = {};
+    // Check if service area doc exists, create if not
+    const existing = await this.serviceAreaRepo.findByBeauticianId(beauticianId);
 
-    const normalizeArray = (arr?: string[]) =>
-      arr ? [...new Set(arr.map((v) => v.trim()))] : undefined;
-
-    if (input.homeServiceableLocation) {
-      updateData.homeServiceableLocation = normalizeArray(
-        input.homeServiceableLocation,
-      );
+    if (!existing) {
+      await this.serviceAreaRepo.create({
+        beauticianId,
+        serviceLocation: (input.serviceableLocation as LocationVO[]) ?? [],
+        homeServiceLocation: (input.homeServiceableLocation as LocationVO[]) ?? [],
+      });
+    } else {
+      await this.serviceAreaRepo.updateLocations(beauticianId, {
+        serviceLocation: input.serviceableLocation as LocationVO[] | undefined,
+        homeServiceLocation: input.homeServiceableLocation as LocationVO[] | undefined,
+      });
     }
-
-    if (input.serviceableLocation) {
-      updateData.serviceableLocation = normalizeArray(input.serviceableLocation);
-    }
-
-    if (Object.keys(updateData).length === 0) {
-      return;
-    }
-
-    await this.beauticianRepo.updateByUserId(beauticianId, updateData);
   }
 }

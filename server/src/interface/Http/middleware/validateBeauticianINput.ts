@@ -3,6 +3,7 @@ import { AppError } from "../../../domain/errors/appError";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { BeauticianFiles, IBeauticianEditProfileInput, IBeauticianRegistrationInput } from "../../../application/interfaceType/beauticianType";
 import { ShopAddressVO } from "../../../domain/entities/Beautician";
+import { PostType } from "../../../domain/enum/userEnum";
 
 export const validateBeauticianData = (
   req: Request,
@@ -388,3 +389,76 @@ export function validateAddCustomServiceInput(
   next();
 }
 
+
+
+export function validateCreatePostInput(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { description, postType, location } = req.body;
+  const files = req.files as Express.Multer.File[];
+
+  // at least description or media must exist
+  if (!description && (!files || files.length === 0)) {
+    return res.status(400).json({
+      error: 'Post must have at least a description or media',
+    });
+  }
+
+  // description
+  if (description !== undefined) {
+    if (typeof description !== 'string') {
+      return res.status(400).json({ error: 'Description must be a string' });
+    }
+    if (description.trim().length === 0) {
+      return res.status(400).json({ error: 'Description cannot be empty' });
+    }
+    if (description.length > 2200) {
+      return res.status(400).json({ error: 'Description cannot exceed 2200 characters' });
+    }
+  }
+
+  // postType
+  if (!postType) {
+    return res.status(400).json({ error: 'Post type is required' });
+  }
+  if (!Object.values(PostType).includes(postType)) {
+    return res.status(400).json({
+      error: `Invalid post type. Must be one of: ${Object.values(PostType).join(', ')}`,
+    });
+  }
+
+  // location (optional)
+  if (location !== undefined) {
+    let parsed = location;
+
+    if (typeof location === 'string') {
+      try {
+        parsed = JSON.parse(location);
+      } catch {
+        return res.status(400).json({ error: 'Location must be a valid JSON object' });
+      }
+    }
+
+    if (typeof parsed !== 'object') {
+      return res.status(400).json({ error: 'Location must be an object' });
+    }
+    if (parsed.lat === undefined || parsed.lng === undefined) {
+      return res.status(400).json({ error: 'Location must include lat and lng' });
+    }
+    if (typeof parsed.lat !== 'number' || parsed.lat < -90 || parsed.lat > 90) {
+      return res.status(400).json({ error: 'lat must be a number between -90 and 90' });
+    }
+    if (typeof parsed.lng !== 'number' || parsed.lng < -180 || parsed.lng > 180) {
+      return res.status(400).json({ error: 'lng must be a number between -180 and 180' });
+    }
+    if (parsed.address !== undefined && typeof parsed.address !== 'string') {
+      return res.status(400).json({ error: 'Location address must be a string' });
+    }
+
+    req.body.location = parsed;
+  }
+
+  next();
+}

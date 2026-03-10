@@ -1,6 +1,6 @@
 import { Slot } from "../../../../domain/entities/schedule";
 import { AppError } from "../../../../domain/errors/appError";
-import { IScheduleRepository } from "../../../../domain/repositoryInterface/IScheduleRepository";
+import { IScheduleRepository } from "../../../../domain/repositoryInterface/beautician/IScheduleRepository";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IDeleteAvailbilitySlotUseCase } from "../../../interface/beautician/schedule/IDeleteAvailabilitySlotUSeCase";

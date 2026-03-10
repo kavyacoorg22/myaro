@@ -1,8 +1,8 @@
 import { Types } from "mongoose";
 import { Schedule } from "../../../domain/entities/schedule";
-import { IScheduleRepository } from "../../../domain/repositoryInterface/IScheduleRepository";
 import { ScheduleDoc, ScheduleModel } from "../../database/models/beautician/scheduleModel";
 import { GenericRepository } from "../genericRepository";
+import { IScheduleRepository } from "../../../domain/repositoryInterface/beautician/IScheduleRepository";
 
 
 export class ScheduleRepository extends GenericRepository<Schedule,ScheduleDoc> implements IScheduleRepository{
@@ -53,6 +53,7 @@ async findByBeauticianId(beauticianId: string): Promise<Schedule | null> {
         endTime:slot.endTime
       })),
       date:doc.date,
+      type:doc.type,
       createdAt:doc.createdAt,
       updatedAt:doc.updatedAt
     }

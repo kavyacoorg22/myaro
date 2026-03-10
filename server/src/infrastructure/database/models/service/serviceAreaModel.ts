@@ -1,10 +1,9 @@
 import mongoose, { Document, Model, Schema, Types } from "mongoose";
 
 export type LocationSubDoc = {
-  placeId: string;
   city: string;
-  lat: number;
-  lng: number;
+  lat: number|null;
+  lng: number|null;
   formattedString: string;
 };
 export type ServiceAreaDoc = Document & {
@@ -17,12 +16,11 @@ export type ServiceAreaDoc = Document & {
 };
 
 const LocationSchema = new Schema({
-  placeId: { type: String },
   city: { type: String },
   lat: { type: Number },
   lng: { type: Number },
   formattedString: { type: String },
-});
+},{_id:false});
 
 export const ServiceAreaSchema = new Schema<ServiceAreaDoc>(
   {

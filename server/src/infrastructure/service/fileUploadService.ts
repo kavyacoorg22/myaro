@@ -62,4 +62,11 @@ export class FileUploadService implements IFileUploader {
  async deletePamphletImage(path: string): Promise<void> {
   await this.fileStorage.delete(path)
  }
+ async uploadPostMedia(files: Express.Multer.File[]): Promise<string[]> {
+  return Promise.all(
+    files.map(file =>
+      this.fileStorage.upload(file.buffer, file.originalname, 'posts/media')
+    )
+  );
+}
 }

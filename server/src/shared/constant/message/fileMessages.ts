@@ -8,5 +8,9 @@ export const fileMessages = {
         IMAGE_REQUIRED: 'Image is required',
         INVALID_TYPE: 'Only JPEG, PNG, and WEBP formats are allowed',
         FILE_TOO_LARGE: 'Image must be smaller than 5MB',
+         INVALID_TYPE_FOR_POST:    "Invalid file type. Allowed: JPEG, PNG, WebP, MP4, WebM, MOV",
+
+    VIDEO_TOO_LARGE: "Video exceeds 50MB limit",
+    TOO_MANY_FILES:  "Maximum 10 files allowed per post",
     },
 } as const;

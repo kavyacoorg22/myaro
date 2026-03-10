@@ -18,7 +18,7 @@ export class ServiceAreaRepository
     super(ServiceAreaModel);
   }
   async findByBeauticianId(beauticianId: string): Promise<ServiceArea | null> {
-    const doc = await ServiceAreaModel.findById({
+    const doc = await ServiceAreaModel.findOne({
       beauticianId: new Types.ObjectId(beauticianId),
     });
     return doc ? this.map(doc) : null;
@@ -59,14 +59,12 @@ export class ServiceAreaRepository
       id: base.id,
       beauticianId: doc.beauticianId.toString(),
       homeServiceLocation: doc.homeServiceLocation.map((loc) => ({
-        placeId: loc.placeId,
         city: loc.city,
         lat: loc.lat,
         lng: loc.lng,
         formattedString: loc.formattedString,
       })),
       serviceLocation: doc.serviceLocation.map((loc) => ({
-        placeId: loc.placeId,
         city: loc.city,
         lat: loc.lat,
         lng: loc.lng,

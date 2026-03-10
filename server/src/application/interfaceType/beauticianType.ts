@@ -1,8 +1,9 @@
+import { ChildProcessWithoutNullStreams } from "child_process";
 import { ShopAddressVO } from "../../domain/entities/Beautician";
 import { LocationVO } from "../../domain/entities/beauticianServiceAres";
 import { VerificationStatus } from "../../domain/enum/beauticianEnum";
-import { UserRole } from "../../domain/enum/userEnum";
-import { IGetServiceAreaDto } from "../dtos/beautician";
+import { PostType, UserRole } from "../../domain/enum/userEnum";
+import { IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto } from "../dtos/beautician";
 
 export interface BeauticianFiles {
   portfolioImage: Express.Multer.File[];
@@ -74,11 +75,42 @@ export interface IBeauticianViewEditProfileOutput {
   upiId?: string;
 }
 
+export interface location{
+   city: string;
+  lat: number|null;
+  lng: number|null;
+  formattedString: string;
+}
 export interface IAddServiceAreaRequest {
-  homeServiceableLocation?: string[];
-  serviceableLocation?: string[];
+  homeServiceableLocation?: location[];
+  serviceableLocation?: location[];
 }
 
 export interface IGetServiceAreaResponse {
   locations: IGetServiceAreaDto;
+}
+
+
+export interface ICreatePostInput{
+ description?:string,
+ postType:PostType,
+ location?:LocationVO,
+ media:string[],
+}
+
+export interface IGetAllHomeFeedOutput{
+  posts:IGetAllPostsDto[],
+  nextCursor:string|null
+}
+
+export interface IGetTipsAndRentOutput{
+ posts:IGetAllPostsDto[]
+ nextCursorTips:string|null,
+ nextCursorRent :string|null
+}
+
+
+export interface IGetBeauticianPostOutPut{
+  posts:IGetBeauticianPostsDto[],
+  nextCursor:string|null
 }

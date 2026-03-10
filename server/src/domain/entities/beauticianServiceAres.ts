@@ -1,9 +1,8 @@
 
 export interface LocationVO{
-  placeId:string,
   city:string,
-  lat: number,
-  lng :number,
+  lat: number|null,
+  lng :number|null,
   formattedString:string
 }
 

@@ -1,11 +1,12 @@
 import express from 'express';
 const router=express.Router();
-import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, customServiceController, scheduleController } from '../../../infrastructure/config/di'
-import { uploadFields, uploadSingle } from '../middleware/multer';
+import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, customServiceController, postController, scheduleController } from '../../../infrastructure/config/di'
+import { uploadFields, uploadMediaArray, uploadSingle } from '../middleware/multer';
 import { validateBeauticianFiles } from '../validator/validateFileUpload';
-import { validatePaymentDetails,validateBeauticianData, validateAddCustomServiceInput } from '../middleware/validateBeauticianINput';
-import { validateAddAvailability } from '../validator/validateScheduleInput';
+import { validatePaymentDetails,validateBeauticianData, validateAddCustomServiceInput, validateCreatePostInput } from '../middleware/validateBeauticianINput';
+import { validateAddAvailability, validateRecurringSchedule } from '../validator/validateScheduleInput';
 import { validatePamphletUpload } from '../validator/valiadtePampletUpload';
+import { validatePostMedia } from '../validator/validatePostUpload';
 
 //user route
 router.get('/pamphlet/:id',authenticateUser,beauticianServiceController.getPamphletForCustomer)
@@ -29,14 +30,21 @@ router.patch('/pamphlet',authenticateBeautician,uploadSingle('pamphletImg'),vali
 router.delete('/pamphlet',authenticateBeautician,beauticianServiceController.deletepamphlet)
 router.get('/pamhlet/:beauticianId',authenticateUser,beauticianServiceController.getPamphletForCustomer)
 router.get('/pamphlet',authenticateBeautician,beauticianServiceController.getPamphlet)
-router.put('/schedules',authenticateBeautician,validateAddAvailability,scheduleController.addAvailability)
-router.delete('/schedules/:id',authenticateBeautician,scheduleController.deleteAvailability)
-router.get('/schedules',authenticateBeautician,scheduleController.getAvailability)
+
 //location
 router.get('/location',authenticateBeautician,beauticianController.getServiceArea)
 router.patch('/location',authenticateBeautician,beauticianController.addServiceArea)
 
+//schedule
+router.put('/schedules',authenticateBeautician,validateAddAvailability,scheduleController.addAvailability)
+router.delete('/schedules/:id',authenticateBeautician,scheduleController.deleteAvailability)
+router.get('/schedules',authenticateBeautician,scheduleController.getAvailability)
+router.post('/schedules/recurring',authenticateBeautician,validateRecurringSchedule,scheduleController.addRecurringSchedule)
+router.delete('/schedules/recurring/:id',authenticateBeautician,scheduleController.deleteRecurringAvailability)
 
+//post
 
-
+router.post( '/post', authenticateBeautician, uploadMediaArray('media', 10), validatePostMedia,validateCreatePostInput,  postController.createPost
+);
+router.get('/post/:id',authenticateUser,postController.getBeauticianPost)
 export  default router

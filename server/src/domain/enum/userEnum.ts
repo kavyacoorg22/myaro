@@ -10,3 +10,9 @@ export enum UserFilterRole{
 }
 
 export  type UserRoleFilter=UserFilterRole|"all"
+
+export enum PostType{
+  REEL='reel',
+  TIPS='tips',
+  RENT='rent'
+}

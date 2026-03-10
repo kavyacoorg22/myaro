@@ -87,7 +87,7 @@ import { RejectCustomServiceUseCase } from "../../application/usecases/admin/man
 import { ScheduleRepository } from "../repositories/beautician/scheduleRepository";
 import { AddAvailabilityUseCase } from "../../application/usecases/beautician/schedule/addAvailabilityUseCase";
 import { DeleteAvailibilitySlotUseCase } from "../../application/usecases/beautician/schedule/deleteAvailablitySlotUseCase";
-import { GetAvaialableUseCase } from "../../application/usecases/beautician/schedule/getAvailableUSeCase";
+import { GetAvailabilityUseCase} from "../../application/usecases/beautician/schedule/getAvailableUSeCase";
 import { ScheduleController } from "../../interface/Http/controllers/beautician/scheduleController";
 import { ServiceAreaRepository } from "../repositories/beautician/serviceAreaRepository";
 import { AddServiceAreaUseCase } from "../../application/usecases/beautician/location/addServiceAreaUsecase";
@@ -97,6 +97,17 @@ import { ChangePasswordController } from "../../interface/Http/controllers/auth/
 import { ChangePasswordUseCase } from "../../application/usecases/auth/changePasswordUseCase";
 import { CustomerViewProfileUseCase } from "../../application/usecases/customer/viewEditProfileUseCase";
 import { CustomerEditProfileUseCase } from "../../application/usecases/customer/editProfileUseCase";
+import { RecurringRepository } from "../repositories/beautician/recuringRepostory";
+import { RecurringExceptionRepository } from "../repositories/beautician/recurringExceptionRepository";
+import { AddRecurringAvailabilityUseCase } from "../../application/usecases/beautician/schedule/addRecurringScheduleusecase";
+import { DeleteRecurringAvailabilityUseCase } from "../../application/usecases/beautician/schedule/deleteRecurringAvailabilitySlotUSeCase";
+import { AddRecurringLeaveUseCase } from "../../application/usecases/beautician/schedule/addRecurringLeaveUseCase";
+import { CreatePostUseCase } from "../../application/usecases/beautician/post/createPostUseCase";
+import { PostRepository } from "../repositories/beautician/postRepository";
+import { PostController } from "../../interface/Http/controllers/public/postController";
+import { GetHomeFeedUseCase } from "../../application/usecases/beautician/post/gethomeFeedUseCase";
+import { GetTipsRentFeedUseCase } from "../../application/usecases/beautician/post/getTipsRentFeedUseCase";
+import { GetBeauticianPostUseCase } from "../../application/usecases/beautician/post/getBeauticianPostUseCase";
 
 
 
@@ -172,8 +183,9 @@ const beauticianEditProfileUC=new BeauticianEditProfileUseCase(beauticianRepo,us
 const searchResultUC=new SearchResultUseCase(userRepo)
 //location
 const serviceAreaRepo=new ServiceAreaRepository()
-const addServiceAreaUC=new AddServiceAreaUseCase(beauticianRepo)
-const getServiceAreaUC=new getServiceAreaUseCase(beauticianRepo)
+
+const addServiceAreaUC=new AddServiceAreaUseCase(beauticianRepo,serviceAreaRepo)
+const getServiceAreaUC=new getServiceAreaUseCase(serviceAreaRepo)
 const customerViewEditProfile=new CustomerViewProfileUseCase(userRepo)
 const customerEditProfileUseCase=new CustomerEditProfileUseCase(userRepo)
 const beauticianController=new BeauticianController(beauticianRegisterUC,beauticianVerificationStatusUC,
@@ -242,9 +254,22 @@ export {categoryController,serviceController,customServiceController,beauticianS
 
 //slot availbility
 const scheduleRepo=new ScheduleRepository()
+const recurringRepo=new RecurringRepository()
+const recurringExceptionRepo=new RecurringExceptionRepository()
 const addAvailabilityUC=new AddAvailabilityUseCase(scheduleRepo)
 const deleteAvailabilitySlotUC=new DeleteAvailibilitySlotUseCase(scheduleRepo)
-const getAvailabilityUC=new GetAvaialableUseCase(scheduleRepo)
-const scheduleController=new ScheduleController(addAvailabilityUC,deleteAvailabilitySlotUC,getAvailabilityUC)
+const addRecurringAvailabilityUC=new AddRecurringAvailabilityUseCase(recurringRepo,userRepo)
+const addRecurringLeaveUC=new AddRecurringLeaveUseCase(recurringRepo,userRepo)
+const deleteRecurringAvailablitySlotUseCase=new DeleteRecurringAvailabilityUseCase(userRepo,recurringExceptionRepo,recurringRepo)
+const getAvailabilityUC=new GetAvailabilityUseCase(scheduleRepo,recurringRepo,recurringExceptionRepo)
+const scheduleController=new ScheduleController(addAvailabilityUC,deleteAvailabilitySlotUC,getAvailabilityUC,addRecurringAvailabilityUC,addRecurringLeaveUC,deleteRecurringAvailablitySlotUseCase)
 export {scheduleController}
 
+const postRepo=new PostRepository()
+const createPostUseCase=new CreatePostUseCase(postRepo,userRepo,fileUpload)
+const getHomefeedUC=new GetHomeFeedUseCase(postRepo,userRepo)
+const getTipsRentFeedUC=new GetTipsRentFeedUseCase(postRepo,userRepo)
+const getBeauticianPostUC=new GetBeauticianPostUseCase(postRepo)
+const postController=new PostController(createPostUseCase,getHomefeedUC,getTipsRentFeedUC,getBeauticianPostUC)
+
+export {postController}

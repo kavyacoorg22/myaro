@@ -1,8 +1,12 @@
 import { Beautician } from "../../domain/entities/Beautician";
+import { ServiceArea } from "../../domain/entities/beauticianServiceAres";
+import { Post } from "../../domain/entities/post";
 import { SearchHistory } from "../../domain/entities/searchHistory";
 import { User } from "../../domain/entities/User";
-import { IBeauticianDTO, IBeauticianProfileDTO, IBeauticianViewEditProfileDTO, IGetServiceAreaDto, ISearchBeauticianResultDto, IUpdateRegistrationDTO, IVerificationStatusDto } from "../dtos/beautician";
+import { getTimeAgo } from "../../utils/schedule/dateHelper";
+import { IBeauticianDTO, IBeauticianProfileDTO, IBeauticianViewEditProfileDTO, IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto, ISearchBeauticianResultDto, IUpdateRegistrationDTO, IVerificationStatusDto } from "../dtos/beautician";
 import { IRecentSearchDto } from "../dtos/user";
+import { IGetBeauticianPostOutPut } from "../interfaceType/beauticianType";
 
 
 export function toVerificationStatusOutputDto(beautician:Beautician): IVerificationStatusDto {
@@ -106,9 +110,40 @@ export function toRecentSearchHistoryResultDtos(
   }).filter((dto): dto is IRecentSearchDto => dto !== null); 
 }
 
-export function toGetServiceAreaDto(location:Beautician):IGetServiceAreaDto{
+export function toGetServiceAreaDto(location:ServiceArea):IGetServiceAreaDto{
 return{
-  serviceableLocation:location.serviceableLocation??[],
-  homeServiceableLocation:location.homeServiceableLocation??[]
+  serviceableLocation:location.serviceLocation??[],
+  homeServiceableLocation:location.homeServiceLocation??[]
 }
+}
+
+export function toGetFeedDto(post:Post,user:User):IGetAllPostsDto{
+  return{
+       id:post.id,
+       beauticianId:post.beauticianId,
+       userName:user.userName,
+       fullName:user.fullName,
+       profileImg:user.profileImg??'',
+       description:post.description,
+       postType:post.postType,
+       location:post.location,
+       media:post.media,
+       likesCount:post.likesCount,
+       commentsCount:post.commentsCount,
+       timeAgo:getTimeAgo(post.createdAt),
+  }
+}
+
+export function toGetBeauticianPostDto(post:Post):IGetBeauticianPostsDto{
+  return{
+      id:post.id,
+       description:post.description,
+       postType:post.postType,
+       location:post.location,
+       media:post.media,
+       likesCount:post.likesCount,
+       commentsCount:post.commentsCount,
+       timeAgo:getTimeAgo(post.createdAt),
+     
+  }
 }

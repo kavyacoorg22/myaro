@@ -60,3 +60,12 @@ export const uploadArray = (fieldName: string, maxCount: number = 10) => {
     }
   }).array(fieldName, maxCount);
 };
+
+export const uploadMediaArray = (fieldName: string, maxCount: number = 10) => {
+  return multer({ 
+    storage: memoryStorage,
+    limits: {
+      fileSize: 50 * 1024 * 1024  
+    }
+  }).array(fieldName, maxCount);
+};

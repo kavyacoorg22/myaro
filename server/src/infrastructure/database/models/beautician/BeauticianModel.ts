@@ -39,8 +39,7 @@ export type BeauticianDoc =Document & {
   remark?: string;
   homeserviceCount?: number;
   pamphletUrl?: string;
-  homeServiceableLocation?:string[]
-  serviceableLocation?:string[]
+  
 
   createdAt: Date;
   updatedAt: Date;
@@ -97,8 +96,7 @@ const BeauticianSchema = new Schema<BeauticianDoc>(
 
     homeserviceCount: { type: Number, default: 0 },
       pamphletUrl: { type: String },
-      homeServiceableLocation:{type:[String],default:[]},
-      serviceableLocation:{type:[String],default:[]}
+
 
   },
   { timestamps: true }
