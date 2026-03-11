@@ -1,6 +1,6 @@
 import { beauticianApi } from "../../constants/apiRoutes/beauticianRoutes";
 import type { BackendResponse } from "../../types/api/api";
-import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse, type IRegisterRequest, type IVerificationStatusResponse, type Slot } from "../../types/api/beautician";
+import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse, type IRegisterRequest, type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest, type ICreatePostRequest } from "../../types/api/beautician";
 import { type IGetPamphletResponse, type IAddCustomServiceRequest, type IBeauticianServiceSelectionResponse, type IGetBeauticianServicesListResponse, type IUpsertBeauticianServiceRequest, type PriceFilter,} from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
 
@@ -61,7 +61,14 @@ export const BeauticianApi = {
    },
    getLocation:async()=>{
     return await axiosWrapper<IGetServiceAreaResponse>(api.get(beauticianApi.getLocation))
-   }
-
-
+   },
+   addRecurringSchedule:async(data:IAddRecursionScheduleRequest)=>{
+    return await axiosWrapper<BackendResponse>(api.post(beauticianApi.addRecurringSlot,data))
+   },
+   deleteRecurringSchedule:async(recurringId:string,data:IDeleteRecursionScheduleReuest)=>{
+    return await axiosWrapper<BackendResponse>(api.delete(beauticianApi.deleteRecurringSlot.replace(':id',recurringId),{data}))
+   },
+  createPost:async(formdata:FormData)=>{
+    return await axiosWrapper<BackendResponse>(api.post(beauticianApi.createPost,formdata))
+  }
 };

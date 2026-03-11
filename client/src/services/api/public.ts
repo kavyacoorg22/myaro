@@ -1,7 +1,7 @@
 
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
 import {type BackendResponse } from "../../types/api/api";
-import type { IGetAvailabilitySlotResponse } from "../../types/api/beautician";
+import type {   IGetAvailabilitySlotResponse, IGetAllHomeFeedResponseData, IGetTipsAndRentResponseData } from "../../types/api/beautician";
 import {type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse, type IChangePasswordRequest } from "../../types/api/public";
 import type{  IGetBeauticianServicesListResponse, IGetCategoryResponse, IGetPamphletResponse, IGetServiceResponse, PriceFilter } from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
@@ -59,6 +59,14 @@ export const publicAPi={
         return await axiosWrapper<BackendResponse>(api.patch(publicApiRoutes.changePassword,{
           input
         }))
-      }
+      },
+    getHomeFeed: async (cursor: string | null = null) => {
+  const params = cursor ? { cursor } : {};
+  return await axiosWrapper<IGetAllHomeFeedResponseData>(api.get(publicApiRoutes.homefeed, { params }));
+},
+getTipsRentFeed: async (cursorTips: string | null = null, cursorRent: string | null = null) => {
+  const params = { ...(cursorTips && { cursorTips }), ...(cursorRent && { cursorRent }) };
+  return await axiosWrapper<IGetTipsAndRentResponseData>(api.get(publicApiRoutes.tipsRentFeed, { params }));
+},
     
 }

@@ -10,7 +10,7 @@ export const useCalendarLogic = (
   const [selectedDates, setSelectedDates] = useState<Set<number>>(
     new Set(initialSelectedDates)
   );
-  const [selectionMode, setSelectionMode] = useState<'single' | 'multiple'>('single');
+  const [selectionMode, setSelectionMode] = useState<'single' | 'multiple'|'recurring'>('single');
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',

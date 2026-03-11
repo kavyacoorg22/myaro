@@ -23,7 +23,7 @@ export type SidebarContentType = {
 export const saidBarContent:SidebarContentType[]=[
   {label:"Home",icon:HouseIcon,path:publicFrontendRoutes.landing,},
   {label:"Search",icon:MagnifyingGlassIcon,showWhenAuthenticatedOnly:true,isButton:true},
-   {label:"Message",icon:PaperPlaneTiltIcon,path:publicFrontendRoutes.message,showWhenAuthenticatedOnly:true,},
+   {label:"Message",icon:PaperPlaneTiltIcon,path:publicFrontendRoutes.chat,showWhenAuthenticatedOnly:true,},
     {label:"Profile",icon:UserIcon, path:publicFrontendRoutes.profile,showWhenAuthenticatedOnly:true,},
      {label:"Notification",icon:BellIcon,path:publicFrontendRoutes.notification,showWhenAuthenticatedOnly:true,},
       {label:"Tips&Tricks",icon:CameraRotateIcon,path:publicFrontendRoutes.tipsRent,},

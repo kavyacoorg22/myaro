@@ -1,6 +1,8 @@
-import type { BeauticianStatusType } from "../../constants/types/beautician";
+import type { BeauticianStatusType, ScheduleEndType, ScheduleTypeValue} from "../../constants/types/beautician";
 import type { UserRoleType } from "../../constants/types/User";
-import type { IGetAvailabilitySlotDto, IGetServiceAreaDto } from "../dtos/beautician";
+import type { LocationVO } from "../../features/shared/locationTagInput";
+import type { PostType } from "../../features/types/mediaType";
+import type { IGetAllPostsDto, IGetAvailabilitySlotDto, IGetBeauticianPostsDto, IGetServiceAreaDto } from "../dtos/beautician";
 import type { BackendResponse } from "./api";
 
 export interface ShopAddressVO {
@@ -85,6 +87,7 @@ export interface IProfileViewData extends IProfileUpdateRequest {
 export interface IAddAvailabilityRequest {
   dates: string[];
   slots: Slot[];
+  type:ScheduleTypeValue
 }
 
 export interface Slot{
@@ -93,17 +96,66 @@ export interface Slot{
 }
 
 export interface IGetAvailabilitySlotResponseData{
-  availability:IGetAvailabilitySlotDto
+  availability:IGetAvailabilitySlotDto,
+
+}
+export type Location = {
+  city: string;
+  lat: number|null;
+  lng: number|null;
+  formattedString: string;
 }
 
 export interface IAddServiceAreaRequest {
-  homeServiceableLocation?: string[];
-  serviceableLocation?: string[];
+  homeServiceableLocation?: Location[];
+  serviceableLocation?: Location[];
 }
 
 export interface IGetServiceAreaResponseData {
   locations: IGetServiceAreaDto;
 }
+
+export interface IAddRecursionScheduleRequest{
+   rrule: string
+    timeFrom?: string
+    timeTo?: string
+    type: ScheduleTypeValue
+    startDate: Date
+    endType: ScheduleEndType
+    endDate?: Date
+    endCount?: number
+}
+
+
+export interface IDeleteRecursionScheduleReuest{
+    date: Date
+  
+}
+
+export interface ICreatePostRequest{
+ description?:string,
+ postType:PostType,
+ location?:LocationVO,
+ media:string[],
+}
+
+export interface IGetAllHomeFeedResponseData{
+  posts:IGetAllPostsDto[],
+  nextCursor:string|null
+}
+
+export interface IGetTipsAndRentResponseData{
+ posts:IGetAllPostsDto[]
+ nextCursorTips:string|null,
+ nextCursorRent :string|null
+}
+
+
+export interface IGetBeauticianPostResponseData{
+  posts:IGetBeauticianPostsDto[],
+  nextCursor:string|null
+}
+
 export type IBeauticianProfileUpdate = Partial<IProfileUpdateRequest> & Partial<IBankDeatilUpdateRequest>;
 
 export type IVerificationStatusResponse=BackendResponse<IVerificationStatusResponseData>
@@ -111,3 +163,6 @@ export type IBeauticianPaymentDetailResponse=BackendResponse<IBeauticianPaymentD
 export type IEditProfileResponse=BackendResponse<IEditProfileResponseData>
 export type IGetAvailabilitySlotResponse=BackendResponse<IGetAvailabilitySlotResponseData>
 export type IGetServiceAreaResponse=BackendResponse<IGetServiceAreaResponseData>
+// export type IGetAllHomeFeedResponse=BackendResponse<IGetAllHomeFeedResponseData>
+// export type IGetTipsAndRentResponse=BackendResponse<IGetTipsAndRentResponseData>
+// export type IGetBeauticianPostResponse=BackendResponse<IGetBeauticianPostResponseData>

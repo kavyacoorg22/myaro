@@ -12,5 +12,7 @@ export const publicApiRoutes={
     getAvailabilityOfBeautician:'/beautician/schedules/:id',
     getBeauticianServiceList:'/beautician/services/:id',
    getPamplet:'/beautician/pamhlet/:beauticianId',
-   changePassword:'/change-password'
+   changePassword:'/change-password',
+   homefeed:'/home',
+   tipsRentFeed:'/tipsRent'
 }

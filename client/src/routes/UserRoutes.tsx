@@ -5,6 +5,8 @@ import { UserRole } from "../constants/types/User";
 import { customerFrontendRoutes } from "../constants/frontendRoutes/customerFrontendRoutes";
 import { beauticianFrontendRoutes } from "../constants/frontendRoutes/beauticianFrontendRoutes";
 import { lazy } from "react";
+import { TipsAndTricksPage } from "../features/user/pages/tipsTricks";
+import ChatApp from "../features/user/component/chat/chatApp";
 
 
 const  ProfilePage=lazy(()=>import('../features/user/pages/profile'))
@@ -81,5 +83,13 @@ export const userRoutes:RouteObject[]=[
       </PrivateRoute>
     )
   },
+  {
+    path:publicFrontendRoutes.chat,
+    element:(
+      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN,UserRole.CUSTOMER]}>
+        <ChatApp/>
+      </PrivateRoute>
+    )
+  }
   
 ]

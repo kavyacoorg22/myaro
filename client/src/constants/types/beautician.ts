@@ -12,3 +12,11 @@ export const BeauticianStatusFilter = {
 } as const;
 
 export type BeauticianStatusFilterType = (typeof BeauticianStatusFilter)[keyof typeof BeauticianStatusFilter];
+
+  export type ScheduleTypeValue = 'availability' | 'leave';
+
+
+export type ScheduleEndType='never'|'on'|'after'
+
+
+export type scheduleSourceType='recurring'|'manual'

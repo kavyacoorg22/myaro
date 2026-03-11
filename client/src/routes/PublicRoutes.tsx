@@ -8,6 +8,7 @@ import OtpForm from "../features/auth/components/otpform";
 import { ForgotPasswordPage } from "../features/auth/pages/forgotPasswordPage";
 import { ResetPasswordPage } from "../features/auth/pages/resetPasswordPage";
 import { adminFrontendRoute } from "../constants/frontendRoutes/adminFrontenRoutes";
+import { TipsAndTricksPage } from "../features/user/pages/tipsTricks";
 
 
 
@@ -15,6 +16,10 @@ export const publicRoutes:RouteObject[]=[
   {
     path:publicFrontendRoutes.landing,
     element:<Landing/>
+  },
+   {
+    path:publicFrontendRoutes.tipsRent,
+    element:<TipsAndTricksPage/>
   },
   {
     path:publicFrontendRoutes.register,

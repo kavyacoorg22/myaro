@@ -75,7 +75,6 @@ export const SaidBar=()=>{
        <img src={logo} alt="logo" width={50} height={50} />
      <h2 className={cn(
          "pt-1 text-3xl font-normal font-family-irish text-[#5C3D2E] transition-all duration-500",
-         isExpanded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
        )}>myaro</h2>
       </div>
        

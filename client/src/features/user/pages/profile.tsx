@@ -18,6 +18,10 @@ import type { TimeSlot } from '../../types/schedule';
 import type { IAddAvailabilityRequest } from '../../../types/api/beautician';
 import { toast } from 'react-toastify';
 import { CalendarModal } from '../../beautician/component/calenderUI';
+import { CreatePostModal } from '../../models/beautician/media/createPostModel';
+import { CropModal } from '../../models/beautician/media/cropModal';
+import { EditModal } from '../../models/beautician/media/editModal';
+import { ShareModal } from '../../models/beautician/media/shareModal';
 
 interface BeauticianInfo {
   isBeautician: boolean;
@@ -36,9 +40,16 @@ const ProfilePage = () => {
     isBeautician: false
   });
   
-  // Simplified state - only what's needed
   const [selectedDates, setSelectedDates] = useState<number[]>([]);
+const [showUpload, setShowUpload] = useState(false);
+const [showCrop, setShowCrop] = useState(false);
+const [cropPreview, setCropPreview] = useState<string | null>(null);
+const [cropFileType, setCropFileType] = useState<"image" | "video" | null>(null);
 
+ const [showShare, setShowShare] = useState(false);
+ const [shareItems, setShareItems] = useState<{ src: string; fileType: "image"|"video" }[]>([]);
+const [showEdit, setShowEdit] = useState(false);
+const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"video"; extras: string[] } | null>(null);
   const currentUser = useSelector((store: RootState) => store.user.currentUser);
 
   // Determine viewMode early so it can be used in functions
@@ -256,7 +267,7 @@ const ProfilePage = () => {
           <ProfileTab
             viewMode={viewMode}
             isVerified={profileData.isVerified}
-            onUpload={() => navigate(`/beautician/${profileData.userId}/upload`)}
+            onUpload={() =>setShowUpload(true)}
             onPosts={() => navigate(`/profile/${profileData.userId}/posts`)}
             onTips={() => navigate(`/profile/${profileData.userId}/tips`)}
             onRent={() => navigate(`/profile/${profileData.userId}/rent`)}
@@ -284,6 +295,62 @@ const ProfilePage = () => {
             beauticianId={viewMode === 'view-beautician' ? profileData.userId : undefined}
           />
         )}
+
+<CreatePostModal
+  isOpen={showUpload}
+  onClose={() => setShowUpload(false)}
+  onNext={(preview, type) => {
+    setCropPreview(preview);
+    setCropFileType(type);
+    setShowUpload(false);
+    setShowCrop(true);
+  }}
+/>
+
+<CropModal
+  isOpen={showCrop}
+  preview={cropPreview}
+  fileType={cropFileType}
+  onBack={() => { setShowCrop(false); setShowUpload(true); }}
+  onClose={() => setShowCrop(false)}
+  onNext={(data) => {
+  setEditData(data);
+  setShowCrop(false);
+  setShowEdit(true);
+  }}
+/>
+
+<EditModal
+  isOpen={showEdit}
+  preview={editData?.preview ?? null}
+  fileType={editData?.fileType ?? null}
+  onBack={() => { setShowEdit(false); setShowCrop(true); }}
+  onClose={() => setShowEdit(false)}
+  onNext={({ preview, fileType }: { preview: string; fileType: "image" | "video"; trimStart: number; trimEnd: number; soundOn: boolean }) => {
+    const items = [
+      { src: preview, fileType },
+      ...(editData?.extras ?? []).map(src => ({ src, fileType: "image" as const }))
+    ];
+    setShareItems(items);
+    setShowEdit(false);
+    setShowShare(true);
+  }}
+/>
+
+<ShareModal
+  isOpen={showShare}
+  mediaItems={shareItems}
+  user={{ 
+    userName: currentUser.userName ?? "", 
+    profileImg: currentUser.profileImg ?? undefined 
+  }}
+  onBack={() => { setShowShare(false); setShowEdit(true); }}
+  onClose={() => setShowShare(false)}
+ onShare={async (formData) => {
+  await BeauticianApi.createPost(formData);
+}}
+/>
+
       </div>
     </>
   );

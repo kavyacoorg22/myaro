@@ -22,7 +22,7 @@ const content=(isActive:boolean)=>(
   </span>
   <span className={cn(
     "absolute left-14 whitespace-nowrap transition-all duration-500 ease-in-out font-medium",
-    isExpanded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4  pointer-events-none"
+    
   )}>{label}</span>
   </div>
 )

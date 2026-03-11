@@ -6,12 +6,13 @@ export const publicFrontendRoutes={
   forgetPassword:'/forgot-password',
   resetPassword:'/reset-password',
   search:'/search',
-  message:'/message',
   tipsRent:'/tips-rent',
   profile:'/profile',
   profileByid:'/profile/:id',
   notification:'/notifiaction',
   adminLogin:'/admin/login',
-  getServiceList:'/beautician/services'
+  getServiceList:'/beautician/services',
+  chat:'/chat'
+ 
  
 }
