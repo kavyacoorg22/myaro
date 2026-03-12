@@ -7,12 +7,14 @@ import { PostType } from "../../../../domain/enum/userEnum";
 import { IGetHomeFeedUseCase } from "../../../../application/interface/beautician/post/IGetHomeFeedUSeCase";
 import { IGetTipsRentUseCase } from "../../../../application/interface/beautician/post/IGetTipsRentUseCase";
 import { IGetBeauticianPostUSeCase } from "../../../../application/interface/beautician/post/IGetbeauticianPostUseCase";
+import { ISearchPostUSeCase } from "../../../../application/interface/beautician/post/ISearchPostUseCase";
 
 export class PostController {
   constructor(private createPostUC: ICreatePostUSeCase,
     private getHomeFeedUC:IGetHomeFeedUseCase,
     private getTipsRentFeedUC:IGetTipsRentUseCase,
-    private getBeauticianPostUC:IGetBeauticianPostUSeCase
+    private getBeauticianPostUC:IGetBeauticianPostUSeCase,
+    private searchPostUseCase:ISearchPostUSeCase
   ) {}
 
   createPost = async (
@@ -91,6 +93,27 @@ getTipsRentfeed = async (req: Request, res: Response, next: NextFunction): Promi
     message:'data returned',
     ...posts
   })
+    }catch(err)
+    {
+      next(err)
+    }
+  }
+  getPostSearchResult=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+    try{
+       const query=req.query.query as string
+       const cursor=(req.query.cursor as string)||null
+
+       if (!query || query.trim().length === 0) {
+      res.status(200).json({ posts: [], nextCursor: null });
+      return;
+    }
+
+    const result = await this.searchPostUseCase.execute(query, cursor);
+    res.status(HttpStatus.OK).json({
+      sucess:true,
+      ...result
+    });
+
     }catch(err)
     {
       next(err)

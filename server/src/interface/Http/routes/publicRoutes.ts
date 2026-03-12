@@ -18,6 +18,7 @@ router.get('/category/:categoryId/services',authenticateAll,serviceController.ge
 router.get('/category',authenticateAll,categoryController.getCategory)
 router.patch('/change-password',authenticateUser,validateChangePassword,(req:Request,res:Response,next:NextFunction)=>{changePasswordController.handle(req,res,next)})
 //feed
-router.get('/home',postController.getHomefeed)
-router.get('/tipsRent',postController.getTipsRentfeed)
+router.get('/posts/feed',postController.getHomefeed)
+router.get('/posts/tips-rent',postController.getTipsRentfeed)
+router.get('/posts/search',postController.getPostSearchResult)
 export default router

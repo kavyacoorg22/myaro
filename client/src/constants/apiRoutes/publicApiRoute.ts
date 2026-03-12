@@ -13,6 +13,7 @@ export const publicApiRoutes={
     getBeauticianServiceList:'/beautician/services/:id',
    getPamplet:'/beautician/pamhlet/:beauticianId',
    changePassword:'/change-password',
-   homefeed:'/home',
-   tipsRentFeed:'/tipsRent'
+   homefeed:'/posts/feed',
+   tipsRentFeed:'/posts/tips-rent',
+  searchPost:'/posts/search'
 }

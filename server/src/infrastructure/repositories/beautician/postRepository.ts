@@ -98,6 +98,41 @@ async findMixedFeedPosts(cursorTips: string | null, cursorRent: string | null, l
     nextCursorRent: hasMoreRent ? slicedRent[slicedRent.length - 1].id.toString() : null,
   };
 }
+
+async findByBeauticianIds(
+  beauticianIds: string[],
+  cursor: string | null,
+  limit: number
+): Promise<Post[]> {
+  const filter: any = { beauticianId: { $in: beauticianIds } };
+  if (cursor) filter._id = { $lt: new Types.ObjectId(cursor) };
+
+  const docs = await PostModel.find(filter)
+    .sort({ _id: -1 })
+    .limit(limit)
+    .exec();
+
+  return docs.map((d) => this.map(d));
+}
+
+async searchByLocation(
+  query: string,
+  cursor: string | null,
+  limit: number
+): Promise<Post[]> {
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(escaped, "i");
+
+  const filter: any = { "location.formattedString": regex };
+  if (cursor) filter._id = { $lt: new Types.ObjectId(cursor) };
+
+  const docs = await PostModel.find(filter)
+    .sort({ _id: -1 })
+    .limit(limit)
+    .exec();
+
+  return docs.map((d) => this.map(d));
+}
    protected map(doc:PostDoc):Post
    {
     const base=super.map(doc)

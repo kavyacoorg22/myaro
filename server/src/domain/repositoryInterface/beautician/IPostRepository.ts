@@ -19,4 +19,7 @@ export interface IPostRepository {
     nextCursorTips: string | null;
     nextCursorRent: string | null;
   }>;
+
+  findByBeauticianIds(beauticianIds: string[], nextCursor: string | null, limit: number): Promise<Post[]>;
+searchByLocation(query: string, nextCursor: string | null, limit: number): Promise<Post[]>;
 }

@@ -108,6 +108,7 @@ import { PostController } from "../../interface/Http/controllers/public/postCont
 import { GetHomeFeedUseCase } from "../../application/usecases/beautician/post/gethomeFeedUseCase";
 import { GetTipsRentFeedUseCase } from "../../application/usecases/beautician/post/getTipsRentFeedUseCase";
 import { GetBeauticianPostUseCase } from "../../application/usecases/beautician/post/getBeauticianPostUseCase";
+import { SearchPostUseCase } from "../../application/usecases/beautician/post/searchPostUseCase";
 
 
 
@@ -270,6 +271,7 @@ const createPostUseCase=new CreatePostUseCase(postRepo,userRepo,fileUpload)
 const getHomefeedUC=new GetHomeFeedUseCase(postRepo,userRepo)
 const getTipsRentFeedUC=new GetTipsRentFeedUseCase(postRepo,userRepo)
 const getBeauticianPostUC=new GetBeauticianPostUseCase(postRepo)
-const postController=new PostController(createPostUseCase,getHomefeedUC,getTipsRentFeedUC,getBeauticianPostUC)
+const getPostSearchResult=new SearchPostUseCase(userRepo,postRepo)
+const postController=new PostController(createPostUseCase,getHomefeedUC,getTipsRentFeedUC,getBeauticianPostUC,getPostSearchResult)
 
 export {postController}

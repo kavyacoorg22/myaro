@@ -10,14 +10,10 @@ export interface LocationResult {
 }
 
 export interface LocationSearchProps {
-  /** Label shown above the input */
   label?: string;
   placeholder?: string;
-  /** Initial value to show in the input */
   initialValue?: string;
-  /** Called when user selects a suggestion */
   onSelect: (result: LocationResult) => void;
-  /** Called when user clears the input */
   onClear?: () => void;
   className?: string;
 }

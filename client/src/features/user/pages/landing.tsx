@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux"
 import { SaidBar } from "../component/saidBar/saidbar"
 import type { RootState } from "../../../redux/appStore"
-import { Search, MapPin, RefreshCw } from "lucide-react"
+import { Search, MapPin, RefreshCw, X } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useUserLocation } from "../../../hooks/useUserLocation"
 import { UserRole } from "../../../constants/types/User"
@@ -9,60 +9,140 @@ import { PostFeed } from "../component/media/postFeed"
 import type { PostCardProps } from "../../types/mediaType"
 import { publicAPi } from "../../../services/api/public"
 
+const DEBOUNCE_DELAY = 500;
+
+function mapPost(p: any): PostCardProps["post"] {
+  return {
+    id: p.id,
+    user: {
+      id: p.beauticianId,
+      userName: p.userName,
+      profileImg: p.profileImg,
+    },
+    location: p.location,
+    mediaUrl: p.media,
+    description: p.description,
+    likesCount: p.likesCount,
+    timeAgo: p.timeAgo,
+  };
+}
+
 export const Landing = () => {
   const currentUser = useSelector((store: RootState) => store.user.currentUser)
   const [searchQuery, setSearchQuery] = useState("")
   const { location, refetchLocation } = useUserLocation()
 
-  const isLoadingRef = useRef(false);
-  const hasMoreRef = useRef(true);
-  const cursorRef = useRef<string | null>(null);
+  // Feed state
+  const feedLoadingRef = useRef(false);
+  const feedHasMoreRef = useRef(true);
+  const feedCursorRef = useRef<string | null>(null);
   const hasFetchedRef = useRef(false);
+  const [feedHasMore, setFeedHasMore] = useState(true);
+  const [feedIsLoading, setFeedIsLoading] = useState(false);
+  const [feedPosts, setFeedPosts] = useState<PostCardProps["post"][]>([]);
 
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [posts, setPosts] = useState<PostCardProps["post"][]>([]);
+  // Search state
+  const searchCursorRef = useRef<string | null>(null);
+  const searchHasMoreRef = useRef(true);
+  const searchLoadingRef = useRef(false);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [searchHasMore, setSearchHasMore] = useState(true);
+  const [searchIsLoading, setSearchIsLoading] = useState(false);
+  const [searchPosts, setSearchPosts] = useState<PostCardProps["post"][]>([]);
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
-  const fetchPosts = useCallback(async () => {
-    if (isLoadingRef.current || !hasMoreRef.current) return;
-
-    isLoadingRef.current = true;
-    setIsLoading(true);
-
+  // ─── Feed fetch ───────────────────────────────────────────────────
+  const fetchFeedPosts = useCallback(async () => {
+    if (feedLoadingRef.current || !feedHasMoreRef.current) return;
+    feedLoadingRef.current = true;
+    setFeedIsLoading(true);
     try {
-      const res = await publicAPi.getHomeFeed(cursorRef.current);
+      const res = await publicAPi.getHomeFeed(feedCursorRef.current);
       const { posts: newPosts, nextCursor } = res.data;
-
-      setPosts(prev => [...prev, ...newPosts.map((p: any) => ({
-        id: p.id,
-        user: {
-          id: p.beauticianId,
-          userName: p.userName,
-          profileImg: p.profileImg,
-        },
-        location: p.location,
-        mediaUrl: p.media,
-        description: p.description,
-        likesCount: p.likesCount,
-        timeAgo: p.timeAgo,
-      }))]);
-
-      cursorRef.current = nextCursor;
-      hasMoreRef.current = nextCursor !== null;
-      setHasMore(nextCursor !== null);
+      setFeedPosts(prev => [...prev, ...newPosts.map(mapPost)]);
+      feedCursorRef.current = nextCursor;
+      feedHasMoreRef.current = nextCursor !== null;
+      setFeedHasMore(nextCursor !== null);
     } catch (err) {
       console.error(err);
     } finally {
-      isLoadingRef.current = false;
-      setIsLoading(false);
+      feedLoadingRef.current = false;
+      setFeedIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
     if (hasFetchedRef.current) return;
     hasFetchedRef.current = true;
-    fetchPosts();
+    fetchFeedPosts();
   }, []);
+
+  // ─── Search fetch ─────────────────────────────────────────────────
+  const fetchSearchPosts = useCallback(async (query: string, reset: boolean) => {
+    if (searchLoadingRef.current) return;
+    if (!reset && !searchHasMoreRef.current) return;
+
+    searchLoadingRef.current = true;
+    setSearchIsLoading(true);
+
+    const cursor = reset ? null : searchCursorRef.current;
+
+    try {
+      const res = await publicAPi.getSearchPostResult(query,cursor);
+      const { posts: newPosts, nextCursor } = res.data;
+
+      const mapped = newPosts.map(mapPost);
+      setSearchPosts(prev => reset ? mapped : [...prev, ...mapped]);
+
+      searchCursorRef.current = nextCursor;
+      searchHasMoreRef.current = nextCursor !== null;
+      setSearchHasMore(nextCursor !== null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      searchLoadingRef.current = false;
+      setSearchIsLoading(false);
+    }
+  }, []);
+
+  // ─── Debounce search input ────────────────────────────────────────
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+
+    if (!value.trim()) {
+      setIsSearchMode(false);
+      setSearchPosts([]);
+      searchCursorRef.current = null;
+      searchHasMoreRef.current = true;
+      return;
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setIsSearchMode(true);
+      // Reset search state for fresh query
+      searchCursorRef.current = null;
+      searchHasMoreRef.current = true;
+      setSearchPosts([]);
+      fetchSearchPosts(value.trim(), true);
+    }, DEBOUNCE_DELAY);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setIsSearchMode(false);
+    setSearchPosts([]);
+    searchCursorRef.current = null;
+    searchHasMoreRef.current = true;
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+  };
+
+  // ─── Infinite scroll handlers ─────────────────────────────────────
+  const handleLoadMore = isSearchMode
+    ? () => fetchSearchPosts(searchQuery.trim(), false)
+    : fetchFeedPosts;
 
   const locationText = location.city
     ? `${location.city}${location.state ? ', ' + location.state : ''}`
@@ -83,12 +163,28 @@ export const Landing = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search based on location"
+                  placeholder="Search by name or location..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={handleSearchChange}
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {searchQuery && (
+                  <button onClick={clearSearch} className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                  </button>
+                )}
               </div>
+
+              {/* Search status indicator */}
+              {isSearchMode && (
+                <p className="text-xs text-gray-500 mt-1 pl-1">
+                  {searchIsLoading && searchPosts.length === 0
+                    ? "Searching..."
+                    : searchPosts.length === 0
+                    ? "No results found"
+                    : `${searchPosts.length} result${searchPosts.length !== 1 ? "s" : ""} found`}
+                </p>
+              )}
             </div>
 
             {currentUser.userName !== UserRole.ADMIN && currentUser.isAuthenticated && (
@@ -100,12 +196,8 @@ export const Landing = () => {
                     className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
                   />
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-800">
-                      {currentUser.userName}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {currentUser.fullName}
-                    </span>
+                    <span className="text-sm font-semibold text-gray-800">{currentUser.userName}</span>
+                    <span className="text-xs text-gray-500">{currentUser.fullName}</span>
                   </div>
                 </div>
               </div>
@@ -128,13 +220,13 @@ export const Landing = () => {
 
         <div className="flex justify-start flex-1 overflow-hidden pr-58">
           <PostFeed
-            posts={posts}
+            posts={isSearchMode ? searchPosts : feedPosts}
             height="calc(100vh - 130px)"
             onFollow={(userId) => console.log("follow", userId)}
             onLike={(postId, liked) => console.log("like", postId, liked)}
-            onLoadMore={fetchPosts}
-            hasMore={hasMore}
-            isLoading={isLoading}
+            onLoadMore={handleLoadMore}
+            hasMore={isSearchMode ? searchHasMore : feedHasMore}
+            isLoading={isSearchMode ? searchIsLoading : feedIsLoading}
           />
         </div>
       </div>

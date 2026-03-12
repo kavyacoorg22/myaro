@@ -1,0 +1,96 @@
+2026-03-12 09:08:53 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-03-12 09:08:53 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:08:53 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:08:53 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:08:54 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:08:54 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:08:56 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:08:58 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:00 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:21 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-03-12 09:09:21 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-03-12 09:09:24 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:26 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:28 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:30 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:32 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:34 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:36 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:38 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:40 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:42 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:45 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:47 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:49 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:51 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:53 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:55 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:57 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:09:59 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:01 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:03 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:05 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:07 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:10 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:12 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:14 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:16 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:18 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:20 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:22 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:24 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:27 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:29 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:31 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:33 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:35 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 09:10:37 error: Error: getaddrinfo ENOTFOUND redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) | {"errno":-3008,"code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"redis-12559.crce217.ap-south-1-1.ec2.cloud.redislabs.com"}
+2026-03-12 10:42:10 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}

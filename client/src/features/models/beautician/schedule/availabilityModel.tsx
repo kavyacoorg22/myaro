@@ -36,68 +36,77 @@ export const AvailabilityModal: React.FC<AvailabilityModalProps> = ({
   // ── Whether the fetched data is leave (not user-switched tab) ─────────────
   const [isFetchedLeave, setIsFetchedLeave] = useState(false);
 
+  // ── View mode fetched type ─────────────────────────────────────────────────
+  const [viewFetchedType, setViewFetchedType] = useState<"availability" | "leave" | "none">("none");
+
   // Reset tab when modal opens
   useEffect(() => {
     if (isOpen) {
       setActiveTab("availability");
       setIsFetchedLeave(false);
       setScheduleSource("manual");
+      setViewFetchedType("none");
     }
   }, [isOpen]);
 
   // Fetch availability when modal opens
-useEffect(() => {
-  const fetchAvailability = async () => {
-    if (!isOpen || selectedDates.length === 0) {
-      setTimeSlots([]);
-      return;
-    }
-
-    setIsFetchingSlots(true);
-    try {
-      let response;
-      if (isEditable) {
-        response = await BeauticianApi.getAvailbilitySchedule(selectedDates[0]);
-      } else if (beauticianId) {
-        response = await publicAPi.getAvailbilitySchedule(beauticianId, selectedDates[0]);
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      if (!isOpen || selectedDates.length === 0) {
+        setTimeSlots([]);
+        return;
       }
 
-      if (response?.data?.data?.availability) {
-        const { scheduleId, slots, type, source } = response.data.data.availability;
-        console.log('📦 Frontend received:', { scheduleId, type, source, slots });
-
-        setCurrentScheduleId(scheduleId);
-        setScheduleSource(source === 'recurring' ? 'recurring' : 'manual');
-
-        if (type === 'leave') {
-          setIsFetchedLeave(true);  // set BEFORE setActiveTab
-          setActiveTab('leave');
-          setTimeSlots([]);
-        } else {
-          setIsFetchedLeave(false);
-          setTimeSlots(convertSlotsToTimeSlots(slots, scheduleId));
+      setIsFetchingSlots(true);
+      try {
+        let response;
+        if (isEditable) {
+          response = await BeauticianApi.getAvailbilitySchedule(selectedDates[0]);
+        } else if (beauticianId) {
+          response = await publicAPi.getAvailbilitySchedule(beauticianId, selectedDates[0]);
         }
-      } else {
+
+        if (response?.data?.data?.availability) {
+          const { scheduleId, slots, type, source } = response.data.data.availability;
+          console.log('📦 Frontend received:', { scheduleId, type, source, slots });
+
+          setCurrentScheduleId(scheduleId);
+          setScheduleSource(source === 'recurring' ? 'recurring' : 'manual');
+
+          if (type === 'leave') {
+            setIsFetchedLeave(true);
+            setActiveTab('leave');
+            setTimeSlots([]);
+            setViewFetchedType("leave");
+          } else {
+            setIsFetchedLeave(false);
+            const converted = convertSlotsToTimeSlots(slots, scheduleId);
+            setTimeSlots(converted);
+            setViewFetchedType("availability");
+          }
+        } else {
+          setTimeSlots([]);
+          setCurrentScheduleId('');
+          setIsFetchedLeave(false);
+          setViewFetchedType("none");
+        }
+      } catch (error) {
+        console.error('❌ Error fetching:', error);
         setTimeSlots([]);
         setCurrentScheduleId('');
         setIsFetchedLeave(false);
+        setViewFetchedType("none");
+      } finally {
+        setIsFetchingSlots(false);
       }
-    } catch (error) {
-      console.error('❌ Error fetching:', error);
-      setTimeSlots([]);
-      setCurrentScheduleId('');
-      setIsFetchedLeave(false);
-    } finally {
-      setIsFetchingSlots(false);
-    }
-  };
+    };
 
-  fetchAvailability();
-}, [isOpen, selectedDates, isEditable, beauticianId,activeTab]); 
+    fetchAvailability();
+  }, [isOpen, selectedDates, isEditable, beauticianId]); // ← removed activeTab dependency
 
-  // Clear slots when user manually switches tabs
+  // Clear slots when user manually switches tabs (edit mode only)
   useEffect(() => {
-    if (!isFetchedLeave) {
+    if (!isFetchedLeave && isEditable) {
       setTimeSlots([]);
       setCurrentScheduleId("");
     }
@@ -112,35 +121,32 @@ useEffect(() => {
     }
   };
 
-const handleDeleteSlot = async (id: string) => {
-  setTimeSlots(timeSlots.filter((slot) => slot.scheduleId !== id));
+  const handleDeleteSlot = async (id: string) => {
+    setTimeSlots(timeSlots.filter((slot) => slot.scheduleId !== id));
 
-  try {
-    if (scheduleSource === "recurring") {
-      // recurringId = currentScheduleId, date needs to be Date object
-      await BeauticianApi.deleteRecurringSchedule(currentScheduleId, {
-        date: new Date(selectedDates[0]),  // ← string → Date
-      });
-    } else {
-      // find the slot object from timeSlots
-      const slot = timeSlots.find((s) => s.scheduleId === id);
-      if (slot) {
-        await BeauticianApi.deleteAvailabilitySlot(
-          { startTime: slot.startTime, endTime: slot.endTime },
-          currentScheduleId,
-        );
+    try {
+      if (scheduleSource === "recurring") {
+        await BeauticianApi.deleteRecurringSchedule(currentScheduleId, {
+          date: new Date(selectedDates[0]),
+        });
+      } else {
+        const slot = timeSlots.find((s) => s.scheduleId === id);
+        if (slot) {
+          await BeauticianApi.deleteAvailabilitySlot(
+            { startTime: slot.startTime, endTime: slot.endTime },
+            currentScheduleId,
+          );
+        }
       }
+    } catch (error) {
+      console.error("❌ Error deleting slot:", error);
     }
-  } catch (error) {
-    console.error("❌ Error deleting slot:", error);
-  }
-};
+  };
 
   const handleDone = async () => {
     if (onSave && isEditable) {
       setIsLoading(true);
 
-      // ── Leave: no slots needed, just mark full day ─────────────────────────
       if (activeTab === "leave") {
         try {
           await onSave({ dates: selectedDates, slots: [], type: "leave" });
@@ -153,7 +159,6 @@ const handleDeleteSlot = async (id: string) => {
         return;
       }
 
-      // ── Availability: needs slots ──────────────────────────────────────────
       if (timeSlots.length === 0) {
         setIsLoading(false);
         onClose();
@@ -192,7 +197,7 @@ const handleDeleteSlot = async (id: string) => {
       : `${selectedDates.length} dates selected`;
 
   // ─────────────────────────────────────────────────────────────────────────
-  // VIEW MODE
+  // VIEW MODE — only changed section
   // ─────────────────────────────────────────────────────────────────────────
   if (!isEditable) {
     return (
@@ -204,30 +209,40 @@ const handleDeleteSlot = async (id: string) => {
               <X className="w-5 h-5" />
             </button>
           </div>
+
           <div className="mb-4">
-            <p className="text-sm font-medium mb-3">Available</p>
             {isFetchingSlots ? (
               <p className="text-sm text-gray-500 py-4 text-center">Loading availability...</p>
-            ) : activeTab === "leave" ? (
-              <div className="flex flex-col items-center py-4 gap-2">
-                <CalendarOff className="w-6 h-6 text-red-400" />
-                <p className="text-sm text-red-600 font-medium">On Leave</p>
+            ) : viewFetchedType === "leave" ? (
+              // ── On Leave ──────────────────────────────────────────────────
+              <div className="flex flex-col items-center py-6 gap-2">
+                <div className="w-11 h-11 rounded-full bg-red-100 flex items-center justify-center">
+                  <CalendarOff className="w-5 h-5 text-red-400" />
+                </div>
+                <p className="text-sm font-semibold text-red-600">On Leave</p>
+                <p className="text-xs text-red-400">Not available on this day</p>
               </div>
-            ) : timeSlots.length === 0 ? (
-              <p className="text-sm text-gray-500 py-4 text-center">No availability</p>
+            ) : viewFetchedType === "none" ? (
+              // ── No availability set ───────────────────────────────────────
+              <p className="text-sm text-gray-500 py-4 text-center">No availability set</p>
             ) : (
-              <div className="space-y-2">
-                {timeSlots.map((slot) => (
-                  <div
-                    key={slot.scheduleId}
-                    className="bg-green-100 text-green-900 px-4 py-3 rounded-lg text-sm font-medium"
-                  >
-                    {slot.startTime} to {slot.endTime}
-                  </div>
-                ))}
-              </div>
+              // ── Show time slots ───────────────────────────────────────────
+              <>
+                <p className="text-sm font-medium mb-3">Available</p>
+                <div className="space-y-2">
+                  {timeSlots.map((slot) => (
+                    <div
+                      key={slot.scheduleId}
+                      className="bg-green-100 text-green-900 px-4 py-3 rounded-lg text-sm font-medium"
+                    >
+                      {slot.startTime} to {slot.endTime}
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
+
           <button
             onClick={onClose}
             className="w-full py-2.5 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition font-medium"
@@ -240,7 +255,7 @@ const handleDeleteSlot = async (id: string) => {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // EDIT MODE
+  // EDIT MODE — unchanged
   // ─────────────────────────────────────────────────────────────────────────
   const isLeave = activeTab === "leave";
 
@@ -297,7 +312,6 @@ const handleDeleteSlot = async (id: string) => {
           {isLeave ? (
             <div className="mb-4">
               {isFetchedLeave && currentScheduleId ? (
-                // ── Existing leave fetched from backend ──────────────────────
                 <div className="rounded-xl border-2 border-red-200 bg-red-50 p-5 flex flex-col items-center gap-2">
                   <div className="w-11 h-11 rounded-full bg-red-100 flex items-center justify-center">
                     <CalendarOff className="w-5 h-5 text-red-400" />
@@ -308,7 +322,6 @@ const handleDeleteSlot = async (id: string) => {
                   </p>
                 </div>
               ) : (
-                // ── User switched to leave tab to add new leave ──────────────
                 <>
                   <div className="rounded-xl border-2 border-dashed border-red-200 bg-red-50 p-5 flex flex-col items-center gap-3 mb-3">
                     <div className="w-11 h-11 rounded-full bg-red-100 flex items-center justify-center">
@@ -320,7 +333,6 @@ const handleDeleteSlot = async (id: string) => {
                     </div>
                   </div>
 
-                  {/* Selected dates list with checkmarks */}
                   <div className="space-y-1.5">
                     {selectedDates.map((d) => (
                       <div key={d} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-red-50">
@@ -341,7 +353,6 @@ const handleDeleteSlot = async (id: string) => {
               )}
             </div>
           ) : (
-            /* ── AVAILABILITY TAB ── */
             isFetchingSlots ? (
               <p className="text-sm text-gray-500 py-4 text-center mb-4">Loading...</p>
             ) : timeSlots.length === 0 ? (
@@ -390,7 +401,6 @@ const handleDeleteSlot = async (id: string) => {
             )
           )}
 
-          {/* Done / Save Leave — hide if viewing existing fetched leave */}
           {!(isFetchedLeave && currentScheduleId) && (
             <button
               onClick={handleDone}
@@ -404,7 +414,6 @@ const handleDeleteSlot = async (id: string) => {
         </div>
       </div>
 
-      {/* Add/Edit Time Slot Modal */}
       <AddTimeSlotModal
         isOpen={isAddSlotOpen}
         onClose={() => {

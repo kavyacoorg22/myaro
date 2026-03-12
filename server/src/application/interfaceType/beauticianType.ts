@@ -114,3 +114,8 @@ export interface IGetBeauticianPostOutPut{
   posts:IGetBeauticianPostsDto[],
   nextCursor:string|null
 }
+
+export interface IGetPostSearchResult{
+  posts:IGetAllPostsDto[]
+   nextCursor: string | null
+}

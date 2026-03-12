@@ -68,5 +68,11 @@ getTipsRentFeed: async (cursorTips: string | null = null, cursorRent: string | n
   const params = { ...(cursorTips && { cursorTips }), ...(cursorRent && { cursorRent }) };
   return await axiosWrapper<IGetTipsAndRentResponseData>(api.get(publicApiRoutes.tipsRentFeed, { params }));
 },
-    
+getSearchPostResult:async(query:string,cursor:string|null)=>{
+   const params = {
+    query,
+    ...(cursor && { cursor })
+  };
+  return await axiosWrapper<IGetAllHomeFeedResponseData>(api.get(publicApiRoutes.searchPost,{params}))
+}
 }
