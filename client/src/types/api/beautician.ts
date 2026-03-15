@@ -132,12 +132,7 @@ export interface IDeleteRecursionScheduleReuest{
   
 }
 
-export interface ICreatePostRequest{
- description?:string,
- postType:PostType,
- location?:LocationVO,
- media:string[],
-}
+
 
 export interface IGetAllHomeFeedResponseData{
   posts:IGetAllPostsDto[],

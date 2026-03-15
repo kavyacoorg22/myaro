@@ -4,6 +4,7 @@ import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { BeauticianFiles, IBeauticianEditProfileInput, IBeauticianRegistrationInput } from "../../../application/interfaceType/beauticianType";
 import { ShopAddressVO } from "../../../domain/entities/Beautician";
 import { PostType } from "../../../domain/enum/userEnum";
+import { fileMessages } from "../../../shared/constant/message/fileMessages";
 
 export const validateBeauticianData = (
   req: Request,
@@ -389,76 +390,118 @@ export function validateAddCustomServiceInput(
   next();
 }
 
-
-
-export function validateCreatePostInput(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const { description, postType, location } = req.body;
-  const files = req.files as Express.Multer.File[];
-
-  // at least description or media must exist
-  if (!description && (!files || files.length === 0)) {
-    return res.status(400).json({
-      error: 'Post must have at least a description or media',
-    });
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
+const ALLOWED_MEDIA_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES];
+ 
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;    // 5 MB
+const MAX_VIDEO_SIZE = 200 * 1024 * 1024;  // 200 MB — raw video before trim
+const MAX_FILES_COUNT = 10;
+ 
+export const validateSignedUrlRequest = (req: Request, res: Response, next: NextFunction): void => {
+  const { files } = req.body as { files: { index: number; fileType: string; fileSize: number }[] };
+ 
+  if (!Array.isArray(files) || files.length === 0) {
+    return next(new AppError("files array is required", HttpStatus.BAD_REQUEST));
   }
-
-  // description
-  if (description !== undefined) {
-    if (typeof description !== 'string') {
-      return res.status(400).json({ error: 'Description must be a string' });
+  if (files.length > MAX_FILES_COUNT) {
+    return next(new AppError(fileMessages.ERROR.TOO_MANY_FILES, HttpStatus.BAD_REQUEST));
+  }
+ 
+  for (const file of files) {
+    if (!file.fileType || !ALLOWED_MEDIA_TYPES.includes(file.fileType)) {
+      return next(new AppError(fileMessages.ERROR.INVALID_TYPE_FOR_POST, HttpStatus.BAD_REQUEST));
     }
-    if (description.trim().length === 0) {
-      return res.status(400).json({ error: 'Description cannot be empty' });
+ 
+    const isVideo = ALLOWED_VIDEO_TYPES.includes(file.fileType);
+    const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+ 
+    // fileSize must be a positive number within the allowed limit
+    if (typeof file.fileSize !== "number" || file.fileSize <= 0) {
+      return next(new AppError("fileSize must be a positive number", HttpStatus.BAD_REQUEST));
     }
-    if (description.length > 2200) {
-      return res.status(400).json({ error: 'Description cannot exceed 2200 characters' });
+    if (file.fileSize > maxSize) {
+      return next(new AppError(
+        isVideo ? fileMessages.ERROR.VIDEO_TOO_LARGE : fileMessages.ERROR.FILE_TOO_LARGE,
+        HttpStatus.BAD_REQUEST
+      ));
     }
   }
-
-  // postType
-  if (!postType) {
-    return res.status(400).json({ error: 'Post type is required' });
+ 
+  next();
+};
+ 
+const MAX_VIDEO_DURATION_SECONDS = 180;
+const MIN_VIDEO_DURATION_SECONDS = 1;
+ 
+export const validateCreatePostInput = (req: Request, res: Response, next: NextFunction): void => {
+  const { description, postType, location, media } = req.body;
+ 
+  if (!Array.isArray(media) || media.length === 0) {
+    res.status(400).json({ error: "media array is required" }); return;
   }
-  if (!Object.values(PostType).includes(postType)) {
-    return res.status(400).json({
-      error: `Invalid post type. Must be one of: ${Object.values(PostType).join(', ')}`,
-    });
-  }
-
-  // location (optional)
-  if (location !== undefined) {
-    let parsed = location;
-
-    if (typeof location === 'string') {
-      try {
-        parsed = JSON.parse(location);
-      } catch {
-        return res.status(400).json({ error: 'Location must be a valid JSON object' });
+ 
+  for (const item of media) {
+    if (!item.s3Key || typeof item.s3Key !== "string") {
+      res.status(400).json({ error: "Each media item must have a valid s3Key" }); return;
+    }
+    if (!["image", "video"].includes(item.fileType)) {
+      res.status(400).json({ error: "fileType must be 'image' or 'video'" }); return;
+    }
+ 
+    if (item.fileType === "video") {
+      const { trimStart, trimEnd } = item;
+      if (trimStart === undefined || trimEnd === undefined) {
+        res.status(400).json({ error: "Videos must include trimStart and trimEnd" }); return;
+      }
+      if (typeof trimStart !== "number" || typeof trimEnd !== "number") {
+        res.status(400).json({ error: "trimStart and trimEnd must be numbers" }); return;
+      }
+      if (trimStart < 0) {
+        res.status(400).json({ error: "trimStart cannot be negative" }); return;
+      }
+      if (trimEnd <= trimStart) {
+        res.status(400).json({ error: "trimEnd must be greater than trimStart" }); return;
+      }
+      const duration = trimEnd - trimStart;
+      if (duration < MIN_VIDEO_DURATION_SECONDS) {
+        res.status(400).json({ error: `Video must be at least ${MIN_VIDEO_DURATION_SECONDS}s after trimming` }); return;
+      }
+      if (duration > MAX_VIDEO_DURATION_SECONDS) {
+        res.status(400).json({ error: `Video cannot exceed ${MAX_VIDEO_DURATION_SECONDS}s after trimming` }); return;
       }
     }
-
-    if (typeof parsed !== 'object') {
-      return res.status(400).json({ error: 'Location must be an object' });
+  }
+ 
+  if (description !== undefined) {
+    if (typeof description !== "string" || description.trim().length === 0) {
+      res.status(400).json({ error: "Description cannot be empty" }); return;
     }
-    if (parsed.lat === undefined || parsed.lng === undefined) {
-      return res.status(400).json({ error: 'Location must include lat and lng' });
+    if (description.length > 2200) {
+      res.status(400).json({ error: "Description cannot exceed 2200 characters" }); return;
     }
-    if (typeof parsed.lat !== 'number' || parsed.lat < -90 || parsed.lat > 90) {
-      return res.status(400).json({ error: 'lat must be a number between -90 and 90' });
+  }
+ 
+  if (!postType) {
+    res.status(400).json({ error: "Post type is required" }); return;
+  }
+  if (!Object.values(PostType).includes(postType)) {
+    res.status(400).json({ error: `Invalid post type. Must be one of: ${Object.values(PostType).join(", ")}` }); return;
+  }
+ 
+  if (location !== undefined) {
+    let parsed = location;
+    if (typeof location === "string") {
+      try { parsed = JSON.parse(location); }
+      catch { res.status(400).json({ error: "Location must be valid JSON" }); return; }
     }
-    if (typeof parsed.lng !== 'number' || parsed.lng < -180 || parsed.lng > 180) {
-      return res.status(400).json({ error: 'lng must be a number between -180 and 180' });
-    }
-    if (parsed.address !== undefined && typeof parsed.address !== 'string') {
-      return res.status(400).json({ error: 'Location address must be a string' });
-    }
-
+    if (typeof parsed !== "object") { res.status(400).json({ error: "Location must be an object" }); return; }
+    if (parsed.lat === undefined || parsed.lng === undefined) { res.status(400).json({ error: "Location must include lat and lng" }); return; }
+    if (typeof parsed.lat !== "number" || parsed.lat < -90 || parsed.lat > 90) { res.status(400).json({ error: "lat must be between -90 and 90" }); return; }
+    if (typeof parsed.lng !== "number" || parsed.lng < -180 || parsed.lng > 180) { res.status(400).json({ error: "lng must be between -180 and 180" }); return; }
     req.body.location = parsed;
   }
-
+ 
   next();
-}
+};
+ 

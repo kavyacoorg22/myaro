@@ -4,6 +4,7 @@ import { LocationVO } from "../../domain/entities/beauticianServiceAres";
 import { VerificationStatus } from "../../domain/enum/beauticianEnum";
 import { PostType, UserRole } from "../../domain/enum/userEnum";
 import { IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto } from "../dtos/beautician";
+import { IMediaInput } from "./mediaType";
 
 export interface BeauticianFiles {
   portfolioImage: Express.Multer.File[];
@@ -95,7 +96,7 @@ export interface ICreatePostInput{
  description?:string,
  postType:PostType,
  location?:LocationVO,
- media:string[],
+ media:IMediaInput[],
 }
 
 export interface IGetAllHomeFeedOutput{

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ProfileHeader } from '../component/profile/profilehead';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/appStore';
@@ -22,6 +22,7 @@ import { CreatePostModal } from '../../models/beautician/media/createPostModel';
 import { CropModal } from '../../models/beautician/media/cropModal';
 import { EditModal } from '../../models/beautician/media/editModal';
 import { ShareModal } from '../../models/beautician/media/shareModal';
+import type { MediaItemWithTrim } from '../../types/mediaType';
 
 interface BeauticianInfo {
   isBeautician: boolean;
@@ -41,18 +42,24 @@ const ProfilePage = () => {
   });
   
   const [selectedDates, setSelectedDates] = useState<number[]>([]);
-const [showUpload, setShowUpload] = useState(false);
-const [showCrop, setShowCrop] = useState(false);
-const [cropPreview, setCropPreview] = useState<string | null>(null);
-const [cropFileType, setCropFileType] = useState<"image" | "video" | null>(null);
+  const [showUpload, setShowUpload] = useState(false);
+  const [showCrop, setShowCrop] = useState(false);
+  const [cropPreview, setCropPreview] = useState<string | null>(null);
+  const [cropFileType, setCropFileType] = useState<"image" | "video" | null>(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editData, setEditData] = useState<{
+    preview: string;
+    fileType: "image" | "video";
+    extras: { src: string; fileType: "image" | "video" }[];
+  } | null>(null);
+  const [showShare, setShowShare] = useState(false);
+  const [shareItems, setShareItems] = useState<MediaItemWithTrim[]>([]);
 
- const [showShare, setShowShare] = useState(false);
- const [shareItems, setShareItems] = useState<{ src: string; fileType: "image"|"video" }[]>([]);
-const [showEdit, setShowEdit] = useState(false);
-const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"video"; extras: string[] } | null>(null);
+  // Ref so EditModal.onNext always reads latest extras — immune to stale closure
+  const extrasRef = useRef<{ src: string; fileType: "image" | "video" }[]>([]);
+
   const currentUser = useSelector((store: RootState) => store.user.currentUser);
 
-  // Determine viewMode early so it can be used in functions
   const isOwnProfile = currentUser?.userId === profileData?.userId;
   const viewMode = isOwnProfile 
     ? (currentUser?.role === 'beautician' ? 'own-beautician' : 'own-customer')
@@ -99,7 +106,6 @@ const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"v
     try {
       const response = await BeauticianApi.getStatus();
       console.log('✅ Beautician status:', response.data?.data);
-      
       setBeauticianInfo({
         isBeautician: true,
         verificationStatus: response.data?.data?.verificationStatus 
@@ -112,15 +118,11 @@ const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"v
     }
   };
 
-  // Save availability - simplified (no loading state needed, handled in modal)
   const handleSaveAvailability = async (request: IAddAvailabilityRequest): Promise<void> => {
     try {
       console.log('📤 Sending to API:', request);
-      
       const response = await BeauticianApi.addAvailabilitySchedule(request);
-      
       console.log('✅ Availability saved successfully:', response);
-      
       toast.success('Availability saved successfully!');
     } catch (error) {
       console.error('❌ Error saving availability:', error);
@@ -129,12 +131,9 @@ const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"v
     }
   };
 
-  // Delete specific slot - simplified
   const handleDeleteSlot = async (slotToDelete: TimeSlot): Promise<void> => {
     try {
       console.log('🗑️ Deleting slot:', slotToDelete);
-      
-      // Extract scheduleId from the slot
       const scheduleId = slotToDelete.scheduleId;
       
       if (!scheduleId) {
@@ -143,19 +142,13 @@ const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"v
         return;
       }
 
-      // Convert TimeSlot to Slot format (remove scheduleId)
       const slotsToDelete = {
         startTime: slotToDelete.startTime,
         endTime: slotToDelete.endTime
       };
 
-      const response = await BeauticianApi.deleteAvailabilitySlot(
-        slotsToDelete,
-        scheduleId
-      );
-      
+      const response = await BeauticianApi.deleteAvailabilitySlot(slotsToDelete, scheduleId);
       console.log('✅ Slot deleted successfully:', response);
-      
       toast.success('Slot deleted successfully!');
     } catch (error) {
       console.error('❌ Error deleting slot:', error);
@@ -178,7 +171,15 @@ const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"v
     setIsCalendarOpen(true);
   };
 
-  // Loading state
+  const handlePostFlowClose = () => {
+    setShowShare(false);
+    extrasRef.current = [];
+    setShareItems([]);
+    setEditData(null);
+    setCropPreview(null);
+    setCropFileType(null);
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-6">
@@ -247,7 +248,7 @@ const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"v
           onEditProfile={() => navigate(beauticianFrontendRoutes.editProfile)}
           onCalender={handleCalendarClick}
           onRegisterAsBeautician={() => navigate(customerFrontendRoutes.register)}
-          onServicePage={() => navigate(`/beautician/services`,{state: { beauticianId: profileData.userId }})}
+          onServicePage={() => navigate(`/beautician/services`, { state: { beauticianId: profileData.userId } })}
           onMessage={() => navigate(`/messages/${profileData.userId}`)}
           onFollow={() => console.log('Follow clicked')}
           onBookService={() => navigate(`/book/${profileData.userId}`)}
@@ -267,14 +268,13 @@ const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"v
           <ProfileTab
             viewMode={viewMode}
             isVerified={profileData.isVerified}
-            onUpload={() =>setShowUpload(true)}
+            onUpload={() => setShowUpload(true)}
             onPosts={() => navigate(`/profile/${profileData.userId}/posts`)}
             onTips={() => navigate(`/profile/${profileData.userId}/tips`)}
             onRent={() => navigate(`/profile/${profileData.userId}/rent`)}
           />
         </div>
 
-        {/* Calendar Modal */}
         {isCalendarOpen && (
           <CalendarModal
             isOpen={isCalendarOpen}
@@ -289,71 +289,82 @@ const [editData, setEditData] = useState<{ preview: string; fileType: "image"|"v
             initialDate={new Date()}
             initialSelectedDates={selectedDates}
             onDateSelect={setSelectedDates}
-            existingSlots={[]} 
+            existingSlots={[]}
             onSaveSlots={handleSaveAvailability}
             onDeleteSlot={handleDeleteSlot}
             beauticianId={viewMode === 'view-beautician' ? profileData.userId : undefined}
           />
         )}
 
-<CreatePostModal
-  isOpen={showUpload}
-  onClose={() => setShowUpload(false)}
-  onNext={(preview, type) => {
-    setCropPreview(preview);
-    setCropFileType(type);
-    setShowUpload(false);
-    setShowCrop(true);
-  }}
-/>
+        <CreatePostModal
+          isOpen={showUpload}
+          onClose={() => setShowUpload(false)}
+          onNext={(preview, type) => {
+            setCropPreview(preview);
+            setCropFileType(type);
+            setShowUpload(false);
+            setShowCrop(true);
+          }}
+        />
 
-<CropModal
-  isOpen={showCrop}
-  preview={cropPreview}
-  fileType={cropFileType}
-  onBack={() => { setShowCrop(false); setShowUpload(true); }}
-  onClose={() => setShowCrop(false)}
-  onNext={(data) => {
-  setEditData(data);
-  setShowCrop(false);
-  setShowEdit(true);
-  }}
-/>
+        <CropModal
+          isOpen={showCrop}
+          preview={cropPreview}
+          fileType={cropFileType}
+          onBack={() => { setShowCrop(false); setShowUpload(true); }}
+          onClose={() => setShowCrop(false)}
+          onNext={(data) => {
+            extrasRef.current = data.extras;
+            setEditData(data);
+            setShowCrop(false);
+            setShowEdit(true);
+          }}
+        />
 
-<EditModal
-  isOpen={showEdit}
-  preview={editData?.preview ?? null}
-  fileType={editData?.fileType ?? null}
-  onBack={() => { setShowEdit(false); setShowCrop(true); }}
-  onClose={() => setShowEdit(false)}
-  onNext={({ preview, fileType }: { preview: string; fileType: "image" | "video"; trimStart: number; trimEnd: number; soundOn: boolean }) => {
-    const items = [
-      { src: preview, fileType },
-      ...(editData?.extras ?? []).map(src => ({ src, fileType: "image" as const }))
-    ];
-    setShareItems(items);
-    setShowEdit(false);
-    setShowShare(true);
-  }}
-/>
+        <EditModal
+          isOpen={showEdit}
+          preview={editData?.preview ?? null}
+          fileType={editData?.fileType ?? null}
+          extras={extrasRef.current}
+          onBack={() => { setShowEdit(false); setShowCrop(true); }}
+          onClose={() => setShowEdit(false)}
+          onNext={({ preview, fileType, allProcessed }) => {
+            // allProcessed carries src + fileType + trimStart + trimEnd + soundOn per item
+            const items: MediaItemWithTrim[] = allProcessed
+              ? allProcessed.map((item) => ({
+                  src: item.src,
+                  fileType: item.fileType,
+                  trimStart: item.trimStart ?? 0,
+                  trimEnd: item.trimEnd ?? 0,
+                  soundOn: item.soundOn ?? true,
+                }))
+              : [
+                  { src: preview, fileType, trimStart: 0, trimEnd: 0, soundOn: true },
+                  ...extrasRef.current.map((e) => ({ ...e, trimStart: 0, trimEnd: 0, soundOn: true })),
+                ];
+            setShareItems(items);
+            setShowEdit(false);
+            setShowShare(true);
+          }}
+        />
 
-<ShareModal
-  isOpen={showShare}
-  mediaItems={shareItems}
-  user={{ 
-    userName: currentUser.userName ?? "", 
-    profileImg: currentUser.profileImg ?? undefined 
-  }}
-  onBack={() => { setShowShare(false); setShowEdit(true); }}
-  onClose={() => setShowShare(false)}
- onShare={async (formData) => {
-  await BeauticianApi.createPost(formData);
-}}
-/>
+        <ShareModal
+          isOpen={showShare}
+          mediaItems={shareItems}
+          user={{
+            userName: currentUser.userName ?? "",
+            profileImg: currentUser.profileImg ?? undefined,
+          }}
+          onBack={() => { setShowShare(false); setShowEdit(true); }}
+          onClose={handlePostFlowClose}
+          // onShare is a no-op — ShareModal handles the full upload flow internally
+          // (signed URLs → S3 upload → POST /api/posts with trim data)
+          onShare={async () => {}}
+        />
 
       </div>
     </>
   );
 };
 
-export default ProfilePage
+export default ProfilePage;

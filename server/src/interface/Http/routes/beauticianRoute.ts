@@ -6,7 +6,6 @@ import { validateBeauticianFiles } from '../validator/validateFileUpload';
 import { validatePaymentDetails,validateBeauticianData, validateAddCustomServiceInput, validateCreatePostInput } from '../middleware/validateBeauticianINput';
 import { validateAddAvailability, validateRecurringSchedule } from '../validator/validateScheduleInput';
 import { validatePamphletUpload } from '../validator/valiadtePampletUpload';
-import { validatePostMedia } from '../validator/validatePostUpload';
 
 //user route
 router.get('/pamphlet/:id',authenticateUser,beauticianServiceController.getPamphletForCustomer)
@@ -44,7 +43,6 @@ router.delete('/schedules/recurring/:id',authenticateBeautician,scheduleControll
 
 //post
 
-router.post( '/post', authenticateBeautician, uploadMediaArray('media', 10), validatePostMedia,validateCreatePostInput,  postController.createPost
-);
+
 router.get('/post/:id',authenticateUser,postController.getBeauticianPost)
 export  default router

@@ -20,6 +20,7 @@ export interface BankDetailsVO {
 
 export interface Beautician {
   id: ID;
+
   userId: ID;
 
   yearsOfExperience: number;

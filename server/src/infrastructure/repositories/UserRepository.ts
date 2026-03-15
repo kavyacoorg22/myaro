@@ -233,6 +233,7 @@ async findUsersByIds(userIds: string[]): Promise<User[]> {
     const base = super.map(doc) as any;
     return{
       id:base.id,
+       userId:doc.userId,
       email:doc.email,
       userName:doc.userName,
       fullName:doc.fullName,

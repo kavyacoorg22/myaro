@@ -59,6 +59,36 @@ export interface IChangePasswordRequest{
   confirmPassword:string
 }
 
+export interface ISignedUrlFile {
+  index: number;
+  fileType: string;   // "video/mp4" | "image/jpeg" etc.
+  fileSize: number;   // bytes
+}
+ 
+export interface ISignedUrl {
+  index: number;
+  signedUrl: string;
+  s3Key: string;
+}
+ 
+export interface ISignedUrlResponse {
+  data: ISignedUrl[];
+}
+ 
+export interface IMediaInput {
+  s3Key: string;
+  fileType: "image" | "video";
+  trimStart?: number;
+  trimEnd?: number;
+  soundOn?: boolean;
+}
+ 
+export interface ICreatePostInput {
+  description?: string;
+  postType: string;
+  location?: object;
+  media: IMediaInput[];
+}
 export type profileResponce=BackendResponse<profileResponseData>
 export type IProfilePhotoChangeResponse=BackendResponse<IProfilePhotoChangeRespnseData>
 export type ISearchResponse=BackendResponse<ISearchResponseData>

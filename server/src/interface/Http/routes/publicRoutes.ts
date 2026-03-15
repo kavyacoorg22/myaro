@@ -1,8 +1,9 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAdmin, authenticateAll, authenticateUser, beauticianController, categoryController, changePasswordController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateUser, beauticianController, categoryController, changePasswordController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword } from "../middleware/validateUserInput";
+import { validateCreatePostInput, validateSignedUrlRequest } from "../middleware/validateBeauticianINput";
 const router=Router()
 
 router.get('/profile/me',authenticateUser,profileController.ownProfile)
@@ -18,7 +19,10 @@ router.get('/category/:categoryId/services',authenticateAll,serviceController.ge
 router.get('/category',authenticateAll,categoryController.getCategory)
 router.patch('/change-password',authenticateUser,validateChangePassword,(req:Request,res:Response,next:NextFunction)=>{changePasswordController.handle(req,res,next)})
 //feed
+router.post( '/posts', authenticateBeautician,validateCreatePostInput, postController.createPost
+);
 router.get('/posts/feed',postController.getHomefeed)
 router.get('/posts/tips-rent',postController.getTipsRentfeed)
 router.get('/posts/search',postController.getPostSearchResult)
+router.post('/posts/upload',authenticateBeautician,  validateSignedUrlRequest,postController.getSignedUploadUrl)
 export default router

@@ -43,7 +43,7 @@ export class BeauticianServiceRepository
 
 
   async findByBeauticianId(beauticianId: string,options?: { homeServiceOnly?: boolean,priceFilter:PriceFilter}): Promise<BeauticianService[]> {
- 
+    console.log(options)
   const query:FilterQuery<BeauticianServiceDoc> = {
   beauticianId: new Types.ObjectId(beauticianId),
    };

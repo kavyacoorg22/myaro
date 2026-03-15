@@ -1,183 +1,157 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import type { EditModalProps } from "../../../types/mediaType";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { fetchFile, toBlobURL } from "@ffmpeg/util";
-
-const ffmpeg = new FFmpeg();
+import type { EditModalProps, MediaItemWithTrim } from "../../../types/mediaType";
 
 export const EditModal: React.FC<EditModalProps> = ({
-  isOpen, preview, fileType, onBack, onClose, onNext,
+  isOpen, preview, fileType, extras, onBack, onClose, onNext,
 }) => {
+  // ── All media in insertion order ──────────────────────────────────────────
+  const allMedia = React.useMemo(() => {
+    if (!preview || !fileType) return [];
+    return [
+      { src: preview, fileType },
+      ...(extras ?? []),
+    ] as { src: string; fileType: "image" | "video" }[];
+  }, [preview, fileType, extras]);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Stores trim data per item — sent to backend, no client-side processing
+  const trimDataRef = useRef<MediaItemWithTrim[]>([]);
+
+  const currentItem = allMedia[currentIndex];
+  const isLast = currentIndex === allMedia.length - 1;
+  const isVideo = currentItem?.fileType === "video";
+  const totalItems = allMedia.length;
+
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [duration, setDuration] = useState(40);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const [duration, setDuration] = useState(0);
   const [trimStart, setTrimStart] = useState(0);
-  const [trimEnd, setTrimEnd] = useState(40);
+  const [trimEnd, setTrimEnd] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
   const [isDraggingStart, setIsDraggingStart] = useState(false);
   const [isDraggingEnd, setIsDraggingEnd] = useState(false);
-  const [isTrimming, setIsTrimming] = useState(false);
-  const [ffmpegLoaded, setFfmpegLoaded] = useState(false);
-  const [ffmpegError, setFfmpegError] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
 
-  // Load ffmpeg with MT core
+  // ── Reset when item changes ───────────────────────────────────────────────
   useEffect(() => {
-    const load = async () => {
-      try {
-        if (!ffmpeg.loaded) {
-          ffmpeg.on('log', ({ message }) => console.log('[ffmpeg]', message));
-          await ffmpeg.load({
-            coreURL: await toBlobURL(
-              'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm/ffmpeg-core.js',
-              'text/javascript'
-            ),
-            wasmURL: await toBlobURL(
-              'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm/ffmpeg-core.wasm',
-              'application/wasm'
-            ),
-            workerURL: await toBlobURL(
-              'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm/ffmpeg-core.worker.js',
-              'text/javascript'
-            ),
-          });
-        }
-        setFfmpegLoaded(true);
-      } catch (err) {
-        console.error("ffmpeg load failed:", err);
-        setFfmpegError(true);
+    setTrimStart(0);
+    setTrimEnd(0);
+    setDuration(0);
+    setSoundOn(true);
+  }, [currentIndex]);
+
+  // ── Load video duration ───────────────────────────────────────────────────
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !isVideo) return;
+    const onLoaded = () => {
+      if (isFinite(video.duration) && video.duration > 0) {
+        setDuration(video.duration);
+        setTrimStart(0);
+        setTrimEnd(video.duration);
       }
     };
-    load();
-  }, []);
-
-  // Load video duration
-  useEffect(() => {
-    if (videoRef.current && fileType === "video") {
-      const video = videoRef.current;
-      const handleMeta = () => {
-        if (video.duration && isFinite(video.duration)) {
-          setDuration(Math.floor(video.duration));
-          setTrimEnd(Math.floor(video.duration));
-        }
-      };
-      video.addEventListener("loadedmetadata", handleMeta);
-      return () => video.removeEventListener("loadedmetadata", handleMeta);
+    if (video.readyState >= 1 && isFinite(video.duration) && video.duration > 0) {
+      onLoaded();
+    } else {
+      video.addEventListener("loadedmetadata", onLoaded);
+      return () => video.removeEventListener("loadedmetadata", onLoaded);
     }
-  }, [preview, fileType]);
+  }, [currentItem, isVideo]);
 
-  // Sync sound
+  // ── Sync mute ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (videoRef.current) videoRef.current.muted = !soundOn;
   }, [soundOn]);
 
-  // Loop within trim range
+  // ── Loop within trim range (preview only) ─────────────────────────────────
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || fileType !== "video") return;
-    video.currentTime = trimStart;
-    const handleTimeUpdate = () => {
+    if (!video || !isVideo || trimEnd === 0) return;
+    if (video.currentTime < trimStart || video.currentTime > trimEnd) {
+      video.currentTime = trimStart;
+    }
+    const onTimeUpdate = () => {
       if (video.currentTime >= trimEnd) video.currentTime = trimStart;
     };
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    return () => video.removeEventListener("timeupdate", handleTimeUpdate);
-  }, [trimStart, trimEnd, fileType]);
+    video.addEventListener("timeupdate", onTimeUpdate);
+    return () => video.removeEventListener("timeupdate", onTimeUpdate);
+  }, [trimStart, trimEnd, isVideo]);
 
-  const getPercent = (val: number) => (val / duration) * 100;
-
-  const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!trackRef.current) return;
-    const rect = trackRef.current.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const val = Math.round(pct * duration);
-    const distStart = Math.abs(val - trimStart);
-    const distEnd = Math.abs(val - trimEnd);
-    if (distStart < distEnd) setTrimStart(Math.min(val, trimEnd - 1));
-    else setTrimEnd(Math.max(val, trimStart + 1));
-  };
-
-  const handleHandleMouseDown = (handle: "start" | "end") => (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (handle === "start") setIsDraggingStart(true);
-    else setIsDraggingEnd(true);
-  };
+  // ── Drag handles ──────────────────────────────────────────────────────────
+  const getPercent = (val: number) => (duration > 0 ? (val / duration) * 100 : 0);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const onMove = (e: MouseEvent) => {
       if (!trackRef.current || (!isDraggingStart && !isDraggingEnd)) return;
       const rect = trackRef.current.getBoundingClientRect();
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      const val = Math.round(pct * duration);
-      if (isDraggingStart) setTrimStart(Math.min(val, trimEnd - 1));
-      if (isDraggingEnd) setTrimEnd(Math.max(val, trimStart + 1));
+      const val = pct * duration;
+      if (isDraggingStart) {
+        const newStart = Math.min(val, trimEnd - 0.5);
+        setTrimStart(newStart);
+        if (videoRef.current) videoRef.current.currentTime = newStart;
+      }
+      if (isDraggingEnd) setTrimEnd(Math.max(val, trimStart + 0.5));
     };
-    const handleMouseUp = () => {
-      setIsDraggingStart(false);
-      setIsDraggingEnd(false);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    const onUp = () => { setIsDraggingStart(false); setIsDraggingEnd(false); };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
     };
   }, [isDraggingStart, isDraggingEnd, trimStart, trimEnd, duration]);
 
-  const handleNext = async () => {
-    if (!preview || !fileType) return;
+  // ── Save trim data and advance ────────────────────────────────────────────
+  const saveAndAdvance = (skip = false) => {
+    if (!currentItem) return;
 
-    if (fileType === "video") {
-      if (!ffmpegLoaded || ffmpegError) {
-        // ffmpeg unavailable — pass original
-        console.warn("ffmpeg not loaded, passing original video");
-        onNext({ preview, fileType, trimStart, trimEnd, soundOn });
-        return;
-      }
+    const entry: MediaItemWithTrim = {
+      src: currentItem.src,
+      fileType: currentItem.fileType,
+      trimStart: skip ? 0 : trimStart,
+      trimEnd: skip ? duration : trimEnd,
+      soundOn,
+    };
 
-      setIsTrimming(true);
-      try {
-        const inputFile = await fetchFile(preview);
-        await ffmpeg.writeFile("input.mp4", inputFile);
+    trimDataRef.current[currentIndex] = entry;
 
-        const trimDuration = trimEnd - trimStart;
-        const audioFlag = soundOn ? [] : ["-an"];
-
-        await ffmpeg.exec([
-          "-ss", String(trimStart),     // before -i for accurate seek
-          "-i", "input.mp4",
-          "-t", String(trimDuration),
-          ...audioFlag,
-          "-c:v", "libx264",            // re-encode for accurate trim points
-          "-c:a", "aac",
-          "-movflags", "+faststart",
-          "output.mp4"
-        ]);
-
-        const data = await ffmpeg.readFile("output.mp4");
-        const blob = new Blob(
-          [new Uint8Array(data as unknown as ArrayBuffer)],
-          { type: "video/mp4" }
-        );
-        const trimmedUrl = URL.createObjectURL(blob);
-
-        // cleanup ffmpeg virtual fs
-        await ffmpeg.deleteFile("input.mp4");
-        await ffmpeg.deleteFile("output.mp4");
-
-        onNext({ preview: trimmedUrl, fileType, trimStart: 0, trimEnd: trimDuration, soundOn });
-      } catch (err) {
-        console.error("Trim failed:", err);
-        onNext({ preview, fileType, trimStart, trimEnd, soundOn });
-      } finally {
-        setIsTrimming(false);
-      }
+    if (isLast) {
+      const allProcessed = [...trimDataRef.current];
+      const primary = allProcessed[0];
+      onNext({
+        preview: primary.src,
+        fileType: primary.fileType,
+        trimStart: primary.trimStart,
+        trimEnd: primary.trimEnd,
+        soundOn: primary.soundOn,
+        allProcessed,
+      });
+      trimDataRef.current = [];
+      setCurrentIndex(0);
     } else {
-      onNext({ preview, fileType, trimStart, trimEnd, soundOn });
+      setCurrentIndex((i) => i + 1);
     }
   };
 
-  const formatTime = (s: number) => `${s}s`;
-  if (!isOpen || !preview) return null;
+  // ── Reset on open ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentIndex(0);
+      trimDataRef.current = [];
+    }
+  }, [isOpen]);
+
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m > 0 ? `${m}:${sec.toString().padStart(2, "0")}` : `${sec}s`;
+  };
+
+  if (!isOpen || !currentItem) return null;
 
   return (
     <div
@@ -186,112 +160,152 @@ export const EditModal: React.FC<EditModalProps> = ({
     >
       <div
         className="relative bg-white rounded-2xl shadow-2xl overflow-hidden"
-        style={{ width: 480 }}
+        style={{ width: 500 }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-white">
-          <button onClick={onBack} className="p-1.5 rounded-full hover:bg-gray-100 transition text-gray-600">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+          <button
+            onClick={() => {
+              if (currentIndex === 0) { trimDataRef.current = []; onBack(); }
+              else setCurrentIndex((i) => i - 1);
+            }}
+            className="p-1.5 rounded-full hover:bg-gray-100 transition text-gray-600"
+          >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <h2 className="text-sm font-semibold text-gray-900">Edit</h2>
-          <button
-            onClick={handleNext}
-            disabled={isTrimming}
-            className="text-sm font-semibold text-blue-500 hover:text-blue-700 transition disabled:opacity-50"
-          >
-            {isTrimming ? "Trimming..." : "Next"}
-          </button>
+
+          <div className="flex flex-col items-center">
+            <h2 className="text-sm font-semibold text-gray-900">Edit</h2>
+            {totalItems > 1 && (
+              <span className="text-xs text-gray-400">{currentIndex + 1} / {totalItems}</span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3">
+            {totalItems > 1 && !isLast && (
+              <button
+                onClick={() => saveAndAdvance(true)}
+                className="text-sm text-gray-400 hover:text-gray-600"
+              >
+                Skip
+              </button>
+            )}
+            <button
+              onClick={() => saveAndAdvance(false)}
+              className="text-sm font-semibold text-blue-500 hover:text-blue-700"
+            >
+              {isLast ? "Next" : "Next →"}
+            </button>
+          </div>
         </div>
 
-        {/* ffmpeg status banners */}
-        {!ffmpegLoaded && !ffmpegError && fileType === "video" && (
-          <div className="px-4 py-2 bg-yellow-50 text-xs text-yellow-700 text-center border-b border-yellow-100">
-            Loading video editor...
-          </div>
-        )}
-        {ffmpegError && fileType === "video" && (
-          <div className="px-4 py-2 bg-red-50 text-xs text-red-600 text-center border-b border-red-100">
-            Trim unavailable — original video will be used
-          </div>
-        )}
-
-        {/* Trimming overlay */}
-        {isTrimming && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm gap-3">
-            <div className="w-10 h-10 rounded-full border-4 border-purple-500 border-t-transparent animate-spin" />
-            <p className="text-sm text-gray-600 font-medium">Trimming video...</p>
+        {/* Progress dots */}
+        {totalItems > 1 && (
+          <div className="flex justify-center gap-1.5 py-2 border-b border-gray-50">
+            {allMedia.map((_, i) => (
+              <div key={i} className={`rounded-full transition-all ${
+                i === currentIndex ? "w-4 h-1.5 bg-blue-500"
+                : i < currentIndex ? "w-1.5 h-1.5 bg-green-400"
+                : "w-1.5 h-1.5 bg-gray-200"
+              }`} />
+            ))}
           </div>
         )}
 
         {/* Body */}
-        <div className="flex" style={{ height: 320 }}>
+        <div className="flex" style={{ height: 340 }}>
+          {/* Preview */}
           <div className="w-1/2 bg-black flex-shrink-0">
-            {fileType === "image" ? (
-              <img src={preview} alt="edit-preview" className="w-full h-full object-cover" />
+            {!isVideo ? (
+              <img src={currentItem.src} alt="preview" className="w-full h-full object-cover" />
             ) : (
               <video
+                key={currentItem.src}
                 ref={videoRef}
-                src={preview}
+                src={currentItem.src}
                 className="w-full h-full object-cover"
                 autoPlay
-                loop
+                playsInline
                 muted={!soundOn}
               />
             )}
           </div>
 
-          <div className="flex-1 flex flex-col justify-center px-5 gap-6 bg-white">
-            {fileType === "video" && (
-              <div>
-                <p className="text-sm font-bold text-gray-900 mb-3">Trim</p>
-                <div
-                  ref={trackRef}
-                  className="relative h-10 bg-gray-300 rounded-md cursor-pointer select-none"
-                  onClick={handleTrackClick}
-                >
-                  <div
-                    className="absolute top-0 h-full bg-gray-500 rounded-md"
-                    style={{
-                      left: `${getPercent(trimStart)}%`,
-                      width: `${getPercent(trimEnd) - getPercent(trimStart)}%`,
-                    }}
-                  />
-                  <div
-                    className="absolute top-0 h-full w-3 bg-white border-2 border-gray-600 rounded-l-md cursor-ew-resize flex items-center justify-center"
-                    style={{ left: `calc(${getPercent(trimStart)}% - 6px)` }}
-                    onMouseDown={handleHandleMouseDown("start")}
-                  >
-                    <div className="w-0.5 h-4 bg-gray-500 rounded-full" />
-                  </div>
-                  <div
-                    className="absolute top-0 h-full w-3 bg-white border-2 border-gray-600 rounded-r-md cursor-ew-resize flex items-center justify-center"
-                    style={{ left: `calc(${getPercent(trimEnd)}% - 6px)` }}
-                    onMouseDown={handleHandleMouseDown("end")}
-                  >
-                    <div className="w-0.5 h-4 bg-gray-500 rounded-full" />
-                  </div>
-                </div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-xs text-gray-400">{formatTime(0)}</span>
-                  <span className="text-xs text-gray-400">{formatTime(Math.round(duration / 2))}</span>
-                  <span className="text-xs text-gray-400">{formatTime(duration)}</span>
-                </div>
-              </div>
+          {/* Controls */}
+          <div className="flex-1 flex flex-col justify-center px-5 gap-5 bg-white">
+            {!isVideo && (
+              <p className="text-sm text-gray-400 text-center">No edits needed for images</p>
             )}
 
-            {fileType === "video" && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-800">Sound On</span>
-                <button
-                  onClick={() => setSoundOn((s) => !s)}
-                  className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${soundOn ? "bg-gray-700" : "bg-gray-300"}`}
-                >
-                  <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${soundOn ? "translate-x-6" : "translate-x-0"}`}
-                  />
-                </button>
-              </div>
+            {isVideo && (
+              <>
+                {/* Trim slider */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-gray-900">Trim</p>
+                    {duration > 0 && (
+                      <span className="text-xs text-gray-400">
+                        {formatTime(trimStart)} – {formatTime(trimEnd)}
+                        <span className="text-gray-300 ml-1">({formatTime(trimEnd - trimStart)})</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {duration > 0 ? (
+                    <>
+                      <div
+                        ref={trackRef}
+                        className="relative h-10 bg-gray-200 rounded-lg select-none"
+                      >
+                        {/* Selected range */}
+                        <div
+                          className="absolute top-0 h-full bg-blue-400/60 rounded-lg pointer-events-none"
+                          style={{
+                            left: `${getPercent(trimStart)}%`,
+                            width: `${getPercent(trimEnd) - getPercent(trimStart)}%`,
+                          }}
+                        />
+                        {/* Start handle */}
+                        <div
+                          className="absolute top-0 h-full w-4 bg-white border-2 border-blue-500 rounded-l-lg cursor-ew-resize flex items-center justify-center shadow z-10"
+                          style={{ left: `calc(${getPercent(trimStart)}% - 8px)` }}
+                          onMouseDown={(e) => { e.preventDefault(); setIsDraggingStart(true); }}
+                        >
+                          <div className="w-0.5 h-4 bg-blue-400 rounded-full" />
+                        </div>
+                        {/* End handle */}
+                        <div
+                          className="absolute top-0 h-full w-4 bg-white border-2 border-blue-500 rounded-r-lg cursor-ew-resize flex items-center justify-center shadow z-10"
+                          style={{ left: `calc(${getPercent(trimEnd)}% - 8px)` }}
+                          onMouseDown={(e) => { e.preventDefault(); setIsDraggingEnd(true); }}
+                        >
+                          <div className="w-0.5 h-4 bg-blue-400 rounded-full" />
+                        </div>
+                      </div>
+                      <div className="flex justify-between mt-1">
+                        <span className="text-xs text-gray-400">{formatTime(0)}</span>
+                        <span className="text-xs text-gray-400">{formatTime(duration)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span className="text-xs text-gray-400">Loading video...</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Sound toggle */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-800">Sound</span>
+                  <button
+                    onClick={() => setSoundOn((s) => !s)}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${soundOn ? "bg-blue-500" : "bg-gray-300"}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${soundOn ? "translate-x-5" : "translate-x-0"}`} />
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </div>

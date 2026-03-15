@@ -2,7 +2,7 @@
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
 import {type BackendResponse } from "../../types/api/api";
 import type {   IGetAvailabilitySlotResponse, IGetAllHomeFeedResponseData, IGetTipsAndRentResponseData } from "../../types/api/beautician";
-import {type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse, type IChangePasswordRequest } from "../../types/api/public";
+import {type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse, type IChangePasswordRequest,type ISignedUrlResponse, type ISignedUrlFile } from "../../types/api/public";
 import type{  IGetBeauticianServicesListResponse, IGetCategoryResponse, IGetPamphletResponse, IGetServiceResponse, PriceFilter } from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
 
@@ -74,5 +74,10 @@ getSearchPostResult:async(query:string,cursor:string|null)=>{
     ...(cursor && { cursor })
   };
   return await axiosWrapper<IGetAllHomeFeedResponseData>(api.get(publicApiRoutes.searchPost,{params}))
-}
+},
+getSignedUploadUrls: async (files: ISignedUrlFile[]) => {
+  return await axiosWrapper<ISignedUrlResponse>(
+    api.post(publicApiRoutes.getSignedUrl, { files })
+  );
+},
 }

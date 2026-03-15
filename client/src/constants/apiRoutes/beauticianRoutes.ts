@@ -16,6 +16,6 @@ export const beauticianApi = {
   addLocation: "/beautician/location",
   addRecurringSlot:'/beautician/schedules/recurring',
   deleteRecurringSlot:'/beautician/schedules/recurring/:id',
-  createPost:'/beautician/post',
+ 
   getBeauticianPost:'/beautician/:id'
 };

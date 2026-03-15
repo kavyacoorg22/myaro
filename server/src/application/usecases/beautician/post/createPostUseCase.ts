@@ -2,38 +2,58 @@ import { UserRole } from "../../../../domain/enum/userEnum";
 import { AppError } from "../../../../domain/errors/appError";
 import { IPostRepository } from "../../../../domain/repositoryInterface/beautician/IPostRepository";
 import { IUserRepository } from "../../../../domain/repositoryInterface/IUserRepository";
-import { IFileUploader } from "../../../../domain/serviceInterface/IFileUploadService";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { ICreatePostUSeCase } from "../../../interface/beautician/post/ICreatePostUseCase";
 import { ICreatePostInput } from "../../../interfaceType/beauticianType";
+import { appConfig } from "../../../../infrastructure/config/config";
+import { IFileStorage } from "../../../interface/IFileStorage";
+import { validateVideoFromS3 } from "../../../../interface/Http/middleware/videoValidator";
 
 export class CreatePostUseCase implements ICreatePostUSeCase {
   constructor(
     private postRepo: IPostRepository,
     private userRepo: IUserRepository,
-    private fileUploader: IFileUploader  
+    private fileStorage: IFileStorage
   ) {}
 
-  async execute(beauticianId: string, input: ICreatePostInput, files: Express.Multer.File[]): Promise<void> {
+  async execute(beauticianId: string, input: ICreatePostInput): Promise<void> {
     const user = await this.userRepo.findByUserId(beauticianId);
-
-      console.log('files received:', files.length);           // is multer passing files?
-  console.log('file buffers:', files.map(f => f.buffer?.length));
     if (!user || user.role !== UserRole.BEAUTICIAN) {
       throw new AppError(authMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
 
-    // upload to AWS, get back real URLs
-    const mediaUrls = files.length > 0
-      ? await this.fileUploader.uploadPostMedia(files)
-      : [];
+  
+    const videoItems = input.media.filter((item) => item.fileType === "video");
+
+    await Promise.all(
+      videoItems.map((item) => validateVideoFromS3(item.s3Key, item.trimEnd))
+    );
+
+    const finalMediaUrls: string[] = await Promise.all(
+      input.media.map(async (item) => {
+        if (
+          item.fileType === "video" &&
+          item.trimStart !== undefined &&
+          item.trimEnd !== undefined &&
+          item.trimEnd > item.trimStart
+        ) {
+          return await this.fileStorage.trimAndReplaceVideo(
+            item.s3Key,
+            item.trimStart,
+            item.trimEnd,
+            item.soundOn ?? true
+          );
+        }
+        return `https://${appConfig.aws.bucketName}.s3.${appConfig.aws.region}.amazonaws.com/${item.s3Key}`;
+      })
+    );
 
     await this.postRepo.create({
       beauticianId,
       description: input.description,
-      postType: input.postType,
-      media: mediaUrls,   
+      postType: input.postType as any,
+      media: finalMediaUrls,
       location: input.location,
       likesCount: 0,
       commentsCount: 0,

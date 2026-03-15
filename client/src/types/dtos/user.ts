@@ -31,6 +31,7 @@ export interface IUserProfile {
 
 export interface IUserDto {
   id: string;
+  userId:string,
   fullName: string;
   userName:string;
   email: string;

@@ -10,7 +10,7 @@ import beauticianRoute from './src/interface/Http/routes/beauticianRoute';
 import redisClient from "./src/infrastructure/redis/redisClient";
 import adminRoutes from "./src/interface/Http/routes/adminRoutes"
 import { Server } from "http";
-
+import "./src/infrastructure/config/ffmpegSetup.ts"
 const app = express();
 
 app.disable('x-powered-by');

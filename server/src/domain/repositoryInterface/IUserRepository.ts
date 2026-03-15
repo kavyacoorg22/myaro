@@ -4,6 +4,7 @@ import { UserRole, UserRoleFilter } from "../enum/userEnum";
 
 
 export interface CreateUserDTO{
+    userId:string
    email:string,
    fullName:string,
    userName:string,

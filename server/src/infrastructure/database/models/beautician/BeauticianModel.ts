@@ -6,6 +6,7 @@ import { VerificationStatus } from "../../../../domain/enum/beauticianEnum";
 
 export type BeauticianDoc =Document & {
   _id: Types.ObjectId;
+  beauticianId:string,
   userId: Types.ObjectId;
   yearsOfExperience: number;
   about: string;
@@ -68,7 +69,7 @@ const BankDetailsSchema = new Schema(
 const BeauticianSchema = new Schema<BeauticianDoc>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-
+   
     yearsOfExperience: { type: Number, default: 0 },
     about: { type: String, default: "" },
 

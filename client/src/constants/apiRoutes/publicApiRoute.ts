@@ -15,5 +15,7 @@ export const publicApiRoutes={
    changePassword:'/change-password',
    homefeed:'/posts/feed',
    tipsRentFeed:'/posts/tips-rent',
-  searchPost:'/posts/search'
+  searchPost:'/posts/search',
+   createPost:'/posts',
+  getSignedUrl:'posts/upload'
 }

@@ -23,7 +23,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     if (isOpen) {
       fetchRecentSearches();
     }
-  }, [isOpen,recentSearches]);
+  }, [isOpen]);
 
 
   useEffect(() => {

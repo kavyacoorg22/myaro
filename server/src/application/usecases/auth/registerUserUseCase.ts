@@ -8,6 +8,7 @@ import { ConflictError } from "../../../domain/errors/systemError";
 import { UserRole } from "../../../domain/enum/userEnum";
 import { IRegisterUserUseCase } from "../../interface/auth/IRegisterUserUseCase";
 import { IRegisterInput, IResponse } from "../../interfaceType/authtypes";
+import { customAlphabet } from 'nanoid';
 
 export type SafeUser = Omit<User, "passwordHash">;
 
@@ -26,9 +27,12 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     }
 
     const passwordHash = await bcrypt.hash(input.password, this.bcryptRound);
-
+   const nanoid = customAlphabet('0123456789', 8);
+const id = nanoid();
     const dto: CreateUserDTO = {
+      userId:id,
       email: input.email,
+
       userName: input.userName,
       fullName: input.fullName,
       passwordHash,

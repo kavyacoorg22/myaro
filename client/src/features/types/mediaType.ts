@@ -8,11 +8,12 @@ export interface PostUser {
   profileImg?: string;
   isVerified?: boolean;
 }
+
 export interface PostCardData {
   id: string;
   user: { id: string; userName: string; profileImg?: string; isVerified?: boolean };
-  location:LocationVO,
-  mediaUrl: string | string[];   // ← now accepts array
+  location: LocationVO;
+  mediaUrl: string | string[];
   mediaType?: "image" | "video" | "reel";
   thumbnailUrl?: string;
   description?: string;
@@ -21,14 +22,13 @@ export interface PostCardData {
   overlayLabel?: string;
 }
 
-
-
 export interface PostCardProps {
   post: PostCardData;
   onFollow?: (userId: string) => void;
   onLike?: (postId: string, liked: boolean) => void;
   className?: string;
 }
+
 export interface PostFeedProps {
   posts: PostCardProps["post"][];
   onFollow?: (userId: string) => void;
@@ -39,18 +39,12 @@ export interface PostFeedProps {
   height?: string;
 }
 
-
-
-
 export interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  /** Called with selected File when user picks media */
   onFileSelect?: (file: File) => void;
-    onNext: (preview: string, fileType: "image" | "video") => void;  
-
+  onNext: (preview: string, fileType: "image" | "video") => void;
 }
-
 
 export interface CropModalProps {
   isOpen: boolean;
@@ -58,15 +52,28 @@ export interface CropModalProps {
   fileType: "image" | "video" | null;
   onBack: () => void;
   onClose: () => void;
-  /** Called when user clicks Next — passes main preview + any extra previews */
-  onNext: (data: { preview: string; fileType: "image" | "video"; extras: string[] }) => void;
+  onNext?: (result: {
+    preview: string;
+    fileType: "image" | "video";
+    extras: { src: string; fileType: "image" | "video" }[];
+  }) => void;
 }
-// In mediaType.ts, add:
+
+// Shared type — carries src + fileType + trim points
+// Used by EditModal, ShareModal, and ProfilePage shareItems state
+export interface MediaItemWithTrim {
+  src: string;
+  fileType: "image" | "video";
+  trimStart: number;
+  trimEnd: number;
+  soundOn: boolean;
+}
+
 export interface EditModalProps {
   isOpen: boolean;
   preview: string | null;
   fileType: "image" | "video" | null;
-  extras?: string[];
+  extras?: { src: string; fileType: "image" | "video" }[];
   onBack: () => void;
   onClose: () => void;
   onNext: (data: {
@@ -75,20 +82,22 @@ export interface EditModalProps {
     trimStart: number;
     trimEnd: number;
     soundOn: boolean;
+    // Required — every item in original order with trim points
+    allProcessed: MediaItemWithTrim[];
   }) => void;
 }
-
-
 
 export type PostType = "reel" | "tips" | "rent";
 
 export interface ShareModalProps {
   isOpen: boolean;
-  mediaItems: { src: string; fileType: "image" | "video" }[];
+  // MediaItemWithTrim so trim data (trimStart/trimEnd/soundOn) reaches the upload
+  mediaItems: MediaItemWithTrim[];
   user: { userName: string; profileImg?: string };
   onBack: () => void;
   onClose: () => void;
-  onShare: (formData: FormData) => Promise<void>;  // FormData instead of object
+  // No-op — ShareModal handles signed URL → S3 upload → POST /api/posts internally
+  onShare: () => Promise<void>;
 }
 
 export type ShareStep = "form" | "sharing" | "posted";

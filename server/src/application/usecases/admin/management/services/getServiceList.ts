@@ -13,6 +13,7 @@ export class GetBeauticianServicesListUseCase implements IGetBeauticianServicesL
     filter: "all" | "home",
     priceFilter?:PriceFilter
   ): Promise<IGetBeauticianServicesListResponse> {
+    
     const services = await this._beauticianServiceRepo.findByBeauticianId(
       beauticianId,
       {
@@ -24,7 +25,7 @@ export class GetBeauticianServicesListUseCase implements IGetBeauticianServicesL
     const mapped = services.map((service) =>
       toGetBeauticianServiceList(service),
     );
-
+    console.log(mapped)
     return { services: mapped };
   }
 }

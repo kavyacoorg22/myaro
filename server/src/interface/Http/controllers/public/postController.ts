@@ -8,13 +8,15 @@ import { IGetHomeFeedUseCase } from "../../../../application/interface/beauticia
 import { IGetTipsRentUseCase } from "../../../../application/interface/beautician/post/IGetTipsRentUseCase";
 import { IGetBeauticianPostUSeCase } from "../../../../application/interface/beautician/post/IGetbeauticianPostUseCase";
 import { ISearchPostUSeCase } from "../../../../application/interface/beautician/post/ISearchPostUseCase";
+import { IGetSignedUploadUrlsUseCase } from "../../../../application/interface/beautician/post/IGetUploadSignedUrlUseCase";
 
 export class PostController {
   constructor(private createPostUC: ICreatePostUSeCase,
     private getHomeFeedUC:IGetHomeFeedUseCase,
     private getTipsRentFeedUC:IGetTipsRentUseCase,
     private getBeauticianPostUC:IGetBeauticianPostUSeCase,
-    private searchPostUseCase:ISearchPostUSeCase
+    private searchPostUseCase:ISearchPostUSeCase,
+    private getSignedUrlsUseCase:IGetSignedUploadUrlsUseCase
   ) {}
 
   createPost = async (
@@ -33,8 +35,8 @@ export class PostController {
         );
       }
 
-    const files = req.files as Express.Multer.File[] ?? [];
-      await this.createPostUC.execute(beauticianId, input,files);
+  
+      await this.createPostUC.execute(beauticianId, input);
       res.status(HttpStatus.CREATED).json({
         success: true,
         message: "Post created successfully",
@@ -43,6 +45,8 @@ export class PostController {
       next(err);
     }
   };
+
+
 
  getHomefeed = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -117,6 +121,16 @@ getTipsRentfeed = async (req: Request, res: Response, next: NextFunction): Promi
     }catch(err)
     {
       next(err)
+    }
+  }
+
+    getSignedUploadUrl=async (req: Request, res: Response, next: NextFunction):Promise<void> => {
+    try {
+      const { files } = req.body;
+      const data = await this.getSignedUrlsUseCase.execute(files);
+       res.status(HttpStatus.OK).json({ data });
+    } catch (err) {
+      next(err);
     }
   }
 }
