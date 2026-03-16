@@ -9,7 +9,7 @@ export const publicApiRoutes={
   searchHistory:'/search/history',
     getService: "/category/:categoryId/services",
     getCategory:'/category',
-    getAvailabilityOfBeautician:'/beautician/schedules/:id',
+    getAvailabilityOfBeautician:'/beautician/:id/schedules',
     getBeauticianServiceList:'/beautician/services/:id',
    getPamplet:'/beautician/pamhlet/:beauticianId',
    changePassword:'/change-password',
@@ -17,5 +17,6 @@ export const publicApiRoutes={
    tipsRentFeed:'/posts/tips-rent',
   searchPost:'/posts/search',
    createPost:'/posts',
-  getSignedUrl:'posts/upload'
+  getSignedUrl:'posts/upload',
+  getMonthlyAvailabilityForCustomer:'/beautician/:id/schedules/month',
 }

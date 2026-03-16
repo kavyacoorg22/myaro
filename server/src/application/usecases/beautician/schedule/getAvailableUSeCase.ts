@@ -22,7 +22,6 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
     const dateOnly = toDateOnly(date);
     console.log('[GetAvailability] beauticianId:', beauticianId, '| dateOnly:', dateOnly);
 
-    // ── 1. One-time schedule ───────────────────────────────────────────────────
     const oneTime = await this.scheduleRepo.findByBeauticianAndDate(beauticianId, dateOnly);
     console.log('[GetAvailability] oneTime:', oneTime);
 
@@ -33,15 +32,13 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
 
     if (oneTime?.type === ScheduleType.AVAILABILITY) {
       console.log('[GetAvailability] → one-time AVAILABILITY, slots:', oneTime);
-      return { availability: { ...toGetAvailabilitySlotDto(oneTime), source: scheduleSourceType.MANUAL } };
+      return { availability: { ...toGetAvailabilitySlotDto(oneTime,scheduleSourceType.MANUAL), source: scheduleSourceType.MANUAL } };
     }
 
-    // ── 2. Recurring rules ─────────────────────────────────────────────────────
     const allRecurring = (await this.recurringScheduleRepo.findByBeauticianId(beauticianId)) ?? [];
     console.log('[GetAvailability] allRecurring count:', allRecurring.length);
     console.log('[GetAvailability] allRecurring:', JSON.stringify(allRecurring.map(r => ({ id: r.id, type: r.type, startDate: r.startDate, endDate: r.endDate, rrule: r.rrule }))));
 
-    // ── 3. Recurring LEAVE ─────────────────────────────────────────────────────
     const recurringLeave = allRecurring
       .filter((r) => r.type === ScheduleType.LEAVE)
       .find((r) => rruleCoversDate(r, dateOnly));
@@ -51,7 +48,6 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
       return { availability: { scheduleId: recurringLeave.id, slots: [], date: dateOnly, source: scheduleSourceType.RECURRING,    type:       ScheduleType.LEAVE } };
     }
 
-    // ── 4. Recurring AVAILABILITY ──────────────────────────────────────────────
     const matchingRecurring = allRecurring
       .filter((r) => r.type === ScheduleType.AVAILABILITY)
       .filter((r) => {
@@ -67,7 +63,6 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
       return { availability: { scheduleId: '', slots: [], date: dateOnly, source: scheduleSourceType.RECURRING ,    type:       ScheduleType.AVAILABILITY} };
     }
 
-    // ── 5. Exceptions ──────────────────────────────────────────────────────────
     const exceptions = await this.recurringExceptionRepo.findByBeauticianAndDate(beauticianId, dateOnly);
     console.log('[GetAvailability] exceptions:', exceptions);
 
@@ -80,7 +75,6 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
       return { availability: { scheduleId: '', slots: [], date: dateOnly, source: scheduleSourceType.RECURRING,    type:       ScheduleType.AVAILABILITY } };
     }
 
-    // ── 6. Build slots ─────────────────────────────────────────────────────────
     const mergedSlots = activeRecurring.map((r) => ({ startTime: r.timeFrom, endTime: r.timeTo }));
     console.log('[GetAvailability] → returning slots:', mergedSlots);
 

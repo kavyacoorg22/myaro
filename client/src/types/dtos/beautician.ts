@@ -57,3 +57,8 @@ export interface IGetAllPostsDto{
    commentsCount?:number,
    timeAgo:string
 }
+
+export interface IGetmonthlyAvailabilityDto{
+  date:Date,
+  type:ScheduleTypeValue
+}

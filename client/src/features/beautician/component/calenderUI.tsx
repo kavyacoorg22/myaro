@@ -7,7 +7,6 @@ import { AvailabilityModal } from "../../models/beautician/schedule/availability
 import { RecurringModal } from "../../models/beautician/schedule/recurringModal";
 import { RecurringLeaveModal } from "../../models/beautician/schedule/leaveModal";
 
-
 export const CalendarModal: React.FC<CalendarModalProps> = ({
   isOpen,
   onClose,
@@ -26,29 +25,26 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
 }) => {
   const isEditable = viewMode === 'own-beautician';
   const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
-
-  // Recurring — which tab is active when recurring opens
   const [isRecurringAvailOpen, setIsRecurringAvailOpen] = useState(false);
   const [isRecurringLeaveOpen, setIsRecurringLeaveOpen] = useState(false);
-
-  // Single unified active mode — only one can be active at a time
   const [activeMode, setActiveMode] = useState<'single' | 'multiple' | 'recurring'>('single');
 
-  const calendar = useCalendarLogic(initialDate, initialSelectedDates, isEditable);
+  // ✅ pass beauticianId so hook knows which API to call
+  const calendar = useCalendarLogic(initialDate, initialSelectedDates, isEditable, beauticianId);
 
   const handleDateClick = (date: number) => {
     calendar.handleDateClick(date);
-    onDateSelect?.(calendar.selectedDates);
+    onDateSelect?.(calendar.selectedDates,calendar.currentDate);
     if (!isEditable) setIsAvailabilityOpen(true);
   };
 
- const handleConfirm = () => {
-  if (isEditable && onConfirm) {
-    const mode = activeMode === 'recurring' ? 'single' : activeMode;
-    onConfirm(calendar.selectedDates, mode);
-  }
-  onClose();
-};
+  const handleConfirm = () => {
+    if (isEditable && onConfirm) {
+      const mode = activeMode === 'recurring' ? 'single' : activeMode;
+      onConfirm(calendar.selectedDates, mode);
+    }
+    onClose();
+  };
 
   const handleOpenAvailability = () => {
     if (calendar.selectedDates.length > 0) setIsAvailabilityOpen(true);
@@ -57,14 +53,20 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
   const handleCloseAvailability = () => {
     setIsAvailabilityOpen(false);
     calendar.clearSelection();
+    calendar.fetchMonthData(); // ✅ refresh colors after save/delete
     onDateSelect?.([]);
   };
 
-  // When beautician clicks Recurring → show small inline picker
   const handleOpenRecurring = (type: 'availability' | 'leave') => {
-    setActiveMode('single'); // reset after opening
+    setActiveMode('single');
     if (type === 'availability') setIsRecurringAvailOpen(true);
     else setIsRecurringLeaveOpen(true);
+  };
+
+  const handleCloseRecurring = () => {
+    setIsRecurringAvailOpen(false);
+    setIsRecurringLeaveOpen(false);
+    calendar.fetchMonthData(); // ✅ refresh colors after recurring save
   };
 
   const getFormattedDates = (): string[] =>
@@ -130,39 +132,60 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
           </div>
 
           {/* Calendar Grid */}
-          <div className="mb-4">
+          <div className="mb-2">
             <div className="grid grid-cols-7 gap-1 mb-2">
               {calendar.dayNames.map(day => (
                 <div key={day} className="text-center text-xs text-gray-500 font-medium">{day}</div>
               ))}
             </div>
             <div className="grid grid-cols-7 gap-1">
-              {calendar.days.map((day, index) => (
-                <div key={index} className="aspect-square">
-                  {day.isCurrentMonth ? (
-                    <button
-                      onClick={() => handleDateClick(day.date)}
-                      className={`w-full h-full flex items-center justify-center rounded-md text-sm font-medium transition ${
-                        day.isSelected
-                          ? 'bg-teal-400 text-white hover:bg-teal-500'
-                          : 'hover:bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      {day.date}
-                    </button>
-                  ) : (
-                    <div className="w-full h-full" />
-                  )}
-                </div>
-              ))}
+              {calendar.days.map((day, index) => {
+                const status = day.isCurrentMonth ? calendar.getDateStatus(day.date) : null;
+                return (
+                  <div key={index} className="aspect-square">
+                    {day.isCurrentMonth ? (
+                      <button
+                        onClick={() => handleDateClick(day.date)}
+                        className={`w-full h-full flex flex-col items-center justify-center rounded-md text-sm font-medium transition
+                          ${day.isSelected
+                            ? 'bg-teal-400 text-white hover:bg-teal-500'
+                            : status === 'leave'
+                              ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                              : status === 'available'
+                                ? 'bg-teal-50 text-teal-700 hover:bg-teal-100'
+                                : 'hover:bg-gray-100 text-gray-900'
+                          }`}
+                      >
+                        {day.date}
+                        {/* dot — hidden when selected since bg already shows it */}
+                        {!day.isSelected && status && (
+                          <span className={`w-1 h-1 rounded-full mt-0.5 ${
+                            status === 'leave' ? 'bg-red-400' : 'bg-teal-400'
+                          }`} />
+                        )}
+                      </button>
+                    ) : (
+                      <div className="w-full h-full" />
+                    )}
+                  </div>
+                );
+              })}
             </div>
+          </div>
+
+          {/* Legend */}
+          <div className="flex gap-4 mb-3 text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-teal-400 inline-block" /> Available
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-red-400 inline-block" /> Leave
+            </span>
           </div>
 
           {/* Controls — edit mode only */}
           {isEditable && (
             <div className="space-y-2">
-
-              {/* Row 1: Single · Multiple · Recurring · + */}
               <div className="flex gap-1.5">
                 <button
                   onClick={() => { calendar.handleSelectionModeChange('single'); setActiveMode('single'); }}
@@ -185,15 +208,15 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
                   Multiple days
                 </button>
                 <button
-                 onClick={() => {
-  if (activeMode === 'recurring') {
-    setActiveMode('single');
-  } else {
-    setActiveMode('recurring');
-    calendar.clearSelection();
-    onDateSelect?.([]);
-  }
-}}
+                  onClick={() => {
+                    if (activeMode === 'recurring') {
+                      setActiveMode('single');
+                    } else {
+                      setActiveMode('recurring');
+                      calendar.clearSelection();
+                      onDateSelect?.([]);
+                    }
+                  }}
                   className={`flex-1 px-2 py-1.5 text-xs rounded-md transition ${
                     activeMode === 'recurring'
                       ? 'bg-gray-700 text-white'
@@ -202,21 +225,22 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
                 >
                   Recurring
                 </button>
-             {activeMode!=='recurring' &&(   <button
-                  onClick={handleOpenAvailability}
-                  disabled={calendar.selectedDates.length === 0 }
-                  className={`p-1.5 rounded-md transition ${
-                    calendar.selectedDates.length > 0
-                      ? 'bg-teal-400 text-white hover:bg-teal-500'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  }`}
-                  title="Add availability slots"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>)}
+                {activeMode !== 'recurring' && (
+                  <button
+                    onClick={handleOpenAvailability}
+                    disabled={calendar.selectedDates.length === 0}
+                    className={`p-1.5 rounded-md transition ${
+                      calendar.selectedDates.length > 0
+                        ? 'bg-teal-400 text-white hover:bg-teal-500'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                    title="Add availability slots"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
-              {/* Row 2: Recurring type picker — appears when Recurring clicked */}
               {activeMode === 'recurring' && (
                 <div className="flex gap-1.5 p-2 bg-gray-50 rounded-md border border-gray-200">
                   <span className="text-xs text-gray-500 self-center mr-1">Add:</span>
@@ -234,7 +258,6 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
                   </button>
                 </div>
               )}
-
             </div>
           )}
 
@@ -257,14 +280,14 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
       {/* Recurring Availability Modal */}
       <RecurringModal
         isOpen={isRecurringAvailOpen}
-        onClose={() => setIsRecurringAvailOpen(false)}
+        onClose={handleCloseRecurring} 
         beauticianId={beauticianId}
       />
 
       {/* Recurring Leave Modal */}
       <RecurringLeaveModal
         isOpen={isRecurringLeaveOpen}
-        onClose={() => setIsRecurringLeaveOpen(false)}
+        onClose={handleCloseRecurring} 
         beauticianId={beauticianId}
       />
     </>

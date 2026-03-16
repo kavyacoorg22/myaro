@@ -1,7 +1,7 @@
 import { beauticianApi } from "../../constants/apiRoutes/beauticianRoutes";
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
 import type { BackendResponse } from "../../types/api/api";
-import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse,  type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest,  } from "../../types/api/beautician";
+import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse,  type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest, type IGetmonthlyAvailabilityReponse,  } from "../../types/api/beautician";
 import type { ICreatePostInput } from "../../types/api/public";
 import { type IGetPamphletResponse, type IAddCustomServiceRequest, type IBeauticianServiceSelectionResponse, type IGetBeauticianServicesListResponse, type IUpsertBeauticianServiceRequest, type PriceFilter,} from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
@@ -69,6 +69,9 @@ export const BeauticianApi = {
    },
    deleteRecurringSchedule:async(recurringId:string,data:IDeleteRecursionScheduleReuest)=>{
     return await axiosWrapper<BackendResponse>(api.delete(beauticianApi.deleteRecurringSlot.replace(':id',recurringId),{data}))
+   },
+   getMonthlyAvailability:async(month: number, year: number)=>{
+    return await axiosWrapper<IGetmonthlyAvailabilityReponse>(api.get(beauticianApi.getMonthlyAvailability, { params: { month, year } }))
    },
  createPost: async (input: ICreatePostInput) => {
   return await axiosWrapper<BackendResponse>(

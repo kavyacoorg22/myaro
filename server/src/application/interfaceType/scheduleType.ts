@@ -1,6 +1,6 @@
 import { Slot } from "../../domain/entities/schedule";
 import { ScheduleEndType, scheduleSourceType, ScheduleType } from "../../domain/enum/beauticianEnum";
-import { IGetAvailabilitySlotDto } from "../dtos/beautician";
+import { IGetAvailabilitySlotDto, IGetmonthlyAvailabilityDto } from "../dtos/beautician";
 
 export interface IAddAvailabilityRequest {
   dates: string[];
@@ -25,8 +25,12 @@ export interface IAddRecursionScheduleInput{
 
 
 export interface IDeleteRecursionScheduleInput{
-   recurringId: string // recurring schedule id
+   recurringId: string 
     date: Date
   
+}
+
+export interface IGetmonthlyAvailabilityOutput{
+  dates:IGetmonthlyAvailabilityDto[]
 }
 

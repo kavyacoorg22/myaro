@@ -54,8 +54,8 @@ const ProfilePage = () => {
   } | null>(null);
   const [showShare, setShowShare] = useState(false);
   const [shareItems, setShareItems] = useState<MediaItemWithTrim[]>([]);
+  const [customerSlots, setCustomerSlots] = useState<any[]>([]);
 
-  // Ref so EditModal.onNext always reads latest extras — immune to stale closure
   const extrasRef = useRef<{ src: string; fileType: "image" | "video" }[]>([]);
 
   const currentUser = useSelector((store: RootState) => store.user.currentUser);
@@ -180,6 +180,23 @@ const ProfilePage = () => {
     setCropFileType(null);
   };
 
+const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => {
+  setSelectedDates(dates);
+  if (viewMode !== 'view-beautician' || !profileData?.userId || dates.length === 0) return;
+
+  const ref = currentDate ?? new Date();
+  const year = ref.getFullYear();
+  const month = ref.getMonth();
+  const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(dates[0]).padStart(2, '0')}`;
+
+  try {
+    const res = await publicAPi.getAvailbilitySchedule(profileData.userId, dateStr);
+    setCustomerSlots(res.data?.data?.availability?.slots ?? []);
+  } catch (err) {
+    console.error('Failed to fetch slots', err);
+    setCustomerSlots([]);
+  }
+};
   if (loading) {
     return (
       <div className="container mx-auto p-6">
@@ -288,8 +305,8 @@ const ProfilePage = () => {
             profileImage={profileData.profileImg}
             initialDate={new Date()}
             initialSelectedDates={selectedDates}
-            onDateSelect={setSelectedDates}
-            existingSlots={[]}
+            onDateSelect={handleCustomerDateSelect}
+            existingSlots={customerSlots}
             onSaveSlots={handleSaveAvailability}
             onDeleteSlot={handleDeleteSlot}
             beauticianId={viewMode === 'view-beautician' ? profileData.userId : undefined}

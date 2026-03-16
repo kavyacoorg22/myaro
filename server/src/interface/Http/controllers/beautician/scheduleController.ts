@@ -6,10 +6,11 @@ import { AppError } from "../../../../domain/errors/appError";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
-import {  ScheduleType } from "../../../../domain/enum/beauticianEnum";
+import { ScheduleType } from "../../../../domain/enum/beauticianEnum";
 import { IAddRecursionScheduleUseCase } from "../../../../application/interface/beautician/schedule/IAddRecurringSchedule";
 import { IAddRecurringLeaveScheduleUseCase } from "../../../../application/interface/beautician/schedule/IAddRecurringLeaveSchedule";
 import { IDeleteRecurringAvailabilitySlotUseCase } from "../../../../application/interface/beautician/schedule/IDeleteRecurringAvailabilitySlotUseCase";
+import { IGetMonthlyAvailabilityUSeCase } from "../../../../application/interface/beautician/schedule/IGetMonthlyAvailabilityUseCase";
 
 export class ScheduleController {
   private _addAvailabilityUC: IAddAvailbilityUseCase;
@@ -20,9 +21,10 @@ export class ScheduleController {
     addAvailabilityUC: IAddAvailbilityUseCase,
     deleteAvailabilitySlotUC: IDeleteAvailbilitySlotUseCase,
     getAvailabilityUC: IGetAvailbilityUseCase,
-    private addRecurringAvailabilityUseCase:IAddRecursionScheduleUseCase,
-    private addRecurringLeaveUseCase:IAddRecurringLeaveScheduleUseCase,
-    private deleteRecurringSlotUC:IDeleteRecurringAvailabilitySlotUseCase
+    private addRecurringAvailabilityUseCase: IAddRecursionScheduleUseCase,
+    private addRecurringLeaveUseCase: IAddRecurringLeaveScheduleUseCase,
+    private deleteRecurringSlotUC: IDeleteRecurringAvailabilitySlotUseCase,
+    private getMonthlyAvailabilityUC: IGetMonthlyAvailabilityUSeCase,
   ) {
     ((this._addAvailabilityUC = addAvailabilityUC),
       (this._deleteAvailabilitySlotUC = deleteAvailabilitySlotUC),
@@ -36,14 +38,14 @@ export class ScheduleController {
   ): Promise<void> => {
     try {
       const beauticianId = req.user?.id;
-      const { dates, slots,type } = req.body;
+      const { dates, slots, type } = req.body;
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
           HttpStatus.UNAUTHORIZED,
         );
       }
-      const input = { dates, slots,type };
+      const input = { dates, slots, type };
       await this._addAvailabilityUC.execute(beauticianId, input);
 
       res.status(HttpStatus.CREATED).json({
@@ -62,7 +64,7 @@ export class ScheduleController {
     try {
       const beauticianId = req.user?.id;
       const scheduleId = req.params.id;
-      const {slotToDelete,source} = req.body;
+      const { slotToDelete, source } = req.body;
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -75,13 +77,13 @@ export class ScheduleController {
           HttpStatus.BAD_REQUEST,
         );
       }
-    
+
       await this._deleteAvailabilitySlotUC.execute(
         beauticianId,
         scheduleId,
         slotToDelete,
       );
-  
+
       res.status(HttpStatus.OK).json({
         success: true,
         message: "Schedule deleted",
@@ -91,40 +93,45 @@ export class ScheduleController {
     }
   };
 
-  deleteRecurringAvailability=async(req: Request,
+  deleteRecurringAvailability = async (
+    req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
-        const beauticianId = req.user?.id;
-      const recurringId  = req.params.id;
-      const { date }     = req.body;
-      console.log(`beautician id ${beauticianId}`)
-      console.log(`recurring id ${recurringId}`)
-      console.log(`date... ${date}`)
+      const beauticianId = req.user?.id;
+      const recurringId = req.params.id;
+      const { date } = req.body;
+      console.log(`beautician id ${beauticianId}`);
+      console.log(`recurring id ${recurringId}`);
+      console.log(`date... ${date}`);
       if (!beauticianId) {
-        throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+        throw new AppError(
+          authMessages.ERROR.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
       if (!recurringId || !date) {
-        throw new AppError(generalMessages.ERROR.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        throw new AppError(
+          generalMessages.ERROR.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
-      await this.deleteRecurringSlotUC.execute(
-        beauticianId,{
+      await this.deleteRecurringSlotUC.execute(beauticianId, {
         recurringId,
-        date:new Date(date),
-        }
-      );
+        date: new Date(date),
+      });
 
       res.status(HttpStatus.OK).json({
         success: true,
         message: "Recurring slot removed for this date",
       });
-    }catch(err){
-      next(err)
+    } catch (err) {
+      next(err);
     }
-  }
+  };
   getAvailability = async (
     req: Request,
     res: Response,
@@ -203,27 +210,55 @@ export class ScheduleController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-         try {
-      const beauticianId = req.user?.id;
-      const input        = req.body;
+      try {
+        const beauticianId = req.user?.id;
+        const input = req.body;
 
-      if(!beauticianId)
-      {
-       throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
+        if (!beauticianId) {
+          throw new AppError(
+            authMessages.ERROR.UNAUTHORIZED,
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        if (input.type === ScheduleType.LEAVE) {
+          await this.addRecurringLeaveUseCase.execute(beauticianId, input);
+        } else {
+          await this.addRecurringAvailabilityUseCase.execute(
+            beauticianId,
+            input,
+          );
+        }
+
+        res
+          .status(HttpStatus.CREATED)
+          .json({ success: true, message: "Schedule added successfully" });
+      } catch (error) {
+        next(error);
       }
-
-      if (input.type === ScheduleType.LEAVE) {
-        await this.addRecurringLeaveUseCase.execute(beauticianId, input);
-      } else {
-        await this.addRecurringAvailabilityUseCase.execute(beauticianId, input);
-      }
-
-      res.status(HttpStatus.CREATED).json({ success: true,message:'Schedule added successfully' });
-    } catch (error) {
-      next(error);
-    }
     } catch (err) {
       next(err);
     }
   };
+ getMonthAvailability = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+      const { month, year } = req.query;
+ 
+    const beauticianId = req.params.id ?? req.user?.id;
+   
+
+    if (!beauticianId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    if (!month || !year) throw new AppError(generalMessages.ERROR.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+
+    const data = await this.getMonthlyAvailabilityUC.execute(
+      beauticianId,
+      Number(month),
+      Number(year)
+    );
+
+    res.status(HttpStatus.OK).json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
 }

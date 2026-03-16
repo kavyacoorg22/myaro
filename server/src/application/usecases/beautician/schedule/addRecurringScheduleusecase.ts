@@ -5,12 +5,13 @@ import { IUserRepository } from "../../../../domain/repositoryInterface/IUserRep
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { ScheduleType } from "../../../../domain/enum/beauticianEnum";
-
+import { IAddRecursionScheduleUseCase } from "../../../interface/beautician/schedule/IAddRecurringSchedule";
 import { IAddRecursionScheduleInput } from "../../../interfaceType/scheduleType";
 import { getEffectiveEndDate } from "../../../../utils/schedule/RruleHelper";
 import { carveLeaveFromAvailability, computeSplit } from "../../../../utils/schedule/recurringOverlapSplitter";
+import { extractBYDAY } from "../../../../utils/schedule/dateHelper";
 
-export class AddRecurringAvailabilityUseCase {
+export class AddRecurringAvailabilityUseCase implements IAddRecursionScheduleUseCase {
   constructor(
     private readonly recurringScheduleRepo: IReccuringScheduleRepository,
     private readonly userRepo: IUserRepository
@@ -22,10 +23,10 @@ export class AddRecurringAvailabilityUseCase {
       throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
 
-      const startDate = new Date(input.startDate);
-  if (isNaN(startDate.getTime())) {
-    throw new AppError("Invalid startDate", HttpStatus.BAD_REQUEST);
-  }
+    const startDate = new Date(input.startDate);
+    if (isNaN(startDate.getTime())) {
+      throw new AppError("Invalid startDate", HttpStatus.BAD_REQUEST);
+    }
 
     const startDateStr = input.startDate instanceof Date
       ? input.startDate.toISOString().split("T")[0]
@@ -57,7 +58,6 @@ export class AddRecurringAvailabilityUseCase {
       }
     }
 
-    // Step 2: Carve existing leave windows out of the new availability — leave wins
     const newAvailSegment = {
       rrule:     input.rrule,
       timeFrom:  input.timeFrom,
@@ -71,11 +71,22 @@ export class AddRecurringAvailabilityUseCase {
       endCount:  input.endCount,
     };
 
-    const toSave = leaveRules.length > 0
-      ? carveLeaveFromAvailability(newAvailSegment, leaveRules)
-      : [newAvailSegment];
+    // Step 2: Only carve leave rules that share the same days as the new availability
+    // ✅ e.g. BYDAY=SA should NOT be carved by BYDAY=TH,SU — different days, no real conflict
+    const newDays = extractBYDAY(input.rrule);
+
+    const conflictingLeaveRules = leaveRules.filter(leave => {
+      const leaveDays = extractBYDAY(leave.rrule);
+      // if either rule has no BYDAY (e.g. FREQ=DAILY), treat as conflicting
+      if (leaveDays.length === 0 || newDays.length === 0) return true;
+      return leaveDays.some(d => newDays.includes(d));
+    });
 
     // Step 3: Save only portions that don't conflict with leave
+    const toSave = conflictingLeaveRules.length > 0
+      ? carveLeaveFromAvailability(newAvailSegment, conflictingLeaveRules)
+      : [newAvailSegment];
+
     for (const seg of toSave) {
       await this.recurringScheduleRepo.create({ beauticianId, ...seg });
     }

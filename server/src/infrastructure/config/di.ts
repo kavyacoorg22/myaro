@@ -110,6 +110,7 @@ import { GetTipsRentFeedUseCase } from "../../application/usecases/beautician/po
 import { GetBeauticianPostUseCase } from "../../application/usecases/beautician/post/getBeauticianPostUseCase";
 import { SearchPostUseCase } from "../../application/usecases/beautician/post/searchPostUseCase";
 import { GetSignedUploadUrlsUseCase } from "../../application/usecases/beautician/post/getSignedUploadUrlUseCase";
+import { GetMonthlyAvailabilityUseCase } from "../../application/usecases/beautician/schedule/getMonthlyAvailabilityUseCase";
 
 
 
@@ -264,7 +265,9 @@ const addRecurringAvailabilityUC=new AddRecurringAvailabilityUseCase(recurringRe
 const addRecurringLeaveUC=new AddRecurringLeaveUseCase(recurringRepo,userRepo)
 const deleteRecurringAvailablitySlotUseCase=new DeleteRecurringAvailabilityUseCase(userRepo,recurringExceptionRepo,recurringRepo)
 const getAvailabilityUC=new GetAvailabilityUseCase(scheduleRepo,recurringRepo,recurringExceptionRepo)
-const scheduleController=new ScheduleController(addAvailabilityUC,deleteAvailabilitySlotUC,getAvailabilityUC,addRecurringAvailabilityUC,addRecurringLeaveUC,deleteRecurringAvailablitySlotUseCase)
+const getMonthlyAvailabilityUC=new GetMonthlyAvailabilityUseCase(getAvailabilityUC)
+const scheduleController=new ScheduleController(addAvailabilityUC,deleteAvailabilitySlotUC,getAvailabilityUC,addRecurringAvailabilityUC,addRecurringLeaveUC,
+  deleteRecurringAvailablitySlotUseCase,getMonthlyAvailabilityUC)
 export {scheduleController}
 
 const postRepo=new PostRepository()

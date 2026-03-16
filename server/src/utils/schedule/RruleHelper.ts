@@ -57,23 +57,38 @@ export function getEffectiveEndDate(rule: {
   return FAR_FUTURE;
 }
 
-export function rruleCoversDate(rule: { rrule: string; startDate: Date; endDate?: Date }, date: Date): boolean {
+export function rruleCoversDate(
+  rule: { rrule: string; startDate: Date; endDate?: Date },
+  date: Date
+): boolean {
   try {
+    // ✅ Force UTC date-only, ignore any timezone offset stored in DB
+    const y = rule.startDate.getUTCFullYear();
+    const m = String(rule.startDate.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(rule.startDate.getUTCDate()).padStart(2, '0');
+    const dtstart = `${y}${m}${d}T000000Z`;
+
     const rruleStr = rule.rrule.includes("DTSTART")
       ? rule.rrule
-      : `DTSTART:${toRRuleDateStr(rule.startDate)}
-RRULE:${rule.rrule}`;
+      : `DTSTART:${dtstart}\nRRULE:${rule.rrule}`;
 
-    const rrule    = rrulestr(rruleStr);
-    const dayStart = date;
-    const dayEnd   = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + 1));
+    console.log('[rruleCoversDate] rruleStr:', rruleStr, '| checking date:', date.toISOString());
+
+    const rrule = rrulestr(rruleStr, { forceset: false });
+
+    const dayStart = new Date(Date.UTC(
+      date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0
+    ));
+    const dayEnd = new Date(Date.UTC(
+      date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 23, 59, 59
+    ));
 
     return rrule.between(dayStart, dayEnd, true).length > 0;
-  } catch {
+  } catch (e) {
+    console.error('[rruleCoversDate] error:', e);
     return false;
   }
 }
-
 export function toRRuleDateStr(date: Date): string {
   return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 }

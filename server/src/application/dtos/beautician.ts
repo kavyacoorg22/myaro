@@ -78,6 +78,10 @@ export interface IGetAvailabilitySlotDto {
   type:ScheduleType
 }
 
+export interface IGetmonthlyAvailabilityDto{
+  date:Date,
+  type:ScheduleType
+}
 export interface IGetServiceAreaDto {
   homeServiceableLocation?: location[];
   serviceableLocation?: location[];

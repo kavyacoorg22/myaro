@@ -2,7 +2,7 @@ import type { BeauticianStatusType, ScheduleEndType, ScheduleTypeValue} from "..
 import type { UserRoleType } from "../../constants/types/User";
 import type { LocationVO } from "../../features/shared/locationTagInput";
 import type { PostType } from "../../features/types/mediaType";
-import type { IGetAllPostsDto, IGetAvailabilitySlotDto, IGetBeauticianPostsDto, IGetServiceAreaDto } from "../dtos/beautician";
+import type { IGetAllPostsDto, IGetAvailabilitySlotDto, IGetBeauticianPostsDto, IGetmonthlyAvailabilityDto, IGetServiceAreaDto } from "../dtos/beautician";
 import type { BackendResponse } from "./api";
 
 export interface ShopAddressVO {
@@ -151,6 +151,10 @@ export interface IGetBeauticianPostResponseData{
   nextCursor:string|null
 }
 
+export interface IGetmonthlyAvailabilityReponseData{
+  dates:IGetmonthlyAvailabilityDto[]
+}
+
 export type IBeauticianProfileUpdate = Partial<IProfileUpdateRequest> & Partial<IBankDeatilUpdateRequest>;
 
 export type IVerificationStatusResponse=BackendResponse<IVerificationStatusResponseData>
@@ -161,3 +165,4 @@ export type IGetServiceAreaResponse=BackendResponse<IGetServiceAreaResponseData>
 // export type IGetAllHomeFeedResponse=BackendResponse<IGetAllHomeFeedResponseData>
 // export type IGetTipsAndRentResponse=BackendResponse<IGetTipsAndRentResponseData>
 // export type IGetBeauticianPostResponse=BackendResponse<IGetBeauticianPostResponseData>
+export type IGetmonthlyAvailabilityReponse=BackendResponse<IGetmonthlyAvailabilityReponseData>

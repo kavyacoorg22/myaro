@@ -35,3 +35,9 @@ export function getTimeAgo(date: Date): string {
   if (days < 7) return `${days}d`;
   return `${weeks}w`;
 }
+
+export function extractBYDAY(rrule: string): string[] {
+  const match = rrule.match(/BYDAY=([^;]+)/);
+  if (!match) return [];
+  return match[1].split(',');
+}

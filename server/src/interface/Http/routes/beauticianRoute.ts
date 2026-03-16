@@ -9,7 +9,6 @@ import { validatePamphletUpload } from '../validator/valiadtePampletUpload';
 
 //user route
 router.get('/pamphlet/:id',authenticateUser,beauticianServiceController.getPamphletForCustomer)
-router.get('/schedules/:id',authenticateUser,scheduleController.getAvailabilityForUser)
 router.get('/location/:id',authenticateUser,beauticianController.getServiceArea)
 
 router.post('/register',authenticateCustomer,uploadFields(['portfolioImage', 'certificateImage', 'shopPhotos', 'shopLicence']),validateBeauticianFiles,validateBeauticianData,beauticianController.beauticianRegistration)
@@ -35,11 +34,14 @@ router.get('/location',authenticateBeautician,beauticianController.getServiceAre
 router.patch('/location',authenticateBeautician,beauticianController.addServiceArea)
 
 //schedule
-router.put('/schedules',authenticateBeautician,validateAddAvailability,scheduleController.addAvailability)
-router.delete('/schedules/:id',authenticateBeautician,scheduleController.deleteAvailability)
-router.get('/schedules',authenticateBeautician,scheduleController.getAvailability)
-router.post('/schedules/recurring',authenticateBeautician,validateRecurringSchedule,scheduleController.addRecurringSchedule)
-router.delete('/schedules/recurring/:id',authenticateBeautician,scheduleController.deleteRecurringAvailability)
+router.get('/schedules/month', authenticateBeautician, scheduleController.getMonthAvailability)
+router.get('/schedules', authenticateBeautician, scheduleController.getAvailability)
+router.put('/schedules', authenticateBeautician, validateAddAvailability, scheduleController.addAvailability)
+router.post('/schedules/recurring', authenticateBeautician, validateRecurringSchedule, scheduleController.addRecurringSchedule)
+router.delete('/schedules/recurring/:id', authenticateBeautician, scheduleController.deleteRecurringAvailability)
+router.delete('/schedules/:id', authenticateBeautician, scheduleController.deleteAvailability)
+router.get('/:id/schedules/month', authenticateCustomer, scheduleController.getMonthAvailability)
+router.get('/:id/schedules', authenticateCustomer, scheduleController.getAvailabilityForUser)
 
 //post
 

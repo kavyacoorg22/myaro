@@ -15,7 +15,7 @@ export interface CalendarModalProps {
   profileImage?: string;
   initialDate?: Date;
   initialSelectedDates?: number[];
-  onDateSelect?: (dates: number[]) => void;
+  onDateSelect?: (dates: number[], currentDate?: Date) => void;
   onConfirm?: (dates: number[], mode: 'single' | 'multiple') => void;
   existingSlots?: TimeSlot[];
   onSaveSlots?: (request: IAddAvailabilityRequest) => Promise<void>;
