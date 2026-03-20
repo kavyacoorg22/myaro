@@ -8,13 +8,14 @@ import { errorHandler } from "./src/interface/Http/middleware/errorHandling";
 import publicRoutes from './src/interface/Http/routes/publicRoutes';
 import beauticianRoute from './src/interface/Http/routes/beauticianRoute';
 import redisClient from "./src/infrastructure/redis/redisClient";
-import adminRoutes from "./src/interface/Http/routes/adminRoutes"
-import { Server } from "http";
-import "./src/infrastructure/config/ffmpegSetup.ts"
+import adminRoutes from "./src/interface/Http/routes/adminRoutes";
+import { createServer } from "http";
+import { initSocket } from "./src/infrastructure/socket/socketInit";
+import "./src/infrastructure/config/ffmpegSetup.ts";
+
 const app = express();
 
 app.disable('x-powered-by');
-
 
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -30,66 +31,56 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 app.use('/api', publicRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/beautician', beauticianRoute);
-app.use('/api/admin',adminRoutes)
-
+app.use('/api/admin', adminRoutes);
 
 app.use(errorHandler);
 
-let server: Server;
+// single server instance shared by Express + Socket.io 
+const httpServer = createServer(app);
 
 async function startServer() {
   try {
     await connectMongo();
     await redisClient.connect();
-    
+
+    // ── Attach socket.io to the same server ───────────────────────────────
+    initSocket(httpServer, process.env.FRONTEND_URL || 'http://localhost:5173');
+
     const port = process.env.PORT || 4323;
-    
-    if (server) {
-      await new Promise<void>((resolve) => {
-        server.close(() => {
-          console.log('🔄 Existing server closed');
-          resolve();
-        });
-      });
-    }
-    
-    server = app.listen(port, () => {
+
+    httpServer.listen(port, () => {
       console.log(`✅ Server running on http://localhost:${port}`);
       console.log(`✅ CORS enabled for: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+      console.log(`✅ Socket.io ready`);
     });
 
-  
     process.on('SIGTERM', gracefulShutdown);
     process.on('SIGINT', gracefulShutdown);
-    
+
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 }
 
-
 async function gracefulShutdown(signal: string) {
   console.log(`\n${signal} received. Closing server gracefully...`);
-  
-  if (server) {
-    server.close(async () => {
-      console.log('🔄 HTTP server closed');
-      
-      try {
-        await redisClient.quit();
-        console.log('🔄 Redis connection closed');
-      } catch (err) {
-        console.error('Error closing Redis:', err);
-      }
-      
-      process.exit(0);
-    });
-  }
+
+  httpServer.close(async () => {
+    console.log('🔄 HTTP server closed');
+
+    try {
+      await redisClient.quit();
+      console.log('🔄 Redis connection closed');
+    } catch (err) {
+      console.error('Error closing Redis:', err);
+    }
+
+    process.exit(0);
+  });
 }
 
 startServer();

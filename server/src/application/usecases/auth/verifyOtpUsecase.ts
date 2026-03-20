@@ -1,4 +1,4 @@
-import { IOtpService } from "../../../domain/serviceInterface/IOtpService";
+import { IOtpService } from "../../serviceInterface/IOtpService";
 import { IVerifyOtpUseCase } from "../../interface/auth/IVerifyOtpUseCase";
 import { IResponse, IVerifyOtpInput } from "../../interfaceType/authtypes";
 

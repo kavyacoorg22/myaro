@@ -1,6 +1,6 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
-import { IFileUploader } from "../../../domain/serviceInterface/IFileUploadService";
+import { IFileUploader } from "../../serviceInterface/IFileUploadService";
 import { userMessages } from "../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IProfileImageChangeUseCase } from "../../interface/public/IProfileImageChangeUseCase";
@@ -18,7 +18,7 @@ export class ProfileImageChangeUseCase implements IProfileImageChangeUseCase {
 
   async execute(
     id: string,
-    profileImg: Express.Multer.File
+    profileImg: Express.Multer.File,
   ): Promise<IProfileImageChangeOutput> {
     const user = await this._userRepo.findByUserId(id);
     if (!user) {
@@ -33,19 +33,19 @@ export class ProfileImageChangeUseCase implements IProfileImageChangeUseCase {
       console.log(err);
       throw new AppError(
         "Failed to upload profile image",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
     const userData = await this._userRepo.updateProfileImageById(
       id,
-      profilePath
+      profilePath,
     );
 
     if (!userData) {
       throw new AppError(
         "Failed to update user profile",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 

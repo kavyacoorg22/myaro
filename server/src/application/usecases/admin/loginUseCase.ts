@@ -1,6 +1,6 @@
 import { IAdminRepository } from "../../../domain/repositoryInterface/IAdminRepository";
-import { IAuthService } from "../../../domain/serviceInterface/IAuthService";
-import { ITokenService } from "../../../domain/serviceInterface/ItokenService";
+import { IAuthService } from "../../serviceInterface/IAuthService";
+import { ITokenService } from "../../serviceInterface/ItokenService";
 import {
   IAdminLoginResponse,
   IAdminLoginRequest,
@@ -19,7 +19,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
   constructor(
     adminRepository: IAdminRepository,
     tokenService: ITokenService,
-    authService: IAuthService
+    authService: IAuthService,
   ) {
     this._adminRepository = adminRepository;
     this._tokenService = tokenService;
@@ -31,18 +31,18 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
     if (!admin) {
       throw new AppError(
         authMessages.ERROR.INVALID_CREDENTIALS,
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
 
     const isMatch = await this._authService.comparePassword(
       request.password,
-      admin.passwordHash
+      admin.passwordHash,
     );
     if (!isMatch) {
       throw new AppError(
         authMessages.ERROR.INVALID_CREDENTIALS,
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
 
@@ -50,13 +50,13 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
       admin.id,
       UserRole.ADMIN,
       admin.email,
-      true
+      true,
     );
     const refreshToken = this._tokenService.generateRefreshToken(
       admin.id,
       UserRole.ADMIN,
       admin.email,
-      true
+      true,
     );
     const role = admin.role;
     return {

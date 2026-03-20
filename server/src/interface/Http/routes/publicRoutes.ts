@@ -1,5 +1,5 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateUser, beauticianController, categoryController, changePasswordController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateUser, beauticianController, categoryController, changePasswordController, chatController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword } from "../middleware/validateUserInput";
@@ -25,4 +25,11 @@ router.get('/posts/feed',postController.getHomefeed)
 router.get('/posts/tips-rent',postController.getTipsRentfeed)
 router.get('/posts/search',postController.getPostSearchResult)
 router.post('/posts/upload',authenticateBeautician,  validateSignedUrlRequest,postController.getSignedUploadUrl)
+
+//chat
+router.post('/chats',authenticateUser,chatController.createChat)
+router.get('/chats',authenticateUser,chatController.getUserChats)
+router.get('/chat/with/:userId',authenticateUser,chatController.getChatByParticipants)
+router.get('/chat/:chatId/messages',authenticateUser,chatController.getMessageByChat)
+
 export default router

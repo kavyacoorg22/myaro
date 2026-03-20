@@ -1,4 +1,4 @@
-import { ITokenService } from "../../../domain/serviceInterface/ItokenService";
+import { ITokenService } from "../../serviceInterface/ItokenService";
 import { IAuthAccountRepository } from "../../../domain/repositoryInterface/IAuthAccountRepository";
 import { AppError } from "../../../domain/errors/appError";
 import { IRefreshTokenUseCase } from "../../interface/auth/IrefreshToken";
@@ -12,7 +12,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 
   constructor(
     tokenService: ITokenService,
-    authAccountRepository: IAuthAccountRepository
+    authAccountRepository: IAuthAccountRepository,
   ) {
     this._tokenService = tokenService;
     this._authAccountRepository = authAccountRepository;
@@ -27,7 +27,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     if (!decoded) {
       throw new AppError(
         authMessages.ERROR.INVALID_REFRESH_TOKEN,
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
 
@@ -37,7 +37,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     if (!user) {
       throw new AppError(
         userMessages.ERROR.USER_NOT_FOUND,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -49,7 +49,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
       user.id,
       user.role,
       user.email,
-      user.isActive ?? true
+      user.isActive ?? true,
     );
 
     return {

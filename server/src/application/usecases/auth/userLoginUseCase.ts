@@ -1,6 +1,6 @@
 import { AppError } from "../../../domain/errors/appError";
-import { IAuthService } from "../../../domain/serviceInterface/IAuthService";
-import { ITokenService } from "../../../domain/serviceInterface/ItokenService";
+import { IAuthService } from "../../serviceInterface/IAuthService";
+import { ITokenService } from "../../serviceInterface/ItokenService";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { authMessages } from "../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
@@ -16,7 +16,7 @@ export class UserLoginUseCase implements ILoginUseCase {
   constructor(
     userRepository: IUserRepository,
     authService: IAuthService,
-    tokenService: ITokenService
+    tokenService: ITokenService,
   ) {
     this._userRepository = userRepository;
     this._authService = authService;
@@ -36,18 +36,18 @@ export class UserLoginUseCase implements ILoginUseCase {
     if (!user || !user.passwordHash) {
       throw new AppError(
         authMessages.ERROR.INVALID_CREDENTIALS,
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
 
     const isMatch = await this._authService.comparePassword(
       password,
-      user.passwordHash
+      user.passwordHash,
     );
     if (!isMatch) {
       throw new AppError(
         authMessages.ERROR.INVALID_CREDENTIALS,
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
     if (!user.isActive) {
@@ -58,13 +58,13 @@ export class UserLoginUseCase implements ILoginUseCase {
       user.id,
       user.role,
       user.email,
-      user.isActive
+      user.isActive,
     );
     const refreshToken = this._tokenService.generateRefreshToken(
       user.id,
       user.role,
       user.email,
-      user.isActive
+      user.isActive,
     );
 
     return toLoginOutputDto(user, accessToken, refreshToken);

@@ -1,7 +1,7 @@
 import { AppError } from "../../../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../../../domain/repositoryInterface/IUserRepository";
-import { IFileUploader } from "../../../../../domain/serviceInterface/IFileUploadService";
+import { IFileUploader } from "../../../../serviceInterface/IFileUploadService";
 import { authMessages } from "../../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IUploadPamphletUseCase } from "../../../../interface/beauticianService/IPamphletUploadUseCase";
@@ -27,13 +27,13 @@ export class UploadPamphletUseCase implements IUploadPamphletUseCase {
     let pamphletUrl: string;
     try {
       if (beautician.pamphletUrl) {
-  try {
-    await this._uploadService.deletePamphletImage(beautician.pamphletUrl);
-  } catch(err) {
-    console.log(err)
-  }
-}
-pamphletUrl = await this._uploadService.uploadPamphletImage(pamphletImg);
+        try {
+          await this._uploadService.deletePamphletImage(beautician.pamphletUrl);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      pamphletUrl = await this._uploadService.uploadPamphletImage(pamphletImg);
     } catch (err) {
       throw new AppError(
         "Failed to upload pamphlet image",

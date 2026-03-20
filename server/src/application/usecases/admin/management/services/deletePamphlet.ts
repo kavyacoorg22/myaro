@@ -1,6 +1,6 @@
 import { AppError } from "../../../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../../../domain/repositoryInterface/IBeauticianRepository";
-import { IFileUploader } from "../../../../../domain/serviceInterface/IFileUploadService";
+import { IFileUploader } from "../../../../serviceInterface/IFileUploadService";
 import { authMessages } from "../../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IDeletePamphletUseCase } from "../../../../interface/beauticianService/IDeletePamphletUseCase";

@@ -1,12 +1,12 @@
-import bcrypt from 'bcrypt';
-import { IAuthService } from '../../domain/serviceInterface/IAuthService';
+import bcrypt from "bcrypt";
+import { IAuthService } from "../../application/serviceInterface/IAuthService";
 
 export class BcryptAuthService implements IAuthService {
-    async hashPassword(password: string): Promise<string> {
-        return bcrypt.hash(password, 10);
-    }
-    
-    async comparePassword(password: string, hash: string): Promise<boolean> {
-        return bcrypt.compare(password, hash);
-    }
+  async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 10);
+  }
+
+  async comparePassword(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
+  }
 }

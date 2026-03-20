@@ -1,0 +1,22 @@
+import { Chat } from "../../../domain/entities/chat";
+import { AppError } from "../../../domain/errors/appError";
+import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
+import { HttpStatus } from "../../../shared/enum/httpStatus";
+import { IGetChatByParticipants } from "../../interface/chat/IGetChatByParticipants";
+import { IGetChatByParticipantsInput } from "../../interfaceType/chatType";
+
+export class GetChatByParticipants implements IGetChatByParticipants {
+  constructor(private chatRepo: IChatRepository) {}
+  async execute(input: IGetChatByParticipantsInput): Promise<Chat | null> {
+    const { participantA, participantB } = input;
+
+    if (participantA === participantB) {
+      throw new AppError(
+        "Cannot start a chat with yourself",
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return this.chatRepo.getChatByParticipants({ participantA, participantB });
+  }
+}

@@ -1,7 +1,7 @@
 import { AppError } from "../../../../domain/errors/appError";
 import { IToggleActiveStatusRepository } from "../../../../domain/repositoryInterface/IToggleActiveRepository";
 import { IUserRepository } from "../../../../domain/repositoryInterface/IUserRepository";
-import { ITokenBlacklistService } from "../../../../domain/serviceInterface/ITokenBlackListService";
+import { ITokenBlacklistService } from "../../../serviceInterface/ITokenBlackListService";
 import { appConfig } from "../../../../infrastructure/config/config";
 import { userMessages } from "../../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
@@ -10,16 +10,16 @@ import { IToggleUserStatusUseCase } from "../../../interface/admin/management/It
 export class ToggleUserStatusUseCase implements IToggleUserStatusUseCase {
   private _userRepo: IUserRepository;
   private _tokenBlacklistService: ITokenBlacklistService;
-  private _repository:IToggleActiveStatusRepository
+  private _repository: IToggleActiveStatusRepository;
 
   constructor(
     userRepo: IUserRepository,
     tokenBlacklistService: ITokenBlacklistService,
-    repository:IToggleActiveStatusRepository
+    repository: IToggleActiveStatusRepository,
   ) {
     this._userRepo = userRepo;
     this._tokenBlacklistService = tokenBlacklistService;
-    this._repository=repository
+    this._repository = repository;
   }
 
   async execute(userId: string, status: "active" | "inactive"): Promise<void> {

@@ -111,6 +111,18 @@ import { GetBeauticianPostUseCase } from "../../application/usecases/beautician/
 import { SearchPostUseCase } from "../../application/usecases/beautician/post/searchPostUseCase";
 import { GetSignedUploadUrlsUseCase } from "../../application/usecases/beautician/post/getSignedUploadUrlUseCase";
 import { GetMonthlyAvailabilityUseCase } from "../../application/usecases/beautician/schedule/getMonthlyAvailabilityUseCase";
+import { ChatRepository } from "../repositories/user/chatRepository";
+import { MessageRepository } from "../repositories/user/messageRepositoty";
+import { SocketIOEmitter } from "../service/socketIOEmitter";
+import { JoinChatRoomRoomUseCase } from "../../application/usecases/chat/joinChatRoomUseCase";
+import { SendMessageUseCase } from "../../application/usecases/chat/sendMessageUseCase";
+import { TypingIndicatorUseCase } from "../../application/usecases/chat/typingIndicatorUseCase";
+import { MarkSeenUseCase } from "../../application/usecases/chat/markSeenUseCase";
+import { ChatController } from "../../interface/Http/controllers/public/chatController";
+import { GetMessagesByChatUseCase } from "../../application/usecases/chat/getMessagesByChatUseCase";
+import { CreateChatUseCase } from "../../application/usecases/chat/createChatUseCase";
+import { GetChatByParticipants } from "../../application/usecases/chat/getChatByParticipantsUseCase";
+import { GetUserChatsUseCase } from "../../application/usecases/chat/getUserChatsUseCase";
 
 
 
@@ -280,3 +292,21 @@ const getSignedUrlUC=new GetSignedUploadUrlsUseCase(fileStorage)
 const postController=new PostController(createPostUseCase,getHomefeedUC,getTipsRentFeedUC,getBeauticianPostUC,getPostSearchResult,getSignedUrlUC)
 
 export {postController}
+//chat
+
+const chatRepository    = new ChatRepository();
+const messageRepository = new MessageRepository();
+
+export function buildChatUseCases(socketEmitter: SocketIOEmitter) {
+  return {
+    joinChatRoomUseCase: new JoinChatRoomRoomUseCase(chatRepository, socketEmitter),
+    sendMessageUseCase:  new SendMessageUseCase(messageRepository,chatRepository,socketEmitter),
+    typingIndicatorUSeCase:new TypingIndicatorUseCase(socketEmitter),
+    markSeenUseCase:new MarkSeenUseCase(chatRepository,messageRepository,socketEmitter)
+  };
+}
+const getMessageByChatUC=new GetMessagesByChatUseCase(messageRepository,chatRepository)
+const createChatUC=new CreateChatUseCase(chatRepository)
+const getChatByParticipantsUC=new GetChatByParticipants(chatRepository)
+const getUserChatsUC=new GetUserChatsUseCase(chatRepository,userRepo,messageRepository)
+export const chatController=new ChatController(getMessageByChatUC,createChatUC,getChatByParticipantsUC,getUserChatsUC)

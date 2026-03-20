@@ -2,7 +2,7 @@ import { Beautician } from "../../../domain/entities/Beautician";
 import { VerificationStatus } from "../../../domain/enum/beauticianEnum";
 import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
-import { IFileUploader } from "../../../domain/serviceInterface/IFileUploadService";
+import { IFileUploader } from "../../serviceInterface/IFileUploadService";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import logger from "../../../utils/logger";
 import { IBeauticianRegisterUseCase } from "../../interface/beautician/IBeauticianRegisterUseCase";
@@ -11,22 +11,20 @@ import {
   IBeauticianRegistrationInput,
 } from "../../interfaceType/beauticianType";
 
-export class BeauticianRegistrationUseCase
-  implements IBeauticianRegisterUseCase
-{
+export class BeauticianRegistrationUseCase implements IBeauticianRegisterUseCase {
   private _beauticianRepo: IBeauticianRepository;
   private _fileUploader: IFileUploader;
 
   constructor(
     beauticianRepo: IBeauticianRepository,
-    fileUploder: IFileUploader
+    fileUploder: IFileUploader,
   ) {
     this._beauticianRepo = beauticianRepo;
     this._fileUploader = fileUploder;
   }
 
   async execute(
-    data: IBeauticianRegistrationInput
+    data: IBeauticianRegistrationInput,
   ): Promise<IBeauticianRegistartionOutput> {
     const existing = await this._beauticianRepo.findByUserId(data.userId);
     if (
@@ -35,14 +33,14 @@ export class BeauticianRegistrationUseCase
     ) {
       throw new AppError(
         "Already registered as beautician",
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 
     const newlyUploaded: string[] = [];
 
     const tryUpload = async (
-      uploadFn: () => Promise<string[] | undefined>
+      uploadFn: () => Promise<string[] | undefined>,
     ): Promise<string[]> => {
       const paths = await uploadFn();
       if (paths && paths.length) newlyUploaded.push(...paths);
@@ -55,33 +53,33 @@ export class BeauticianRegistrationUseCase
     let shopLicencePaths: string[] | undefined;
 
     try {
-     portfolioPaths= await tryUpload(() =>
-        this._fileUploader.uploadPortfolioImages(data.files.portfolioImage)
+      portfolioPaths = await tryUpload(() =>
+        this._fileUploader.uploadPortfolioImages(data.files.portfolioImage),
       );
 
       if (data.files.certificateImage?.length) {
         certificatePaths = await tryUpload(() =>
-          this._fileUploader.uploadCertificates(data.files.certificateImage)
+          this._fileUploader.uploadCertificates(data.files.certificateImage),
         );
       }
 
       if (data.hasShop) {
         if (data.files.shopPhotos?.length) {
           shopPhotosPaths = await tryUpload(() =>
-            this._fileUploader.uploadShopPhotos(data.files.shopPhotos ?? [])
+            this._fileUploader.uploadShopPhotos(data.files.shopPhotos ?? []),
           );
         }
         if (data.files.shopLicence?.length) {
           shopLicencePaths = await tryUpload(() =>
-            this._fileUploader.uploadShopLicences(data.files.shopLicence)
+            this._fileUploader.uploadShopLicences(data.files.shopLicence),
           );
         }
       }
     } catch (err) {
       try {
         await this._fileUploader.deleteFiles(newlyUploaded);
-      } catch(err) {
-        logger.error(err)
+      } catch (err) {
+        logger.error(err);
       }
       throw err;
     }
@@ -118,15 +116,15 @@ export class BeauticianRegistrationUseCase
       } else {
         const updated = await this._beauticianRepo.updateByUserId(
           data.userId,
-          registerDto
+          registerDto,
         );
         beauticianId = updated?.id ?? "";
       }
     } catch (dbErr) {
       try {
         await this._fileUploader.deleteFiles(newlyUploaded);
-      } catch(err) {
-        logger.error(err)
+      } catch (err) {
+        logger.error(err);
       }
       throw dbErr;
     }
@@ -138,8 +136,8 @@ export class BeauticianRegistrationUseCase
           await this._fileUploader.deleteFiles(oldFiles.certificate);
           await this._fileUploader.deleteFiles(oldFiles.shopPhotos);
           await this._fileUploader.deleteFiles(oldFiles.shopLicence);
-        } catch(err) {
-          logger.error(err)
+        } catch (err) {
+          logger.error(err);
         }
       })();
     }

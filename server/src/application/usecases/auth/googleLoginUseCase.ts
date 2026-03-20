@@ -1,8 +1,8 @@
 import { User } from "../../../domain/entities/User";
 import { AppError } from "../../../domain/errors/appError";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
-import { IGoogleAuthService } from "../../../domain/serviceInterface/IGoogleAuthService";
-import { ITokenService } from "../../../domain/serviceInterface/ItokenService";
+import { IGoogleAuthService } from "../../serviceInterface/IGoogleAuthService";
+import { ITokenService } from "../../serviceInterface/ItokenService";
 import { adminMessages } from "../../../shared/constant/message/adminMessages";
 import { authMessages } from "../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
@@ -20,7 +20,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
   constructor(
     tokenService: ITokenService,
     userRepo: IUserRepository,
-    googleAuthService: IGoogleAuthService
+    googleAuthService: IGoogleAuthService,
   ) {
     this._tokenService = tokenService;
     this._userRepo = userRepo;
@@ -35,7 +35,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
     if (!payload || !payload.email) {
       throw new AppError(
         authMessages.ERROR.INVALID_GOOGLE_TOKEN,
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
 
@@ -47,7 +47,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
       if (!user.isActive) {
         throw new AppError(
           authMessages.ERROR.BLOCKED_USER,
-          HttpStatus.FORBIDDEN
+          HttpStatus.FORBIDDEN,
         );
       }
 
@@ -91,7 +91,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
     if (!user?.id) {
       throw new AppError(
         adminMessages.ERROR.USER_ID_REQUIRED,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -99,14 +99,14 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
       user?.id,
       user?.role,
       user?.email,
-      user.isActive
+      user.isActive,
     );
 
     const refreshToken = this._tokenService.generateRefreshToken(
       user.id,
       user.role,
       user.email,
-      user.isActive
+      user.isActive,
     );
 
     return toLoginOutputDto(user, accessToken, refreshToken);

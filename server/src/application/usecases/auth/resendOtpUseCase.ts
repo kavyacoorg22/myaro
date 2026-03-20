@@ -1,14 +1,14 @@
 import { generateOtp } from "../../../utils/otpUtils";
 import { NodemailerOtpService } from "../../../infrastructure/service/sendEmail";
-import { IOtpService } from "../../../domain/serviceInterface/IOtpService";
+import { IOtpService } from "../../serviceInterface/IOtpService";
 import { IResendOtpUseCase } from "../../interface/auth/IResendOtpUseCase";
 import { IResponse, ISendOtpInput } from "../../interfaceType/authtypes";
-import { ISendMailService } from "../../../domain/serviceInterface/mailService";
+import { ISendMailService } from "../../serviceInterface/mailService";
 
 export class ResendOtpUseCase implements IResendOtpUseCase {
   constructor(
     private otpService: IOtpService,
-    private mailService: ISendMailService
+    private mailService: ISendMailService,
   ) {}
 
   async execute(input: ISendOtpInput): Promise<IResponse> {

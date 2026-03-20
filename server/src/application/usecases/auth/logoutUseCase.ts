@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { ITokenBlacklistService } from "../../../domain/serviceInterface/ITokenBlackListService";
-import { ITokenService } from "../../../domain/serviceInterface/ItokenService";
+import { ITokenBlacklistService } from "../../serviceInterface/ITokenBlackListService";
+import { ITokenService } from "../../serviceInterface/ItokenService";
 import { ILogoutUseCase } from "../../interface/auth/logoutUseCase";
 
 import { appConfig } from "../../../infrastructure/config/config";
@@ -11,7 +11,7 @@ export class LogoutUseCase implements ILogoutUseCase {
 
   constructor(
     tokenBlacklistService: ITokenBlacklistService,
-    jwtService: ITokenService
+    jwtService: ITokenService,
   ) {
     this._tokenBlacklistService = tokenBlacklistService;
     this._tokenService = jwtService;
