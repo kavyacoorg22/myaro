@@ -17,6 +17,7 @@ import { adminFrontendRoute } from "../../../constants/frontendRoutes/adminFront
 import { UserRole } from "../../../constants/types/User"
 import type { RootState } from "../../../redux/appStore"
 import { GoogleAuthButton } from "./googleAuthButton"
+import { connectSocket } from "../../../services/socket/socketService"
 
 
 export const LoginForm=()=>{
@@ -102,7 +103,6 @@ export const LoginForm=()=>{
         toast.success(res.data.message);
 
       } else {
-        console.log('🚀 Sending user login request');
         res = await authApi.login(data);
         console.log('✅ User login response:', res);
         
@@ -127,7 +127,7 @@ export const LoginForm=()=>{
             profileImg: userData.profileImg,
           })
         );
-
+       connectSocket(userData.userId); 
         toast.success(res.data.message);
         navigate(publicFrontendRoutes.landing, { replace: true });
       }

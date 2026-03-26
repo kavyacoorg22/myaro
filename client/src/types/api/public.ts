@@ -1,4 +1,5 @@
-import type { UserRoleType } from "../../constants/types/User";
+import type { ServiceModesType } from "../../constants/types/beautician";
+import type { Role } from "../dtos/user";
 import type { BackendResponse } from "./api"
 
 
@@ -9,7 +10,7 @@ export interface profileResponseData{
   fullName: string;
   profileImg?: string;
   isVerified: boolean;
-  role: UserRoleType;
+  role: Role;
   
   
  
@@ -23,6 +24,7 @@ export interface profileResponseData{
       city: string;
       pincode: string;
     };
+    serviceModes:ServiceModesType[],
     homeservicecount: number;
     verificationStatus: string;
   };

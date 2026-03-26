@@ -25,8 +25,10 @@ const corsOptions = {
   exposedHeaders: ['Set-Cookie'],
   optionsSuccessStatus: 204
 };
-
-app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  if (req.path.startsWith('/socket.io')) return next(); 
+  cors(corsOptions)(req, res, next);
+});
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -44,13 +46,17 @@ const httpServer = createServer(app);
 async function startServer() {
   try {
     await connectMongo();
-    await redisClient.connect();
 
-    // ── Attach socket.io to the same server ───────────────────────────────
+    try {
+      await redisClient.connect();
+      console.log("✅ Redis connected");
+    } catch (err) {
+      console.warn("⚠️ Redis unavailable, continuing without it:", err);
+    }
+
     initSocket(httpServer, process.env.FRONTEND_URL || 'http://localhost:5173');
 
     const port = process.env.PORT || 4323;
-
     httpServer.listen(port, () => {
       console.log(`✅ Server running on http://localhost:${port}`);
       console.log(`✅ CORS enabled for: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);

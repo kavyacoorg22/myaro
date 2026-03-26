@@ -21,7 +21,6 @@ export interface ILoginOutputDto {
 
 export interface IUserDto {
     id: string;
-    userId:string,
     userName: string;
     email: string;
     fullName: string;

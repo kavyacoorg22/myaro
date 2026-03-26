@@ -138,7 +138,7 @@ export default function UsersList(props: UsersDetailDesignProps) {
               {pageData.map((user) => (
                 <TableRow key={user.id}>
                  
-                  <TableCell>{user.userId}</TableCell>
+                  <TableCell>{user.id}</TableCell>
                   <TableCell>{user.userName}</TableCell>
                   <TableCell>{user.fullName}</TableCell>
                    <TableCell>{user.email}</TableCell>

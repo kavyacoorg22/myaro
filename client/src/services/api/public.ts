@@ -1,7 +1,8 @@
 
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
+import type { PostType } from "../../features/types/mediaType";
 import {type BackendResponse } from "../../types/api/api";
-import type {   IGetAvailabilitySlotResponse, IGetAllHomeFeedResponseData, IGetTipsAndRentResponseData, IGetmonthlyAvailabilityReponse } from "../../types/api/beautician";
+import {   type IGetAvailabilitySlotResponse, type IGetAllHomeFeedResponseData, type IGetTipsAndRentResponseData, type IGetmonthlyAvailabilityReponse, type IGetBeauticianPostResponse, type IGetBeauticianPostResponseData } from "../../types/api/beautician";
 import {type IProfilePhotoChangeResponse, type profileResponce, type ISearchResponse, type IRecentSearchResponse, type IChangePasswordRequest,type ISignedUrlResponse, type ISignedUrlFile } from "../../types/api/public";
 import type{  IGetBeauticianServicesListResponse, IGetCategoryResponse, IGetPamphletResponse, IGetServiceResponse, PriceFilter } from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
@@ -83,6 +84,13 @@ getSignedUploadUrls: async (files: ISignedUrlFile[]) => {
  getMonthlyAvailabilityForUser:async(beauticianId:string,month: number, year: number)=>{
     return await axiosWrapper<IGetmonthlyAvailabilityReponse>(api.get(publicApiRoutes.getMonthlyAvailabilityForCustomer.replace(':id',beauticianId), { params: { month, year } }))
    },
-
+ getBeauticianPost:async(beauticianId:string,postType:PostType,limit=12,cursor?:string|null)=>{
+   const params={
+    postType,
+    limit,
+    ...(cursor&&{cursor})
+   }
+  return await axiosWrapper<IGetBeauticianPostResponseData>(api.get(publicApiRoutes.getBeauticianPost.replace(':id',beauticianId),{params}))
+ }
   
 }

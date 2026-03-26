@@ -17,29 +17,33 @@ export const CustomerProfileSchema = z.object({
 });
 
 export const ProfileSchema = z.object({
-  userName: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters" })
-    .regex(/^[a-zA-Z0-9_]+$/, {
-      message: "Username can only contain letters, numbers, and underscores",
-    }),
-  fullName: z
-    .string()
-    .min(2, { message: "Full name must be at least 2 characters" })
-    .regex(/^[a-zA-Z\s]+$/, {
-      message: "Full name can only contain letters and spaces",
-    }),
-  about: z.string().min(10, { message: "Bio must be at least 10 characters" }),
+  userName: z.string().min(3),
+  fullName: z.string().min(2),
+  about: z.string().min(10),
   shopName: z.string().trim().optional(),
-  shopAddress: z
-    .object({
-      address: z.string(),
-      city: z.string(),
-    })
-    .optional(),
+  shopAddress: z.object({
+    address: z.string(),
+    city: z.string(),
+  }).optional(),
   yearsOfExperience: z.string(),
-});
 
+ 
+  serviceModes: z
+    .array(z.enum(["HOME", "SHOP", "EVENT", "CONSULTATION"]))
+    .min(1, { message: "Please select at least one service mode" }),
+}).superRefine((data, ctx) => {
+  if (data.serviceModes?.includes("SHOP")) {
+    if (!data.shopName || data.shopName.trim() === "") {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Shop name is required", path: ["shopName"] });
+    }
+    if (!data.shopAddress?.address || data.shopAddress.address.trim() === "") {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Shop address is required", path: ["shopAddress", "address"] });
+    }
+    if (!data.shopAddress?.city || data.shopAddress.city.trim() === "") {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "City is required", path: ["shopAddress", "city"] });
+    }
+  }
+});
 
 export const BankDetailsSchema = z
   .object({

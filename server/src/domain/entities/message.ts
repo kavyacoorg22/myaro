@@ -1,3 +1,4 @@
+import { BookingStatus } from "../enum/bookingEnum";
 import { MessageType } from "../enum/messageEnum";
 
 export interface Message
@@ -9,6 +10,7 @@ export interface Message
   message: string,
   type:MessageType,
   bookingId?: string,
+  status?: BookingStatus;
   seen: boolean,
   seenAt:Date,
   createdAt: Date,

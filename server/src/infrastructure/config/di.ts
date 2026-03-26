@@ -123,6 +123,13 @@ import { GetMessagesByChatUseCase } from "../../application/usecases/chat/getMes
 import { CreateChatUseCase } from "../../application/usecases/chat/createChatUseCase";
 import { GetChatByParticipants } from "../../application/usecases/chat/getChatByParticipantsUseCase";
 import { GetUserChatsUseCase } from "../../application/usecases/chat/getUserChatsUseCase";
+import { CreateBookingUseCase } from "../../application/usecases/booking/createBookingUseCase";
+import { BookingRepository } from "../repositories/user/bookingRepository";
+import { BookingHistoryRepository } from "../repositories/user/bookingHistory";
+import { UpdateBookingStatusUseCase } from "../../application/usecases/booking/updateBookingStatusUseCase";
+import { GetBeauticianBookingsUSeCase } from "../../application/usecases/booking/getBeauticianBookingsUSeCase";
+import { GetBookingByIdUSeCase } from "../../application/usecases/booking/getBookingByIdUseCase";
+import { BookingController } from "../../interface/Http/controllers/public/bookingController";
 
 
 
@@ -293,11 +300,12 @@ const postController=new PostController(createPostUseCase,getHomefeedUC,getTipsR
 
 export {postController}
 //chat
+export const socketEmitter=new SocketIOEmitter()
 
 const chatRepository    = new ChatRepository();
 const messageRepository = new MessageRepository();
 
-export function buildChatUseCases(socketEmitter: SocketIOEmitter) {
+export function buildChatUseCases() {
   return {
     joinChatRoomUseCase: new JoinChatRoomRoomUseCase(chatRepository, socketEmitter),
     sendMessageUseCase:  new SendMessageUseCase(messageRepository,chatRepository,socketEmitter),
@@ -308,5 +316,13 @@ export function buildChatUseCases(socketEmitter: SocketIOEmitter) {
 const getMessageByChatUC=new GetMessagesByChatUseCase(messageRepository,chatRepository)
 const createChatUC=new CreateChatUseCase(chatRepository)
 const getChatByParticipantsUC=new GetChatByParticipants(chatRepository)
-const getUserChatsUC=new GetUserChatsUseCase(chatRepository,userRepo,messageRepository)
+const getUserChatsUC=new GetUserChatsUseCase(chatRepository,userRepo,messageRepository,beauticianRepo)
 export const chatController=new ChatController(getMessageByChatUC,createChatUC,getChatByParticipantsUC,getUserChatsUC)
+//booking
+const bookingRepo=new BookingRepository()
+const bookingHistoryRepo=new BookingHistoryRepository()
+const createBookingUseCase=new CreateBookingUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter)
+const updateBookingStatusUC=new UpdateBookingStatusUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter)
+const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userRepo)
+const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
+export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase)

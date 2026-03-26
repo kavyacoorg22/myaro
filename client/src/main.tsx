@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import {GoogleOAuthProvider} from '@react-oauth/google'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
     onScriptLoadError={() => console.log('Error loading Google script')}
       onScriptLoadSuccess={() => console.log('Google script loaded')}
@@ -17,5 +17,5 @@ createRoot(document.getElementById('root')!).render(
   
     </Provider>
     </GoogleOAuthProvider>
-  </StrictMode>,
+  // </StrictMode>
 )

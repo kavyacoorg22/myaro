@@ -19,4 +19,13 @@ export const publicApiRoutes={
    createPost:'/posts',
   getSignedUrl:'posts/upload',
   getMonthlyAvailabilityForCustomer:'/beautician/:id/schedules/month',
+  getBeauticianPost:'/beautician/posts/:id',
+  //chat
+  createChat:'/chats',
+  getUserChats:'/chats',
+  getChatByparticipants:'/chat/with/:id',
+  getMessageByChat:'/chat/:chatId/messages',
+  getBookingById:'/bookings/:bookingId',
+  createBooking:'/bookings',
+  updateBookingStatus:'/bookings/:bookingId/status',
 }

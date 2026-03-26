@@ -10,3 +10,12 @@ export interface BookingCardProps {
   onReschedule?: () => void;
   reason?: string;
 }
+
+export interface BookingForm {
+  selectedServices: string[];
+  phone:    string;
+  address:  string;
+  date:     string;
+  timeSlot: string; 
+  notes:    string;
+}

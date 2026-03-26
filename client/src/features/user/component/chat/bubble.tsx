@@ -3,9 +3,9 @@ export const Bubble = ({
   isSelf,
 }: {
   children: React.ReactNode;
-  isSelf?: boolean;
+  isSelf?:  boolean;
 }) => (
-  <div className={`flex ${isSelf ? "justify-end" : "justify-start"} mb-2`}>
+  <div className={`flex ${isSelf ? "justify-end" : "justify-start"} mb-1`}>
     {children}
   </div>
 );

@@ -23,7 +23,7 @@ export class GetMessagesByChatUseCase implements IGetMessagesByChatUseCase {
     if (!chat)
       throw new AppError(`Chat ${chatId} not found.`, HttpStatus.NOT_FOUND);
 
-    if (!chat.participants.includes(userId)) {
+    if (!chat.participants.some((p) => p.toString() === userId)) {
       throw new AppError(`Access denied.`, HttpStatus.FORBIDDEN);
     }
     const messages = await this.messageRepo.findByChatId(

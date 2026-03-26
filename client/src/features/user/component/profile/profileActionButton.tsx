@@ -1,9 +1,10 @@
 //shows button according the roleee
 
-import React from 'react';
+import React, { useState } from 'react';
 import { type ProfileActions } from './types';
 import { type UserRoleType } from '../../../../constants/types/User';
 import { Upload, Camera, Lightbulb, Home } from 'lucide-react';
+type Tab = "upload" | "posts" | "tips" | "rent";
 
 // Beautician Own Buttons - Horizontal layout below username
 export const BeauticianOwnButtons: React.FC<
@@ -38,41 +39,54 @@ export const BeauticianTabSection: React.FC<
   onPosts,
   onTips,
   onRent
-}) => (
-  <div className="flex items-center gap-40 border-t pt-4">
+}) => {
+   const [activeTab, setActiveTab] = useState<Tab>("posts");
+
+  const handleClick = (tab: Tab, handler?: () => void) => {
+    setActiveTab(tab);
+    handler?.();
+  };
+
+  const activeClass = "text-gray-400 border-t-2 border-brown-500 -mt-[1px]";
+  const inactiveClass = "text-gray-500 hover:text-gray-700";
+
+  return (
+    <div className="flex items-center justify-around border-t pt-4 mb-5">
+  {onUpload && (
     <button
-      onClick={onUpload}
-      className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+      onClick={() => handleClick("upload", onUpload)}
+      className={`flex items-center gap-2 ${activeTab === "upload" ? activeClass : inactiveClass}`}
     >
       <Upload className="w-5 h-5" />
     </button>
+  )}
 
-    <button
-      onClick={onPosts}
-      className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
-    >
-      <Camera className="w-5 h-5" />
-      <span className="text-sm font-medium">POSTS</span>
-    </button>
+  <button
+    onClick={() => handleClick("posts", onPosts)}
+    className={`flex items-center gap-2 ${activeTab === "posts" ? activeClass : inactiveClass}`}
+  >
+    <Camera className="w-5 h-5" />
+    <span className="text-sm font-medium">POSTS</span>
+  </button>
 
-    <button
-      onClick={onTips}
-      className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
-    >
-      <Lightbulb className="w-5 h-5" />
-      <span className="text-sm font-medium">TIPS</span>
-    </button>
+  <button
+    onClick={() => handleClick("tips", onTips)}
+    className={`flex items-center gap-2 ${activeTab === "tips" ? activeClass : inactiveClass}`}
+  >
+    <Lightbulb className="w-5 h-5" />
+    <span className="text-sm font-medium">TIPS</span>
+  </button>
 
-    <button
-      onClick={onRent}
-      className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
-    >
-      <Home className="w-5 h-5" />
-      <span className="text-sm font-medium">RENT</span>
-    </button>
-  </div>
-);
-
+  <button
+    onClick={() => handleClick("rent", onRent)}
+    className={`flex items-center gap-2 ${activeTab === "rent" ? activeClass : inactiveClass}`}
+  >
+    <Home className="w-5 h-5" />
+    <span className="text-sm font-medium">RENT</span>
+  </button>
+</div>
+  );
+}
 // Customer Own Button
 export const CustomerOwnButtons: React.FC<ProfileActions> = ({ 
   onEditProfile,

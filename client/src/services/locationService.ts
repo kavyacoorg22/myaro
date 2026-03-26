@@ -13,7 +13,6 @@ export const locationService = {
       );
     });
   },
-// Reverse geocoding: Convert coordinates to location name
   async getLocationName(lat: number, lon: number): Promise<{
     city: string;
     state: string;

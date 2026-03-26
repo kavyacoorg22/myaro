@@ -1,4 +1,4 @@
-import { VerificationStatus } from "../enum/beauticianEnum";
+import { ServiceModes, VerificationStatus } from "../enum/beauticianEnum";
 
 export type ID = string;
 
@@ -20,32 +20,23 @@ export interface BankDetailsVO {
 
 export interface Beautician {
   id: ID;
-
   userId: ID;
-
   yearsOfExperience: number;
+  serviceModes?:ServiceModes[],
   about: string;
-
   hasShop: boolean;
-
   shopName?: string;
   shopAddress?: ShopAddressVO;
   shopPhotos?: string[];
   shopLicence?: string[];
   portfolioImage?: string[];
   certificateImage?: string[];
-
   bankDetails?: BankDetailsVO;
-
   verificationStatus: VerificationStatus;
   verifiedBy?: ID;
   verifiedAt?: Date;
-
- 
   homeserviceCount: number;
    pamphletUrl?:string,
-
-
   createdAt: Date;
   updatedAt: Date;
 }

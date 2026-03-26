@@ -1,5 +1,6 @@
 import mongoose, { Document, Model, model, Schema, Types } from "mongoose";
 import { MessageType } from "../../../../domain/enum/messageEnum";
+import { BookingStatus } from "../../../../domain/enum/bookingEnum";
 
 
 export type MessageDoc=Document&{
@@ -10,6 +11,7 @@ export type MessageDoc=Document&{
     message: string,
     type:MessageType,
     bookingId?: Types.ObjectId,
+    status?: BookingStatus;
     seen: boolean,
     seenAt:Date,
     createdAt: Date,
@@ -23,6 +25,7 @@ const MessageSchema=new Schema<MessageDoc>({
   message:{type:String,required:true},
   type:{type:String,enum:Object.values(MessageType),default:MessageType.TEXT,required:true},
   bookingId:{type:Schema.Types.ObjectId},
+  status:{type:String,enum:Object.values(BookingStatus),default:BookingStatus.REQUESTED},
   seen:{type:Boolean,required:true},
   seenAt:{type:Date}
 },{timestamps:true})

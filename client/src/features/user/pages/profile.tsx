@@ -1,46 +1,54 @@
-import { useEffect, useRef, useState } from 'react';
-import { ProfileHeader } from '../component/profile/profilehead';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../redux/appStore';
-import { useNavigate, useParams } from 'react-router-dom';
-import { publicAPi } from '../../../services/api/public';
-import { handleApiError } from '../../../lib/utils/handleApiError';
-import type { IUserProfile } from '../../../types/dtos/user';
-import { SaidBar } from '../component/saidBar/saidbar';
-import { publicFrontendRoutes } from '../../../constants/frontendRoutes/publicFrontendRoutes';
-import { customerFrontendRoutes } from '../../../constants/frontendRoutes/customerFrontendRoutes';
-import { VerificationStatusBanner } from '../component/verificationStatus';
-import { BeauticianStatus, type BeauticianStatusType } from '../../../constants/types/beautician';
-import { BeauticianApi } from '../../../services/api/beautician';
-import { ProfileTab } from '../component/profile/profileTab';
-import { beauticianFrontendRoutes } from '../../../constants/frontendRoutes/beauticianFrontendRoutes';
-import type { TimeSlot } from '../../types/schedule';
-import type { IAddAvailabilityRequest } from '../../../types/api/beautician';
-import { toast } from 'react-toastify';
-import { CalendarModal } from '../../beautician/component/calenderUI';
-import { CreatePostModal } from '../../models/beautician/media/createPostModel';
-import { CropModal } from '../../models/beautician/media/cropModal';
-import { EditModal } from '../../models/beautician/media/editModal';
-import { ShareModal } from '../../models/beautician/media/shareModal';
-import type { MediaItemWithTrim } from '../../types/mediaType';
+import { useEffect, useRef, useState } from "react";
+import { ProfileHeader } from "../component/profile/profilehead";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../redux/appStore";
+import { useNavigate, useParams } from "react-router-dom";
+import { publicAPi } from "../../../services/api/public";
+import { handleApiError } from "../../../lib/utils/handleApiError";
+import type { IUserProfile } from "../../../types/dtos/user";
+import { SaidBar } from "../component/saidBar/saidbar";
+import { publicFrontendRoutes } from "../../../constants/frontendRoutes/publicFrontendRoutes";
+import { customerFrontendRoutes } from "../../../constants/frontendRoutes/customerFrontendRoutes";
+import { VerificationStatusBanner } from "../component/verificationStatus";
+import { BeauticianStatus, type BeauticianStatusType } from "../../../constants/types/beautician";
+import { BeauticianApi } from "../../../services/api/beautician";
+import { ProfileTab } from "../component/profile/profileTab";
+import { beauticianFrontendRoutes } from "../../../constants/frontendRoutes/beauticianFrontendRoutes";
+import type { TimeSlot } from "../../types/schedule";
+import type { IAddAvailabilityRequest } from "../../../types/api/beautician";
+import { toast } from "react-toastify";
+import { CalendarModal } from "../../beautician/component/calenderUI";
+import { CreatePostModal } from "../../models/beautician/media/createPostModel";
+import { CropModal } from "../../models/beautician/media/cropModal";
+import { EditModal } from "../../models/beautician/media/editModal";
+import { ShareModal } from "../../models/beautician/media/shareModal";
+import type { MediaItemWithTrim } from "../../types/mediaType";
+import PostsTab from "../../post/page/postTab";
+import { ChatApi } from "../../../services/api/chat";
 
 interface BeauticianInfo {
   isBeautician: boolean;
   verificationStatus?: BeauticianStatusType;
 }
 
+// ─── Tab type ─────────────────────────────────────────────────────────────────
+type ActiveTab = "posts" | "tips" | "rent";
+
 const ProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [profileData, setProfileData] = useState<IUserProfile | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [beauticianInfo, setBeauticianInfo] = useState<BeauticianInfo>({
-    isBeautician: false
+    isBeautician: false,
   });
-  
+
+  // ── NEW: active tab state, defaults to "posts" so grid loads immediately ──
+  const [activeTab, setActiveTab] = useState<ActiveTab>("posts");
+
   const [selectedDates, setSelectedDates] = useState<number[]>([]);
   const [showUpload, setShowUpload] = useState(false);
   const [showCrop, setShowCrop] = useState(false);
@@ -61,9 +69,13 @@ const ProfilePage = () => {
   const currentUser = useSelector((store: RootState) => store.user.currentUser);
 
   const isOwnProfile = currentUser?.userId === profileData?.userId;
-  const viewMode = isOwnProfile 
-    ? (currentUser?.role === 'beautician' ? 'own-beautician' : 'own-customer')
-    : (profileData?.role === 'beautician' ? 'view-beautician' : 'view-customer');
+  const viewMode = isOwnProfile
+    ? currentUser?.role === "beautician"
+      ? "own-beautician"
+      : "own-customer"
+    : profileData?.role === "beautician"
+    ? "view-beautician"
+    : "view-customer";
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -78,20 +90,20 @@ const ProfilePage = () => {
           console.log(`use param id in frontend ${id}`);
           const profile = await publicAPi.callById(id);
           if (profile?.data?.data) {
-            setProfileData(profile.data?.data);
+            setProfileData(profile?.data?.data);
           } else {
-            setError('Profile data structure is incorrect');
+            setError("Profile data structure is incorrect");
           }
         } else {
           const profile = await publicAPi.ownProfile();
           if (profile?.data?.data) {
-            setProfileData(profile.data.data);
+            setProfileData(profile.data?.data);
           } else {
-            setError('Profile data structure is incorrect');
+            setError("Profile data structure is incorrect");
           }
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load profile';
+        const errorMessage = err instanceof Error ? err.message : "Failed to load profile";
         setError(errorMessage);
         handleApiError(err);
       } finally {
@@ -102,16 +114,39 @@ const ProfilePage = () => {
     loadProfile();
   }, [id, currentUser]);
 
+const handleStartChat = async (participantB: string) => {
+  try {
+    const res = await ChatApi.createChat(participantB);
+
+    const chat = res.data?.data;
+ if (!chat || !profileData) return;
+
+    navigate(`/chat/${chat.id}`, {
+  state: {
+    participant: {
+      id: profileData.userId,
+      fullName: profileData.fullName,
+      userName: profileData.userName,
+      profileImg: profileData.profileImg,
+      role:profileData.role,
+      serviceModes:profileData.beauticianData?.serviceModes??[]
+    }
+  }
+});
+  } catch (err) {
+    console.error("Failed to start chat", err);
+  }
+};
   const fetchBeauticianStatus = async () => {
     try {
       const response = await BeauticianApi.getStatus();
-      console.log('✅ Beautician status:', response.data?.data);
+      console.log("✅ Beautician status:", response.data?.data);
       setBeauticianInfo({
         isBeautician: true,
-        verificationStatus: response.data?.data?.verificationStatus 
+        verificationStatus: response.data?.data?.verificationStatus,
       });
     } catch (error: any) {
-      console.log('❌ Not a beautician or error:', error);
+      console.log("❌ Not a beautician or error:", error);
       if (error.status === 404) {
         setBeauticianInfo({ isBeautician: false });
       }
@@ -120,12 +155,12 @@ const ProfilePage = () => {
 
   const handleSaveAvailability = async (request: IAddAvailabilityRequest): Promise<void> => {
     try {
-      console.log('📤 Sending to API:', request);
+      console.log("📤 Sending to API:", request);
       const response = await BeauticianApi.addAvailabilitySchedule(request);
-      console.log('✅ Availability saved successfully:', response);
-      toast.success('Availability saved successfully!');
+      console.log("✅ Availability saved successfully:", response);
+      toast.success("Availability saved successfully!");
     } catch (error) {
-      console.error('❌ Error saving availability:', error);
+      console.error("❌ Error saving availability:", error);
       handleApiError(error);
       throw error;
     }
@@ -133,27 +168,27 @@ const ProfilePage = () => {
 
   const handleDeleteSlot = async (slotToDelete: TimeSlot): Promise<void> => {
     try {
-      console.log('🗑️ Deleting slot:', slotToDelete);
+      console.log("🗑️ Deleting slot:", slotToDelete);
       const scheduleId = slotToDelete.scheduleId;
-      
+
       if (!scheduleId) {
-        console.error('No schedule ID in slot');
-        toast.error('No schedule ID available');
+        console.error("No schedule ID in slot");
+        toast.error("No schedule ID available");
         return;
       }
 
       const slotsToDelete = {
         startTime: slotToDelete.startTime,
-        endTime: slotToDelete.endTime
+        endTime: slotToDelete.endTime,
       };
 
       const response = await BeauticianApi.deleteAvailabilitySlot(slotsToDelete, scheduleId);
-      console.log('✅ Slot deleted successfully:', response);
-      toast.success('Slot deleted successfully!');
+      console.log("✅ Slot deleted successfully:", response);
+      toast.success("Slot deleted successfully!");
     } catch (error) {
-      console.error('❌ Error deleting slot:', error);
+      console.error("❌ Error deleting slot:", error);
       handleApiError(error);
-      toast.error('Failed to delete slot');
+      toast.error("Failed to delete slot");
       throw error;
     }
   };
@@ -167,7 +202,7 @@ const ProfilePage = () => {
   };
 
   const handleCalendarClick = () => {
-    if (viewMode === 'own-customer' || viewMode === 'view-customer') return;
+    if (viewMode === "own-customer" || viewMode === "view-customer") return;
     setIsCalendarOpen(true);
   };
 
@@ -180,28 +215,42 @@ const ProfilePage = () => {
     setCropFileType(null);
   };
 
-const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => {
-  setSelectedDates(dates);
-  if (viewMode !== 'view-beautician' || !profileData?.userId || dates.length === 0) return;
+  const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => {
+    setSelectedDates(dates);
+    if (viewMode !== "view-beautician" || !profileData?.userId || dates.length === 0) return;
 
-  const ref = currentDate ?? new Date();
-  const year = ref.getFullYear();
-  const month = ref.getMonth();
-  const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(dates[0]).padStart(2, '0')}`;
+    const ref = currentDate ?? new Date();
+    const year = ref.getFullYear();
+    const month = ref.getMonth();
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(dates[0]).padStart(2, "0")}`;
 
-  try {
-    const res = await publicAPi.getAvailbilitySchedule(profileData.userId, dateStr);
-    setCustomerSlots(res.data?.data?.availability?.slots ?? []);
-  } catch (err) {
-    console.error('Failed to fetch slots', err);
-    setCustomerSlots([]);
-  }
-};
+    try {
+      const res = await publicAPi.getAvailbilitySchedule(profileData.userId, dateStr);
+      setCustomerSlots(res.data?.data?.availability?.slots ?? []);
+    } catch (err) {
+      console.error("Failed to fetch slots", err);
+      setCustomerSlots([]);
+    }
+  };
+
+  // ─── Loading state ─────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <p>Loading profile...</p>
+      <div className="flex min-h-screen">
+        <SaidBar />
+        <div className="ml-60 flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex gap-1.5">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="w-2.5 h-2.5 rounded-full bg-rose-400 animate-bounce"
+                  style={{ animationDelay: `${i * 150}ms` }}
+                />
+              ))}
+            </div>
+            <p className="text-sm text-gray-400">Loading profile…</p>
+          </div>
         </div>
       </div>
     );
@@ -209,16 +258,19 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
 
   if (error) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="bg-red-50 border border-red-200 p-6 rounded-lg">
-          <p className="text-red-800 font-semibold">Error loading profile</p>
-          <p className="text-red-600 mt-2">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Retry
-          </button>
+      <div className="flex min-h-screen">
+        <SaidBar />
+        <div className="ml-60 flex-1 flex items-center justify-center p-6">
+          <div className="bg-red-50 border border-red-200 p-6 rounded-2xl max-w-md w-full text-center">
+            <p className="text-red-700 font-semibold mb-1">Couldn't load profile</p>
+            <p className="text-red-500 text-sm mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-5 py-2 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -226,29 +278,35 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
 
   if (!profileData) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <p>Profile not found</p>
-          <button 
-            onClick={() => navigate(publicFrontendRoutes.landing)} 
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Go Home
-          </button>
+      <div className="flex min-h-screen">
+        <SaidBar />
+        <div className="ml-60 flex-1 flex items-center justify-center p-6">
+          <div className="text-center">
+            <p className="text-gray-500 mb-4">Profile not found</p>
+            <button
+              onClick={() => navigate(publicFrontendRoutes.landing)}
+              className="px-5 py-2 bg-gray-800 text-white rounded-full text-sm font-medium hover:bg-gray-900 transition-colors"
+            >
+              Go Home
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  const shouldHideButtons = beauticianInfo.isBeautician && 
-    (beauticianInfo.verificationStatus === BeauticianStatus.PENDING || 
-     beauticianInfo.verificationStatus === BeauticianStatus.VERIFIED ||
-     beauticianInfo.verificationStatus === BeauticianStatus.REJECTED);
-  
+  const shouldHideButtons =
+    beauticianInfo.isBeautician &&
+    (beauticianInfo.verificationStatus === BeauticianStatus.PENDING ||
+      beauticianInfo.verificationStatus === BeauticianStatus.VERIFIED ||
+      beauticianInfo.verificationStatus === BeauticianStatus.REJECTED);
+
   return (
     <>
       <SaidBar />
-      <div className="min-h-screen bg-white ml-60 w-9.5/12">
+      <div className="min-h-screen bg-gray-50 ml-60 w-9.5/12">
+
+        {/* ── Profile Header ── */}
         <ProfileHeader
           viewMode={viewMode}
           userName={profileData.userName}
@@ -266,13 +324,14 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
           onCalender={handleCalendarClick}
           onRegisterAsBeautician={() => navigate(customerFrontendRoutes.register)}
           onServicePage={() => navigate(`/beautician/services`, { state: { beauticianId: profileData.userId } })}
-          onMessage={() => navigate(`/messages/${profileData.userId}`)}
-          onFollow={() => console.log('Follow clicked')}
+          onMessage={() => handleStartChat(profileData.userId)}
+          onFollow={() => console.log("Follow clicked")}
           onBookService={() => navigate(`/book/${profileData.userId}`)}
         />
 
+        {/* ── Verification Banner ── */}
         {beauticianInfo.isBeautician && beauticianInfo.verificationStatus && (
-          <div className="px-6 mt-6">
+          <div className="px-6 mt-4">
             <VerificationStatusBanner
               status={beauticianInfo.verificationStatus}
               onCompleteSetup={handleCompleteSetup}
@@ -281,17 +340,48 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
           </div>
         )}
 
-        <div className="mt-0">
+        {/* ── Tab Bar ── */}
+        <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
           <ProfileTab
             viewMode={viewMode}
             isVerified={profileData.isVerified}
             onUpload={() => setShowUpload(true)}
-            onPosts={() => navigate(`/profile/${profileData.userId}/posts`)}
-            onTips={() => navigate(`/profile/${profileData.userId}/tips`)}
-            onRent={() => navigate(`/profile/${profileData.userId}/rent`)}
+            onPosts={() => setActiveTab("posts")}
+            onTips={() => setActiveTab("tips")}
+            onRent={() => setActiveTab("rent")}
           />
         </div>
 
+        {/* ── Tab Content ── */}
+        <div className="bg-white min-h-[60vh]">
+          {activeTab === "posts" && (
+            <PostsTab
+              beauticianUserId={isOwnProfile ? null : profileData.userId}
+            />
+          )}
+
+          {activeTab === "tips" && (
+            <div className="flex flex-col items-center justify-center py-24 text-center text-gray-400">
+              <svg className="w-10 h-10 mb-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <p className="text-sm font-medium">No tips yet</p>
+            </div>
+          )}
+
+          {activeTab === "rent" && (
+            <div className="flex flex-col items-center justify-center py-24 text-center text-gray-400">
+              <svg className="w-10 h-10 mb-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <p className="text-sm font-medium">No rentals yet</p>
+            </div>
+          )}
+        </div>
+
+        {/* ── Modals (unchanged) ── */}
         {isCalendarOpen && (
           <CalendarModal
             isOpen={isCalendarOpen}
@@ -309,7 +399,7 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
             existingSlots={customerSlots}
             onSaveSlots={handleSaveAvailability}
             onDeleteSlot={handleDeleteSlot}
-            beauticianId={viewMode === 'view-beautician' ? profileData.userId : undefined}
+            beauticianId={viewMode === "view-beautician" ? profileData.userId : undefined}
           />
         )}
 
@@ -328,7 +418,10 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
           isOpen={showCrop}
           preview={cropPreview}
           fileType={cropFileType}
-          onBack={() => { setShowCrop(false); setShowUpload(true); }}
+          onBack={() => {
+            setShowCrop(false);
+            setShowUpload(true);
+          }}
           onClose={() => setShowCrop(false)}
           onNext={(data) => {
             extrasRef.current = data.extras;
@@ -343,10 +436,12 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
           preview={editData?.preview ?? null}
           fileType={editData?.fileType ?? null}
           extras={extrasRef.current}
-          onBack={() => { setShowEdit(false); setShowCrop(true); }}
+          onBack={() => {
+            setShowEdit(false);
+            setShowCrop(true);
+          }}
           onClose={() => setShowEdit(false)}
           onNext={({ preview, fileType, allProcessed }) => {
-            // allProcessed carries src + fileType + trimStart + trimEnd + soundOn per item
             const items: MediaItemWithTrim[] = allProcessed
               ? allProcessed.map((item) => ({
                   src: item.src,
@@ -357,7 +452,12 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
                 }))
               : [
                   { src: preview, fileType, trimStart: 0, trimEnd: 0, soundOn: true },
-                  ...extrasRef.current.map((e) => ({ ...e, trimStart: 0, trimEnd: 0, soundOn: true })),
+                  ...extrasRef.current.map((e) => ({
+                    ...e,
+                    trimStart: 0,
+                    trimEnd: 0,
+                    soundOn: true,
+                  })),
                 ];
             setShareItems(items);
             setShowEdit(false);
@@ -372,13 +472,13 @@ const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => 
             userName: currentUser.userName ?? "",
             profileImg: currentUser.profileImg ?? undefined,
           }}
-          onBack={() => { setShowShare(false); setShowEdit(true); }}
+          onBack={() => {
+            setShowShare(false);
+            setShowEdit(true);
+          }}
           onClose={handlePostFlowClose}
-          // onShare is a no-op — ShareModal handles the full upload flow internally
-          // (signed URLs → S3 upload → POST /api/posts with trim data)
           onShare={async () => {}}
         />
-
       </div>
     </>
   );

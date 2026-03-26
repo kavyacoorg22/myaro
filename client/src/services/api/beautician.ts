@@ -1,7 +1,8 @@
 import { beauticianApi } from "../../constants/apiRoutes/beauticianRoutes";
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
+import type { PostType } from "../../features/types/mediaType";
 import type { BackendResponse } from "../../types/api/api";
-import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse,  type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest, type IGetmonthlyAvailabilityReponse,  } from "../../types/api/beautician";
+import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse,  type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest, type IGetmonthlyAvailabilityReponse, type IGetBeauticianPostResponse, type IGetBeauticianPostResponseData,  } from "../../types/api/beautician";
 import type { ICreatePostInput } from "../../types/api/public";
 import { type IGetPamphletResponse, type IAddCustomServiceRequest, type IBeauticianServiceSelectionResponse, type IGetBeauticianServicesListResponse, type IUpsertBeauticianServiceRequest, type PriceFilter,} from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
@@ -22,7 +23,7 @@ export const BeauticianApi = {
   updateProfile:async(data:IBeauticianProfileUpdate)=>{
     return await axiosWrapper<BackendResponse>(api.patch(beauticianApi.profile,data))
   },
-  getServiceList:async(filter:string,priceFilter:PriceFilter)=>{
+  getServiceList:async(filter:string,priceFilter?:PriceFilter)=>{
     return await axiosWrapper<IGetBeauticianServicesListResponse>(api.get(beauticianApi.getServiceLists,{
       params:{filter,priceFilter}
     })
@@ -78,4 +79,12 @@ export const BeauticianApi = {
     api.post(publicApiRoutes.createPost, input)
   );
 },
+  getBeauticianPosts:async(postType:PostType,limit=12,cursor?:string|null)=>{
+   const params={
+    postType,
+    limit,
+    ...(cursor&&{cursor})
+   }
+  return await axiosWrapper<IGetBeauticianPostResponseData>(api.get(beauticianApi.getBeauticianPost,{params}))
+  }
 };

@@ -95,7 +95,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   const handleResultClick = async (result: ISearchResult) => {
     try {
-     
+      console.log(`search history result id ${result.beauticianId}`)
       navigate(publicFrontendRoutes.profileByid.replace(':id',result.beauticianId))
       
       

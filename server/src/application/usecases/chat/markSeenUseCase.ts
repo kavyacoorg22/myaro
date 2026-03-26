@@ -22,9 +22,9 @@ export class MarkSeenUseCase {
     if (!chat) throw new AppError(`Chat ${chatId} not found.`,HttpStatus.NOT_FOUND);
 
    
-    if (!chat.participants.includes(receiverId)) {
-      throw new AppError(`Access denied.`,HttpStatus.FORBIDDEN);
-    }
+   if (!chat.participants.some(p => p.toString() === receiverId)) {
+  throw new AppError(`Access denied.`, HttpStatus.FORBIDDEN);
+}
 
     await this.messageRepo.markSeen(chatId, receiverId);
 

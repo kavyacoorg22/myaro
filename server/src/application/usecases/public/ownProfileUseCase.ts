@@ -40,12 +40,10 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
     };
 
     if (user.role === "beautician") {
-      console.log("👤 User is beautician, fetching beautician data...");
 
       const beautician = await this._beauticianRepo.findByUserId(id);
 
       if (beautician) {
-        console.log("✅ Beautician data found");
 
         userDetail.beauticianData = {
           yearsOfExperience: beautician.yearsOfExperience,
@@ -53,6 +51,7 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
           hasShop: beautician.hasShop,
           shopName: beautician.shopName,
           shopAddress: beautician.shopAddress,
+          serviceModes:beautician.serviceModes??[],
           homeservicecount: beautician.homeserviceCount ?? 0,
           verificationStatus: beautician.verificationStatus,
         };

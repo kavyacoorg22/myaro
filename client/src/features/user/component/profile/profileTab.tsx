@@ -6,21 +6,20 @@ interface Props extends ProfileData, ProfileActions {
   viewMode: ViewMode;
 }
 
-export const ProfileTab:React.FC<Props>=({
-viewMode,
-isVerified,
-...rest
-})=>{
-return(
-  <div>
-     {isVerified && viewMode === "own-beautician" && (
-            <BeauticianTabSection
-              onUpload={rest.onUpload}
-              onPosts={rest.onPosts}
-              onTips={rest.onTips}
-              onRent={rest.onRent}
-            />
-          )}
-  </div>
-)
-}
+export const ProfileTab: React.FC<Props> = ({ viewMode, isVerified, ...rest }) => {
+  const isOwnProfile = isVerified && viewMode === "own-beautician";
+  const isViewingProfile = viewMode === "view-beautician";
+
+  if (!isOwnProfile && !isViewingProfile) return null;
+
+  return (
+    <div>
+      <BeauticianTabSection
+        onPosts={rest.onPosts}
+        onTips={rest.onTips}
+        onRent={rest.onRent}
+        onUpload={isOwnProfile ? rest.onUpload : undefined}
+      />
+    </div>
+  );
+};

@@ -5,7 +5,6 @@ export type UserId=string
 
 export interface User{
   id:UserId,
-    userId:string,
   email:string,
   fullName:string,
   userName:string,

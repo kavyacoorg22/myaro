@@ -22,7 +22,6 @@ export function toLoginOutputDto(user: User, accessToken: string, refreshToken: 
 export function toUserDetailDto(user: IUserDto): IUserDto {
     return {
         id: user.id,
-        userId:user.userId,
         userName: user.userName,
         fullName:user.fullName,
         email: user.email,

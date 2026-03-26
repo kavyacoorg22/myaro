@@ -1,0 +1,37 @@
+import { BookingAction, BookingStatus } from "../enum/bookingEnum";
+
+export const VALID_TRANSITIONS: Record<BookingStatus, BookingAction[]> = {
+  [BookingStatus.REQUESTED]:  [BookingAction.ACCEPT, BookingAction.REJECT, BookingAction.CANCEL],
+  [BookingStatus.ACCEPTED]:   [BookingAction.CONFIRM, BookingAction.CANCEL],
+  [BookingStatus.CONFIRMED]:  [BookingAction.COMPLETE, BookingAction.CANCEL, BookingAction.REJECT],
+  [BookingStatus.COMPLETED]:  [],
+  [BookingStatus.REJECTED]:   [],
+  [BookingStatus.CANCELLED]:  [],
+  [BookingStatus.DISPUTE]:    [],
+};
+
+export const ACTION_TO_STATUS: Record<BookingAction, BookingStatus> = {
+  [BookingAction.REQUEST]: BookingStatus.REQUESTED,
+  [BookingAction.ACCEPT]:  BookingStatus.ACCEPTED,
+  [BookingAction.REJECT]:  BookingStatus.REJECTED,
+  [BookingAction.COMPLETE]: BookingStatus.COMPLETED,
+  [BookingAction.CANCEL]:  BookingStatus.CANCELLED,
+  [BookingAction.CONFIRM]: BookingStatus.CONFIRMED,
+};
+
+export const ACTION_MESSAGE: Record<BookingAction, string> = {
+  [BookingAction.REQUEST]: "Booking requested",
+  [BookingAction.ACCEPT]:  "Booking accepted",
+  [BookingAction.REJECT]:  "Booking rejected",
+  [BookingAction.COMPLETE]: "Booking completed",
+  [BookingAction.CANCEL]:  "Booking cancelled",
+  [BookingAction.CONFIRM]: "Booking confirmed",
+};
+
+
+export function isValidTransition(
+  current: BookingStatus,
+  action: BookingAction
+): boolean {
+  return VALID_TRANSITIONS[current].includes(action);
+}

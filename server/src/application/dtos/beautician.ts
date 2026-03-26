@@ -1,7 +1,7 @@
 import { ShopAddressVO } from "../../domain/entities/Beautician";
 import { LocationVO } from "../../domain/entities/beauticianServiceAres";
 import { Slot } from "../../domain/entities/schedule";
-import { scheduleSourceType, ScheduleType, VerificationStatus } from "../../domain/enum/beauticianEnum";
+import { scheduleSourceType, ScheduleType, ServiceModes, VerificationStatus } from "../../domain/enum/beauticianEnum";
 import { PostType, UserRole } from "../../domain/enum/userEnum";
 import { location } from "../interfaceType/beauticianType";
 
@@ -50,6 +50,7 @@ export interface IBeauticianViewEditProfileDTO {
   shopName?: string;
   about: string;
   shopAddress?: Partial<ShopAddressVO>;
+  serviceModes:ServiceModes[],
   accountHolderName?: string;
   accountNumber?: string;
   ifscCode?: string;

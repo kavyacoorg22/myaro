@@ -1,3 +1,4 @@
+import { ServiceModes } from "../../domain/enum/beauticianEnum";
 
 
 
@@ -21,6 +22,7 @@ export interface IOwnProfileOutput{
       city: string;
       pincode: string;
     };
+    serviceModes:ServiceModes[],
     homeservicecount: number;
     verificationStatus: string;
   };

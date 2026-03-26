@@ -17,18 +17,19 @@ export class UserOnlineStatusUseCase implements IUserOnlineStatusUSeCase {
       SOCKET_EVENTS.USER_ONLINE,
       { userId, chatId },
     );
-  }
-
-  async userOffline({
-    socketId,
-    userId,
-    chatId,
-  }: IUserPresenceInput): Promise<void> {
-    this.socketEmitter.emitToRoomExcept(
+        this.socketEmitter.emitToRoomExcept(
       socketId,
-      chatId,
-      SOCKET_EVENTS.USER_OFFLINE,
-      { userId, chatId },
+      `user:${userId}`,
+      SOCKET_EVENTS.USER_ONLINE,
+      { userId },
     );
   }
+
+
+async userOffline({ socketId, userId, chatId }: IUserPresenceInput): Promise<void> {
+  if (chatId) {
+    this.socketEmitter.emitToRoomExcept(socketId, chatId, SOCKET_EVENTS.USER_OFFLINE, { userId });
+  }
+  this.socketEmitter.emitToRoom(`user:${userId}`, SOCKET_EVENTS.USER_OFFLINE, { userId });
+}
 }

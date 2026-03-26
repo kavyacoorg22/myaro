@@ -1,4 +1,4 @@
-import type { UserRoleType } from "../../constants/types/User";
+import type { ServiceModesType } from "../../constants/types/beautician";
 
 export type Role = 'customer' | 'beautician' ;
 
@@ -8,7 +8,7 @@ export interface IUserProfile {
   fullName: string;
   profileImg?: string;
   isVerified: boolean;
-  role: string;
+  role: Role;
   
   
  
@@ -22,6 +22,7 @@ export interface IUserProfile {
       city: string;
       pincode: string;
     };
+    serviceModes:ServiceModesType[]
     homeservicecount: number;
     verificationStatus: string;
   };
@@ -31,7 +32,6 @@ export interface IUserProfile {
 
 export interface IUserDto {
   id: string;
-  userId:string,
   fullName: string;
   userName:string;
   email: string;

@@ -3,7 +3,6 @@ import { UserRole } from "../../../../domain/enum/userEnum";
 
 export type UserDoc=Document &{
   _id:Types.ObjectId,
-   userId:string,
   email:string,
   userName:string,
   fullName:string,
@@ -20,7 +19,6 @@ export type UserDoc=Document &{
 const UserSchema=new Schema<UserDoc>(
   {
     email:{type:String,required:true,unique:true},
-    userId:{type:String},
     userName:{type:String,required:true,unique:true},
     fullName:{type:String},
     passwordHash:{type:String},

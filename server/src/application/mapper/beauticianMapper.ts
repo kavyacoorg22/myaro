@@ -65,6 +65,7 @@ export function toBeauticianEditProfileDto(beautician:Beautician,user:User):IBea
      address:beautician.shopAddress?.address??"",
      city:beautician.shopAddress?.city??""
     },
+    serviceModes:beautician.serviceModes??[],
     accountHolderName:beautician.bankDetails?.accountHolderName,
     accountNumber:beautician.bankDetails?.accountNumber,
     ifscCode:beautician.bankDetails?.ifscCode,

@@ -72,11 +72,12 @@ export class ChatController {
           HttpStatus.BAD_REQUEST,
         );
       }
-      await this.createChatUC.execute({ participantA, participantB });
-      res.send(HttpStatus.CREATED).json({
-        success: true,
-        message: "chat created",
-      });
+     const data= await this.createChatUC.execute({ participantA, participantB });
+    res.status(HttpStatus.CREATED).json({
+  success: true,
+  message: "chat created",
+  data,
+});
     } catch (err) {
       next(err);
     }

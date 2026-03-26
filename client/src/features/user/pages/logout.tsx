@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { authApi } from '../../../services/api/auth';
 import { handleApiError } from '../../../lib/utils/handleApiError';
 import { publicFrontendRoutes } from '../../../constants/frontendRoutes/publicFrontendRoutes';
+import { disconnectSocket } from '../../../services/socket/socketService';
 
 const LogoutPage = () => {
   const dispatch = useDispatch();
@@ -17,9 +18,11 @@ const LogoutPage = () => {
         const res = await authApi.logout();
         console.log('logout res: ', res);
         toast.success(res.data?.message);
+        
       } catch (err) {
         handleApiError(err);
       } finally {
+        disconnectSocket(); 
         dispatch(logout());
         navigate(publicFrontendRoutes.landing, { replace: true });
       }

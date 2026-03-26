@@ -40,12 +40,12 @@ const ServiceSchema = new Schema({
   name: { type: String },
   price: { type: Number },
   isHomeServiceAvailable: { type: Boolean },
-});
+},{_id:false});
 
 const ResultSchema = new Schema({
   serviceId: { type: Schema.Types.ObjectId },
   categoryId: { type: Schema.Types.ObjectId },
-});
+},{_id:false});
 
 export const CustomServiceSchema = new Schema<CustomServiceDoc>(
   {

@@ -186,7 +186,9 @@ export class BeauticianController {
   ): Promise<void> => {
     try {
       const {id,role}= req.user!;
+      console.log('reached... update profileData controller')
       const data = req.body;
+      console.log(data)
       if (!id) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,

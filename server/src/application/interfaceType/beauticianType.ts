@@ -1,7 +1,7 @@
 import { ChildProcessWithoutNullStreams } from "child_process";
 import { ShopAddressVO } from "../../domain/entities/Beautician";
 import { LocationVO } from "../../domain/entities/beauticianServiceAres";
-import { VerificationStatus } from "../../domain/enum/beauticianEnum";
+import { ServiceModes, VerificationStatus } from "../../domain/enum/beauticianEnum";
 import { PostType, UserRole } from "../../domain/enum/userEnum";
 import { IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto } from "../dtos/beautician";
 import { IMediaInput } from "./mediaType";
@@ -54,6 +54,7 @@ export interface IBeauticianEditProfileInput {
   shopName?: string;
   shopAddress: Partial<ShopAddressVO>;
   yearsOfExperience: number;
+  serviceModes:ServiceModes[],
   accountHolderName: string;
   accountNumber: string;
   ifscCode: string;
@@ -69,6 +70,7 @@ export interface IBeauticianViewEditProfileOutput {
   shopName?: string;
   about: string;
   shopAddress?: Partial<ShopAddressVO>;
+  serviceModes:ServiceModes[],
   accountHolderName?: string;
   accountNumber?: string;
   ifscCode?: string;

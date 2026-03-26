@@ -9,6 +9,7 @@ import { IGetTipsRentUseCase } from "../../../../application/interface/beauticia
 import { IGetBeauticianPostUSeCase } from "../../../../application/interface/beautician/post/IGetbeauticianPostUseCase";
 import { ISearchPostUSeCase } from "../../../../application/interface/beautician/post/ISearchPostUseCase";
 import { IGetSignedUploadUrlsUseCase } from "../../../../application/interface/beautician/post/IGetUploadSignedUrlUseCase";
+import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 
 export class PostController {
   constructor(private createPostUC: ICreatePostUSeCase,
@@ -85,12 +86,41 @@ getTipsRentfeed = async (req: Request, res: Response, next: NextFunction): Promi
 
   getBeauticianPost=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
     try{
-        const { beauticianId } = req.params;
+        const  id  = req.user?.id;
   const postType = req.query.postType as PostType ?? PostType.REEL;
   const cursor = req.query.cursor as string ?? null;
   const limit = Number(req.query.limit) || 12;
+  console.log('beautician post -> id of beautician',id)
+  console.log('post controller reached')
+   if(!id)
+   {
+    throw new AppError(generalMessages.ERROR.BAD_REQUEST)
+   }
 
-  const posts=await this.getBeauticianPostUC.execute(beauticianId,postType,cursor,limit)
+  const posts=await this.getBeauticianPostUC.execute(id,postType,cursor,limit)
+
+  res.status(HttpStatus.OK).json({
+    success:true,
+    message:'data returned',
+    ...posts
+  })
+    }catch(err)
+    {
+      next(err)
+    }
+  }
+   getBeauticianPostForUser=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+    try{
+        const { id } = req.params;
+  const postType = req.query.postType as PostType ?? PostType.REEL;
+  const cursor = req.query.cursor as string ?? null;
+  const limit = Number(req.query.limit) || 12;
+   if(!id)
+   {
+    throw new AppError(generalMessages.ERROR.BAD_REQUEST)
+   }
+
+  const posts=await this.getBeauticianPostUC.execute(id,postType,cursor,limit)
 
   res.status(HttpStatus.OK).json({
     success:true,

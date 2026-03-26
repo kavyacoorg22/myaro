@@ -21,3 +21,10 @@ export enum scheduleSourceType{
   RECURRING='recurring',
   MANUAL='manual'
 }
+
+export enum ServiceModes {
+  HOME = "HOME",
+  SHOP = "SHOP",
+  EVENT = "EVENT",
+  CONSULTATION = "CONSULTATION",
+}

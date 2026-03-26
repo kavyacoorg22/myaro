@@ -1,38 +1,43 @@
+
 import { Server as SocketServer } from "socket.io";
 import { ISocketEmitter } from "../../application/serviceInterface/ISocketEmitter";
 
 export class SocketIOEmitter implements ISocketEmitter {
-  constructor(private readonly io: SocketServer) {}
+  private io: SocketServer | null = null;
 
-  emitToRoom(room: string, event: string, payload: unknown): void {
-    this.io.to(room).emit(event, payload);
+  setIO(io: SocketServer): void {
+    this.io = io;
   }
 
-  emitToRoomExcept(
-    excludeSocketId: string,
-    room: string,
-    event: string,
-    payload: unknown,
-  ): void {
-    const socket = this.io.sockets.sockets.get(excludeSocketId);
+  private getIO(): SocketServer {
+    if (!this.io) throw new Error("Socket.io not initialized yet.");
+    return this.io;
+  }
+
+  emitToRoom(room: string, event: string, payload: unknown): void {
+    this.getIO().to(room).emit(event, payload);
+  }
+
+  emitToRoomExcept(excludeSocketId: string, room: string, event: string, payload: unknown): void {
+    const socket = this.getIO().sockets.sockets.get(excludeSocketId);
     if (socket) {
       socket.to(room).emit(event, payload);
     } else {
-      this.io.to(room).emit(event, payload);
+      this.getIO().to(room).emit(event, payload);
     }
   }
 
   emitToSocket(socketId: string, event: string, payload: unknown): void {
-    this.io.to(socketId).emit(event, payload);
+    this.getIO().to(socketId).emit(event, payload);
   }
 
   joinRoom(socketId: string, room: string): void {
-    const socket = this.io.sockets.sockets.get(socketId);
+    const socket = this.getIO().sockets.sockets.get(socketId);
     socket?.join(room);
   }
 
   leaveRoom(socketId: string, room: string): void {
-    const socket = this.io.sockets.sockets.get(socketId);
+    const socket = this.getIO().sockets.sockets.get(socketId);
     socket?.leave(room);
   }
 }

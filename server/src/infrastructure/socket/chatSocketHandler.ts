@@ -25,12 +25,16 @@ export function registerChatHandlers(socket: Socket, useCases: ChatUseCases): vo
         chatId,
         userId,
       });
+      socket.data.chatId = chatId;
       socket.data.userId = userId;
     } catch (err) {
       socket.emit(EV.ERROR, { message: toMessage(err) });
     }
 
-    socket.on(EV.SEND_MESSAGE,async(payload:ISendMessageInput)=>{
+
+  });
+
+      socket.on(EV.SEND_MESSAGE,async(payload:ISendMessageInput)=>{
       try{
       await  useCases.sendMessageUseCase.execute(payload)
       }catch(err)
@@ -38,7 +42,6 @@ export function registerChatHandlers(socket: Socket, useCases: ChatUseCases): vo
         socket.emit(EV.ERROR,{message:toMessage(err)})
       }
     })
-  });
    
   socket.on(EV.TYPING_START, ({ chatId, userId }) => {
   useCases.typingIndicatorUSeCase.startTyping({ socketId: socket.id, chatId, userId });

@@ -1,3 +1,5 @@
+import { Beautician } from "../../../domain/entities/Beautician";
+import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
 import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
@@ -14,13 +16,10 @@ export class GetUserChatsUseCase implements IGetUserChatsUseCase {
     private chatRepo: IChatRepository,
     private userRepo: IUserRepository,
     private messageRepo: IMessageRepository,
+    private beauticianRepo: IBeauticianRepository, 
   ) {}
 
-  async execute({
-    userId,
-    limit = 20,
-    cursor,
-  }: IGetUserChatsInput): Promise<IGetUserChatsOutput> {
+  async execute({ userId, limit = 20, cursor }: IGetUserChatsInput): Promise<IGetUserChatsOutput> {
     if (!userId) throw new Error("userId is required");
 
     const chats = await this.chatRepo.findByUserId(userId, limit + 1, cursor);
@@ -44,6 +43,18 @@ export class GetUserChatsUseCase implements IGetUserChatsUseCase {
 
     const userMap = new Map(users.map((u) => [u.id, u]));
 
+    const beauticianUsers = users.filter((u) => u.role === "beautician");
+    const beauticianMap = new Map<string, Beautician>();
+
+    if (beauticianUsers.length > 0) {
+      await Promise.all(
+        beauticianUsers.map(async (u) => {
+          const b = await this.beauticianRepo.findByUserId(u.id);
+          if (b) beauticianMap.set(u.id, b);
+        })
+      );
+    }
+
     const chatsFiltered = chats
       .map((chat, index) => {
         const otherUserId = chat.participants.find((p) => p !== userId);
@@ -52,10 +63,12 @@ export class GetUserChatsUseCase implements IGetUserChatsUseCase {
         const user = userMap.get(otherUserId);
         if (!user) return null;
 
-        return toGetUserChats(chat, user, unreadCounts[index]);
-      })
-      .filter((c): c is IChatListDto => c !== null);
+        const beautician = beauticianMap.get(otherUserId) ?? null; // ✅
 
+        return toGetUserChats(chat, user, unreadCounts[index], beautician);
+      })
+      .filter((c): c is IChatListDto => c !== null)
+        .filter((c) => c.lastMessage !== "");
     return { chats: chatsFiltered, nextCursor, hasMore };
   }
 }

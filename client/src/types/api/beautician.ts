@@ -1,7 +1,6 @@
-import type { BeauticianStatusType, ScheduleEndType, ScheduleTypeValue} from "../../constants/types/beautician";
+import type { BeauticianStatusType, ScheduleEndType, ScheduleTypeValue, ServiceModesType} from "../../constants/types/beautician";
 import type { UserRoleType } from "../../constants/types/User";
-import type { LocationVO } from "../../features/shared/locationTagInput";
-import type { PostType } from "../../features/types/mediaType";
+
 import type { IGetAllPostsDto, IGetAvailabilitySlotDto, IGetBeauticianPostsDto, IGetmonthlyAvailabilityDto, IGetServiceAreaDto } from "../dtos/beautician";
 import type { BackendResponse } from "./api";
 
@@ -51,7 +50,7 @@ export interface IProfileUpdateRequest{
   shopName?:string,
   shopAddress?:ShopAddressVO,
   yearsOfExperience:string,
-
+  serviceModes:ServiceModesType[]
 }
 
 
@@ -73,6 +72,7 @@ export interface IEditProfileResponseData{
   shopName?:string,
   shopAddress?:ShopAddressVO,
   yearsOfExperience:string,
+  serviceModes:ServiceModesType[],
   accountHolderName: string;
     accountNumber: string;
     confirmAccountNumber: string;
@@ -164,5 +164,5 @@ export type IGetAvailabilitySlotResponse=BackendResponse<IGetAvailabilitySlotRes
 export type IGetServiceAreaResponse=BackendResponse<IGetServiceAreaResponseData>
 // export type IGetAllHomeFeedResponse=BackendResponse<IGetAllHomeFeedResponseData>
 // export type IGetTipsAndRentResponse=BackendResponse<IGetTipsAndRentResponseData>
-// export type IGetBeauticianPostResponse=BackendResponse<IGetBeauticianPostResponseData>
+export type IGetBeauticianPostResponse=BackendResponse<IGetBeauticianPostResponseData>
 export type IGetmonthlyAvailabilityReponse=BackendResponse<IGetmonthlyAvailabilityReponseData>

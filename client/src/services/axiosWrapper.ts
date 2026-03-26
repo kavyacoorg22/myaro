@@ -1,6 +1,8 @@
 import axios, { AxiosError, type AxiosResponse } from "axios";
 import { authRoutes } from "../constants/apiRoutes/authRoutes";
 import { adminApiRoute } from "../constants/apiRoutes/adminRoutes";
+import { adminFrontendRoute } from "../constants/frontendRoutes/adminFrontenRoutes";
+import { publicFrontendRoutes } from "../constants/frontendRoutes/publicFrontendRoutes";
 
 //api error
 export class ApiError extends Error {
@@ -46,9 +48,23 @@ api.interceptors.response.use(
     const isAuthEndpoint =
       endpoint.includes(authRoutes.login) ||
       endpoint.includes(authRoutes.preSignup) ||
-      endpoint.includes(adminApiRoute.adminLogin)|| endpoint.includes(authRoutes.completeSignup)||endpoint.includes(authRoutes.sendOtp)||endpoint.includes(authRoutes.verifyOtp)||endpoint.includes(authRoutes.reSendOtp);
+      endpoint.includes(adminApiRoute.adminLogin) ||
+      endpoint.includes(authRoutes.completeSignup) ||
+      endpoint.includes(authRoutes.sendOtp) ||
+      endpoint.includes(authRoutes.verifyOtp) ||
+      endpoint.includes(authRoutes.reSendOtp);
 
-    if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+    // ✅ NEW
+    const isRefreshEndpoint =
+      endpoint.includes(authRoutes.refresh) ||
+      endpoint.includes(authRoutes.adminRefresh);
+
+    if (
+      status === 401 &&
+      !originalRequest._retry &&
+      !isAuthEndpoint &&
+      !isRefreshEndpoint
+    ) {
       originalRequest._retry = true;
 
       const isAdminRequest = endpoint.startsWith("/admin");
@@ -58,9 +74,12 @@ api.interceptors.response.use(
 
       try {
         await api.post(refreshEndpoint);
-        return api(originalRequest); 
+        return api(originalRequest);
       } catch {
-        const loginPath = isAdminRequest ? adminApiRoute.adminLogin : authRoutes.login;
+        const loginPath = isAdminRequest
+          ? adminFrontendRoute.login
+          : publicFrontendRoutes.login;
+
         window.location.href = loginPath;
         throw new Error("Session expired");
       }

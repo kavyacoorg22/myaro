@@ -1,5 +1,5 @@
 import mongoose, { Document, Model, Schema, Types } from "mongoose";
-import { VerificationStatus } from "../../../../domain/enum/beauticianEnum";
+import { ServiceModes, VerificationStatus } from "../../../../domain/enum/beauticianEnum";
 
 
 
@@ -9,6 +9,7 @@ export type BeauticianDoc =Document & {
   beauticianId:string,
   userId: Types.ObjectId;
   yearsOfExperience: number;
+  serviceModes?:ServiceModes[],
   about: string;
 
   hasShop: boolean;
@@ -71,6 +72,7 @@ const BeauticianSchema = new Schema<BeauticianDoc>(
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
    
     yearsOfExperience: { type: Number, default: 0 },
+    serviceModes:{type:[String],enum:Object.values(ServiceModes),default:[]},
     about: { type: String, default: "" },
 
     hasShop: { type: Boolean, default: false },

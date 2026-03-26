@@ -6,7 +6,7 @@ import { customerFrontendRoutes } from "../constants/frontendRoutes/customerFron
 import { beauticianFrontendRoutes } from "../constants/frontendRoutes/beauticianFrontendRoutes";
 import { lazy } from "react";
 import { TipsAndTricksPage } from "../features/user/pages/tipsTricks";
-import ChatApp from "../features/user/component/chat/chatApp";
+import BookingModal from "../features/models/booking/bookingModal";
 
 
 const  ProfilePage=lazy(()=>import('../features/user/pages/profile'))
@@ -16,7 +16,7 @@ const  BeauticianProfileForm=lazy(()=>import('../features/shared/profileService'
 const  ServicePageList=lazy(()=>import('../features/service/pages/serviceListPage'))
 const  ServiceLocationForm=lazy(()=>import('../features/service/pages/locationPage'))
 const  ServicePageListForUser=lazy(()=>import('../features/user/component/viewServicePage'))
-
+const ChatList=lazy(()=>import("../features/user/component/chat/chatList"))
 export const userRoutes:RouteObject[]=[
   {
     path:publicFrontendRoutes.profile,
@@ -87,8 +87,24 @@ export const userRoutes:RouteObject[]=[
     path:publicFrontendRoutes.chat,
     element:(
       <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN,UserRole.CUSTOMER]}>
-        <ChatApp/>
+        <ChatList/>
       </PrivateRoute>
+    )
+  },
+   {
+    path:publicFrontendRoutes.specificChat,
+    element:(
+      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN,UserRole.CUSTOMER]}>
+        <ChatList/>
+      </PrivateRoute>
+    )
+  },
+  {
+    path:publicFrontendRoutes.notification,
+    element:(
+    <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
+      <BookingModal/>
+    </PrivateRoute>
     )
   }
   

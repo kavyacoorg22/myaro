@@ -61,6 +61,7 @@ async getUnreadCount(chatId: string, userId: string): Promise<number> {
         message:doc.message,
         type:doc.type,
         bookingId:doc.bookingId?.toString(),
+        status:doc.status,
         seen:doc.seen,
         seenAt:doc.seenAt,
         createdAt:doc.createdAt,

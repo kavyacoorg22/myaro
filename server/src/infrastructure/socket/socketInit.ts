@@ -3,10 +3,12 @@ import { Server as SocketServer } from "socket.io";
 import { SocketIOEmitter } from "../service/socketIOEmitter";
 import { registerChatHandlers } from "./chatSocketHandler";
 import { registerUserHandlers } from "./userSocketHandler";
-import { buildChatUseCases } from "../config/di";
+import { buildChatUseCases, socketEmitter } from "../config/di";
 import { UserOnlineStatusUseCase } from "../../application/usecases/chat/userOnlineStatusUSeCase";
 
 export function initSocket(httpServer: HttpServer, corsOrigin: string): SocketServer {
+    console.log("🔧 Socket CORS origin:", corsOrigin); 
+
 
   const io = new SocketServer(httpServer, {
     cors: {
@@ -16,8 +18,8 @@ export function initSocket(httpServer: HttpServer, corsOrigin: string): SocketSe
     },
   });
 
-  const socketEmitter = new SocketIOEmitter(io);
-  const useCases = buildChatUseCases(socketEmitter);
+socketEmitter.setIO(io);
+  const useCases = buildChatUseCases();
 const userOnlineStatusUSeCase= new UserOnlineStatusUseCase(socketEmitter)
 
   io.on("connection", (socket) => {

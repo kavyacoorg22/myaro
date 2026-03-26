@@ -20,3 +20,12 @@ export type ScheduleEndType='never'|'on'|'after'
 
 
 export type scheduleSourceType='recurring'|'manual'
+
+export const ServiceModes={
+  HOME :"HOME",
+  SHOP : "SHOP",
+  EVENT : "EVENT",
+  CONSULTATION :"CONSULTATION",
+}
+
+export type ServiceModesType=(typeof ServiceModes)[keyof typeof ServiceModes]

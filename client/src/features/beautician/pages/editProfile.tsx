@@ -16,6 +16,7 @@ import type { IBeauticianProfileUpdate } from "../../../types/api/beautician";
 import { publicAPi } from "../../../services/api/public";
 import { ChangePasswordUi } from "../component/changePasswordUI";
 import { publicFrontendRoutes } from "../../../constants/frontendRoutes/publicFrontendRoutes";
+import type { ServiceModesType } from "../../../constants/types/beautician";
 
 export const ProfileEditPage = ({ isCustomer = false }: { isCustomer?: boolean }) => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export const ProfileEditPage = ({ isCustomer = false }: { isCustomer?: boolean }
     shopAddress: { address: "", city: "", pincode: "" },
     yearsOfExperience: "1",
     profileImg: undefined as string | undefined,
+      serviceModes: [] as ServiceModesType[], 
   });
 
   const [bankData, setBankData] = useState({
@@ -62,6 +64,7 @@ export const ProfileEditPage = ({ isCustomer = false }: { isCustomer?: boolean }
         },
         yearsOfExperience: String(data?.yearsOfExperience || 1),
         profileImg: data?.profileImg,
+          serviceModes: data?.serviceModes || [], 
       });
 
       setBankData({
@@ -136,6 +139,7 @@ const handleSaveProfile = async (data: ProfileType | CustomerProfileType) => {
           }
         : undefined,
       yearsOfExperience: "yearsOfExperience" in data ? data.yearsOfExperience : undefined,
+       serviceModes: "serviceModes" in data ? data.serviceModes : undefined, 
     };
 
     await BeauticianApi.updateProfile(payload);

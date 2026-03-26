@@ -12,7 +12,8 @@ export const publicFrontendRoutes={
   notification:'/notifiaction',
   adminLogin:'/admin/login',
   getServiceList:'/beautician/services',
-  chat:'/chat'
+  chat:'/chat',
+  specificChat:'/chat/:id'
  
  
 }

@@ -1,6 +1,6 @@
 import express from 'express';
 const router=express.Router();
-import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, customServiceController, postController, scheduleController } from '../../../infrastructure/config/di'
+import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, bookingController, customServiceController, postController, scheduleController } from '../../../infrastructure/config/di'
 import { uploadFields, uploadMediaArray, uploadSingle } from '../middleware/multer';
 import { validateBeauticianFiles } from '../validator/validateFileUpload';
 import { validatePaymentDetails,validateBeauticianData, validateAddCustomServiceInput, validateCreatePostInput } from '../middleware/validateBeauticianINput';
@@ -44,7 +44,9 @@ router.get('/:id/schedules/month', authenticateCustomer, scheduleController.getM
 router.get('/:id/schedules', authenticateCustomer, scheduleController.getAvailabilityForUser)
 
 //post
+router.get('/posts/me',authenticateBeautician,postController.getBeauticianPost)
 
-
-router.get('/post/:id',authenticateUser,postController.getBeauticianPost)
+router.get('/posts/:id',authenticateUser,postController.getBeauticianPostForUser)
+//booking
+router.get('/bookings',authenticateBeautician,bookingController.getBeauticianBookings)
 export  default router

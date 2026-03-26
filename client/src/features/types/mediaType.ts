@@ -12,7 +12,7 @@ export interface PostUser {
 export interface PostCardData {
   id: string;
   user: { id: string; userName: string; profileImg?: string; isVerified?: boolean };
-  location: LocationVO;
+  location: LocationVO|null;
   mediaUrl: string | string[];
   mediaType?: "image" | "video" | "reel";
   thumbnailUrl?: string;
