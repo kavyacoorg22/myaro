@@ -2,7 +2,6 @@ import { FormProvider } from "react-hook-form";
 import { FormField, FormMessage } from "../../../../components/ui/form";
 import { useState } from "react";
 import { Eye, EyeClosedIcon } from "lucide-react";
-import { EyeClosed } from "@phosphor-icons/react";
 
 export function Step3UI({
   methods,

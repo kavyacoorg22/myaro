@@ -21,7 +21,7 @@ const toPostCardData = (dto: BeauticianPostData): PostCardData => ({
   timeAgo: dto.timeAgo,  // ✅ use timeAgo directly from backend
 });
 
-export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType }: PostsTabProps) => {
+export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType ,viewMode}: PostsTabProps) => {
   const [posts, setPosts] = useState<PostCardData[]>([]);
   const [rawPosts, setRawPosts] = useState<BeauticianPostData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,18 +38,18 @@ export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType }: Po
     async (nextCursor?: string | null, replace = false) => {
       try {
         replace ? setLoading(true) : setLoadingMore(true);
-
+        if(viewMode!=="own-beautician" && viewMode!=="view-beautician")
+          return
         const response = isOwn
           ? await BeauticianApi.getBeauticianPosts(postType, 12, nextCursor)
           : await publicAPi.getBeauticianPost(beauticianUserId!, postType, 12, nextCursor);
 
-        // ✅ Your backend returns { success, posts, nextCursor } directly in response.data
         console.log('backend post response',response.data)
         const data = response?.data;
         const newDtos: BeauticianPostData[] = data?.posts ?? [];
         const nextCursorValue: string | null = data?.nextCursor ?? null;
 
-        console.log("fetched posts:", newDtos); // ✅ add this to verify
+        console.log("fetched posts:", newDtos); 
 
         const mapped = newDtos.map(toPostCardData);
 
@@ -64,7 +64,7 @@ export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType }: Po
         setLoadingMore(false);
       }
     },
-    [beauticianUserId, isOwn, postType]
+    [beauticianUserId, isOwn, postType,viewMode]
   );
 
   useEffect(() => {

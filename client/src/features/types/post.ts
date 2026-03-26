@@ -11,6 +11,7 @@ export interface Post {
 export interface PostsTabProps {
   beauticianUserId?: string | null;
   postType?: PostType;
+  viewMode:string
 }
 
 

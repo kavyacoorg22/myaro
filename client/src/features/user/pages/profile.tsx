@@ -31,7 +31,6 @@ interface BeauticianInfo {
   verificationStatus?: BeauticianStatusType;
 }
 
-// ─── Tab type ─────────────────────────────────────────────────────────────────
 type ActiveTab = "posts" | "tips" | "rent";
 
 const ProfilePage = () => {
@@ -46,7 +45,6 @@ const ProfilePage = () => {
     isBeautician: false,
   });
 
-  // ── NEW: active tab state, defaults to "posts" so grid loads immediately ──
   const [activeTab, setActiveTab] = useState<ActiveTab>("posts");
 
   const [selectedDates, setSelectedDates] = useState<number[]>([]);
@@ -353,10 +351,11 @@ const handleStartChat = async (participantB: string) => {
         </div>
 
         {/* ── Tab Content ── */}
+        {viewMode==='own-beautician'|| viewMode==='view-beautician'&&
         <div className="bg-white min-h-[60vh]">
           {activeTab === "posts" && (
             <PostsTab
-              beauticianUserId={isOwnProfile ? null : profileData.userId}
+              beauticianUserId={isOwnProfile ? null : profileData.userId} viewMode={viewMode}
             />
           )}
 
@@ -379,7 +378,7 @@ const handleStartChat = async (participantB: string) => {
               <p className="text-sm font-medium">No rentals yet</p>
             </div>
           )}
-        </div>
+        </div>}
 
         {/* ── Modals (unchanged) ── */}
         {isCalendarOpen && (
