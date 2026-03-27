@@ -1,14 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BeauticianPostData } from "../../types/post";
 
-export const PostModal = ({ post, onClose }: { post: BeauticianPostData; onClose: () => void }) => {
+interface ModalUser {
+  userName: string;
+  fullName?: string;
+  profileImg?: string;
+}
+
+export const PostModal = ({
+  post,
+  user,
+  onClose,
+}: {
+  post: BeauticianPostData;
+  user: ModalUser;
+  onClose: () => void;
+}) => {
   const mediaList: string[] = post.media;
   const [mediaIndex, setMediaIndex] = useState(0);
+  const [comment, setComment] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const current = mediaList[mediaIndex];
-  const isVideo =
-    post.postType === "reel" ||
-    (typeof current === "string" && /\.(mp4|webm|mov)(\?|$)/i.test(current));
- 
+  const isVideo = typeof current === "string" && /\.(mp4|webm|mov)(\?|$)/i.test(current);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -18,28 +32,42 @@ export const PostModal = ({ post, onClose }: { post: BeauticianPostData; onClose
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose, mediaList.length]);
- 
+
+  const displayName = user.userName || user.fullName || "Unknown";
+  const initials = displayName.charAt(0).toUpperCase();
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-3xl w-full mx-4 flex flex-col md:flex-row"
-        style={{ maxHeight: "90vh" }}
+        className="relative bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
+        style={{ width: "min(900px, 95vw)", maxHeight: "92vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Media panel */}
+        {/* ── Media panel ── */}
         <div
-          className="relative bg-black flex-shrink-0 w-full md:w-[420px] flex items-center justify-center"
-          style={{ minHeight: 320 }}
+          className="relative bg-black flex-shrink-0 flex items-center justify-center"
+          style={{ width: "min(520px, 55vw)", minHeight: 360 }}
         >
           {isVideo ? (
-            <video src={current} controls autoPlay className="w-full h-full object-contain" style={{ maxHeight: 520 }} />
+            <video
+              src={current}
+              controls
+              autoPlay
+              className="w-full h-full object-contain"
+              style={{ maxHeight: "92vh" }}
+            />
           ) : (
-            <img src={current} alt="Post" className="w-full h-full object-contain" style={{ maxHeight: 520 }} />
+            <img
+              src={current}
+              alt="Post"
+              className="w-full h-full object-contain"
+              style={{ maxHeight: "92vh" }}
+            />
           )}
- 
+
           {mediaList.length > 1 && (
             <>
               <button
@@ -54,46 +82,101 @@ export const PostModal = ({ post, onClose }: { post: BeauticianPostData; onClose
               >›</button>
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
                 {mediaList.map((_, i) => (
-                  <button key={i} onClick={() => setMediaIndex(i)}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${i === mediaIndex ? "bg-white scale-125" : "bg-white/50"}`}
+                  <button
+                    key={i}
+                    onClick={() => setMediaIndex(i)}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      i === mediaIndex ? "bg-white scale-125" : "bg-white/50"
+                    }`}
                   />
                 ))}
               </div>
             </>
           )}
         </div>
- 
-        {/* Info panel */}
-        <div className="flex flex-col p-5 flex-1 overflow-y-auto">
-          <button onClick={onClose} className="self-end text-gray-400 hover:text-gray-600 transition-colors mb-3 text-xl leading-none">✕</button>
- 
-          {post.description && (
-            <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">{post.description}</p>
-          )}
- 
-          {post.location?.formattedString && (
-            <div className="flex items-center gap-1 mt-3 text-xs text-gray-400">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              {post.location.formattedString}
+
+        {/* ── Info panel ── */}
+        <div className="flex flex-col flex-1 min-w-0" style={{ minHeight: 360 }}>
+
+          {/* Header */}
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+            <div className="w-9 h-9 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              {user.profileImg ? (
+                <img src={user.profileImg} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-rose-500 text-sm font-semibold">{initials}</span>
+              )}
             </div>
-          )}
- 
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 truncate">{displayName}</p>
+              {post.location?.formattedString && (
+                <p className="text-xs text-gray-400 truncate">{post.location.formattedString}</p>
+              )}
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none ml-2"
+            >✕</button>
+          </div>
+
+          {/* Description + comments */}
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+            {post.description && (
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {user.profileImg ? (
+                    <img src={user.profileImg} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-rose-500 text-xs font-semibold">{initials}</span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-800">
+                    <span className="font-semibold mr-1">{displayName}</span>
+                    {post.description}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">{post.timeAgo}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Likes */}
           {!!post.likesCount && (
-            <div className="flex items-center gap-1 mt-3 text-xs text-gray-400">
-              <svg className="w-3.5 h-3.5 text-rose-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd"
-                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                  clipRule="evenodd" />
+            <div className="px-4 py-2 border-t border-gray-100 flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
               </svg>
-              {post.likesCount} likes
+              <span className="text-sm font-semibold text-gray-800">{post.likesCount} likes</span>
             </div>
           )}
- 
-          <p className="text-gray-400 text-xs mt-auto pt-4">{post.timeAgo}</p>
+
+          {/* Add comment */}
+          <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-3">
+            <input
+              ref={inputRef}
+              type="text"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && comment.trim()) {
+                  // TODO: call post comment API
+                  setComment("");
+                }
+              }}
+              placeholder="Add a comment..."
+              className="flex-1 text-sm text-gray-800 placeholder-gray-400 bg-transparent outline-none"
+            />
+            <button
+              disabled={!comment.trim()}
+              onClick={() => {
+                setComment("");
+              }}
+              className="text-sm font-semibold text-rose-500 disabled:opacity-30 hover:text-rose-600 transition-colors"
+            >
+              Post
+            </button>
+          </div>
         </div>
       </div>
     </div>

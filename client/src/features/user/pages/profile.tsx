@@ -10,7 +10,10 @@ import { SaidBar } from "../component/saidBar/saidbar";
 import { publicFrontendRoutes } from "../../../constants/frontendRoutes/publicFrontendRoutes";
 import { customerFrontendRoutes } from "../../../constants/frontendRoutes/customerFrontendRoutes";
 import { VerificationStatusBanner } from "../component/verificationStatus";
-import { BeauticianStatus, type BeauticianStatusType } from "../../../constants/types/beautician";
+import {
+  BeauticianStatus,
+  type BeauticianStatusType,
+} from "../../../constants/types/beautician";
 import { BeauticianApi } from "../../../services/api/beautician";
 import { ProfileTab } from "../component/profile/profileTab";
 import { beauticianFrontendRoutes } from "../../../constants/frontendRoutes/beauticianFrontendRoutes";
@@ -37,7 +40,9 @@ const ProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [profileData, setProfileData] = useState<IUserProfile | undefined>(undefined);
+  const [profileData, setProfileData] = useState<IUserProfile | undefined>(
+    undefined,
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -51,7 +56,9 @@ const ProfilePage = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [showCrop, setShowCrop] = useState(false);
   const [cropPreview, setCropPreview] = useState<string | null>(null);
-  const [cropFileType, setCropFileType] = useState<"image" | "video" | null>(null);
+  const [cropFileType, setCropFileType] = useState<"image" | "video" | null>(
+    null,
+  );
   const [showEdit, setShowEdit] = useState(false);
   const [editData, setEditData] = useState<{
     preview: string;
@@ -72,8 +79,8 @@ const ProfilePage = () => {
       ? "own-beautician"
       : "own-customer"
     : profileData?.role === "beautician"
-    ? "view-beautician"
-    : "view-customer";
+      ? "view-beautician"
+      : "view-customer";
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -101,7 +108,8 @@ const ProfilePage = () => {
           }
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Failed to load profile";
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load profile";
         setError(errorMessage);
         handleApiError(err);
       } finally {
@@ -112,29 +120,29 @@ const ProfilePage = () => {
     loadProfile();
   }, [id, currentUser]);
 
-const handleStartChat = async (participantB: string) => {
-  try {
-    const res = await ChatApi.createChat(participantB);
+  const handleStartChat = async (participantB: string) => {
+    try {
+      const res = await ChatApi.createChat(participantB);
 
-    const chat = res.data?.data;
- if (!chat || !profileData) return;
+      const chat = res.data?.data;
+      if (!chat || !profileData) return;
 
-    navigate(`/chat/${chat.id}`, {
-  state: {
-    participant: {
-      id: profileData.userId,
-      fullName: profileData.fullName,
-      userName: profileData.userName,
-      profileImg: profileData.profileImg,
-      role:profileData.role,
-      serviceModes:profileData.beauticianData?.serviceModes??[]
+      navigate(`/chat/${chat.id}`, {
+        state: {
+          participant: {
+            id: profileData.userId,
+            fullName: profileData.fullName,
+            userName: profileData.userName,
+            profileImg: profileData.profileImg,
+            role: profileData.role,
+            serviceModes: profileData.beauticianData?.serviceModes ?? [],
+          },
+        },
+      });
+    } catch (err) {
+      console.error("Failed to start chat", err);
     }
-  }
-});
-  } catch (err) {
-    console.error("Failed to start chat", err);
-  }
-};
+  };
   const fetchBeauticianStatus = async () => {
     try {
       const response = await BeauticianApi.getStatus();
@@ -151,7 +159,9 @@ const handleStartChat = async (participantB: string) => {
     }
   };
 
-  const handleSaveAvailability = async (request: IAddAvailabilityRequest): Promise<void> => {
+  const handleSaveAvailability = async (
+    request: IAddAvailabilityRequest,
+  ): Promise<void> => {
     try {
       console.log("📤 Sending to API:", request);
       const response = await BeauticianApi.addAvailabilitySchedule(request);
@@ -180,7 +190,10 @@ const handleStartChat = async (participantB: string) => {
         endTime: slotToDelete.endTime,
       };
 
-      const response = await BeauticianApi.deleteAvailabilitySlot(slotsToDelete, scheduleId);
+      const response = await BeauticianApi.deleteAvailabilitySlot(
+        slotsToDelete,
+        scheduleId,
+      );
       console.log("✅ Slot deleted successfully:", response);
       toast.success("Slot deleted successfully!");
     } catch (error) {
@@ -213,9 +226,17 @@ const handleStartChat = async (participantB: string) => {
     setCropFileType(null);
   };
 
-  const handleCustomerDateSelect = async (dates: number[], currentDate?: Date) => {
+  const handleCustomerDateSelect = async (
+    dates: number[],
+    currentDate?: Date,
+  ) => {
     setSelectedDates(dates);
-    if (viewMode !== "view-beautician" || !profileData?.userId || dates.length === 0) return;
+    if (
+      viewMode !== "view-beautician" ||
+      !profileData?.userId ||
+      dates.length === 0
+    )
+      return;
 
     const ref = currentDate ?? new Date();
     const year = ref.getFullYear();
@@ -223,7 +244,10 @@ const handleStartChat = async (participantB: string) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(dates[0]).padStart(2, "0")}`;
 
     try {
-      const res = await publicAPi.getAvailbilitySchedule(profileData.userId, dateStr);
+      const res = await publicAPi.getAvailbilitySchedule(
+        profileData.userId,
+        dateStr,
+      );
       setCustomerSlots(res.data?.data?.availability?.slots ?? []);
     } catch (err) {
       console.error("Failed to fetch slots", err);
@@ -260,7 +284,9 @@ const handleStartChat = async (participantB: string) => {
         <SaidBar />
         <div className="ml-60 flex-1 flex items-center justify-center p-6">
           <div className="bg-red-50 border border-red-200 p-6 rounded-2xl max-w-md w-full text-center">
-            <p className="text-red-700 font-semibold mb-1">Couldn't load profile</p>
+            <p className="text-red-700 font-semibold mb-1">
+              Couldn't load profile
+            </p>
             <p className="text-red-500 text-sm mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
@@ -303,7 +329,6 @@ const handleStartChat = async (participantB: string) => {
     <>
       <SaidBar />
       <div className="min-h-screen bg-gray-50 ml-60 w-9.5/12">
-
         {/* ── Profile Header ── */}
         <ProfileHeader
           viewMode={viewMode}
@@ -320,8 +345,14 @@ const handleStartChat = async (participantB: string) => {
           hideButtons={shouldHideButtons}
           onEditProfile={() => navigate(beauticianFrontendRoutes.editProfile)}
           onCalender={handleCalendarClick}
-          onRegisterAsBeautician={() => navigate(customerFrontendRoutes.register)}
-          onServicePage={() => navigate(`/beautician/services`, { state: { beauticianId: profileData.userId } })}
+          onRegisterAsBeautician={() =>
+            navigate(customerFrontendRoutes.register)
+          }
+          onServicePage={() =>
+            navigate(`/beautician/services`, {
+              state: { beauticianId: profileData.userId },
+            })
+          }
           onMessage={() => handleStartChat(profileData.userId)}
           onFollow={() => console.log("Follow clicked")}
           onBookService={() => navigate(`/book/${profileData.userId}`)}
@@ -351,34 +382,38 @@ const handleStartChat = async (participantB: string) => {
         </div>
 
         {/* ── Tab Content ── */}
-        {viewMode==='own-beautician'|| viewMode==='view-beautician'&&
-        <div className="bg-white min-h-[60vh]">
-          {activeTab === "posts" && (
-            <PostsTab
-              beauticianUserId={isOwnProfile ? null : profileData.userId} viewMode={viewMode}
-            />
-          )}
+        {(viewMode === "own-beautician" || viewMode === "view-beautician") && (
+          <div className="bg-white min-h-[60vh]">
+            {activeTab === "posts" && (
+              <PostsTab
+                beauticianUserId={isOwnProfile ? null : profileData.userId}
+                viewMode={viewMode}
+                postType="post"
+                user={{userName:profileData.userName,fullName:profileData.fullName,profileImg:profileData.profileImg}}
+              />
+            )}
 
-          {activeTab === "tips" && (
-            <div className="flex flex-col items-center justify-center py-24 text-center text-gray-400">
-              <svg className="w-10 h-10 mb-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              <p className="text-sm font-medium">No tips yet</p>
-            </div>
-          )}
+            {activeTab === "tips" && (
+              <PostsTab
+                beauticianUserId={isOwnProfile ? null : profileData.userId}
+                viewMode={viewMode}
+                postType="tips"
+                user={{userName:profileData.userName,fullName:profileData.fullName,profileImg:profileData.profileImg}}
 
-          {activeTab === "rent" && (
-            <div className="flex flex-col items-center justify-center py-24 text-center text-gray-400">
-              <svg className="w-10 h-10 mb-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <p className="text-sm font-medium">No rentals yet</p>
-            </div>
-          )}
-        </div>}
+              />
+            )}
+
+            {activeTab === "rent" && (
+              <PostsTab
+                beauticianUserId={isOwnProfile ? null : profileData.userId}
+                viewMode={viewMode}
+                postType="rent"
+              user={{userName:profileData.userName,fullName:profileData.fullName,profileImg:profileData.profileImg}}
+
+              />
+            )}
+          </div>
+        )}
 
         {/* ── Modals (unchanged) ── */}
         {isCalendarOpen && (
@@ -398,7 +433,9 @@ const handleStartChat = async (participantB: string) => {
             existingSlots={customerSlots}
             onSaveSlots={handleSaveAvailability}
             onDeleteSlot={handleDeleteSlot}
-            beauticianId={viewMode === "view-beautician" ? profileData.userId : undefined}
+            beauticianId={
+              viewMode === "view-beautician" ? profileData.userId : undefined
+            }
           />
         )}
 
@@ -450,7 +487,13 @@ const handleStartChat = async (participantB: string) => {
                   soundOn: item.soundOn ?? true,
                 }))
               : [
-                  { src: preview, fileType, trimStart: 0, trimEnd: 0, soundOn: true },
+                  {
+                    src: preview,
+                    fileType,
+                    trimStart: 0,
+                    trimEnd: 0,
+                    soundOn: true,
+                  },
                   ...extrasRef.current.map((e) => ({
                     ...e,
                     trimStart: 0,

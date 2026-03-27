@@ -51,39 +51,37 @@ export const BeauticianTabSection: React.FC<
   const inactiveClass = "text-gray-500 hover:text-gray-700";
 
   return (
-    <div className="flex items-center justify-around border-t pt-4 mb-5">
+<div className="flex items-center border-b border-gray-100 bg-white">
   {onUpload && (
     <button
       onClick={() => handleClick("upload", onUpload)}
-      className={`flex items-center gap-2 ${activeTab === "upload" ? activeClass : inactiveClass}`}
+      className="flex items-center justify-center px-4 py-3.5 text-gray-400 hover:text-gray-600 border-b-2 border-transparent -mb-px transition-colors"
     >
-      <Upload className="w-5 h-5" />
+      <Upload className="w-4 h-4" />
     </button>
   )}
 
-  <button
-    onClick={() => handleClick("posts", onPosts)}
-    className={`flex items-center gap-2 ${activeTab === "posts" ? activeClass : inactiveClass}`}
-  >
-    <Camera className="w-5 h-5" />
-    <span className="text-sm font-medium">POSTS</span>
-  </button>
-
-  <button
-    onClick={() => handleClick("tips", onTips)}
-    className={`flex items-center gap-2 ${activeTab === "tips" ? activeClass : inactiveClass}`}
-  >
-    <Lightbulb className="w-5 h-5" />
-    <span className="text-sm font-medium">TIPS</span>
-  </button>
-
-  <button
-    onClick={() => handleClick("rent", onRent)}
-    className={`flex items-center gap-2 ${activeTab === "rent" ? activeClass : inactiveClass}`}
-  >
-    <Home className="w-5 h-5" />
-    <span className="text-sm font-medium">RENT</span>
-  </button>
+  {(["posts", "tips", "rent"] as const).map((tab) => {
+    const config = {
+      posts: { icon: <Camera className="w-4 h-4" />, label: "Posts", handler: onPosts },
+      tips:  { icon: <Lightbulb className="w-4 h-4" />, label: "Tips", handler: onTips },
+      rent:  { icon: <Home className="w-4 h-4" />, label: "Rent", handler: onRent },
+    }[tab];
+    return (
+      <button
+        key={tab}
+        onClick={() => handleClick(tab, config.handler)}
+        className={`flex flex-1 items-center justify-center gap-1.5 py-3.5 text-xs font-medium uppercase tracking-widest border-b-2 -mb-px transition-colors
+          ${activeTab === tab
+            ? "text-rose-700 border-rose-700"
+            : "text-gray-400 border-transparent hover:text-gray-600"
+          }`}
+      >
+        {config.icon}
+        {config.label}
+      </button>
+    );
+  })}
 </div>
   );
 }

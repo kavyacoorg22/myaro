@@ -29,7 +29,7 @@ export const PostSchema=new Schema<PostDoc>({
       required: true
     },
     description:{type:String},
-    postType:{type:String,enum:Object.values(PostType),default:PostType.REEL,required:true},
+    postType:{type:String,enum:Object.values(PostType),default:PostType.POST,required:true},
     location:{type:LocationSchema},
     media:[{type:String,required:true}],
     likesCount:{type:Number,default:0},

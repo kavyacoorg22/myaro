@@ -74,7 +74,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [step, setStep] = useState<ShareStep>("form");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState<LocationResult | null>(null);
-  const [postType, setPostType] = useState<PostType>("reel");
+  const [postType, setPostType] = useState<PostType>("post");
   const [uploadPhase, setUploadPhase] = useState<UploadPhase>("getting-urls");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
@@ -165,7 +165,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     setStep("form");
     setDescription("");
     setLocation(null);
-    setPostType("reel");
+    setPostType("post");
     setUploadProgress(0);
     setErrorMsg("");
     onClose();
@@ -291,7 +291,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <div>
               <p className="text-sm text-gray-600 mb-2">Choose any one</p>
               <div className="flex flex-col gap-2">
-                {(["reel", "tips", "rent"] as PostType[]).map((type) => (
+                {(["post", "tips", "rent"] as PostType[]).map((type) => (
                   <label key={type} className="flex items-center gap-2 cursor-pointer">
                     <div
                       onClick={() => setPostType(type)}

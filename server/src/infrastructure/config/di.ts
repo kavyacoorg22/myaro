@@ -42,7 +42,6 @@ import { ViewBeauticianDetailUseCase } from "../../application/usecases/admin/ma
 import { ApproveBeauticianUseCase } from "../../application/usecases/admin/management/approveBeauticianUseCase";
 import { RejectBeauticianUseCase } from "../../application/usecases/admin/management/rejectBeauticianUseCase";
 import { BeauticianUpdateRegistartionUseCase } from "../../application/usecases/beautician/beauticianregistationUpdateUsecase";
-
 import { GoogleLoginUseCase } from "../../application/usecases/auth/googleLoginUseCase";
 import { GoogleAuthService } from "../service/googleAuthService";
 import { GoogleLoginController } from "../../interface/Http/controllers/auth/googleLoginController";

@@ -69,7 +69,6 @@ export class S3Storage implements IFileStorage {
     }
   }
 
-  // ── NEW: Generate a presigned PUT URL for direct client → S3 upload ──────
   async generateSignedUploadUrl(
     fileType: string,   // e.g. "video/mp4", "image/jpeg"
     folder: string = "posts/raw"
@@ -83,11 +82,11 @@ export class S3Storage implements IFileStorage {
       ContentType: fileType,
     });
 
-    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 }); // 5 min
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: appConfig.signedUrl.expireTime }); // 5 min
     return { signedUrl, s3Key };
   }
 
-  // ── NEW: Download raw video from S3, trim with ffmpeg, re-upload ─────────
+  // Download raw video from S3, trim with ffmpeg, re-upload ─────────
   async trimAndReplaceVideo(
     rawS3Key: string,
     trimStart: number,

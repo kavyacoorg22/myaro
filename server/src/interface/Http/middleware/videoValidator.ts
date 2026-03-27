@@ -1,4 +1,3 @@
-// src/shared/utils/videoValidator.ts
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
 import * as os from "os";

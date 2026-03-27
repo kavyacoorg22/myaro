@@ -11,7 +11,7 @@ export class GetBeauticianPostUseCase implements IGetBeauticianPostUSeCase{
 
 async execute(
   beauticianId: string,
-   postType: PostType = PostType.REEL,  
+   postType: PostType = PostType.POST,  
   cursor: string | null = null,
   limit: number = 12
 ): Promise<IGetBeauticianPostOutPut> {

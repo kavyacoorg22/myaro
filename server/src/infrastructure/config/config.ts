@@ -70,6 +70,9 @@ export const appConfig = {
     google: {
         clientId: required('GOOGLE_CLIENT_ID', process.env.GOOGLE_CLIENT_ID),
     },
+    signedUrl:{
+        expireTime:Number(required('SIGNED_URL_EXPIRETIME',process.env.SIGNED_URL_EXPIRETIME))
+    }
 
  
 };

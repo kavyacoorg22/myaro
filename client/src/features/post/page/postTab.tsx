@@ -9,19 +9,32 @@ import { PostSkeleton } from "../component/skelton";
 import { PostGridCard } from "../component/postGridCard";
 import type { BeauticianPostData, PostsTabProps } from "../../types/post";
 
+const isVideoUrl = (url: string) => /\.(mp4|webm|mov)(\?|$)/i.test(url);
+
 const toPostCardData = (dto: BeauticianPostData): PostCardData => ({
   id: dto.id,
   user: { id: "", userName: "", profileImg: undefined, isVerified: false },
   location: dto.location ?? null,
   mediaUrl: dto.media.length === 1 ? dto.media[0] : dto.media,
-  mediaType: dto.postType === "reel" ? "reel" : "image",
+  mediaType: isVideoUrl(dto.media[0]) ? "video" : "image",
   thumbnailUrl: dto.media[0],
   description: dto.description,
   likesCount: dto.likesCount ?? 0,
-  timeAgo: dto.timeAgo,  // ✅ use timeAgo directly from backend
+  timeAgo: dto.timeAgo,
 });
 
-export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType ,viewMode}: PostsTabProps) => {
+interface ModalUser {
+  userName: string;
+  fullName?: string;
+  profileImg?: string;
+}
+
+export const PostsTab = ({
+  beauticianUserId,
+  postType = "post" as PostType,
+  viewMode,
+  user,
+}: PostsTabProps & { user: ModalUser }) => {
   const [posts, setPosts] = useState<PostCardData[]>([]);
   const [rawPosts, setRawPosts] = useState<BeauticianPostData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,21 +49,16 @@ export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType ,view
 
   const fetchPosts = useCallback(
     async (nextCursor?: string | null, replace = false) => {
+      if (viewMode !== "own-beautician" && viewMode !== "view-beautician") return;
       try {
         replace ? setLoading(true) : setLoadingMore(true);
-        if(viewMode!=="own-beautician" && viewMode!=="view-beautician")
-          return
         const response = isOwn
           ? await BeauticianApi.getBeauticianPosts(postType, 12, nextCursor)
           : await publicAPi.getBeauticianPost(beauticianUserId!, postType, 12, nextCursor);
 
-        console.log('backend post response',response.data)
         const data = response?.data;
         const newDtos: BeauticianPostData[] = data?.posts ?? [];
         const nextCursorValue: string | null = data?.nextCursor ?? null;
-
-        console.log("fetched posts:", newDtos); 
-
         const mapped = newDtos.map(toPostCardData);
 
         setPosts((prev) => (replace ? mapped : [...prev, ...mapped]));
@@ -64,7 +72,7 @@ export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType ,view
         setLoadingMore(false);
       }
     },
-    [beauticianUserId, isOwn, postType,viewMode]
+    [beauticianUserId, isOwn, postType, viewMode]
   );
 
   useEffect(() => {
@@ -94,14 +102,16 @@ export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType ,view
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-0.5">
-        {posts.map((post, index) => (
-          <PostGridCard
-            key={post.id}
-            post={post}
-            onClick={() => setSelectedPost(rawPosts[index])}
-          />
-        ))}
+      <div className="w-full">
+        <div className="grid grid-cols-3 gap-[2px] w-full">
+          {posts.map((post, index) => (
+            <PostGridCard
+              key={post.id}
+              post={post}
+              onClick={() => setSelectedPost(rawPosts[index])}
+            />
+          ))}
+        </div>
       </div>
 
       <div ref={sentinelRef} className="h-4" />
@@ -121,7 +131,11 @@ export const PostsTab = ({ beauticianUserId, postType = "reel" as PostType ,view
       )}
 
       {selectedPost && (
-        <PostModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+        <PostModal
+          post={selectedPost}
+          user={user}
+          onClose={() => setSelectedPost(null)}
+        />
       )}
     </>
   );

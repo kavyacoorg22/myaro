@@ -11,7 +11,7 @@ export class GetHomeFeedUseCase implements IGetHomeFeedUseCase{
   constructor(private postRepo:IPostRepository,private userRepo:IUserRepository){}
 
   async execute(cursor: string | null = null, limit: number = 10): Promise<IGetAllHomeFeedOutput> {
-  const { posts, nextCursor } = await this.postRepo.findFeedPosts(PostType.REEL, cursor, limit);
+  const { posts, nextCursor } = await this.postRepo.findFeedPosts(PostType.POST, cursor, limit);
 
   const beauticianIds = [...new Set(posts.map(p => p.beauticianId))];
 

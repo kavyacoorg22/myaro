@@ -12,6 +12,7 @@ export interface PostsTabProps {
   beauticianUserId?: string | null;
   postType?: PostType;
   viewMode:string
+  user:{userName:string,fullName:string,profileImg?:string}
 }
 
 

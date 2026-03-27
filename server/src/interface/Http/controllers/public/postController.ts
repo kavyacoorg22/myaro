@@ -87,7 +87,7 @@ getTipsRentfeed = async (req: Request, res: Response, next: NextFunction): Promi
   getBeauticianPost=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
     try{
         const  id  = req.user?.id;
-  const postType = req.query.postType as PostType ?? PostType.REEL;
+  const postType = req.query.postType as PostType ?? PostType.POST;
   const cursor = req.query.cursor as string ?? null;
   const limit = Number(req.query.limit) || 12;
   console.log('beautician post -> id of beautician',id)
@@ -112,7 +112,7 @@ getTipsRentfeed = async (req: Request, res: Response, next: NextFunction): Promi
    getBeauticianPostForUser=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
     try{
         const { id } = req.params;
-  const postType = req.query.postType as PostType ?? PostType.REEL;
+  const postType = req.query.postType as PostType ?? PostType.POST;
   const cursor = req.query.cursor as string ?? null;
   const limit = Number(req.query.limit) || 12;
    if(!id)

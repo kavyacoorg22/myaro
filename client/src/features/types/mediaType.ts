@@ -1,6 +1,6 @@
 import type { LocationVO } from "../shared/locationTagInput";
 
-export type PostMediaType = "image" | "video" | "reel";
+export type PostMediaType = "image" | "video" ;
 
 export interface PostUser {
   id: string;
@@ -14,7 +14,7 @@ export interface PostCardData {
   user: { id: string; userName: string; profileImg?: string; isVerified?: boolean };
   location: LocationVO|null;
   mediaUrl: string | string[];
-  mediaType?: "image" | "video" | "reel";
+  mediaType?: "image" | "video" 
   thumbnailUrl?: string;
   description?: string;
   likesCount?: number;
@@ -87,7 +87,7 @@ export interface EditModalProps {
   }) => void;
 }
 
-export type PostType = "reel" | "tips" | "rent";
+export type PostType = "post" | "tips" | "rent";
 
 export interface ShareModalProps {
   isOpen: boolean;
