@@ -3,5 +3,4 @@ export interface ITokenService {
     generateRefreshToken(userId: string, role: string, email: string, isActive: boolean): string;
     verifyAccessToken(token: string): { userId: string; email: string; role: string; isActive: boolean; exp: number } | null;
     verifyRefreshToken(token: string): { userId: string; email: string; role: string; isActive: boolean } | null;
-   
 }

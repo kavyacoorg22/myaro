@@ -28,4 +28,10 @@ export const publicApiRoutes={
   getBookingById:'/bookings/:bookingId',
   createBooking:'/bookings',
   updateBookingStatus:'/bookings/:bookingId/status',
+  //comment-like
+  addLike:'/posts/:postId/like',
+  removeLike:'/posts/:postId/like',
+  addPostComment:'/posts/:postId/comment',
+  getPostComment:'/posts/:postId/comment',
+  deleteComment:'/posts/:postId/comment/:commentId'
 }

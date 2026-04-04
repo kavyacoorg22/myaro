@@ -29,7 +29,7 @@ export class LikeCommetController {
   ): Promise<void> => {
     try {
       const userId = req.user?.id;
-      const postId = req.body.postId;
+      const postId = req.params.postId;
       if (!userId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
