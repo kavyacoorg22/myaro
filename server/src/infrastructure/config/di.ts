@@ -16,7 +16,7 @@ import { Logincontroller } from "../../interface/Http/controllers/auth/loginCont
 import { LogoutUseCase } from "../../application/usecases/auth/logoutUseCase";
 import { RedisTokenBlacklistService } from "../service/blackListTokenService";
 import { LogoutController } from "../../interface/Http/controllers/auth/logoutController";
-import { authMiddleware } from "../../interface/Http/middleware/authMiddleware";
+import { authMiddleware, optionalAuthMiddleware } from "../../interface/Http/middleware/authMiddleware";
 import { OwnProfileUseCase } from "../../application/usecases/public/ownProfileUseCase";
 import { ProfileController } from "../../interface/Http/controllers/public/profileController";
 import { RefreshTokenController } from "../../interface/Http/controllers/auth/refreshTokenController";
@@ -192,6 +192,7 @@ export const authenticateAdmin=authMiddleware(new JwtTokenService,new RedisToken
 export const authenticateBeautician=authMiddleware(new JwtTokenService,new RedisTokenBlacklistService,['beautician'])
 export const authenticateUser=authMiddleware(new JwtTokenService,new RedisTokenBlacklistService,['customer','beautician'])
 export const authenticateAll=authMiddleware(new JwtTokenService,new RedisTokenBlacklistService,['admin','customer','beautician'])
+export const optionalAuth=optionalAuthMiddleware(new JwtTokenService,new RedisTokenBlacklistService)
 
 //beautician repo
 const beauticianRepo=new mongoBeauticianRepository()

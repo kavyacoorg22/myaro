@@ -19,13 +19,15 @@ export class GetHomeFeedUseCase implements IGetHomeFeedUseCase {
     const beauticianIds = [...new Set(posts.map((p) => p.beauticianId))];
     const users = await this.userRepo.findUsersByIds(beauticianIds);
     const userMap = new Map(users.map((u) => [u.id, u]));
-
-    const postIds = posts.map((p) => p.id);
-    const likedPostIds = await this.likeRepo.findLikedPostIds(userId, postIds);
+const postIds = posts.map((p) => p.id);
+console.log("post.id samples:", postIds.slice(0, 3));
+const likedPostIds = await this.likeRepo.findLikedPostIds(userId, postIds);
+console.log("likedPostIds returned:", likedPostIds);
     const likedSet = new Set(likedPostIds);
 
     const enrichedPosts = posts.map((post) => {
       const user = userMap.get(post.beauticianId);
+      console.log(likedSet.has(post.id))
       return toGetFeedDto(post, user!, likedSet.has(post.id));
     });
 

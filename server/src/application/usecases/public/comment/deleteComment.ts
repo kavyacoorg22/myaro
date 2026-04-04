@@ -35,5 +35,10 @@ export class DeleteCommentUseCase implements IdeleteCommentUseCase {
       throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
     await this.commentRepo.delete(commentId);
+
+    if (postId) {
+      await this.postRepo.decrementCommentsCount(postId);
+    }
   }
+     
 }

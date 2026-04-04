@@ -24,7 +24,7 @@ async findById(id: string): Promise<Comment | null> {
 
 async findByPostId(postId: string,limit:number,cursor?:string|null): Promise<{comments:Comment[];nextCursor:string|null}> {
     const filter:Record<string,unknown>={
-       beauticianId:new Types.ObjectId(postId),
+       postId:new Types.ObjectId(postId),
        type:CommentType.POST,
        isDeleted:false
     }

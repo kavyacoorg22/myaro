@@ -1,11 +1,15 @@
 import type { IGetHomeServiceCommentsDto, IGetPostCommentsDto } from "../dtos/commetLike"
+import type { BackendResponse } from "./api"
 
-export interface IGetPostCommentsOutPut{
+export interface IGetPostCommentsOutPutData{
  comments:IGetPostCommentsDto[],
  nextCursor:string|null
 }
 
-export interface IGetHomeServiceCommentsOutPut{
+export interface IGetHomeServiceCommentsOutPutData{
 comments:IGetHomeServiceCommentsDto[]
 nextCursor:string|null
 }
+
+export type IGetPostCommentsOutPut=BackendResponse<IGetPostCommentsOutPutData>
+export type IGetHomeServiceCommentsOutPut=BackendResponse<IGetHomeServiceCommentsOutPutData>

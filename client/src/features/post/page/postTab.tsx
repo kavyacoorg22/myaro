@@ -21,6 +21,7 @@ const toPostCardData = (dto: BeauticianPostData): PostCardData => ({
   description: dto.description,
   likesCount: dto.likesCount ?? 0,
   timeAgo: dto.timeAgo,
+  isLiked:dto.isLiked
 });
 
 interface ModalUser {
@@ -134,7 +135,9 @@ export const PostsTab = ({
         <PostModal
           post={selectedPost}
           user={user}
+           postId={selectedPost.id}
           onClose={() => setSelectedPost(null)}
+          currentUser={user}
         />
       )}
     </>

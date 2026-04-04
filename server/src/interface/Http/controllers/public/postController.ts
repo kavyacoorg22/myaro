@@ -53,10 +53,10 @@ export class PostController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.id??null;
       const cursor = (req.query.cursor as string) ?? null;
       const limit = Number(req.query.limit) || 10;
-
+     
       const result = await this.getHomeFeedUC.execute(userId!, cursor, limit);
 
       res.status(HttpStatus.OK).json({

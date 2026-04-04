@@ -25,7 +25,11 @@ async findLikedPostIds(userId:string,postIds:string[]): Promise<string[]> {
     userId: new Types.ObjectId(userId),
     postId: { $in: postIds.map((id) => new Types.ObjectId(id)) },  // only checks these 10-12 ids
   });
-  return docs.map((doc) => doc.id.toString());
+    console.log("userId:", userId);
+  console.log("postIds passed in:", postIds);
+  console.log("docs found:", docs.length);
+  console.log("returned postIds:", docs.map((doc) => doc.postId.toString()));
+  return docs.map((doc) => doc.postId.toString());
 }
 
 async delete(userId: string, postId: string): Promise<void> {

@@ -32,5 +32,9 @@ import { IAddCommentInput } from "../../../interfaceType/commetLike";
       type: input.type,
       isDeleted: false,
     });
+
+      if (input.postId) {
+      await this.postRepo.incrementCommentsCount(input.postId);
+    }
   }
 }

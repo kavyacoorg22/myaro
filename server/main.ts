@@ -1,6 +1,9 @@
-import "dotenv/config";
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.join(__dirname, '.env') });
 import cors from 'cors';
 import express from "express";
+
 import authRoutes from './src/interface/Http/routes/authRoutes';
 import cookieParser from 'cookie-parser';
 import { connectMongo } from "./src/infrastructure/database/connectDB";

@@ -1,3 +1,5 @@
+const CACHE_DURATION = 1000 * 60 * 30;
+
 export const locationService = {
   async getCurrentLocation(): Promise<GeolocationCoordinates> {
     return new Promise((resolve, reject) => {

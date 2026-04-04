@@ -1,11 +1,14 @@
 import { useState } from "react";
 import type { PostCardProps } from "../../../types/mediaType";
 import { Bookmark, Heart, MessageCircle, MoreHorizontal, Play, Send, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { CommentLikeApi } from "../../../../services/api/commentLike";
+import { handleApiError } from "../../../../lib/utils/handleApiError";
 
 export const PostCard: React.FC<PostCardProps> = ({
   post,
   onFollow,
   onLike,
+    onCommentClick, 
   className = "",
 }) => {
   const [liked, setLiked] = useState(false);
@@ -24,12 +27,25 @@ export const PostCard: React.FC<PostCardProps> = ({
   const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
   const currentIsVideo = isVideo(currentMedia);
 
-  const handleLike = () => {
-    const next = !liked;
-    setLiked(next);
-    setLocalLikes((prev) => (next ? prev + 1 : prev - 1));
-    onLike?.(post.id, next);
-  };
+ const handleLike = async () => {
+  const next = !liked;
+  setLiked(next);
+  setLocalLikes((prev) => (next ? prev + 1 : prev - 1));
+  onLike?.(post.id, next);
+  
+  try {
+    if (next) {
+      await CommentLikeApi.addLike(post.id);
+    } else {
+      await CommentLikeApi.removeLike(post.id);
+    }
+  } catch (err) {
+    // revert on error
+    setLiked(!next);
+    setLocalLikes((prev) => (!next ? prev + 1 : prev - 1));
+    handleApiError(err);
+  }
+};
 
   const handleFollow = () => {
     setFollowed(true);
@@ -158,13 +174,16 @@ export const PostCard: React.FC<PostCardProps> = ({
       <div className="px-4 pt-3 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={handleLike} className="flex items-center gap-1.5 group transition-transform active:scale-90">
-              <Heart className={`w-5 h-5 transition-colors ${liked ? "fill-rose-500 text-rose-500" : "text-gray-700 group-hover:text-rose-400"}`} />
-              {localLikes > 0 && <span className="text-sm font-medium text-gray-700">{localLikes}</span>}
-            </button>
-            <button className="group transition-transform active:scale-90">
-              <MessageCircle className="w-5 h-5 text-gray-700 group-hover:text-blue-400 transition-colors" />
-            </button>
+          <button onClick={handleLike} className="flex items-center gap-1.5 group transition-transform active:scale-90">
+      <Heart className={`w-5 h-5 transition-colors ${post.isLiked ? "fill-rose-500 text-rose-500" : "text-gray-700 group-hover:text-rose-400"}`} />
+      {localLikes > 0 && <span className="text-sm font-medium text-gray-700">{localLikes}</span>}
+    </button>
+              <button 
+      onClick={() => onCommentClick?.(post.id)}  // ← add onClick
+      className="group transition-transform active:scale-90"
+    >
+      <MessageCircle className="w-5 h-5 text-gray-700 group-hover:text-blue-400 transition-colors" />
+    </button>
             <button className="group transition-transform active:scale-90">
               <Send className="w-5 h-5 text-gray-700 group-hover:text-green-400 transition-colors" />
             </button>

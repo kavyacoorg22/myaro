@@ -19,6 +19,7 @@ export interface PostCardData {
   description?: string;
   likesCount?: number;
   timeAgo?: string;
+  isLiked:boolean;
   overlayLabel?: string;
 }
 
@@ -26,7 +27,8 @@ export interface PostCardProps {
   post: PostCardData;
   onFollow?: (userId: string) => void;
   onLike?: (postId: string, liked: boolean) => void;
-  className?: string;
+  onCommentClick?: (postId: string) => void;
+    className?: string;
 }
 
 export interface PostFeedProps {

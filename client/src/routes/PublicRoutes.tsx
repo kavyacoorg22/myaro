@@ -10,62 +10,61 @@ import { ResetPasswordPage } from "../features/auth/pages/resetPasswordPage";
 import { adminFrontendRoute } from "../constants/frontendRoutes/adminFrontenRoutes";
 import { TipsAndTricksPage } from "../features/user/pages/tipsTricks";
 
-
-
-export const publicRoutes:RouteObject[]=[
+export const publicRoutes: RouteObject[] = [
   {
-    path:publicFrontendRoutes.landing,
-    element:<Landing/>
-  },
-   {
-    path:publicFrontendRoutes.tipsRent,
-    element:<TipsAndTricksPage/>
+    path: publicFrontendRoutes.landing,
+    element: <Landing />,
   },
   {
-    path:publicFrontendRoutes.register,
-    element:(
-      <PublicRoute>
-       <RegistrationPage/>
-      </PublicRoute>
-    )
-  },
-   {
-    path:publicFrontendRoutes.login,
-    element:(
-      <PublicRoute>
-       <LoginPage/>
-      </PublicRoute>
-    )
-  },{
-    path:publicFrontendRoutes.verifyOtp,
-    element:(
-      <PublicRoute>
-        <OtpForm/>
-      </PublicRoute>
-    )
+    path: publicFrontendRoutes.tipsRent,
+    element: <TipsAndTricksPage />,
   },
   {
-    path:publicFrontendRoutes.forgetPassword,
-    element:(
+    path: publicFrontendRoutes.register,
+    element: (
       <PublicRoute>
-        <ForgotPasswordPage/>
+        <RegistrationPage />
       </PublicRoute>
-    )
-  },
-   {
-    path:publicFrontendRoutes.resetPassword,
-    element:(
-      <PublicRoute>
-        <ResetPasswordPage/>
-      </PublicRoute>
-    )
+    ),
   },
   {
-     path:adminFrontendRoute.login,
-    element:(
+    path: publicFrontendRoutes.login,
+    element: (
       <PublicRoute>
-    <LoginPage/>
-    </PublicRoute>
-  )
-  }
-]
+        <LoginPage />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: publicFrontendRoutes.verifyOtp,
+    element: (
+      <PublicRoute>
+        <OtpForm />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: publicFrontendRoutes.forgetPassword,
+    element: (
+      <PublicRoute>
+        <ForgotPasswordPage />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: publicFrontendRoutes.resetPassword,
+    element: (
+      <PublicRoute>
+        <ResetPasswordPage />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: adminFrontendRoute.login,
+    element: (
+      <PublicRoute>
+        <LoginPage />
+      </PublicRoute>
+    ),
+  },
+];

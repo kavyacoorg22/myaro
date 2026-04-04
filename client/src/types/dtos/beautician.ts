@@ -40,7 +40,8 @@ export interface IGetBeauticianPostsDto{
    likesCount?:number,
    commentsCount?:number,
    createdAt:Date,
-   updatedAt:Date
+   updatedAt:Date,
+   isLiked:boolean
 }
 
 export interface IGetAllPostsDto{

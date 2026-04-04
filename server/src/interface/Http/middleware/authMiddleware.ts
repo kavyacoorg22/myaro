@@ -125,3 +125,57 @@ export const authMiddleware =
       );
     }
   };
+
+
+export const optionalAuthMiddleware =
+  (
+    jwtService: ITokenService,
+    blacklistService: ITokenBlacklistService,
+  ): RequestHandler =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token =
+        req.cookies.accessToken ||
+        req.cookies.access_token ||
+        req.cookies.token ||
+        req.cookies.jwt;
+
+      // No token = guest, just continue
+      if (!token) return next();
+
+      // Blacklisted = treat as guest
+      const tokenBlacklisted = await blacklistService.isTokenBlacklisted(token);
+      if (tokenBlacklisted) return next();
+
+      let payload;
+      try {
+        payload = jwtService.verifyAccessToken(token);
+      } catch {
+        // Expired or invalid = treat as guest
+        return next();
+      }
+
+      if (!payload || !payload.userId || !payload.email || !payload.role) {
+        return next();
+      }
+
+      // Blocked user = treat as guest
+      const userBlocked = await blacklistService.isUserBlocked(payload.userId);
+      if (userBlocked) return next();
+
+      if (payload.isActive === false) return next();
+
+      // ✅ Valid user — attach and continue
+      req.user = {
+        id: payload.userId,
+        email: payload.email,
+        role: payload.role as UserRole,
+        isActive: payload.isActive,
+      };
+
+      next();
+    } catch (err) {
+      // Any unexpected error — just treat as guest, never block the request
+      next();
+    }
+  };

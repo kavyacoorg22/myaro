@@ -1,0 +1,73 @@
+2026-04-04 14:02:55 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-04-04 14:03:00 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:622:28)
+    at Socket.emit (node:events:508:28)
+    at Socket._onTimeout (node:net:604:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at processTimers (node:internal/timers:541:7)
+2026-04-04 14:03:05 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:622:28)
+    at Socket.emit (node:events:508:28)
+    at Socket._onTimeout (node:net:604:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at processTimers (node:internal/timers:541:7)
+2026-04-04 14:03:10 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:622:28)
+    at Socket.emit (node:events:508:28)
+    at Socket._onTimeout (node:net:604:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at processTimers (node:internal/timers:541:7)
+2026-04-04 14:03:16 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:622:28)
+    at Socket.emit (node:events:508:28)
+    at Socket._onTimeout (node:net:604:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at processTimers (node:internal/timers:541:7)
+2026-04-04 14:53:44 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-04-04 14:53:49 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:622:28)
+    at Socket.emit (node:events:508:28)
+    at Socket._onTimeout (node:net:604:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at processTimers (node:internal/timers:541:7)
+2026-04-04 14:53:55 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:622:28)
+    at Socket.emit (node:events:508:28)
+    at Socket._onTimeout (node:net:604:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at processTimers (node:internal/timers:541:7)
+2026-04-04 14:54:00 error: Error: Connection timeout
+    at Socket.onTimeout (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\@redis\client\lib\client\socket.ts:265:40)
+    at Object.onceWrapper (node:events:622:28)
+    at Socket.emit (node:events:508:28)
+    at Socket._onTimeout (node:net:604:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at processTimers (node:internal/timers:541:7)
+2026-04-04 16:15:47 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-04-04 18:42:55 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at CommentRepository.findById (C:\Users\User\Desktop\completed\week23\myaro\server\src\infrastructure\repositories\user\commetRepository.ts:21:49)
+    at DeleteCommentUseCase.execute (C:\Users\User\Desktop\completed\week23\myaro\server\src\application\usecases\public\comment\deleteComment.ts:19:44)
+    at LikeCommetController.deleteComment (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\public\likeCommentController.ts:135:34)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:115:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-04-04 18:45:47 error: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\bson\src\objectid.ts:120:15)
+    at CommentRepository.findById (C:\Users\User\Desktop\completed\week23\myaro\server\src\infrastructure\repositories\user\commetRepository.ts:21:49)
+    at DeleteCommentUseCase.execute (C:\Users\User\Desktop\completed\week23\myaro\server\src\application\usecases\public\comment\deleteComment.ts:19:44)
+    at LikeCommetController.deleteComment (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\public\likeCommentController.ts:135:34)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:115:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)

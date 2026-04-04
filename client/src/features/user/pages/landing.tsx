@@ -24,6 +24,7 @@ function mapPost(p: any): PostCardProps["post"] {
     description: p.description,
     likesCount: p.likesCount,
     timeAgo: p.timeAgo,
+    isLiked:p.isLiked
   };
 }
 

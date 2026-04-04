@@ -27,4 +27,5 @@ export interface BeauticianPostData {
   createdAt: Date;
   updatedAt: Date;
   timeAgo?: string;
+  isLiked:boolean
 }

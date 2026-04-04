@@ -1,5 +1,5 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, optionalAuth, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword, ValidateComment } from "../middleware/validateUserInput";
@@ -21,8 +21,8 @@ router.patch('/change-password',authenticateUser,validateChangePassword,(req:Req
 //feed
 router.post( '/posts', authenticateBeautician,validateCreatePostInput, postController.createPost
 );
-router.get('/posts/feed',postController.getHomefeed)
-router.get('/posts/tips-rent',postController.getTipsRentfeed)
+router.get('/posts/feed',optionalAuth, postController.getHomefeed)
+router.get('/posts/tips-rent',optionalAuth, postController.getTipsRentfeed)
 router.get('/posts/search',postController.getPostSearchResult)
 router.post('/posts/upload',authenticateBeautician,  validateSignedUrlRequest,postController.getSignedUploadUrl)
 //comment like

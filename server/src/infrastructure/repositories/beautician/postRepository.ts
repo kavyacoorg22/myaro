@@ -136,19 +136,19 @@ async searchByLocation(
 
 
 async incrementCommentsCount(postId: string): Promise<void> {
-  await PostModel.findByIdAndUpdate({postId},{commentsCount:{$inc:1}})
+  await PostModel.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
 }
-async incrementLikesCount(postId: string): Promise<void> {
-    await PostModel.findByIdAndUpdate({postId},{likesCount:{$inc:1}})
 
-}
 async decrementCommentsCount(postId: string): Promise<void> {
-    await PostModel.findByIdAndUpdate({postId},{commentsCount:{$inc:-1}})
-
+  await PostModel.findByIdAndUpdate(postId, { $inc: { commentsCount: -1 } });
 }
-async decrementLikesCount(postId: string): Promise<void> {
-      await PostModel.findByIdAndUpdate({postId},{likesCount:{$inc:-1}})
 
+async incrementLikesCount(postId: string): Promise<void> {
+  await PostModel.findByIdAndUpdate(postId, { $inc: { likesCount: 1 } });
+}
+
+async decrementLikesCount(postId: string): Promise<void> {
+  await PostModel.findByIdAndUpdate(postId, { $inc: { likesCount: -1 } });
 }
 async findById(id: string): Promise<Post | null> {
   const doc=await PostModel.findById(id)

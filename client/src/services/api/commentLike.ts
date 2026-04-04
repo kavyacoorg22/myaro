@@ -24,8 +24,10 @@ export const CommentLikeApi={
     }
     return await axiosWrapper<IGetPostCommentsOutPut>(api.get(publicApiRoutes.getPostComment.replace(':postId',postId),{params}))
   },
-  deletePostComment:async(postId:string)=>{
-    return await axiosWrapper<BackendResponse>(api.delete(publicApiRoutes.deleteComment.replace(':postId',postId)))
+  deletePostComment:async(postId:string,commentId:string)=>{
+    return await axiosWrapper<BackendResponse>(api.delete(publicApiRoutes.deleteComment.replace(':postId',postId)
+      .replace(':commentId', commentId)
+  ))
   },
   addHomeServiceComment:async(text:string,beauticianId:string)=>{
     return await axiosWrapper<BackendResponse>(api.post(customerApiRoute.addHomeServiceComment.replace(':beauticianId',beauticianId),

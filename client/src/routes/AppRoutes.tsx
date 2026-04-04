@@ -1,42 +1,33 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { publicRoutes } from "./PublicRoutes"
-import { userRoutes } from "./UserRoutes"
-import { adminRoutes } from "./adminRoute"
-import { Suspense } from "react"
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { publicRoutes } from "./PublicRoutes";
+import { userRoutes } from "./UserRoutes";
+import { adminRoutes } from "./adminRoute";
+import { Suspense } from "react";
 
-const AppRouters=()=>{
-
-
-  return(
+const AppRouters = () => {
+  return (
     <Routes>
-      {publicRoutes.map((route)=>(
-      <Route key={route.path} path={route.path} element={route.element}/>
-      ))}
-      
-      {userRoutes.map((route)=>(
-        <Route key={route.path} path={route.path} element={route.element}/>
+      {publicRoutes.map((route) => (
+        <Route key={route.path} path={route.path} element={route.element} />
       ))}
 
-       {adminRoutes.map((route)=>(
-        <Route key={route.path} path={route.path} element={route.element}/>
+      {userRoutes.map((route) => (
+        <Route key={route.path} path={route.path} element={route.element} />
       ))}
-     
-     
-    
+
+      {adminRoutes.map((route) => (
+        <Route key={route.path} path={route.path} element={route.element} />
+      ))}
     </Routes>
-  )
+  );
+};
 
-}
-
-
- const AppRoute=()=>(
+const AppRoute = () => (
   <BrowserRouter>
-  <Suspense fallback={<div>Loading...</div>}>
-   <AppRouters/>
-   </Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
+      <AppRouters />
+    </Suspense>
   </BrowserRouter>
-)
+);
 
-export default AppRoute
-
-
+export default AppRoute;
