@@ -12,12 +12,13 @@ import { IGetSignedUploadUrlsUseCase } from "../../../../application/interface/b
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 
 export class PostController {
-  constructor(private createPostUC: ICreatePostUSeCase,
-    private getHomeFeedUC:IGetHomeFeedUseCase,
-    private getTipsRentFeedUC:IGetTipsRentUseCase,
-    private getBeauticianPostUC:IGetBeauticianPostUSeCase,
-    private searchPostUseCase:ISearchPostUSeCase,
-    private getSignedUrlsUseCase:IGetSignedUploadUrlsUseCase
+  constructor(
+    private createPostUC: ICreatePostUSeCase,
+    private getHomeFeedUC: IGetHomeFeedUseCase,
+    private getTipsRentFeedUC: IGetTipsRentUseCase,
+    private getBeauticianPostUC: IGetBeauticianPostUSeCase,
+    private searchPostUseCase: ISearchPostUSeCase,
+    private getSignedUrlsUseCase: IGetSignedUploadUrlsUseCase,
   ) {}
 
   createPost = async (
@@ -28,7 +29,7 @@ export class PostController {
     try {
       const beauticianId = req.user?.id;
       const input = req.body;
-      console.log(`create post input... `,input)
+      console.log(`create post input... `, input);
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -36,7 +37,6 @@ export class PostController {
         );
       }
 
-  
       await this.createPostUC.execute(beauticianId, input);
       res.status(HttpStatus.CREATED).json({
         success: true,
@@ -47,120 +47,156 @@ export class PostController {
     }
   };
 
-
-
- getHomefeed = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const cursor = req.query.cursor as string ?? null;
-    const limit = Number(req.query.limit) || 10;
-
-    const result = await this.getHomeFeedUC.execute(cursor, limit);
-
-    res.status(HttpStatus.OK).json({
-      success: true,
-      message: 'data returned',
-      ...result
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-getTipsRentfeed = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const cursorTips = req.query.cursorTips as string ?? null;
-    const cursorRent = req.query.cursorRent as string ?? null;
-    const limit = Number(req.query.limit) || 10;
-
-    const result = await this.getTipsRentFeedUC.execute(cursorTips, cursorRent, limit);
-
-    res.status(HttpStatus.OK).json({
-      success: true,
-      message: 'data returned',
-      ...result
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-  getBeauticianPost=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-    try{
-        const  id  = req.user?.id;
-  const postType = req.query.postType as PostType ?? PostType.POST;
-  const cursor = req.query.cursor as string ?? null;
-  const limit = Number(req.query.limit) || 12;
-  console.log('beautician post -> id of beautician',id)
-  console.log('post controller reached')
-   if(!id)
-   {
-    throw new AppError(generalMessages.ERROR.BAD_REQUEST)
-   }
-
-  const posts=await this.getBeauticianPostUC.execute(id,postType,cursor,limit)
-
-  res.status(HttpStatus.OK).json({
-    success:true,
-    message:'data returned',
-    ...posts
-  })
-    }catch(err)
-    {
-      next(err)
-    }
-  }
-   getBeauticianPostForUser=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-    try{
-        const { id } = req.params;
-  const postType = req.query.postType as PostType ?? PostType.POST;
-  const cursor = req.query.cursor as string ?? null;
-  const limit = Number(req.query.limit) || 12;
-   if(!id)
-   {
-    throw new AppError(generalMessages.ERROR.BAD_REQUEST)
-   }
-
-  const posts=await this.getBeauticianPostUC.execute(id,postType,cursor,limit)
-
-  res.status(HttpStatus.OK).json({
-    success:true,
-    message:'data returned',
-    ...posts
-  })
-    }catch(err)
-    {
-      next(err)
-    }
-  }
-  getPostSearchResult=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-    try{
-       const query=req.query.query as string
-       const cursor=(req.query.cursor as string)||null
-
-       if (!query || query.trim().length === 0) {
-      res.status(200).json({ posts: [], nextCursor: null });
-      return;
-    }
-
-    const result = await this.searchPostUseCase.execute(query, cursor);
-    res.status(HttpStatus.OK).json({
-      sucess:true,
-      ...result
-    });
-
-    }catch(err)
-    {
-      next(err)
-    }
-  }
-
-    getSignedUploadUrl=async (req: Request, res: Response, next: NextFunction):Promise<void> => {
+  getHomefeed = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const { files } = req.body;
-      const data = await this.getSignedUrlsUseCase.execute(files);
-       res.status(HttpStatus.OK).json({ data });
+      const userId = req.user?.id;
+      const cursor = (req.query.cursor as string) ?? null;
+      const limit = Number(req.query.limit) || 10;
+
+      const result = await this.getHomeFeedUC.execute(userId!, cursor, limit);
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: "data returned",
+        ...result,
+      });
     } catch (err) {
       next(err);
     }
-  }
+  };
+
+  getTipsRentfeed = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const userId = req.user?.id;
+      const cursorTips = (req.query.cursorTips as string) ?? null;
+      const cursorRent = (req.query.cursorRent as string) ?? null;
+      const limit = Number(req.query.limit) || 10;
+
+      const result = await this.getTipsRentFeedUC.execute(
+        userId!,
+        cursorTips,
+        cursorRent,
+        limit,
+      );
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: "data returned",
+        ...result,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  getBeauticianPost = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const beauticianId = req.user?.id;
+      const postType = (req.query.postType as PostType) ?? PostType.POST;
+      const cursor = (req.query.cursor as string) ?? null;
+      const limit = Number(req.query.limit) || 12;
+      console.log("beautician post -> id of beautician", beauticianId);
+      console.log("post controller reached");
+      if (!beauticianId) {
+        throw new AppError(generalMessages.ERROR.BAD_REQUEST);
+      }
+
+      const posts = await this.getBeauticianPostUC.execute(
+        beauticianId,
+        beauticianId,
+        postType,
+        cursor,
+        limit,
+      );
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: "data returned",
+        ...posts,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+  getBeauticianPostForUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const userId = req.user?.id;
+      const beauticianId = req.params.id;
+      const postType = (req.query.postType as PostType) ?? PostType.POST;
+      const cursor = (req.query.cursor as string) ?? null;
+      const limit = Number(req.query.limit) || 12;
+      if (!beauticianId || !userId) {
+        throw new AppError(generalMessages.ERROR.BAD_REQUEST);
+      }
+
+      const posts = await this.getBeauticianPostUC.execute(
+        userId,
+        beauticianId,
+        postType,
+        cursor,
+        limit,
+      );
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: "data returned",
+        ...posts,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+  getPostSearchResult = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const query = req.query.query as string;
+      const cursor = (req.query.cursor as string) || null;
+
+      if (!query || query.trim().length === 0) {
+        res.status(200).json({ posts: [], nextCursor: null });
+        return;
+      }
+
+      const result = await this.searchPostUseCase.execute(query, cursor);
+      res.status(HttpStatus.OK).json({
+        sucess: true,
+        ...result,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  getSignedUploadUrl = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { files } = req.body;
+      const data = await this.getSignedUrlsUseCase.execute(files);
+      res.status(HttpStatus.OK).json({ data });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

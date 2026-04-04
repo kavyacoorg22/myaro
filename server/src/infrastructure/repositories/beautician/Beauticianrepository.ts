@@ -30,7 +30,7 @@ export class mongoBeauticianRepository
   }
 
   async findByUserId(userId: string): Promise<Beautician | null> {
-    const doc = await BeauticianModel.findOne({ userId });
+    const doc = await BeauticianModel.findOne({ userId:new Types.ObjectId(userId) });
     return doc ? this.map(doc) : null;
   }
   async findById(id: string): Promise<Beautician | null> {

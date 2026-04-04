@@ -118,7 +118,7 @@ return{
 }
 }
 
-export function toGetFeedDto(post:Post,user:User):IGetAllPostsDto{
+export function toGetFeedDto(post:Post,user:User,isLiked:boolean):IGetAllPostsDto{
   return{
        id:post.id,
        beauticianId:post.beauticianId,
@@ -132,10 +132,11 @@ export function toGetFeedDto(post:Post,user:User):IGetAllPostsDto{
        likesCount:post.likesCount,
        commentsCount:post.commentsCount,
        timeAgo:getTimeAgo(post.createdAt),
+       isLiked
   }
 }
 
-export function toGetBeauticianPostDto(post:Post):IGetBeauticianPostsDto{
+export function toGetBeauticianPostDto(post:Post,isLiked: boolean):IGetBeauticianPostsDto{
   return{
       id:post.id,
        description:post.description,
@@ -145,6 +146,7 @@ export function toGetBeauticianPostDto(post:Post):IGetBeauticianPostsDto{
        likesCount:post.likesCount,
        commentsCount:post.commentsCount,
        timeAgo:getTimeAgo(post.createdAt),
-     
+       isLiked
+       
   }
 }

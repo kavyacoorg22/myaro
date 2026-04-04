@@ -1,8 +1,8 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
-import { validateChangePassword } from "../middleware/validateUserInput";
+import { validateChangePassword, ValidateComment } from "../middleware/validateUserInput";
 import { validateCreatePostInput, validateSignedUrlRequest } from "../middleware/validateBeauticianINput";
 const router=Router()
 
@@ -25,7 +25,12 @@ router.get('/posts/feed',postController.getHomefeed)
 router.get('/posts/tips-rent',postController.getTipsRentfeed)
 router.get('/posts/search',postController.getPostSearchResult)
 router.post('/posts/upload',authenticateBeautician,  validateSignedUrlRequest,postController.getSignedUploadUrl)
-
+//comment like
+router.post('/posts/:postId/like',authenticateUser,likeCommentController.addLike)
+router.delete('/posts/:postId/like',authenticateUser,likeCommentController.removeLike)
+router.post('/posts/:postId/comment',authenticateUser,ValidateComment, likeCommentController.addComment)
+router.get('/posts/:postId/comment',authenticateUser,likeCommentController.getPostComment)
+router.delete('/posts/:postId/comment/:commentId',authenticateUser,likeCommentController.deleteComment)
 //chat
 router.post('/chats',authenticateUser,chatController.createChat)
 router.get('/chats',authenticateUser,chatController.getUserChats)
@@ -35,4 +40,5 @@ router.get('/chat/:chatId/messages',authenticateUser,chatController.getMessageBy
 router.get('/bookings/:bookingId',authenticateUser,bookingController.getBookingById)
 router.post('/bookings',authenticateCustomer,bookingController.createBooking),
 router.patch('/bookings/:bookingId/status',authenticateUser,bookingController.updateBookingStatus)
+
 export default router

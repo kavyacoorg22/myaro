@@ -1,11 +1,12 @@
 import express from 'express';
 const router=express.Router();
-import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, bookingController, customServiceController, postController, scheduleController } from '../../../infrastructure/config/di'
+import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, bookingController, customServiceController, likeCommentController, postController, scheduleController } from '../../../infrastructure/config/di'
 import { uploadFields, uploadMediaArray, uploadSingle } from '../middleware/multer';
 import { validateBeauticianFiles } from '../validator/validateFileUpload';
 import { validatePaymentDetails,validateBeauticianData, validateAddCustomServiceInput, validateCreatePostInput } from '../middleware/validateBeauticianINput';
 import { validateAddAvailability, validateRecurringSchedule } from '../validator/validateScheduleInput';
 import { validatePamphletUpload } from '../validator/valiadtePampletUpload';
+import { ValidateComment } from '../middleware/validateUserInput';
 
 //user route
 router.get('/pamphlet/:id',authenticateUser,beauticianServiceController.getPamphletForCustomer)
@@ -49,4 +50,8 @@ router.get('/posts/me',authenticateBeautician,postController.getBeauticianPost)
 router.get('/posts/:id',authenticateUser,postController.getBeauticianPostForUser)
 //booking
 router.get('/bookings',authenticateBeautician,bookingController.getBeauticianBookings)
+//home service review/comments
+router.post('/:beauticianId/comment',authenticateUser,ValidateComment, likeCommentController.addComment)
+router.get('/:beauticianId/comment',authenticateUser,likeCommentController.getHomeServiceComment)
+
 export  default router

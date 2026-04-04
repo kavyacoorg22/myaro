@@ -1,5 +1,6 @@
 import { PostType } from "../../../../domain/enum/userEnum";
 import { IPostRepository } from "../../../../domain/repositoryInterface/beautician/IPostRepository";
+import { ILikeRepository } from "../../../../domain/repositoryInterface/User/ILikeRepository";
 import { IGetBeauticianPostUSeCase } from "../../../interface/beautician/post/IGetbeauticianPostUseCase";
 import { IGetBeauticianPostOutPut } from "../../../interfaceType/beauticianType";
 import { toGetBeauticianPostDto, toGetFeedDto } from "../../../mapper/beauticianMapper";
@@ -7,9 +8,10 @@ import { toGetBeauticianPostDto, toGetFeedDto } from "../../../mapper/beautician
 
 export class GetBeauticianPostUseCase implements IGetBeauticianPostUSeCase{
 
-  constructor(private postRepo:IPostRepository){}
+  constructor(private postRepo:IPostRepository,private likeRepo:ILikeRepository){}
 
 async execute(
+  userId:string,
   beauticianId: string,
    postType: PostType = PostType.POST,  
   cursor: string | null = null,
@@ -21,9 +23,13 @@ async execute(
     cursor,
     limit
   );
+  const postIds=posts.map((u)=>u.id)
+  const likedPostIds = await this.likeRepo.findLikedPostIds(userId, postIds);
+      const likedSet = new Set(likedPostIds);
+
 
   return {
-    posts: posts.map(toGetBeauticianPostDto),
+      posts: posts.map((post) => toGetBeauticianPostDto(post, likedSet.has(post.id))),
     nextCursor,
   };
 }

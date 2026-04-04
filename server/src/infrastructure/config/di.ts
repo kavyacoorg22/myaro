@@ -129,6 +129,15 @@ import { UpdateBookingStatusUseCase } from "../../application/usecases/booking/u
 import { GetBeauticianBookingsUSeCase } from "../../application/usecases/booking/getBeauticianBookingsUSeCase";
 import { GetBookingByIdUSeCase } from "../../application/usecases/booking/getBookingByIdUseCase";
 import { BookingController } from "../../interface/Http/controllers/public/bookingController";
+import { LikeRepository } from "../repositories/user/likeRepository";
+import { CommentRepository } from "../repositories/user/commetRepository";
+import { AddLikeUseCase } from "../../application/usecases/public/like/addLikeUseCase";
+import { RemoveLikeUseCase } from "../../application/usecases/public/like/removeLikeUseCase";
+import { AddCommentUseCase } from "../../application/usecases/public/comment/addComment";
+import { DeleteCommentUseCase } from "../../application/usecases/public/comment/deleteComment";
+import { GetHomeServiceUseCase } from "../../application/usecases/public/comment/getHomeServiceCommentUseCase";
+import { GetPostCommentUSeCase } from "../../application/usecases/public/comment/getPostCommentUseCase";
+import { LikeCommetController } from "../../interface/Http/controllers/public/likeCommentController";
 
 
 
@@ -288,16 +297,7 @@ const scheduleController=new ScheduleController(addAvailabilityUC,deleteAvailabi
   deleteRecurringAvailablitySlotUseCase,getMonthlyAvailabilityUC)
 export {scheduleController}
 
-const postRepo=new PostRepository()
-const createPostUseCase=new CreatePostUseCase(postRepo,userRepo,fileStorage)
-const getHomefeedUC=new GetHomeFeedUseCase(postRepo,userRepo)
-const getTipsRentFeedUC=new GetTipsRentFeedUseCase(postRepo,userRepo)
-const getBeauticianPostUC=new GetBeauticianPostUseCase(postRepo)
-const getPostSearchResult=new SearchPostUseCase(userRepo,postRepo)
-const getSignedUrlUC=new GetSignedUploadUrlsUseCase(fileStorage)
-const postController=new PostController(createPostUseCase,getHomefeedUC,getTipsRentFeedUC,getBeauticianPostUC,getPostSearchResult,getSignedUrlUC)
 
-export {postController}
 //chat
 export const socketEmitter=new SocketIOEmitter()
 
@@ -325,3 +325,29 @@ const updateBookingStatusUC=new UpdateBookingStatusUseCase(bookingRepo,bookingHi
 const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userRepo)
 const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
 export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase)
+//like comment
+
+const likeRepo=new LikeRepository()
+const commentRepo=new CommentRepository()
+//post
+
+const postRepo=new PostRepository()
+const createPostUseCase=new CreatePostUseCase(postRepo,userRepo,fileStorage)
+const getHomefeedUC=new GetHomeFeedUseCase(postRepo,userRepo,likeRepo)
+const getTipsRentFeedUC=new GetTipsRentFeedUseCase(postRepo,userRepo,likeRepo)
+const getBeauticianPostUC=new GetBeauticianPostUseCase(postRepo,likeRepo)
+const getPostSearchResult=new SearchPostUseCase(userRepo,postRepo)
+const getSignedUrlUC=new GetSignedUploadUrlsUseCase(fileStorage)
+const postController=new PostController(createPostUseCase,getHomefeedUC,getTipsRentFeedUC,getBeauticianPostUC,getPostSearchResult,getSignedUrlUC)
+
+export {postController}
+
+//like comment
+
+const addLikeUC=new AddLikeUseCase(likeRepo,postRepo)
+const removeLikeUC=new RemoveLikeUseCase(likeRepo,postRepo)
+const addCommentUC=new AddCommentUseCase(commentRepo,postRepo,beauticianRepo)
+const deleteCommentUC=new DeleteCommentUseCase(commentRepo,postRepo)
+const getHomeServiceCommentUC=new GetHomeServiceUseCase(commentRepo,userRepo)
+const getPostCommentUseCase=new GetPostCommentUSeCase(commentRepo,userRepo)
+export const likeCommentController=new LikeCommetController(addLikeUC,removeLikeUC,addCommentUC,deleteCommentUC,getHomeServiceCommentUC,getPostCommentUseCase)

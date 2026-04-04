@@ -16,3 +16,8 @@ export enum PostType{
   TIPS='tips',
   RENT='rent'
 }
+
+export enum CommentType{
+  POST='post',
+  HOME='home'
+}

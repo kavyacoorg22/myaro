@@ -1,5 +1,6 @@
 import { IPostRepository } from "../../../../domain/repositoryInterface/beautician/IPostRepository";
 import { IUserRepository } from "../../../../domain/repositoryInterface/IUserRepository";
+import { ILikeRepository } from "../../../../domain/repositoryInterface/User/ILikeRepository";
 import { IGetTipsRentUseCase } from "../../../interface/beautician/post/IGetTipsRentUseCase";
 import {
 
@@ -11,9 +12,11 @@ export class GetTipsRentFeedUseCase implements IGetTipsRentUseCase {
   constructor(
     private postRepo: IPostRepository,
     private userRepo: IUserRepository,
+    private likeRepo:ILikeRepository
   ) {}
 
   async execute(
+    userId:string,
     cursorTips: string | null,
     cursorRent: string | null,
     limit: number = 10,
@@ -24,10 +27,14 @@ export class GetTipsRentFeedUseCase implements IGetTipsRentUseCase {
     const beauticianIds = [...new Set(posts.map((p) => p.beauticianId))];
     const users = await this.userRepo.findUsersByIds(beauticianIds);
     const userMap = new Map(users.map((u) => [u.id, u]));
+        
+    const postIds = posts.map((p) => p.id);
+    const likedPostIds = await this.likeRepo.findLikedPostIds(userId, postIds);
+    const likedSet = new Set(likedPostIds);
 
     const enrichedPosts = posts.map((post) => {
       const user = userMap.get(post.beauticianId);
-      return toGetFeedDto(post, user!);
+      return toGetFeedDto(post, user!,likedSet.has(post.id));
     });
 
     return { posts: enrichedPosts, nextCursorTips, nextCursorRent };

@@ -3,7 +3,9 @@ import {  IGetBeauticianPostOutPut } from "../../../interfaceType/beauticianType
 
 
 export interface IGetBeauticianPostUSeCase {
-  execute( beauticianId: string,
+  execute( 
+      userId:string,
+    beauticianId: string,
     postType: PostType  ,  
     cursor: string | null ,
     limit: number  ):Promise<IGetBeauticianPostOutPut>

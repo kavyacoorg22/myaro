@@ -98,7 +98,7 @@ export interface IGetBeauticianPostsDto{
    likesCount?:number,
    commentsCount?:number,
    timeAgo:string,
-  
+   isLiked:boolean,
 }
 
 export interface IGetAllPostsDto{
@@ -113,5 +113,6 @@ export interface IGetAllPostsDto{
    media:string[],
    likesCount?:number,
    commentsCount?:number,
-  timeAgo:string
+  timeAgo:string,
+  isLiked: boolean
 }
