@@ -138,6 +138,11 @@ import { DeleteCommentUseCase } from "../../application/usecases/public/comment/
 import { GetHomeServiceUseCase } from "../../application/usecases/public/comment/getHomeServiceCommentUseCase";
 import { GetPostCommentUSeCase } from "../../application/usecases/public/comment/getPostCommentUseCase";
 import { LikeCommetController } from "../../interface/Http/controllers/public/likeCommentController";
+import { CreateOrderUsecase } from "../../application/usecases/payment/createOrderUseCase";
+import { PaymentRepository } from "../repositories/user/paymentRepository";
+import { RazorPayService } from "../service/razorPayService";
+import { PaymentController } from "../../interface/Http/controllers/public/paymentController";
+import { VerifyPaymentUsecase } from "../../application/usecases/payment/verifyPaymentUseCase";
 
 
 
@@ -352,3 +357,11 @@ const deleteCommentUC=new DeleteCommentUseCase(commentRepo,postRepo)
 const getHomeServiceCommentUC=new GetHomeServiceUseCase(commentRepo,userRepo)
 const getPostCommentUseCase=new GetPostCommentUSeCase(commentRepo,userRepo)
 export const likeCommentController=new LikeCommetController(addLikeUC,removeLikeUC,addCommentUC,deleteCommentUC,getHomeServiceCommentUC,getPostCommentUseCase)
+
+//payment
+const paymentrepo=new PaymentRepository()
+const razorPayService=new RazorPayService()
+const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayService)
+const verifyPaymentUC=new VerifyPaymentUsecase(paymentrepo,bookingRepo,razorPayService)
+
+export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC)

@@ -33,5 +33,8 @@ export const publicApiRoutes={
   removeLike:'/posts/:postId/like',
   addPostComment:'/posts/:postId/comment',
   getPostComment:'/posts/:postId/comment',
-  deleteComment:'/posts/:postId/comment/:commentId'
+  deleteComment:'/posts/:postId/comment/:commentId',
+  //payment
+  createOrder:'/bookings/:bookingId/payment',
+  verifyPayment:'/payments/verify'
 }

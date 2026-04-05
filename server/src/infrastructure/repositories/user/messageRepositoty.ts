@@ -1,5 +1,4 @@
 import { Types } from "mongoose";
-import { Chat } from "../../../domain/entities/chat";
 import { Message } from "../../../domain/entities/message";
 import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
 import { MessageDoc, MessageModel } from "../../database/models/user/messageModal";

@@ -72,7 +72,10 @@ export const appConfig = {
     },
     signedUrl:{
         expireTime:Number(required('SIGNED_URL_EXPIRETIME',process.env.SIGNED_URL_EXPIRETIME))
+    },
+    razorPay:{
+      razorPayKeyId:required('RAZORPAY_KEY_ID',process.env.RAZORPAY_KEY_ID),
+      razorPayKeySecret:required('RAZORPAY_KEY_SECRET',process.env.RAZORPAY_KEY_SECRET)
     }
 
- 
 };

@@ -1,5 +1,5 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, optionalAuth, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, optionalAuth, paymentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword, ValidateComment } from "../middleware/validateUserInput";
@@ -40,5 +40,8 @@ router.get('/chat/:chatId/messages',authenticateUser,chatController.getMessageBy
 router.get('/bookings/:bookingId',authenticateUser,bookingController.getBookingById)
 router.post('/bookings',authenticateCustomer,bookingController.createBooking),
 router.patch('/bookings/:bookingId/status',authenticateUser,bookingController.updateBookingStatus)
-
+//payment
+//create order
+router.post('/bookings/:bookingId/payment',authenticateCustomer,paymentController.createOrder)
+router.post('/payments/verify',authenticateCustomer,paymentController.verifyPayment)
 export default router
