@@ -25,6 +25,8 @@ export interface Booking{
   status:BookingStatus,
   rejectionReason:string,
   cancelledAt:Date|null,
+   clientNote: string | null,       
+  beauticianNote: string | null,
   createdAt:Date,
   updatedAt:Date,
 }

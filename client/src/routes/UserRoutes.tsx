@@ -26,6 +26,7 @@ const ServicePageListForUser = lazy(
   () => import("../features/user/component/viewServicePage"),
 );
 const ChatList = lazy(() => import("../features/user/component/chat/chatList"));
+const BeauticianBookingsPage=lazy(()=>import('../features/beautician/booking/beautcianBookingsPage'))
 export const userRoutes: RouteObject[] = [
   {
     path: publicFrontendRoutes.profile,
@@ -109,6 +110,11 @@ export const userRoutes: RouteObject[] = [
     ),
   },
   {
-    path: publicFrontendRoutes.notification,
+    path: beauticianFrontendRoutes.booking,
+    element:(
+      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
+         <BeauticianBookingsPage/>
+      </PrivateRoute>
+    )
   },
 ];

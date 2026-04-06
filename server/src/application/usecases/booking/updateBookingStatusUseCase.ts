@@ -24,7 +24,7 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
   ) {}
 
   async execute(input: IUpdateBookingStatusInput): Promise<Booking|null> {
-    const { bookingId, performedBy, role, action, rejectionReason } = input;
+    const { bookingId, performedBy, role, action, rejectionReason,beauticianNote } = input;
 
     const booking = await this.bookingRepo.findById(bookingId);
     if (!booking) throw new AppError("Booking not found.", HttpStatus.NOT_FOUND);
@@ -46,6 +46,7 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
       bookingId,
       toStatus,
       rejectionReason,
+      beauticianNote
     );
 
     // 4. record history
@@ -81,8 +82,7 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
 
     // 7. update chat last message
     await this.chatRepo.updateLastMessage(booking.chatId, message, saved.createdAt);
-console.log("📤 Emitting NEW_MESSAGE to room:", booking.chatId);
-    // 8. emit to chat room — both see updated booking card
+
     this.socketEmitter.emitToRoom(
       booking.chatId,
       SOCKET_EVENTS.NEW_MESSAGE,

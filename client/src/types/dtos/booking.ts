@@ -22,6 +22,8 @@ export interface BookingDto{
   slot:BookingSlotVO,
   status:BookingStatusType,
   rejectionReason:string,
+  clientNote?:string|null,
+  beauticianNote?:string|null,
   cancelledAt:Date|null,
 }
 

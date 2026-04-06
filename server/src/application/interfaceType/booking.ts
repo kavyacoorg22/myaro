@@ -12,6 +12,7 @@ export interface ICreateBookingInput {
   address:      string;
   phoneNumber:  string;
   slot:         BookingSlotVO;
+  clientNote?:string
 }
 
 export interface IUpdateBookingStatusInput{
@@ -20,6 +21,7 @@ export interface IUpdateBookingStatusInput{
   role:            UserRole;
   action:          BookingAction;
   rejectionReason?: string;
+  beauticianNote?:string
 }
 
 export interface IGetBeauticianBookingsInput {

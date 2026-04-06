@@ -37,6 +37,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
       address,
       phoneNumber,
       slot,
+      clientNote
     } = input;
 
     // ── 1. Chat validation ─────────────────────────────────────────────────
@@ -123,6 +124,8 @@ console.log('userId:', userId);
       status: BookingStatus.REQUESTED,
       rejectionReason: "",
       cancelledAt: null,
+      clientNote:clientNote??null,
+      beauticianNote:null
     });
 
     // ── 6. History ─────────────────────────────────────────────────────────

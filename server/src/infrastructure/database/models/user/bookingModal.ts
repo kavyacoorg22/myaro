@@ -23,6 +23,8 @@ export type BookingDoc = Document & {
   status: BookingStatus;
   rejectionReason: string;
   cancelledAt: Date | null;
+   clientNote: string | null,       
+  beauticianNote: string | null,
   createdAt: Date;
   updatedAt: Date;
 };
@@ -51,7 +53,9 @@ export const BookingSchema=new Schema<BookingDoc>({
   slot:{type:SlotSchema},
   status:{type:String,enum:Object.values(BookingStatus),default:BookingStatus.REQUESTED},
   rejectionReason:{type:String},
-  cancelledAt:{type:Date}
+  cancelledAt:{type:Date},
+  clientNote:{type:String},
+  beauticianNote:{type:String},
 },{timestamps:true})
 
 export const BookingModel:Model<BookingDoc>=mongoose.models.Booking||mongoose.model('Booking',BookingSchema)

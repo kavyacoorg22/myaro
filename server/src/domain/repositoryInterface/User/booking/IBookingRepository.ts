@@ -10,6 +10,7 @@ export interface IBookingRepository {
     id: string,
     status: BookingStatus,
     reason?: string,
+    beauticianNote?:string|null
   ): Promise<Booking | null>;
   findByBeauticianId(
     beauticianId: string,

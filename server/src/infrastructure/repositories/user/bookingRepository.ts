@@ -19,9 +19,9 @@ export class BookingRepository extends GenericRepository<Booking,BookingDoc> imp
     return doc?this.map(doc):null
   }
 
-  async updateStatus(id: string, status: BookingStatus, reason?: string): Promise<Booking|null> {
+  async updateStatus(id: string, status: BookingStatus, reason?: string,beauticianNote?:string|null): Promise<Booking|null> {
     const doc=await BookingModel.findByIdAndUpdate(id,{
-      $set:{status,...(reason&& {rejectionReason:reason})
+      $set:{status,...(reason&& {rejectionReason:reason}),...(beauticianNote&&{beauticianNote:beauticianNote})
     }},{new:true})
     return doc? this.map(doc):null
   }
@@ -90,6 +90,8 @@ async findOverlapping({
     status:doc.status,
     rejectionReason:doc.rejectionReason,
     cancelledAt:doc.cancelledAt,
+    clientNote:doc.clientNote,
+    beauticianNote:doc.beauticianNote,
     createdAt:doc.createdAt,
     updatedAt:doc.updatedAt
    }

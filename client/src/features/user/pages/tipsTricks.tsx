@@ -38,6 +38,7 @@ export const TipsAndTricksPage = () => {
         mediaUrl: p.media,
         description: p.description,
         likesCount: p.likesCount,
+        isLiked:p.isLiked,
         timeAgo: p.timeAgo,
         overlayLabel: p.postType === 'tips' ? 'Tips & Tricks' : 'For Rent',
       }))]);

@@ -22,6 +22,7 @@ export interface ICreateBookingRequest {
   address:      string;
   phoneNumber:  string;
   slot:         BookingSlotVO;
+  clientNote?:string
 }
 
 export interface IUpdateBookingStatusInput{
@@ -30,6 +31,7 @@ export interface IUpdateBookingStatusInput{
   role:            UserRoleType;
   action:          BookingActionType;
   rejectionReason?: string;
+  beauticianNote?:string
 }
 
 export interface IGetBeauticianBookingsRequest {
@@ -49,7 +51,7 @@ export interface IBookingListItem {
   };
 }
 
-export interface IGetBeauticianBookingsResponse {
+export interface IGetBeauticianBookingsResponseData{
   bookings:    IBookingListItem[];
   total:       number;
   page:        number;
@@ -79,3 +81,4 @@ export interface IUpdateBookingResponseData{
 
 export type IGetBookingByIdResponse=BackendResponse<IGetBookingByIdResponseData>
 export type IUpdateBookingResponse=BackendResponse<IUpdateBookingResponseData>
+export type IGetBeauticianBookingsResponse=BackendResponse<IGetBeauticianBookingsResponseData>
