@@ -41,3 +41,20 @@ export function extractBYDAY(rrule: string): string[] {
   if (!match) return [];
   return match[1].split(',');
 }
+
+export function timeToMinutes(time: string): number {
+  const [timePart, modifier] = time.split(' ');
+  let [hours, minutes] = timePart.split(':').map(Number);
+  if (modifier === 'PM' && hours !== 12) hours += 12;
+  if (modifier === 'AM' && hours === 12) hours = 0;
+  return hours * 60 + minutes;
+}
+
+// utility — minutes back to time string
+export function minutesToTime(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  const modifier = h >= 12 ? 'PM' : 'AM';
+  const hour = h % 12 === 0 ? 12 : h % 12;
+  return `${String(hour).padStart(2, '0')}:${String(m).padStart(2, '0')} ${modifier}`;
+}

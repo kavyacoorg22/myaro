@@ -17,4 +17,10 @@ export interface IBookingRepository {
     limit: number,
     status?: BookingStatus,
   ): Promise<{bookings:Booking[],total:number}>;
+  findOverlapping(input: {
+  beauticianId: string;
+  date: Date;
+  startMinutes: number;
+  endMinutes: number;
+}): Promise<Booking | null>;
 }

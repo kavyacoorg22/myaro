@@ -50,3 +50,11 @@ export interface IGetBeauticianBookingsResult {
 export interface IGetBookingByIdResponse{
 data:IGetBookingByIdDto
 }
+
+export interface ILockSlotInput {
+  beauticianId: string;
+  date: string;      
+  startTime: string;   
+  endTime: string;     
+  userId: string;
+}

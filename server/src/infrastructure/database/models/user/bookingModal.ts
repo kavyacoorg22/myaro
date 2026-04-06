@@ -17,6 +17,8 @@ export type BookingDoc = Document & {
   slot: {
     date: Date;
     time: string;
+    startMinutes: number,
+  endMinutes: number,
   };
   status: BookingStatus;
   rejectionReason: string;
@@ -33,7 +35,9 @@ const BookingServiceSchema=new Schema({
 
 const SlotSchema=new Schema({
   date:{type:Date},
-  time:{type:String}
+  time:{type:String},
+ startMinutes:{type:Number},
+  endMinutes: {type:Number},
 },{_id:false})
 
 export const BookingSchema=new Schema<BookingDoc>({

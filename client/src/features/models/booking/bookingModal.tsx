@@ -129,6 +129,7 @@ export default function BookingModal({
     ? hasConsecutiveBlock(slots, selectedSlotObj.startHour, duration)
     : false;
 
+// BookingModal.tsx — onSubmit
 const onSubmit = async (data: BookingFormValues) => {
   try {
     const selectedSlotObj = slots.find((s) => s.start === data.timeSlot);
@@ -140,11 +141,11 @@ const onSubmit = async (data: BookingFormValues) => {
       beauticianId,
       services: selectedServiceObjects.map((s) => ({
         serviceId: s.id,
-        name:      s.serviceName,
-        price:     s.price,
+        name: s.serviceName,
+        price: s.price,
       })),
       totalPrice: total,
-      address:    data.address,
+      address: data.address,
       phoneNumber: data.phone,
       slot: {
         date: new Date(data.date),
@@ -154,9 +155,27 @@ const onSubmit = async (data: BookingFormValues) => {
       },
     });
 
-    setSubmitted(true);
-  } catch (err) {
-    console.error(err);
+    setSubmitted(true); // ✅ only on success
+
+  } catch (err: any) {
+    // ✅ 409 = slot already taken
+    if (err?.status === 409) {
+      methods.setError("timeSlot", {
+        message: "⚠ This slot was just booked by someone else. Please select another time.",
+      });
+      setValue("timeSlot", ""); // clear selected slot
+
+      // ✅ Refresh slots without closing modal — user keeps all other details
+      const freshRes = await publicAPi.getAvailbilitySchedule(beauticianId, data.date);
+      const freshSlots = mapBackendSlots(freshRes.data?.data?.availability?.slots ?? []);
+      setSlots(freshSlots);
+      return;
+    }
+
+    // ✅ Other errors — show generic error, keep modal open
+    methods.setError("timeSlot", {
+      message: "Something went wrong. Please try again.",
+    });
   }
 };
 

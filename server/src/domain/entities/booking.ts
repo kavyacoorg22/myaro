@@ -8,7 +8,9 @@ export interface BookingServiceVO{
 
 export interface BookingSlotVO{
   date:Date,
-  time:string
+  time:string,
+   startMinutes: number,
+  endMinutes: number,
 }
 export interface Booking{
   id:string,

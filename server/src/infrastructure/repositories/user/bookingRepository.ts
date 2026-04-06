@@ -48,6 +48,29 @@ async findByBeauticianId(beauticianId: string,  page: number, limit: number,stat
 
 }
 
+async findOverlapping({
+  beauticianId,
+  date,
+  startMinutes,
+  endMinutes
+}: {
+  beauticianId: string;
+  date: Date;
+  startMinutes: number;
+  endMinutes: number;
+}): Promise<Booking | null> {
+
+  const doc = await BookingModel.findOne({
+    beauticianId,
+    'slot.date': date,
+    status: { $in: [BookingStatus.CONFIRMED, BookingStatus.ACCEPTED] },
+    'slot.startMinutes': { $lt: endMinutes },
+    'slot.endMinutes':   { $gt: startMinutes },
+  });
+
+  return doc ? this.map(doc) : null;
+}
+
   protected map(doc:BookingDoc):Booking {
    const base=super.map(doc)
    return{
