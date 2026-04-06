@@ -143,6 +143,8 @@ import { PaymentRepository } from "../repositories/user/paymentRepository";
 import { RazorPayService } from "../service/razorPayService";
 import { PaymentController } from "../../interface/Http/controllers/public/paymentController";
 import { VerifyPaymentUsecase } from "../../application/usecases/payment/verifyPaymentUseCase";
+import { LockSlotUseCase } from "../../application/usecases/booking/lockSlotUseCase";
+import { LockSlotService } from "../service/lockSlotService";
 
 
 
@@ -325,12 +327,14 @@ const getUserChatsUC=new GetUserChatsUseCase(chatRepository,userRepo,messageRepo
 export const chatController=new ChatController(getMessageByChatUC,createChatUC,getChatByParticipantsUC,getUserChatsUC)
 //booking
 const bookingRepo=new BookingRepository()
+const lockSlotService=new LockSlotService()
+const lockSlotUseCase=new LockSlotUseCase(bookingRepo,lockSlotService)
 const bookingHistoryRepo=new BookingHistoryRepository()
-const createBookingUseCase=new CreateBookingUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter)
+const createBookingUseCase=new CreateBookingUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter,getAvailabilityUC,lockSlotService)
 const updateBookingStatusUC=new UpdateBookingStatusUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter)
 const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userRepo)
 const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
-export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase)
+export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase)
 //like comment
 
 const likeRepo=new LikeRepository()

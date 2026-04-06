@@ -7,6 +7,7 @@ import { IGetBeauticianBookingsUseCase } from "../../../../application/interface
 import { ICreateBookingUseCase } from "../../../../application/interface/booking/ICreateBooking";
 import { IUpdateBookingStatusUseCase } from "../../../../application/interface/booking/IUpdateBookingStatusUSeCase";
 import { IGetBookingByIdUseCase } from "../../../../application/interface/booking/IGetBookingById";
+import { ILockSlotUSeCase } from "../../../../application/interface/booking/ILockSlotUseCase";
 
 
 export class BookingController{
@@ -14,7 +15,8 @@ export class BookingController{
   private getBeauticianBookingUseCase:IGetBeauticianBookingsUseCase,
   private createBookingUseCase:ICreateBookingUseCase,
   private updateBookingStatusUseCase:IUpdateBookingStatusUseCase,
-  private getBookingByIdUseCase:IGetBookingByIdUseCase
+  private getBookingByIdUseCase:IGetBookingByIdUseCase,
+  private lockSlotUseCase:ILockSlotUSeCase
   ){}
 
   createBooking=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -105,5 +107,22 @@ export class BookingController{
    {
     next(err)
    }
+  }
+  lockSlot=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+   const userId = req.user?.id;
+    const { beauticianId, date, startTime, endTime } = req.body;
+    if(!userId)
+    {
+      throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
+    }
+    const result = await this.lockSlotUseCase.execute({
+      beauticianId, date, startTime, endTime, userId,
+    });
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: "Slot reserved",
+      data: result,  
+    });
   }
 }

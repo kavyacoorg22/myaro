@@ -8,13 +8,13 @@ import { IBookingRepository } from "../../../domain/repositoryInterface/User/boo
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
 import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
-import { timeToMinutes } from "../../../utils/schedule/dateHelper";
+import { timeToMinutes, toDateString } from "../../../utils/schedule/dateHelper";
 import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { ICreateBookingUseCase } from "../../interface/booking/ICreateBooking";
 import { ICreateBookingInput } from "../../interfaceType/booking";
+import { ILockSlotService } from "../../serviceInterface/ILockSlotService";
 import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 import { GetAvailabilityUseCase } from "../beautician/schedule/getAvailableUSeCase";
-
 
 export class CreateBookingUseCase implements ICreateBookingUseCase {
   constructor(
@@ -23,13 +23,20 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     private messageRepo: IMessageRepository,
     private chatRepo: IChatRepository,
     private socketEmitter: ISocketEmitter,
-    private getAvailabilityUC: GetAvailabilityUseCase,  
+    private getAvailabilityUC: GetAvailabilityUseCase,
+    private lockSlotService: ILockSlotService,
   ) {}
 
   async execute(input: ICreateBookingInput): Promise<Booking> {
     const {
-      chatId, userId, beauticianId,
-      services, totalPrice, address, phoneNumber, slot,
+      chatId,
+      userId,
+      beauticianId,
+      services,
+      totalPrice,
+      address,
+      phoneNumber,
+      slot,
     } = input;
 
     // ── 1. Chat validation ─────────────────────────────────────────────────
@@ -47,7 +54,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     }
 
     const startMinutes = timeToMinutes(startStr.trim());
-    const endMinutes   = timeToMinutes(endStr.trim());
+    const endMinutes = timeToMinutes(endStr.trim());
 
     // ── 3. Validate slot is within beautician availability ─────────────────
     const { availability } = await this.getAvailabilityUC.execute(
@@ -64,7 +71,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     const fitsInAvailability = availability.slots.some((s) => {
       const sStart = timeToMinutes(s.startTime);
-      const sEnd   = timeToMinutes(s.endTime);
+      const sEnd = timeToMinutes(s.endTime);
       return startMinutes >= sStart && endMinutes <= sEnd;
     });
 
@@ -74,7 +81,20 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
         HttpStatus.BAD_REQUEST,
       );
     }
+const dateStr  = toDateString(slot.date); 
+const lockKey  = `lock:${beauticianId}:${dateStr}:${startStr.trim()}-${endStr.trim()}`;
 
+const lockedBy = await this.lockSlotService.get(lockKey);
+console.log('lockKey:', lockKey);       
+console.log('lockedBy:', lockedBy);
+console.log('userId:', userId);
+
+    if (!lockedBy || lockedBy !== userId) {
+      throw new AppError(
+        "Slot reservation expired. Please select the slot again.",
+        HttpStatus.CONFLICT,
+      );
+    }
     // ── 4. Check for overlapping bookings (ACCEPTED or CONFIRMED) ──────────
     const overlapping = await this.bookingRepo.findOverlapping({
       beauticianId,
@@ -86,15 +106,20 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     if (overlapping) {
       throw new AppError(
         "This time slot is already booked",
-        HttpStatus.CONFLICT,  // ✅ 409 — frontend catches this specifically
+        HttpStatus.CONFLICT, // ✅ 409 — frontend catches this specifically
       );
     }
 
     // ── 5. Create booking ──────────────────────────────────────────────────
     const booking = await this.bookingRepo.create({
-      chatId, userId, beauticianId,
-      services, totalPrice, address, phoneNumber,
-      slot: { ...slot, startMinutes, endMinutes },  // ✅ store minutes
+      chatId,
+      userId,
+      beauticianId,
+      services,
+      totalPrice,
+      address,
+      phoneNumber,
+      slot: { ...slot, startMinutes, endMinutes }, // ✅ store minutes
       status: BookingStatus.REQUESTED,
       rejectionReason: "",
       cancelledAt: null,
@@ -102,34 +127,42 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     // ── 6. History ─────────────────────────────────────────────────────────
     await this.bookingHistoryRepo.create({
-      bookingId:   booking.id,
-      action:      BookingAction.REQUEST,
+      bookingId: booking.id,
+      action: BookingAction.REQUEST,
       performedBy: userId,
-      role:        UserRole.CUSTOMER,
-      fromStatus:  "",
-      toStatus:    BookingStatus.REQUESTED,
+      role: UserRole.CUSTOMER,
+      fromStatus: "",
+      toStatus: BookingStatus.REQUESTED,
     });
 
     // ── 7. Chat message ────────────────────────────────────────────────────
     const saved = await this.messageRepo.create({
       chatId,
-      senderId:   userId,
+      senderId: userId,
       receiverId: beauticianId,
-      message:    `Booking request for ${services.map((s) => s.name).join(", ")}`,
-      type:       MessageType.BOOKING,
-      bookingId:  booking.id,
-      seen:       false,
+      message: `Booking request for ${services.map((s) => s.name).join(", ")}`,
+      type: MessageType.BOOKING,
+      bookingId: booking.id,
+      seen: false,
     });
 
-    await this.chatRepo.updateLastMessage(chatId, saved.message, saved.createdAt);
+    await this.chatRepo.updateLastMessage(
+      chatId,
+      saved.message,
+      saved.createdAt,
+    );
 
     // ── 8. Socket ──────────────────────────────────────────────────────────
     this.socketEmitter.emitToRoom(chatId, SOCKET_EVENTS.NEW_MESSAGE, saved);
-    this.socketEmitter.emitToRoom(`user:${beauticianId}`, SOCKET_EVENTS.NEW_NOTIFICATION, {
-      chatId,
-      lastMessage:   saved.message,
-      lastMessageAt: saved.createdAt,
-    });
+    this.socketEmitter.emitToRoom(
+      `user:${beauticianId}`,
+      SOCKET_EVENTS.NEW_NOTIFICATION,
+      {
+        chatId,
+        lastMessage: saved.message,
+        lastMessageAt: saved.createdAt,
+      },
+    );
 
     return booking;
   }

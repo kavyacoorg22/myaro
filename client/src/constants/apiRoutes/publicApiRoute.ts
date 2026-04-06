@@ -28,6 +28,7 @@ export const publicApiRoutes={
   getBookingById:'/bookings/:bookingId',
   createBooking:'/bookings',
   updateBookingStatus:'/bookings/:bookingId/status',
+  lockSlot: '/bookings/lock-slot',
   //comment-like
   addLike:'/posts/:postId/like',
   removeLike:'/posts/:postId/like',

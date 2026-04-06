@@ -37,6 +37,7 @@ router.get('/chats',authenticateUser,chatController.getUserChats)
 router.get('/chat/with/:id',authenticateUser,chatController.getChatByParticipants)
 router.get('/chat/:chatId/messages',authenticateUser,chatController.getMessageByChat)
 //booking
+router.post('/bookings/lock-slot', authenticateCustomer, bookingController.lockSlot);
 router.get('/bookings/:bookingId',authenticateUser,bookingController.getBookingById)
 router.post('/bookings',authenticateCustomer,bookingController.createBooking),
 router.patch('/bookings/:bookingId/status',authenticateUser,bookingController.updateBookingStatus)

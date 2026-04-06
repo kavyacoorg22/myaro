@@ -14,32 +14,30 @@ import { DurationPicker } from "./durationPicker";
 import { getEndTimeLabel, hasConsecutiveBlock, mapBackendSlots, type TimeSlot } from "../../../lib/utils/BookingslotLable";
 import { BookingApi } from "../../../services/api/booking";
 
-
-// ─── Extended form to include duration (not in zod schema but kept locally) ──
-type LocalForm = BookingFormValues & { duration: 1 | 2 | 3 };
-
 export default function BookingModal({
   isOpen = true,
   onClose,
   beauticianId,
   beauticianName = "Beautician",
-   chatId,      
-  userId, 
+  chatId,
+  userId,
 }: {
   isOpen?: boolean;
   onClose?: () => void;
   beauticianId: string;
   beauticianName?: string;
-   chatId:          string;   
-  userId:          string; 
+  chatId: string;
+  userId: string;
 }) {
-  const [services, setServices]         = useState<IGetBeauticianServicesListDto[]>([]);
-  const [slots, setSlots]               = useState<TimeSlot[]>([]);
-  const [duration, setDuration]         = useState<1 | 2 | 3>(1);
+  const [services, setServices]                   = useState<IGetBeauticianServicesListDto[]>([]);
+  const [slots, setSlots]                         = useState<TimeSlot[]>([]);
+  const [duration, setDuration]                   = useState<1 | 2 | 3>(1);
   const [servicesLoading, setServicesLoading]     = useState(false);
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
-  const [isLeaveDay, setIsLeaveDay]     = useState(false);
-  const [submitted, setSubmitted]       = useState(false);
+  const [isLeaveDay, setIsLeaveDay]               = useState(false);
+  const [submitted, setSubmitted]                 = useState(false);
+  const [lockTtl, setLockTtl]                     = useState<number | null>(null); // ✅ countdown
+  const [slotError, setSlotError]                 = useState<string | null>(null); // ✅ slot error
 
   const methods = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -65,6 +63,19 @@ export default function BookingModal({
   const watchedDate      = watch("date");
   const watchedSlot      = watch("timeSlot");
 
+  // ── Countdown timer for Redis lock ─────────────────────────────────────────
+  useEffect(() => {
+    if (!lockTtl) return;
+    if (lockTtl <= 0) {
+      setValue("timeSlot", "");
+      setLockTtl(null);
+      setSlotError("⏰ Your slot reservation expired. Please select again.");
+      return;
+    }
+    const timer = setTimeout(() => setLockTtl((prev) => (prev ?? 1) - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [lockTtl]);
+
   // ── Fetch services ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (!beauticianId) return;
@@ -84,28 +95,70 @@ export default function BookingModal({
     setValue("timeSlot", "");
     setSlots([]);
     setIsLeaveDay(false);
+    setSlotError(null);
+    setLockTtl(null);
 
     publicAPi.getAvailbilitySchedule(beauticianId, watchedDate)
       .then((res) => {
         const data = res.data?.data;
         if (!data) { setSlots([]); return; }
-
         if (data.availability?.type === "leave" || data.availability?.slots?.length === 0) {
           setIsLeaveDay(true);
           setSlots([]);
         } else {
-          // mapBackendSlots converts raw { start, end, available } → TimeSlot[]
-          setSlots(mapBackendSlots(data.availability?.slots?? []));
+          setSlots(mapBackendSlots(data.availability?.slots ?? []));
         }
       })
       .catch(console.error)
       .finally(() => setAvailabilityLoading(false));
   }, [watchedDate, beauticianId]);
 
-  // ── Reset timeSlot when duration changes (block may no longer be valid) ─────
+  // ── Reset timeSlot when duration changes ────────────────────────────────────
   useEffect(() => {
     setValue("timeSlot", "");
+    setLockTtl(null);
+    setSlotError(null);
   }, [duration]);
+
+  // ── Lock slot on selection ──────────────────────────────────────────────────
+  const handleSlotSelect = async (start: string) => {
+    // Deselect
+    if (start === watchedSlot) {
+      setValue("timeSlot", "", { shouldValidate: true });
+      setLockTtl(null);
+      setSlotError(null);
+      return;
+    }
+
+    setValue("timeSlot", start, { shouldValidate: true });
+    setSlotError(null);
+
+    const selectedSlotObj = slots.find((s) => s.start === start);
+    if (!selectedSlotObj || !watchedDate) return;
+
+    const endTime = getEndTimeLabel(selectedSlotObj.startHour, duration);
+
+    try {
+      const res = await BookingApi.lockSlot({
+        beauticianId,
+        date:      watchedDate,
+        startTime: start,
+        endTime,
+      });
+      setLockTtl(res.data?.data?.ttl ?? 300); // ✅ start countdown
+    } catch (err: any) {
+      setValue("timeSlot", "");
+      setLockTtl(null);
+      if (err?.status === 409) {
+        setSlotError("⚠ This slot was just taken. Please pick another.");
+        // Refresh slots
+        const freshRes = await publicAPi.getAvailbilitySchedule(beauticianId, watchedDate);
+        setSlots(mapBackendSlots(freshRes.data?.data?.availability?.slots ?? []));
+      } else {
+        setSlotError("Could not reserve slot. Please try again.");
+      }
+    }
+  };
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
   const toggleService = (id: string) => {
@@ -121,63 +174,56 @@ export default function BookingModal({
     (selectedServices ?? []).includes(s.id),
   );
   const total = selectedServiceObjects.reduce((sum, s) => sum + s.price, 0);
-
   const today = new Date().toISOString().split("T")[0];
-
   const selectedSlotObj = slots.find((s) => s.start === watchedSlot);
   const blockValid = selectedSlotObj
     ? hasConsecutiveBlock(slots, selectedSlotObj.startHour, duration)
     : false;
 
-// BookingModal.tsx — onSubmit
-const onSubmit = async (data: BookingFormValues) => {
-  try {
-    const selectedSlotObj = slots.find((s) => s.start === data.timeSlot);
-    if (!selectedSlotObj) return;
+  // ── Submit ──────────────────────────────────────────────────────────────────
+  const onSubmit = async (data: BookingFormValues) => {
+    setSlotError(null);
+    try {
+      const selectedSlotObj = slots.find((s) => s.start === data.timeSlot);
+      if (!selectedSlotObj) return;
 
-    await BookingApi.createBooking({
-      chatId,
-      userId,
-      beauticianId,
-      services: selectedServiceObjects.map((s) => ({
-        serviceId: s.id,
-        name: s.serviceName,
-        price: s.price,
-      })),
-      totalPrice: total,
-      address: data.address,
-      phoneNumber: data.phone,
-      slot: {
-        date: new Date(data.date),
-        time: duration === 1
-          ? data.timeSlot
-          : `${data.timeSlot} – ${getEndTimeLabel(selectedSlotObj.startHour, duration)}`,
-      },
-    });
-
-    setSubmitted(true); // ✅ only on success
-
-  } catch (err: any) {
-    // ✅ 409 = slot already taken
-    if (err?.status === 409) {
-      methods.setError("timeSlot", {
-        message: "⚠ This slot was just booked by someone else. Please select another time.",
+      await BookingApi.createBooking({
+        chatId,
+        userId,
+        beauticianId,
+        services: selectedServiceObjects.map((s) => ({
+          serviceId: s.id,
+          name:      s.serviceName,
+          price:     s.price,
+        })),
+        totalPrice:  total,
+        address:     data.address,
+        phoneNumber: data.phone,
+        slot: {
+          date: new Date(data.date),
+          time: duration === 1
+            ? data.timeSlot
+            : `${data.timeSlot} – ${getEndTimeLabel(selectedSlotObj.startHour, duration)}`,
+        },
       });
-      setValue("timeSlot", ""); // clear selected slot
 
-      // ✅ Refresh slots without closing modal — user keeps all other details
-      const freshRes = await publicAPi.getAvailbilitySchedule(beauticianId, data.date);
-      const freshSlots = mapBackendSlots(freshRes.data?.data?.availability?.slots ?? []);
-      setSlots(freshSlots);
-      return;
+      setSubmitted(true); // ✅ success
+      setLockTtl(null);
+
+    } catch (err: any) {
+      if (err?.status === 409) {
+        // ✅ Slot taken between lock and submit (race condition)
+        setSlotError("⚠ This slot was just booked. Please select another time.");
+        setValue("timeSlot", "");
+        setLockTtl(null);
+        // Refresh slots — modal stays open, other fields preserved
+        const freshRes = await publicAPi.getAvailbilitySchedule(beauticianId, data.date);
+        setSlots(mapBackendSlots(freshRes.data?.data?.availability?.slots ?? []));
+        return;
+      }
+      setSlotError("Something went wrong. Please try again.");
     }
-
-    // ✅ Other errors — show generic error, keep modal open
-    methods.setError("timeSlot", {
-      message: "Something went wrong. Please try again.",
-    });
-  }
-};
+  };
 
   if (!isOpen) return null;
 
@@ -240,7 +286,7 @@ const onSubmit = async (data: BookingFormValues) => {
           <div className="flex-1 min-h-0 overflow-y-auto">
             <div className="px-5 py-5 space-y-5">
 
-              {/* ── Step 1: Services ── */}
+              {/* Step 1: Services */}
               <section className="bg-white rounded-2xl p-4 shadow-sm">
                 <StepBadge n={1} label="Select Services" />
                 {servicesLoading ? (
@@ -268,7 +314,7 @@ const onSubmit = async (data: BookingFormValues) => {
                 )}
               </section>
 
-              {/* ── Step 2: Contact ── */}
+              {/* Step 2: Contact */}
               <section className="bg-white rounded-2xl p-4 shadow-sm">
                 <StepBadge n={2} label="Contact Details" />
                 <div className="space-y-4">
@@ -297,11 +343,9 @@ const onSubmit = async (data: BookingFormValues) => {
                 </div>
               </section>
 
-              {/* ── Step 3: Schedule ── */}
+              {/* Step 3: Schedule */}
               <section className="bg-white rounded-2xl p-4 shadow-sm">
                 <StepBadge n={3} label="Schedule Appointment" />
-
-                {/* Date */}
                 <div className="mb-4">
                   <label className="text-xs font-medium text-gray-500 mb-1 block">Preferred Date</label>
                   <input
@@ -314,15 +358,10 @@ const onSubmit = async (data: BookingFormValues) => {
                   {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date.message}</p>}
                 </div>
 
-                {/* Duration picker — always visible once date is chosen */}
                 {watchedDate && !isLeaveDay && (
-                  <DurationPicker
-                    value={duration}
-                    onChange={(d) => setDuration(d)}
-                  />
+                  <DurationPicker value={duration} onChange={(d) => setDuration(d)} />
                 )}
 
-                {/* Slot grid */}
                 {watchedDate ? (
                   availabilityLoading ? (
                     <div className="grid grid-cols-3 gap-2">
@@ -339,15 +378,33 @@ const onSubmit = async (data: BookingFormValues) => {
                     </div>
                   ) : (
                     <>
-                      <label className="text-xs font-medium text-gray-500 mb-2 block">
-                        Pick a Start Time
-                      </label>
+                      <label className="text-xs font-medium text-gray-500 mb-2 block">Pick a Start Time</label>
                       <TimeSlotPicker
                         slots={slots}
                         selected={watchedSlot}
                         duration={duration}
-                        onSelect={(start) => setValue("timeSlot", start, { shouldValidate: true })}
+                        onSelect={handleSlotSelect}  
                       />
+
+                      {/* ✅ Slot error */}
+                      {slotError && (
+                        <p className="text-xs text-red-500 mt-2">{slotError}</p>
+                      )}
+
+                      {/* ✅ Lock countdown timer */}
+                      {lockTtl !== null && watchedSlot && (
+                        <div className="mt-2 flex items-center gap-1.5 text-xs text-amber-600">
+                          <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Slot reserved for{" "}
+                          <strong>
+                            {Math.floor(lockTtl / 60)}:{String(lockTtl % 60).padStart(2, "0")}
+                          </strong>{" "}
+                          mins
+                        </div>
+                      )}
+
                       {errors.timeSlot && (
                         <p className="text-xs text-red-500 mt-2">{errors.timeSlot.message}</p>
                       )}
@@ -363,7 +420,7 @@ const onSubmit = async (data: BookingFormValues) => {
                 )}
               </section>
 
-              {/* ── Step 4: Notes ── */}
+              {/* Step 4: Notes */}
               <section className="bg-white rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-sm font-semibold text-gray-500">Additional Notes</span>
@@ -378,7 +435,7 @@ const onSubmit = async (data: BookingFormValues) => {
                 {errors.notes && <p className="text-xs text-red-500 mt-1">{errors.notes.message}</p>}
               </section>
 
-              {/* ── Summary ── */}
+              {/* Summary */}
               {selectedServiceObjects.length > 0 && (
                 <section className="bg-violet-50 border border-violet-100 rounded-2xl p-4">
                   <p className="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-3">Summary</p>
@@ -406,13 +463,11 @@ const onSubmit = async (data: BookingFormValues) => {
                   </div>
                 </section>
               )}
-
             </div>
           </div>
 
-          {/* ── Footer CTA ── */}
+          {/* Footer CTA */}
           <div className="px-5 py-4 bg-white border-t border-gray-100 rounded-b-3xl sm:rounded-b-2xl shrink-0">
-            {/* Warn if slot is selected but block isn't fully available */}
             {watchedSlot && !blockValid && (
               <p className="text-xs text-red-500 text-center mb-2">
                 ⚠ The selected {duration}h block has unavailable slots. Pick a different start time.
@@ -420,9 +475,9 @@ const onSubmit = async (data: BookingFormValues) => {
             )}
             <button
               type="submit"
-              disabled={isSubmitting || (!!watchedSlot && !blockValid)}
+              disabled={isSubmitting || (!!watchedSlot && !blockValid) || !watchedSlot}
               className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-200
-                ${!isSubmitting && (!watchedSlot || blockValid)
+                ${!isSubmitting && watchedSlot && blockValid
                   ? "bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-200 active:scale-[0.98]"
                   : "bg-gray-100 text-gray-400 cursor-not-allowed"
                 }`}
@@ -430,7 +485,6 @@ const onSubmit = async (data: BookingFormValues) => {
               {isSubmitting ? "Sending…" : "Send Booking Request"}
             </button>
           </div>
-
         </form>
       </div>
     </FormProvider>

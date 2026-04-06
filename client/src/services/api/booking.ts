@@ -31,5 +31,8 @@ export const BookingApi={
     limit
   }
   return await axiosWrapper<IGetBeauticianBookingsResponse>(api.get(beauticianApi.getBeauticianBookings,{params}))
- }
+ },
+ lockSlot: async (input: { beauticianId: string; date: string; startTime: string; endTime: string }) => {
+  return await axiosWrapper(api.post(publicApiRoutes.lockSlot, input));
+}
 }

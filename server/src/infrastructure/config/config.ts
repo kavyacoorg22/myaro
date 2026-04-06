@@ -50,6 +50,7 @@ export const appConfig = {
         redisHost: process.env.REDIS_HOST,
         redisPort: Number(process.env.REDIS_PORT),
         redisPassword: process.env.REDIS_PASSWORD,
+        redisLockSlotTtl:Number(required('REDIS_LOCK_SLOT_TTL',process.env.REDIS_LOCK_SLOT_TTL))
     },
 
     nodemailer: {

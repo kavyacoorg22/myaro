@@ -58,3 +58,7 @@ export function minutesToTime(minutes: number): string {
   const hour = h % 12 === 0 ? 12 : h % 12;
   return `${String(hour).padStart(2, '0')}:${String(m).padStart(2, '0')} ${modifier}`;
 }
+
+export function toDateString(date: Date | string): string {
+  return new Date(date).toISOString().split("T")[0]; 
+}
