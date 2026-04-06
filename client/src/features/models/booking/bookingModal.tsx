@@ -21,6 +21,7 @@ export default function BookingModal({
   beauticianName = "Beautician",
   chatId,
   userId,
+    onSuccess,
 }: {
   isOpen?: boolean;
   onClose?: () => void;
@@ -28,6 +29,7 @@ export default function BookingModal({
   beauticianName?: string;
   chatId: string;
   userId: string;
+    onSuccess?: () => void;
 }) {
   const [services, setServices]                   = useState<IGetBeauticianServicesListDto[]>([]);
   const [slots, setSlots]                         = useState<TimeSlot[]>([]);
@@ -38,7 +40,7 @@ export default function BookingModal({
   const [submitted, setSubmitted]                 = useState(false);
   const [lockTtl, setLockTtl]                     = useState<number | null>(null); // ✅ countdown
   const [slotError, setSlotError]                 = useState<string | null>(null); // ✅ slot error
-
+  
   const methods = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -199,16 +201,15 @@ export default function BookingModal({
         totalPrice:  total,
         address:     data.address,
         phoneNumber: data.phone,
-        slot: {
-          date: new Date(data.date),
-          time: duration === 1
-            ? data.timeSlot
-            : `${data.timeSlot} – ${getEndTimeLabel(selectedSlotObj.startHour, duration)}`,
-        },
+       slot: {
+  date: new Date(data.date),
+  time: `${data.timeSlot} – ${getEndTimeLabel(selectedSlotObj.startHour, duration)}`,
+       }
       });
 
-      setSubmitted(true); // ✅ success
+      setSubmitted(true); 
       setLockTtl(null);
+        onSuccess?.();
 
     } catch (err: any) {
       if (err?.status === 409) {

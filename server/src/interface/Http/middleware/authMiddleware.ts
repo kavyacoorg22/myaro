@@ -18,8 +18,6 @@ declare module "express-serve-static-core" {
   }
 }
 
-
-
 export const authMiddleware =
   (
     jwtService: ITokenService,
@@ -28,13 +26,11 @@ export const authMiddleware =
   ): RequestHandler =>
   async (req: Request, res: Response, next: NextFunction) => {
     const token =
-  req.cookies.accessToken ||
-  req.cookies.access_token ||
-  req.cookies.token ||
-  req.cookies.jwt;
+      req.cookies.accessToken ||
+      req.cookies.access_token ||
+      req.cookies.token ||
+      req.cookies.jwt;
 
-console.log('cookies received:', req.cookies);  // ✅ add this
-console.log('token found:', !!token);
     try {
       const token =
         req.cookies.accessToken ||
@@ -135,7 +131,6 @@ console.log('token found:', !!token);
       );
     }
   };
-
 
 export const optionalAuthMiddleware =
   (

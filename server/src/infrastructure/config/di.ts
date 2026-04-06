@@ -145,6 +145,7 @@ import { PaymentController } from "../../interface/Http/controllers/public/payme
 import { VerifyPaymentUsecase } from "../../application/usecases/payment/verifyPaymentUseCase";
 import { LockSlotUseCase } from "../../application/usecases/booking/lockSlotUseCase";
 import { LockSlotService } from "../service/lockSlotService";
+import { BlockBookedSlotUseCase } from "../../application/usecases/beautician/schedule/blockBookedSlotUSeCase";
 
 
 
@@ -334,6 +335,7 @@ const createBookingUseCase=new CreateBookingUseCase(bookingRepo,bookingHistoryRe
 const updateBookingStatusUC=new UpdateBookingStatusUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter)
 const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userRepo)
 const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
+const blockBookedSlotUseCase=new BlockBookedSlotUseCase(scheduleRepo,recurringExceptionRepo,getAvailabilityUC)
 export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase)
 //like comment
 
@@ -366,6 +368,7 @@ export const likeCommentController=new LikeCommetController(addLikeUC,removeLike
 const paymentrepo=new PaymentRepository()
 const razorPayService=new RazorPayService()
 const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayService)
-const verifyPaymentUC=new VerifyPaymentUsecase(paymentrepo,bookingRepo,razorPayService)
+
+const verifyPaymentUC=new VerifyPaymentUsecase(paymentrepo,bookingRepo,razorPayService,blockBookedSlotUseCase)
 
 export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC)

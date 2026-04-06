@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { SaidBar } from "../saidBar/saidbar";
 import { ChatApi } from "../../../../services/api/chat";
@@ -20,13 +20,23 @@ export default function ChatList() {
   const [onlineUsers, setOnlineUsers]   = useState<Set<string>>(new Set());
   const [typingChats, setTypingChats]   = useState<Set<string>>(new Set());
 
+  // ✅ refs so socket handlers always read latest values without re-registering
+  const activeChatIdRef = useRef<string | null>(null);
+  const userIdRef       = useRef<string | null | undefined>(undefined);
+  const loadingRef      = useRef<boolean>(false); // ✅ prevents duplicate fetches
+
   const { id } = useParams();
   const location = useLocation();
   const participantFromState = location.state?.participant;
 
+  // keep refs in sync
+  useEffect(() => { activeChatIdRef.current = activeChatId; }, [activeChatId]);
+  useEffect(() => { userIdRef.current = userId; }, [userId]);
+
   // ── fetch chats ────────────────────────────────────────────────────────────
   const fetchChats = async (cursorParam: string | null = null, reset = false) => {
-    if (loading) return;
+    if (loadingRef.current) return; // ✅ use ref not state (state is stale in closures)
+    loadingRef.current = true;
     setLoading(true);
     try {
       const res = await ChatApi.getUserChats(cursorParam, 20);
@@ -37,6 +47,7 @@ export default function ChatList() {
       setHasMore(more);
     } finally {
       setLoading(false);
+      loadingRef.current = false; // ✅ always release the lock
     }
   };
 
@@ -52,9 +63,20 @@ export default function ChatList() {
       setCursor(null);
       setHasMore(true);
       setActiveChatId(id);
+      loadingRef.current = false; // ✅ reset lock before refetch
       fetchChats(null, true);
     }
   }, [id]);
+
+  // ── clear unread when user opens a chat ───────────────────────────────────
+  useEffect(() => {
+    if (!activeChatId) return;
+    setChats((prev) =>
+      prev.map((c) =>
+        c.chatId === activeChatId ? { ...c, unreadCount: 0 } : c,
+      ),
+    );
+  }, [activeChatId]);
 
   // ── online / offline ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -112,10 +134,10 @@ export default function ChatList() {
     };
   }, []);
 
-  // ── update last message preview on new message ─────────────────────────────
+  // ── update last message preview + unread count on new message ─────────────
   useEffect(() => {
     const handleNewMessage = ({
-      chatId,
+      chatId: incomingChatId,
       message,
       senderId,
     }: {
@@ -123,30 +145,42 @@ export default function ChatList() {
       message:  string;
       senderId: string;
     }) => {
-      setChats((prev) =>
-        prev.map((c) => {
-          if (c.chatId !== chatId) return c;
+      const currentUserId       = userIdRef.current;
+      const currentActiveChatId = activeChatIdRef.current;
+
+      setChats((prev) => {
+        const exists = prev.some((c) => c.chatId === incomingChatId);
+
+        // chat not in list yet — refetch to include it
+        if (!exists) {
+          loadingRef.current = false; // reset before refetch
+          fetchChats(null, true);
+          return prev;
+        }
+
+        return prev.map((c) => {
+          if (c.chatId !== incomingChatId) return c;
+          const isFromOther     = senderId !== currentUserId;
+          const isNotActiveChat = incomingChatId !== currentActiveChatId;
           return {
             ...c,
             lastMessage: message,
-            // only increment unread if the message is from the other person
-            // and this chat is not currently active
-            unreadCount:
-              senderId !== userId && chatId !== activeChatId
-                ? c.unreadCount + 1
-                : c.unreadCount,
+            unreadCount: isFromOther && isNotActiveChat
+              ? c.unreadCount + 1
+              : c.unreadCount,
           };
-        }),
-      );
+        });
+      });
     };
 
     socket.on(SOCKET_EVENTS.NEW_MESSAGE, handleNewMessage);
     return () => {
       socket.off(SOCKET_EVENTS.NEW_MESSAGE, handleNewMessage);
     };
-  }, [userId, activeChatId]);
+  }, []); // ✅ empty deps — refs keep values fresh
 
-  const activeChat = chats.find((c) => c.chatId === activeChatId);
+  const activeChat        = chats.find((c) => c.chatId === activeChatId);
+  const activeParticipant = activeChat?.participant ?? participantFromState ?? null;
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -206,7 +240,7 @@ export default function ChatList() {
             <ChatWindow
               chatId={activeChatId}
               userId={userId}
-              participant={activeChat?.participant ?? participantFromState ?? null}
+              participant={activeParticipant}
             />
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center text-gray-400">
@@ -216,7 +250,7 @@ export default function ChatList() {
             </div>
           )}
         </main>
-        
+
       </div>
     </div>
   );

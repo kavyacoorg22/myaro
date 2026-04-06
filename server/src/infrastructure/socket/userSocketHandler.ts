@@ -15,6 +15,7 @@ export function registerUserHandlers(socket: Socket, useCases: UserUseCases): vo
   socket.on(EV.JOIN_USER_ROOM, ({ userId }: { userId: string }) => {
     try {
       if (!userId) throw new Error("userId is required");
+      
       socket.join(`user:${userId}`);
       socket.data.userId = userId;
       console.log(`${userId} → room user:${userId}`);

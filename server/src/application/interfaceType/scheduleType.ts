@@ -34,3 +34,10 @@ export interface IGetmonthlyAvailabilityOutput{
   dates:IGetmonthlyAvailabilityDto[]
 }
 
+
+export interface IBlockBookedSlotInput {
+  beauticianId: string;
+  date: Date;
+  startTime: string;  
+  endTime: string;    
+}

@@ -14,9 +14,9 @@ export class JoinChatRoomRoomUseCase implements IJoinChatRoomUseCase {
     const chat = await this.chatRepo.findById(chatId);
     if (!chat) throw new Error(`Chat ${chatId} not found.`);
 
-    if (!chat.participants.includes(userId)) {
-      throw new Error(`Access denied.`);
-    }
+   if (!chat.participants.some(p => p.toString() === userId)) {
+  throw new Error(`Access denied.`);
+}
 
     this.socketEmitter.joinRoom(socketId, chatId);
 

@@ -42,21 +42,30 @@ export function extractBYDAY(rrule: string): string[] {
   return match[1].split(',');
 }
 
+// utils/schedule/timeHelper.ts
+
 export function timeToMinutes(time: string): number {
-  const [timePart, modifier] = time.split(' ');
+  const trimmed = time.trim();
+
+  // 24hr format: "09:00", "18:00"
+  if (!trimmed.includes('AM') && !trimmed.includes('PM')) {
+    const [hours, minutes] = trimmed.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  // 12hr format: "09:00 AM", "06:00 PM"
+  const [timePart, modifier] = trimmed.split(' ');
   let [hours, minutes] = timePart.split(':').map(Number);
   if (modifier === 'PM' && hours !== 12) hours += 12;
   if (modifier === 'AM' && hours === 12) hours = 0;
   return hours * 60 + minutes;
 }
 
-// utility — minutes back to time string
 export function minutesToTime(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  const modifier = h >= 12 ? 'PM' : 'AM';
-  const hour = h % 12 === 0 ? 12 : h % 12;
-  return `${String(hour).padStart(2, '0')}:${String(m).padStart(2, '0')} ${modifier}`;
+  // match stored format — 24hr
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
 export function toDateString(date: Date | string): string {

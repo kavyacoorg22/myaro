@@ -81,7 +81,7 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
 
     // 7. update chat last message
     await this.chatRepo.updateLastMessage(booking.chatId, message, saved.createdAt);
-
+console.log("📤 Emitting NEW_MESSAGE to room:", booking.chatId);
     // 8. emit to chat room — both see updated booking card
     this.socketEmitter.emitToRoom(
       booking.chatId,

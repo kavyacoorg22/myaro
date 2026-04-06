@@ -8,9 +8,6 @@ import { SOCKET_EVENTS } from "../../../../../constants/socketConstants";
 import socket from "../../../../../services/socket/socket";
 import type { ChatParticipant } from "../../../../types/chat";
 
-
-
-
 export const useChat = (chatId: string, userId: string, participant: ChatParticipant | null) => {
   const [messages, setMessages] = useState<MessageDto[]>([]);
   const [cursor, setCursor]     = useState<string | null>(null);
@@ -26,7 +23,7 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
   useJoinChat(chatId, userId);
   useMarkSeen(chatId, userId, messages);
 
-  // ── load messages ────────────────────────────────────────────────────────
+  // ── load messages ─────────────────────────────────────────────────────────
   const loadMessages = useCallback(
     async (cursorParam: string | null) => {
       if (loadingRef.current) return;
@@ -37,7 +34,9 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
         if (!res.data.data) return;
         const { messages: newMsgs, nextCursor, hasMore: more } = res.data.data;
 
-        setMessages((prev) => [...newMsgs, ...prev]);
+        // ✅ if loading fresh (no cursor), replace messages entirely
+        // if paginating (has cursor), prepend older messages
+        setMessages((prev) => cursorParam ? [...newMsgs, ...prev] : newMsgs);
         setCursor(nextCursor);
         setHasMore(more);
 
@@ -62,18 +61,22 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
     [chatId, userId],
   );
 
-  // ── reset on chatId change ───────────────────────────────────────────────
+  // ── reset + reload when chatId changes ────────────────────────────────────
+  // ✅ ONE effect only — reset everything and load fresh
   useEffect(() => {
+    // reset all state for the new chat
     setMessages([]);
     setCursor(null);
     setHasMore(true);
     setIsOnline(false);
     setIsTyping(false);
     setLastSeen(null);
-    loadMessages(null);
-  }, [chatId]);
+    loadingRef.current = false; // ✅ always reset the guard on chat switch
 
-  // ── socket listeners ─────────────────────────────────────────────────────
+    loadMessages(null);
+  }, [chatId]); // ✅ only chatId — loadMessages intentionally excluded
+
+  // ── socket listeners ──────────────────────────────────────────────────────
   useEffect(() => {
     const handleNewMessage = (msg: MessageDto) => {
       if (msg.chatId !== chatId) return;
@@ -118,7 +121,7 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
     };
   }, [chatId, participant?.id, userId]);
 
-  // ── actions ──────────────────────────────────────────────────────────────
+  // ── actions ───────────────────────────────────────────────────────────────
   const handleSend = (text: string) => {
     if (!participant || !text.trim()) return;
     sendMessage({
@@ -142,6 +145,15 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
     if (hasMore && !loading) loadMessages(cursor);
   };
 
+  // ✅ expose reload for external triggers (e.g. after booking created)
+  const reload = useCallback(() => {
+    loadingRef.current = false;
+    setMessages([]);
+    setCursor(null);
+    setHasMore(true);
+    loadMessages(null);
+  }, [loadMessages]);
+
   return {
     messages,
     loading,
@@ -152,5 +164,6 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
     handleSend,
     handleTyping,
     loadMore,
+    reload,
   };
 };

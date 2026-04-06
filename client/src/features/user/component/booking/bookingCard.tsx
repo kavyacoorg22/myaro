@@ -14,7 +14,7 @@ import { useNavigate } from "react-router";
 const statusBg: Record<string, string> = {
   requested: "bg-white        border-indigo-200",
   accepted:  "bg-green-50     border-green-200",
-  confirmed: "bg-teal-50      border-teal-200",
+  confirmed: "bg-teal-100      border-teal-200",
   completed: "bg-teal-100     border-teal-300",
   rejected:  "bg-rose-100     border-rose-300",
   cancelled: "bg-gray-100     border-gray-300",
@@ -127,25 +127,29 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
         )}
 
         {/* ── CONFIRMED ──────────────────────────────────────────────────── */}
-        {status === "confirmed" && (
-          <div className="flex gap-2 flex-wrap">
-            <Pill label="Confirmed" variant="default" disabled />
-            <Pill
-              label="cancel"
-              variant="warning"
-              disabled={loading}
-              onClick={() => callAction("cancel")}
-            />
-            {!isBeautician && (
-              <Pill
-                label="Completed"
-                variant="success"
-                disabled={loading}
-                onClick={() => callAction("complet")}
-              />
-            )}
-          </div>
-        )}
+       {status === "confirmed" && (
+  <div className="flex gap-2 flex-wrap">
+    <Pill label="Confirmed" variant="default" disabled />
+    {!isBeautician && (
+      <>
+        <Pill
+          label="cancel"
+          variant="warning"
+          disabled={loading}
+          onClick={() => callAction("cancel")}
+        />
+        <Pill
+          label="Completed"
+          variant="success"
+          disabled={loading}
+          onClick={() => callAction("complete")}
+        />
+      </>
+    )}
+  </div>
+)}
+
+
 
         {/* ── COMPLETED ──────────────────────────────────────────────────── */}
         {status === "completed" && (

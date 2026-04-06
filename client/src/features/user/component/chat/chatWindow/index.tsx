@@ -14,7 +14,7 @@ export const ChatWindow = ({
 }: ChatWindowProps) => {
   const navigate = useNavigate();
   const [showBooking, setShowBooking] = useState(false);
-
+  
   const {
     messages,
     loading,
