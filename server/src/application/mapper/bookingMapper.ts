@@ -27,7 +27,8 @@ export function toGetBookingById(booking:Booking,user:User):IGetBookingByIdDto{
     phoneNumber:booking.phoneNumber,
     slot:booking.slot,
     status:booking.status,
-    rejectionReason:booking.rejectionReason,
+    rejectionReason:booking.rejectionReason??'',
+    refundReason:booking.refundReason??'',
     fullName:user.fullName
   }
 }

@@ -12,7 +12,7 @@ export interface ICreateBookingInput {
   address:      string;
   phoneNumber:  string;
   slot:         BookingSlotVO;
-  clientNote?:string
+  clientNote:string|null;
 }
 
 export interface IUpdateBookingStatusInput{
@@ -59,4 +59,15 @@ export interface ILockSlotInput {
   startTime: string;   
   endTime: string;     
   userId: string;
+}
+
+export interface IRequestRefundInput{
+  bookingId:string,
+  userId:string,
+  refundReason:string
+}
+
+export interface IApproveRefundUInput{
+  bookingId:string,
+  beauticianId:string
 }

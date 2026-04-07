@@ -24,4 +24,5 @@ export interface IBookingRepository {
   startMinutes: number;
   endMinutes: number;
 }): Promise<Booking | null>;
+updateByBookingId(id:string,data:Partial<Omit<Booking, "id" | "createdAt" | "updatedAt">>):Promise<Booking|null>
 }

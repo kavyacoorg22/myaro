@@ -3,11 +3,13 @@ import { BookingAction, BookingStatus } from "../enum/bookingEnum";
 export const VALID_TRANSITIONS: Record<BookingStatus, BookingAction[]> = {
   [BookingStatus.REQUESTED]:  [BookingAction.ACCEPT, BookingAction.REJECT, BookingAction.CANCEL],
   [BookingStatus.ACCEPTED]:   [BookingAction.CONFIRM, BookingAction.CANCEL],
-  [BookingStatus.CONFIRMED]:  [BookingAction.COMPLETE, BookingAction.CANCEL, BookingAction.REJECT],
-  [BookingStatus.COMPLETED]:  [],
-  [BookingStatus.REJECTED]:   [],
+  [BookingStatus.CONFIRMED]:  [BookingAction.COMPLETE, BookingAction.CANCEL],
+  [BookingStatus.COMPLETED]: [ BookingAction.REQUEST_REFUND],[BookingStatus.REJECTED]:   [],
   [BookingStatus.CANCELLED]:  [],
   [BookingStatus.DISPUTE]:    [],
+  [BookingStatus.REFUND_REQUESTED]:[BookingAction.APPROVE_REFUND],
+   [BookingStatus.CLOSED]: [],
+   [BookingStatus.REFUND_APPROVED]:[]
 };
 
 export const ACTION_TO_STATUS: Record<BookingAction, BookingStatus> = {
@@ -17,6 +19,9 @@ export const ACTION_TO_STATUS: Record<BookingAction, BookingStatus> = {
   [BookingAction.COMPLETE]: BookingStatus.COMPLETED,
   [BookingAction.CANCEL]:  BookingStatus.CANCELLED,
   [BookingAction.CONFIRM]: BookingStatus.CONFIRMED,
+    [BookingAction.REQUEST_REFUND]: BookingStatus.REFUND_REQUESTED,
+    [BookingAction.APPROVE_REFUND]:BookingStatus.REFUND_APPROVED
+
 };
 
 export const ACTION_MESSAGE: Record<BookingAction, string> = {
@@ -26,6 +31,9 @@ export const ACTION_MESSAGE: Record<BookingAction, string> = {
   [BookingAction.COMPLETE]: "Booking completed",
   [BookingAction.CANCEL]:  "Booking cancelled",
   [BookingAction.CONFIRM]: "Booking confirmed",
+    [BookingAction.REQUEST_REFUND]: "Refund requested",
+    [BookingAction.APPROVE_REFUND]:'Approve Refund'
+
 };
 
 

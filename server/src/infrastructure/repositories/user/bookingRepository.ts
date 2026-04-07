@@ -71,6 +71,16 @@ async findOverlapping({
   return doc ? this.map(doc) : null;
 }
 
+async updateByBookingId(id: string, data: Partial<Omit<Booking, "id" | "createdAt" | "updatedAt">>): Promise<Booking | null> {
+  const doc=await BookingModel.findByIdAndUpdate(
+    id,
+    {$set:data},
+    {new:true}
+  )
+
+  return doc?this.map(doc):null
+}
+
   protected map(doc:BookingDoc):Booking {
    const base=super.map(doc)
    return{
@@ -90,8 +100,12 @@ async findOverlapping({
     status:doc.status,
     rejectionReason:doc.rejectionReason,
     cancelledAt:doc.cancelledAt,
-    clientNote:doc.clientNote,
-    beauticianNote:doc.beauticianNote,
+    clientNote:doc.clientNote??null,
+    beauticianNote:doc.beauticianNote??null,
+    disputeAt:doc.disputeAt,
+    refundType:doc.refundType,
+    refundReason:doc.refundReason,
+    disputeReason:doc.disputeReason,
     createdAt:doc.createdAt,
     updatedAt:doc.updatedAt
    }

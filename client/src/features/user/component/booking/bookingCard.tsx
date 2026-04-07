@@ -10,15 +10,21 @@ import type { Role } from "../../../../components/config/saidBarContent";
 import { BookingAction, type BookingActionType, type BookingStatusType } from "../../../../constants/types/booking";
 import { PaymentDetailModal } from "../../../models/booking/paymentDetailModal";
 import { useNavigate } from "react-router";
+import { ServiceCompletionModal } from "../../../models/booking/refundDispute/serviceCompletionModal";
+import { WriteReviewModal } from "../../../models/booking/refundDispute/writeReviewModel";
+import { RefundConfirmationModal } from "../../../models/booking/refundDispute/refundConformationModal";
+import { RefundReasonModal } from "../../../models/booking/refundDispute/refundReasonModal";
+import { handleApiError } from "../../../../lib/utils/handleApiError";
 
 const statusBg: Record<string, string> = {
-  requested: "bg-white        border-indigo-200",
-  accepted:  "bg-green-50     border-green-200",
-  confirmed: "bg-teal-100      border-teal-200",
-  completed: "bg-teal-100     border-teal-300",
-  rejected:  "bg-rose-100     border-rose-300",
-  cancelled: "bg-gray-100     border-gray-300",
-  dispute:   "bg-amber-50     border-amber-300",
+  requested:        "bg-white        border-indigo-200",
+  accepted:         "bg-green-50     border-green-200",
+  confirmed:        "bg-teal-100     border-teal-200",
+  completed:        "bg-teal-100     border-teal-300",
+  rejected:         "bg-rose-100     border-rose-300",
+  cancelled:        "bg-gray-100     border-gray-300",
+  dispute:          "bg-amber-50     border-amber-300",
+  refund_requested: "bg-orange-50    border-orange-300", // ← added
 };
 
 // ── BookingCard ───────────────────────────────────────────────────────────────
@@ -29,13 +35,20 @@ export interface BookingCardProps {
 
 export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
   const role = useSelector((s: RootState) => s.user.currentUser?.role);
-  const [booking, setBooking]               = useState<IGetBookingByIdDto | null>(null);
-  const [loading, setLoading]               = useState(false);
-  const [showModal, setShowModal]           = useState(false);
-  const [showPayModal, setShowPayModal]     = useState(false);  // ← new
-
+  const [booking, setBooking]                     = useState<IGetBookingByIdDto | null>(null);
+  const [loading, setLoading]                     = useState(false);
+  const [showModal, setShowModal]                 = useState(false);
+  const [showPayModal, setShowPayModal]           = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showReviewModal, setShowReviewModal]     = useState(false);
+  const [showRefundReason, setShowRefundReason]   = useState(false);
+  const [showRefundConfirm, setShowRefundConfirm] = useState(false);
+  const [refundReason, setRefundReason]           = useState("");
+  const [refundLoading, setRefundLoading]         = useState(false);
+   console.log('status',status)
   const isBeautician = role === UserRole.BEAUTICIAN;
-   const navigate = useNavigate();
+  const navigate = useNavigate();
+
   // ── fetch booking on mount ─────────────────────────────────────────────────
   useEffect(() => {
     BookingApi.getBookingByid(bookingId)
@@ -68,7 +81,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
         );
       }
       setShowModal(false);
-      setShowPayModal(false);   // ← close pay modal on success
+      setShowPayModal(false);
     } catch (err) {
       console.error(err);
     } finally {
@@ -120,36 +133,34 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
                 label="pay & confirm"
                 variant="primary"
                 disabled={loading}
-                onClick={() => setShowPayModal(true)}   // ← open pay modal
+                onClick={() => setShowPayModal(true)}
               />
             )}
           </div>
         )}
 
         {/* ── CONFIRMED ──────────────────────────────────────────────────── */}
-       {status === "confirmed" && (
-  <div className="flex gap-2 flex-wrap">
-    <Pill label="Confirmed" variant="default" disabled />
-    {!isBeautician && (
-      <>
-        <Pill
-          label="cancel"
-          variant="warning"
-          disabled={loading}
-          onClick={() => callAction("cancel")}
-        />
-        <Pill
-          label="Completed"
-          variant="success"
-          disabled={loading}
-          onClick={() => callAction("complete")}
-        />
-      </>
-    )}
-  </div>
-)}
-
-
+        {status === "confirmed" && (
+          <div className="flex gap-2 flex-wrap">
+            <Pill label="Confirmed" variant="default" disabled />
+            {!isBeautician && (
+              <>
+                <Pill
+                  label="cancel"
+                  variant="warning"
+                  disabled={loading}
+                  onClick={() => callAction("cancel")}
+                />
+                <Pill
+                  label="Completed"
+                  variant="success"
+                  disabled={loading}
+                  onClick={() => setShowCompletionModal(true)}
+                />
+              </>
+            )}
+          </div>
+        )}
 
         {/* ── COMPLETED ──────────────────────────────────────────────────── */}
         {status === "completed" && (
@@ -177,6 +188,30 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
         {status === "dispute" && (
           <Pill label="Dispute" variant="danger" disabled />
         )}
+
+        {/* ── REFUND_REQUESTED ───────────────────────────────────────────── */}
+        {status === "refund_requested" && (
+          <div className="flex flex-col gap-1">
+            {isBeautician ? (
+              <>
+                <p className="text-[11px] text-orange-700 font-semibold">
+                  Refund confirmation request
+                </p>
+                <Pill label="Open" variant="ghost" onClick={() => setShowModal(true)} />
+              </>
+            ) : (
+              <>
+                <Pill label="Refund Requested" variant="warning" disabled />
+                {booking.refundReason && (
+                  <p className="text-[11px] text-orange-600 mt-1">
+                    {booking.refundReason}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
       </div>
 
       {/* Beautician detail modal */}
@@ -191,34 +226,85 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
       )}
 
       {/* Payment detail modal — shown to customer on "pay & confirm" */}
-     {showPayModal && !isBeautician && (
-  <PaymentDetailModal
-    booking={booking}
-    loading={loading}
-    onClose={() => setShowPayModal(false)}
-   onConfirm={async () => {
-  try {
-    await BookingApi.updateBookingStatus(
-      bookingId,
-      BookingAction.CONFIRM as BookingActionType,
-      role as Role,
-    );
-    setBooking(prev => prev ? { ...prev, status: 'confirmed' } : null);
-    setShowPayModal(false);
-    navigate(`/chat/${booking.chatId}`);  // ✅ redirect to chat
-  } catch (err) {
-    console.error('confirm failed:', err);
-    // booking is already confirmed in DB — just navigate anyway
-    setShowPayModal(false);
-    navigate(`/chat/${booking.chatId}`);
-  }
-}}
-    onCancel={() => {
-      setShowPayModal(false);
-      callAction("cancel");
-    }}
-  />
-)}
+      {showPayModal && !isBeautician && (
+        <PaymentDetailModal
+          booking={booking}
+          loading={loading}
+          onClose={() => setShowPayModal(false)}
+          onConfirm={async () => {
+            try {
+              await BookingApi.updateBookingStatus(
+                bookingId,
+                BookingAction.CONFIRM as BookingActionType,
+                role as Role,
+              );
+              setBooking(prev => prev ? { ...prev, status: 'confirmed' } : null);
+              setShowPayModal(false);
+              navigate(`/chat/${booking.chatId}`);
+            } catch (err) {
+              console.error('confirm failed:', err);
+              setShowPayModal(false);
+              navigate(`/chat/${booking.chatId}`);
+            }
+          }}
+          onCancel={() => {
+            setShowPayModal(false);
+            callAction("cancel");
+          }}
+        />
+      )}
+
+      {showCompletionModal && !isBeautician && (
+        <ServiceCompletionModal
+          loading={loading}
+          onClose={() => setShowCompletionModal(false)}
+          onComplete={() => {
+            callAction("complete");
+            setShowCompletionModal(false);
+            setShowReviewModal(true);
+          }}
+          onNotCompleted={() => {
+            setShowCompletionModal(false);
+            setShowRefundReason(true);
+          }}
+        />
+      )}
+
+      {showReviewModal && (
+        <WriteReviewModal
+          beauticianId={booking.beauticianId}
+          onClose={() => setShowReviewModal(false)}
+        />
+      )}
+
+      {showRefundReason && (
+        <RefundReasonModal
+          onCancel={() => setShowRefundReason(false)}
+          onContinue={(reason) => {
+            setRefundReason(reason);
+            setShowRefundReason(false);
+            setShowRefundConfirm(true);
+          }}
+        />
+      )}
+
+      {showRefundConfirm && (
+        <RefundConfirmationModal
+          loading={refundLoading}
+          onCancel={() => setShowRefundConfirm(false)}
+          onConfirm={async () => {
+            setRefundLoading(true);
+            try {
+              await BookingApi.requestRefund(bookingId, refundReason);
+              setBooking(prev => prev ? { ...prev, status: "refund_requested" } : null); // ← added
+            } catch(err) {
+              handleApiError(err);
+            }
+            setRefundLoading(false);
+            setShowRefundConfirm(false);
+          }}
+        />
+      )}
     </>
   );
 };

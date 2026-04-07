@@ -146,6 +146,13 @@ import { VerifyPaymentUsecase } from "../../application/usecases/payment/verifyP
 import { LockSlotUseCase } from "../../application/usecases/booking/lockSlotUseCase";
 import { LockSlotService } from "../service/lockSlotService";
 import { BlockBookedSlotUseCase } from "../../application/usecases/beautician/schedule/blockBookedSlotUSeCase";
+import { RequestRefundUseCase } from "../../application/usecases/booking/requestRefundUseCase";
+import { BookingValidatorService } from "../../application/services/bookingValidatorService";
+import { BookingHistoryService } from "../../application/services/bookingHistoryService";
+import { ChatMessageService } from "../../application/services/chatMessageService";
+import { PaymentLookupService } from "../../application/services/paymentLookupService";
+import { ApproveRefundUseCase } from "../../application/usecases/booking/approveRefundUseCase";
+import { RefundRepository } from "../repositories/user/refundRepository";
 
 
 
@@ -326,6 +333,7 @@ const createChatUC=new CreateChatUseCase(chatRepository)
 const getChatByParticipantsUC=new GetChatByParticipants(chatRepository)
 const getUserChatsUC=new GetUserChatsUseCase(chatRepository,userRepo,messageRepository,beauticianRepo)
 export const chatController=new ChatController(getMessageByChatUC,createChatUC,getChatByParticipantsUC,getUserChatsUC)
+
 //booking
 const bookingRepo=new BookingRepository()
 const lockSlotService=new LockSlotService()
@@ -336,7 +344,18 @@ const updateBookingStatusUC=new UpdateBookingStatusUseCase(bookingRepo,bookingHi
 const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userRepo)
 const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
 const blockBookedSlotUseCase=new BlockBookedSlotUseCase(scheduleRepo,recurringExceptionRepo,getAvailabilityUC)
-export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase)
+//services
+const refundRepo=new RefundRepository()
+const paymentrepo=new PaymentRepository()
+const razorPayService=new RazorPayService()
+const bookingValidatorService=new BookingValidatorService(bookingRepo)
+const bookinghistoryService=new BookingHistoryService(bookingHistoryRepo)
+const chatMessageService=new ChatMessageService(messageRepository,chatRepository,socketEmitter)
+
+const paymentLookupService=new PaymentLookupService(paymentrepo)
+const requestRefundUseCase=new RequestRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,chatMessageService,paymentLookupService)
+const approveRefundRequestUseCase=new ApproveRefundUseCase(bookingRepo,paymentrepo,refundRepo,razorPayService,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService)
+export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase)
 //like comment
 
 const likeRepo=new LikeRepository()
@@ -365,8 +384,6 @@ const getPostCommentUseCase=new GetPostCommentUSeCase(commentRepo,userRepo)
 export const likeCommentController=new LikeCommetController(addLikeUC,removeLikeUC,addCommentUC,deleteCommentUC,getHomeServiceCommentUC,getPostCommentUseCase)
 
 //payment
-const paymentrepo=new PaymentRepository()
-const razorPayService=new RazorPayService()
 const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayService)
 
 const verifyPaymentUC=new VerifyPaymentUsecase(paymentrepo,bookingRepo,razorPayService,blockBookedSlotUseCase)

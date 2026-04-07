@@ -34,5 +34,10 @@ export const BookingApi={
  },
  lockSlot: async (input: { beauticianId: string; date: string; startTime: string; endTime: string }) => {
   return await axiosWrapper(api.post(publicApiRoutes.lockSlot, input));
+},
+requestRefund:async(bookingId:string,refundReason:string)=>{
+return await axiosWrapper(api.post(publicApiRoutes.refundRequest.replace(':bookingId',bookingId),
+{refundReason}
+))
 }
 }

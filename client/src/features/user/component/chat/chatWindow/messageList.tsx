@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { MessageDto } from "../../../../../types/dtos/chat";
 import { Bubble } from "../bubble";
 import type { ChatParticipant } from "../../../../types/chat";
+import { BookingCard } from "../../booking/bookingCard";
 
 const timeAgo = (date: Date): string => {
   const diff = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -134,10 +135,10 @@ export const MessageList = ({
 
         return (
           <Bubble key={msg.id} isSelf={isSelf}>
-            {msg.type === "booking" ? (
-              // ✅ inline — no API call, no "open" button
-              <BookingBubble msg={msg} />
-            ) : (
+            {msg.type === "booking" ?  (
+              
+              <BookingCard bookingId={msg.bookingId!} status={msg.status}/>
+            ): (
               <div className="flex flex-col">
                 <span
                   className={`px-4 py-2 rounded-2xl text-sm max-w-xs break-words ${

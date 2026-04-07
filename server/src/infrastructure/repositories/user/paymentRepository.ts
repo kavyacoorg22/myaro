@@ -3,6 +3,8 @@ import { Payment } from "../../../domain/entities/payment";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { PaymentDoc, PaymentModel } from "../../database/models/user/paymentModal";
 import { GenericRepository } from "../genericRepository";
+import { Booking } from "../../../domain/entities/booking";
+import { PaymentStatus } from "../../../domain/enum/paymentEnum";
 
 export class PaymentRepository extends GenericRepository<Payment,PaymentDoc> implements IPaymentRepository{
 
@@ -26,6 +28,40 @@ async updateByRazorpayOrderId(razorpayOrderId: string, data: Partial<Pick<Paymen
   return doc?this.map(doc):null
 }
 
+async findByBookingId(bookingId: string): Promise<Payment | null> {
+  const doc=await PaymentModel.findOne({bookingId:new Types.ObjectId(bookingId)})
+  return doc?this.map(doc):null
+}
+  async updateById(
+    id: string,
+    data: Partial<Omit<Payment, "id" | "createdAt" | "updatedAt">>
+  ): Promise<Payment | null> {
+    if (!Types.ObjectId.isValid(id)) return null;
+
+    const doc = await PaymentModel.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true }
+    );
+
+    return doc ? this.map(doc) : null;
+  }
+
+    async updateStatus(
+    id: string,
+    status: PaymentStatus,
+    extra?: {
+      refundReason?: string;
+      razorpayRefundId?: string;
+    }
+  ): Promise<Payment | null> {
+    const doc=await PaymentModel.findByIdAndUpdate(id, {
+      status,
+      ...(extra || {}),
+    });
+    return doc ? this.map(doc) : null;
+  }
+
 protected map(doc:PaymentDoc):Payment
 {
   const base=super.map(doc)
@@ -42,6 +78,8 @@ protected map(doc:PaymentDoc):Payment
     mode:doc.mode,
     failureReason:doc.failureReason,
     paidAt:doc.paidAt,
+    refundedAt:doc.refundedAt,
+    refundReason:doc.refundReason,
     releasedAt:doc.releasedAt,
     releasedBy:doc.releasedBy?.toString(),
     createdAt:doc.createdAt,

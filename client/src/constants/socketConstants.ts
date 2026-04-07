@@ -8,6 +8,8 @@ export const SOCKET_EVENTS = Object.freeze({
   TYPING_START:   "typing_start",
   TYPING_STOP:    "typing_stop",
   MARK_SEEN:      "mark_seen",
+   REFUND_REQUESTED:'refund_requested',
+  REFUND_APPROVED:'refund_approved',
 
   // server → client
   NEW_MESSAGE:      "new_message",

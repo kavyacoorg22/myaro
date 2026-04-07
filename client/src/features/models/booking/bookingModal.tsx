@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { bookingSchema, type BookingFormValues } from "../../../lib/validations/user/valiadateBooking";
 import { publicAPi } from "../../../services/api/public";
-
 import { StepBadge } from "./stepBadge";
 import { ServiceCard } from "./serviceCard";
-
 import type { IGetBeauticianServicesListDto } from "../../../types/dtos/service";
 import { TimeSlotPicker } from "./timeSlotPicker";
 import { DurationPicker } from "./durationPicker";
@@ -204,8 +201,11 @@ export default function BookingModal({
        slot: {
   date: new Date(data.date),
   time: `${data.timeSlot} – ${getEndTimeLabel(selectedSlotObj.startHour, duration)}`,
-       }
+       },
+       clientNote:data.notes?.trim()||undefined
       });
+
+      console.log(data.notes)
 
       setSubmitted(true); 
       setLockTtl(null);

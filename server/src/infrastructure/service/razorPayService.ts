@@ -32,4 +32,19 @@ export class RazorPayService implements IPaymentService{
       .digest("hex");
     return expectedSignature === razorpay_signature;
   }
+
+  async refundPayment(
+  paymentId: string,
+  amount?: number
+): Promise<{ id: string; status: string }> {
+
+  const refund = await this.razorPay.payments.refund(paymentId, {
+    amount: amount ? amount * 100 : undefined, // optional (paise)
+  });
+
+  return {
+    id: refund.id,
+    status: refund.status,
+  };
+}
 }

@@ -1,4 +1,5 @@
 import { BookingStatus } from "../enum/bookingEnum"
+import { RefundType } from "../enum/paymentEnum"
 
 export interface BookingServiceVO{
    serviceId:string,
@@ -23,10 +24,14 @@ export interface Booking{
   phoneNumber:string,
   slot:BookingSlotVO,
   status:BookingStatus,
-  rejectionReason:string,
+  rejectionReason?:string,
   cancelledAt:Date|null,
    clientNote: string | null,       
   beauticianNote: string | null,
+  refundType?:RefundType
+  disputeAt?: Date
+  refundReason?: string        // customer reason for refund
+disputeReason?: string       // beautician rejects → reason
   createdAt:Date,
   updatedAt:Date,
 }

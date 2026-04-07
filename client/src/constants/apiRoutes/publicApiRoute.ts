@@ -37,5 +37,8 @@ export const publicApiRoutes={
   deleteComment:'/posts/:postId/comment/:commentId',
   //payment
   createOrder:'/bookings/:bookingId/payment',
-  verifyPayment:'/payments/verify'
+  verifyPayment:'/payments/verify',
+  //refund
+  refundRequest:'/bookings/:bookingId/refund-request',
+  approverefund:'/bookings/:bookingId/refunds'
 }

@@ -22,7 +22,7 @@ export interface ICreateBookingRequest {
   address:      string;
   phoneNumber:  string;
   slot:         BookingSlotVO;
-  clientNote?:string
+  clientNote?:string|null
 }
 
 export interface IUpdateBookingStatusInput{

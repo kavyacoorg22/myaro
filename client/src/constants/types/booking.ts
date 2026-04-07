@@ -5,7 +5,9 @@ export const BookingStatus={
   COMPLETED:'completed',
   CANCELLED:'cancelled',
   CONFIRMED:'confirmed',
-  DISPUTE:'dispute'
+  DISPUTE:'dispute',
+  REFUND_REQUESTED:'refund_requested',
+  CLOSED:'closed'
 }
 
 export const BookingAction={
@@ -15,6 +17,7 @@ export const BookingAction={
   COMPLETE:'complete',
   CANCEL:'cancel',
   CONFIRM:'confirm',
+    REQUEST_REFUND:'refund_request',
 }
 
 export type BookingStatusType=(typeof BookingStatus)[keyof typeof BookingStatus]

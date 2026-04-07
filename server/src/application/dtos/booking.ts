@@ -14,5 +14,6 @@ export interface IGetBookingByIdDto{
   status:BookingStatus,
   rejectionReason:string
   fullName:string,
+  refundReason:string
 
 }

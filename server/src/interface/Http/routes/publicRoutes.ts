@@ -4,6 +4,7 @@ import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword, ValidateComment } from "../middleware/validateUserInput";
 import { validateCreatePostInput, validateSignedUrlRequest } from "../middleware/validateBeauticianINput";
+import { validateRequestRefund } from "../middleware/bookingValidation";
 const router=Router()
 
 router.get('/profile/me',authenticateUser,profileController.ownProfile)
@@ -41,8 +42,12 @@ router.post('/bookings/lock-slot', authenticateCustomer, bookingController.lockS
 router.get('/bookings/:bookingId',authenticateUser,bookingController.getBookingById)
 router.post('/bookings',authenticateCustomer,bookingController.createBooking),
 router.patch('/bookings/:bookingId/status',authenticateUser,bookingController.updateBookingStatus)
+
 //payment
 //create order
 router.post('/bookings/:bookingId/payment',authenticateCustomer,paymentController.createOrder)
 router.post('/payments/verify',authenticateCustomer,paymentController.verifyPayment)
+//refund
+router.post('/bookings/:bookingId/refund-request',authenticateCustomer, validateRequestRefund,bookingController.requestRefund)
+router.post('/bookings/:bookingId/refunds',authenticateBeautician,bookingController.approveRefund)
 export default router

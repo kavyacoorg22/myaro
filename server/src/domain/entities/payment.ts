@@ -12,6 +12,8 @@ export interface Payment {
   status: PaymentStatus
   mode: PaymentMode
    failureReason?: string    
+     refundReason?: string
+  refundedAt?: Date
   paidAt?: Date
   releasedAt?: Date
   releasedBy?: string

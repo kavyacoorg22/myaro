@@ -8,6 +8,9 @@ import { ICreateBookingUseCase } from "../../../../application/interface/booking
 import { IUpdateBookingStatusUseCase } from "../../../../application/interface/booking/IUpdateBookingStatusUSeCase";
 import { IGetBookingByIdUseCase } from "../../../../application/interface/booking/IGetBookingById";
 import { ILockSlotUSeCase } from "../../../../application/interface/booking/ILockSlotUseCase";
+import { IRequestRefundUseCase } from "../../../../application/interface/booking/IRequestRefundUC";
+import { IApproveRefundUseCase } from "../../../../application/interface/booking/IApproveRefundUseCase";
+import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 
 
 export class BookingController{
@@ -16,7 +19,9 @@ export class BookingController{
   private createBookingUseCase:ICreateBookingUseCase,
   private updateBookingStatusUseCase:IUpdateBookingStatusUseCase,
   private getBookingByIdUseCase:IGetBookingByIdUseCase,
-  private lockSlotUseCase:ILockSlotUSeCase
+  private lockSlotUseCase:ILockSlotUSeCase,
+  private requestRefundUC:IRequestRefundUseCase,
+  private approveRefundUC:IApproveRefundUseCase
   ){}
 
   createBooking=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -32,6 +37,7 @@ export class BookingController{
       address,
       phoneNumber,
       slot,
+      clientNote
     } = req.body;
 
     const booking = await this.createBookingUseCase.execute({
@@ -43,6 +49,7 @@ export class BookingController{
       address,
       phoneNumber,
       slot,
+      clientNote,
     });
 
     res.status(HttpStatus.CREATED).json({ success: true, data: booking });
@@ -125,4 +132,48 @@ export class BookingController{
       data: result,  
     });
   }
+   
+  requestRefund = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+ 
+      const { bookingId } = req.params;
+      const { refundReason } = req.body;
+      console.log(refundReason)
+      if(!refundReason|| !bookingId)
+      {
+        throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
+      }
+ 
+      const booking = await this.requestRefundUC.execute({
+        bookingId,
+        userId,
+        refundReason,
+      });
+ 
+      res.status(HttpStatus.OK).json({ success: true, data: booking });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+    approveRefund = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const beauticianId = req.user?.id;
+      if (!beauticianId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+ 
+      const { bookingId } = req.params;
+ 
+      const booking = await this.approveRefundUC.execute({
+        bookingId,
+        beauticianId,
+      });
+ 
+      res.status(HttpStatus.OK).json({ success: true, data: booking });
+    } catch (err) {
+      next(err);
+    }
+  };
+ 
 }
