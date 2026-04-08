@@ -8,6 +8,7 @@ export const SOCKET_EVENTS = Object.freeze({
   GET_CHATS: "get_chats",
   REFUND_REQUESTED:'refund_requested',
   REFUND_APPROVED:'refund_approved',
+  REFUND_DISPUTED : 'refund_disputed',
 
   // Server → Client
   NEW_MESSAGE: "new_message",

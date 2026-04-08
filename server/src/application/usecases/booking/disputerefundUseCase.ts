@@ -1,38 +1,37 @@
+// usecases/booking/disputeRefundUseCase.ts
 import { Booking } from "../../../domain/entities/booking";
 import { BookingAction, BookingStatus } from "../../../domain/enum/bookingEnum";
-import { PaymentStatus, RefundMethod, RefundStatus, RefundType } from "../../../domain/enum/paymentEnum";
+import { PaymentStatus } from "../../../domain/enum/paymentEnum";
 import { UserRole } from "../../../domain/enum/userEnum";
 import { AppError } from "../../../domain/errors/appError";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
+import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
-import { SOCKET_EVENTS } from "../../events/socketEvents";
+import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 import { BookingHistoryService } from "../../services/bookingHistoryService";
 import { BookingValidatorService } from "../../services/bookingValidatorService";
 import { PaymentLookupService } from "../../services/paymentLookupService";
-import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
-import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { ChatMessageService } from "../../services/chatMessageService";
 import { MessageType } from "../../../domain/enum/messageEnum";
-import { IRefundRepository } from "../../../domain/repositoryInterface/User/booking/IRefundRepository";
-import { IBeauticianApproveRefundUInput } from "../../interfaceType/booking";
-import { IBeauticianApproveRefundUseCase } from "../../interface/booking/IBeauticianApproveRefundUseCase";
+import { SOCKET_EVENTS } from "../../events/socketEvents";
+import { IDisputeRefundUInput } from "../../interfaceType/booking";
+import { IDisputeRefundUseCase } from "../../interface/booking/IDisputeRefundUsecase";
 
-export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundUseCase {
+export class DisputeRefundUseCase implements IDisputeRefundUseCase {
   constructor(
     private bookingRepo:      IBookingRepository,
-    private paymentRepo:      IPaymentRepository,     
+    private paymentRepo:      IPaymentRepository,
     private socketEmitter:    ISocketEmitter,
     private bookingValidator: BookingValidatorService,
     private bookingHistory:   BookingHistoryService,
     private paymentLookup:    PaymentLookupService,
-   private chatMessage:      ChatMessageService,
-   private refundrepo:IRefundRepository
-    
+    private chatMessage:      ChatMessageService,
   ) {}
 
-  async execute(input: IBeauticianApproveRefundUInput): Promise<Booking> {
-    const { bookingId, beauticianId } = input;
+  async execute(input: IDisputeRefundUInput): Promise<Booking> {
+    const { bookingId, beauticianId, disputeReason } = input;
 
+    // 1. Validate booking is in REFUND_REQUESTED state
     const booking = await this.bookingValidator.getAndValidateStatus(
       bookingId,
       beauticianId,
@@ -46,57 +45,52 @@ export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundU
       [PaymentStatus.REFUND_REQUESTED],
     );
 
-
-     await this.refundrepo.create({
-      paymentId:  payment.id,
-      amount:     payment.amount,
-      method:     RefundMethod.SOURCE,
-      status:     RefundStatus.PENDING,        
-      refundType: RefundType.SERVICE_ISSUE,
-      reason:     booking.refundReason ?? undefined,
-    });
-
-    await this.paymentRepo.updateStatus(
-      payment.id,
-      PaymentStatus.BEAUTICIAN_APPROVED_REFUND, 
-    );
-
+    // 3. Update booking → DISPUTE, store beautician's reason
     const updatedBooking = await this.bookingRepo.updateByBookingId(bookingId, {
-      status: BookingStatus.REFUND_APPROVED, 
+      status:        BookingStatus.DISPUTE,
+      disputeReason,
+      disputeAt:     new Date(),
     });
 
     if (!updatedBooking) {
       throw new AppError("Failed to update booking", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    // 4. Update payment → REFUND_DISPUTED (admin will arbitrate)
+    await this.paymentRepo.updateStatus(
+      payment.id,
+      PaymentStatus.REFUND_DISPUTED,
+    );
+
+    // 5. Log history
     await this.bookingHistory.log({
       bookingId,
-      action:      BookingAction.APPROVE_REFUND,
+      action:      BookingAction.DISPUTE,        // add to your enum if missing
       performedBy: beauticianId,
       role:        UserRole.BEAUTICIAN,
       fromStatus:  BookingStatus.REFUND_REQUESTED,
-      toStatus:    BookingStatus.REFUND_APPROVED, 
+      toStatus:    BookingStatus.DISPUTE,
     });
 
-    // 6. Send chat message to CUSTOMER (not beautician!)
+    // 6. Notify customer via chat
     await this.chatMessage.sendAndEmit({
       chatId:     booking.chatId,
       senderId:   beauticianId,
-      receiverId: booking.userId,           
-      message:    `Your refund has been approved and is being processed.`,
+      receiverId: booking.userId,
+      message:    `Your refund request is under dispute: "${disputeReason}"`,
       type:       MessageType.BOOKING,
       bookingId,
-      status:     BookingStatus.REFUND_APPROVED, 
+      status:     BookingStatus.DISPUTE,
     });
 
-
+    // 7. Notify customer via socket
     this.socketEmitter.emitToRoom(
       `user:${booking.userId}`,
-      SOCKET_EVENTS.REFUND_APPROVED,
+      SOCKET_EVENTS.REFUND_DISPUTED,        // add to your SOCKET_EVENTS if missing
       {
         bookingId,
-        amount:  payment.amount,
-        message: "Your refund has been approved and will be processed shortly.",
+        disputeReason,
+        message: "The beautician has disputed your refund. Admin will review.",
       },
     );
 
@@ -105,9 +99,9 @@ export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundU
       SOCKET_EVENTS.NEW_NOTIFICATION,
       {
         chatId:        booking.chatId,
-        lastMessage:   "Your refund has been approved",
+        lastMessage:   "Your refund request is under dispute",
         lastMessageAt: new Date(),
-        type:          "refund_approved",
+        type:          "refund_disputed",
       },
     );
 

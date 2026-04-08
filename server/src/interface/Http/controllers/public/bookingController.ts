@@ -11,6 +11,7 @@ import { ILockSlotUSeCase } from "../../../../application/interface/booking/ILoc
 import { IRequestRefundUseCase } from "../../../../application/interface/booking/IRequestRefundUC";
 import { IApproveRefundUseCase } from "../../../../application/interface/booking/IApproveRefundUseCase";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
+import { IDisputeRefundUseCase } from "../../../../application/interface/booking/IDisputeRefundUsecase";
 
 
 export class BookingController{
@@ -21,7 +22,8 @@ export class BookingController{
   private getBookingByIdUseCase:IGetBookingByIdUseCase,
   private lockSlotUseCase:ILockSlotUSeCase,
   private requestRefundUC:IRequestRefundUseCase,
-  private approveRefundUC:IApproveRefundUseCase
+  private approveRefundUC:IApproveRefundUseCase,
+  private disputeRefundUC:IDisputeRefundUseCase
   ){}
 
   createBooking=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -168,6 +170,27 @@ export class BookingController{
       const booking = await this.approveRefundUC.execute({
         bookingId,
         beauticianId,
+      });
+ 
+      res.status(HttpStatus.OK).json({ success: true, data: booking });
+    } catch (err) {
+      next(err);
+    }
+  };
+    disputeRefund = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const beauticianId = req.user?.id;
+      if (!beauticianId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+ 
+      const { bookingId } = req.params;
+      const {disputeReason}=req.body
+
+      if(!disputeReason) throw new AppError(generalMessages.ERROR.BAD_REQUEST)
+ 
+      const booking = await this.disputeRefundUC.execute({
+        bookingId,
+        beauticianId,
+        disputeReason
       });
  
       res.status(HttpStatus.OK).json({ success: true, data: booking });

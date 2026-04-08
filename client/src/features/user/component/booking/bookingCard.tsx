@@ -15,7 +15,12 @@ import { WriteReviewModal } from "../../../models/booking/refundDispute/writeRev
 import { RefundConfirmationModal } from "../../../models/booking/refundDispute/refundConformationModal";
 import { RefundReasonModal } from "../../../models/booking/refundDispute/refundReasonModal";
 import { handleApiError } from "../../../../lib/utils/handleApiError";
+import { RefundApproveModal } from "../../../models/booking/refundDispute/refundApproveModal";
 
+
+// Statuses where a local update has "won" and must not be overwritten by the prop
+const TERMINAL_LOCAL_STATUSES = new Set(["refund_approved", "completed", "dispute"]);
+ 
 const statusBg: Record<string, string> = {
   requested:        "bg-white        border-indigo-200",
   accepted:         "bg-green-50     border-green-200",
@@ -24,7 +29,20 @@ const statusBg: Record<string, string> = {
   rejected:         "bg-rose-100     border-rose-300",
   cancelled:        "bg-gray-100     border-gray-300",
   dispute:          "bg-amber-50     border-amber-300",
-  refund_requested: "bg-orange-50    border-orange-300", // ← added
+  refund_requested: "bg-orange-50    border-orange-300",
+  refund_approved:  "bg-green-50     border-green-300",
+};
+
+
+const isWithin3Days = (slotDate: Date | string): boolean => {
+  const now      = new Date();
+  const booking  = new Date(slotDate);
+  const diffDays = (booking.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+  return diffDays <= 3;
+};
+
+const isBookingTimePassed = (slotDate: Date | string): boolean => {
+  return new Date() >= new Date(slotDate);
 };
 
 // ── BookingCard ───────────────────────────────────────────────────────────────
@@ -35,27 +53,39 @@ export interface BookingCardProps {
 
 export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
   const role = useSelector((s: RootState) => s.user.currentUser?.role);
-  const [booking, setBooking]                     = useState<IGetBookingByIdDto | null>(null);
-  const [loading, setLoading]                     = useState(false);
-  const [showModal, setShowModal]                 = useState(false);
-  const [showPayModal, setShowPayModal]           = useState(false);
-  const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [showReviewModal, setShowReviewModal]     = useState(false);
-  const [showRefundReason, setShowRefundReason]   = useState(false);
-  const [showRefundConfirm, setShowRefundConfirm] = useState(false);
-  const [refundReason, setRefundReason]           = useState("");
-  const [refundLoading, setRefundLoading]         = useState(false);
-   console.log('status',status)
+  const [booking, setBooking]                             = useState<IGetBookingByIdDto | null>(null);
+  const [currentStatus, setCurrentStatus]                 = useState<string>(status);
+  const [loading, setLoading]                             = useState(false);
+  const [showModal, setShowModal]                         = useState(false);
+  const [showPayModal, setShowPayModal]                   = useState(false);
+  const [showCompletionModal, setShowCompletionModal]     = useState(false);
+  const [showReviewModal, setShowReviewModal]             = useState(false);
+  const [showRefundReason, setShowRefundReason]           = useState(false);
+  const [showRefundConfirm, setShowRefundConfirm]         = useState(false);
+  const [refundReason, setRefundReason]                   = useState("");
+  const [refundLoading, setRefundLoading]                 = useState(false);
+  const [showRefundApprove, setShowRefundApprove]         = useState(false);
   const isBeautician = role === UserRole.BEAUTICIAN;
   const navigate = useNavigate();
-
+ 
+  // ── Sync prop → currentStatus only when we haven't locally advanced ────────
+  useEffect(() => {
+    setCurrentStatus((prev) =>
+      TERMINAL_LOCAL_STATUSES.has(prev) ? prev : status
+    );
+  }, [status]);
+ 
   // ── fetch booking on mount ─────────────────────────────────────────────────
   useEffect(() => {
     BookingApi.getBookingByid(bookingId)
-      .then((res) => { if (res.data?.data?.data) setBooking(res.data.data.data); })
+      .then((res) => {
+        if (res.data?.data?.data) {
+          setBooking(res.data.data.data);
+        }
+      })
       .catch(console.error);
   }, [bookingId]);
-
+ 
   // ── call action ────────────────────────────────────────────────────────────
   const callAction = async (action: string, rejectionReason?: string) => {
     if (!booking) return;
@@ -67,7 +97,6 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
         role as Role,
         rejectionReason,
       );
-
       const updated = res.data?.data;
       if (updated) {
         setBooking((prev) =>
@@ -79,6 +108,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
               }
             : null,
         );
+        if (updated.status) setCurrentStatus(updated.status);
       }
       setShowModal(false);
       setShowPayModal(false);
@@ -88,8 +118,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
       setLoading(false);
     }
   };
-
-  // ── loading state ──────────────────────────────────────────────────────────
+ 
   if (!booking) {
     return (
       <div className="rounded-2xl border border-gray-200 p-3 w-56 bg-white">
@@ -98,8 +127,13 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
     );
   }
 
-  const bg = statusBg[status] ?? "bg-white border-gray-200";
+  // ── Derived flags for confirmed status ─────────────────────────────────────
+  const slotDate        = booking.slot?.date ?? null;
+  const cancelDisabled  = loading || (slotDate != null ? isWithin3Days(slotDate) : false);
+  const completeEnabled = slotDate != null ? isBookingTimePassed(slotDate) : false;
 
+  const bg = statusBg[currentStatus] ?? "bg-white border-gray-200";
+ 
   return (
     <>
       <div className={`rounded-2xl border p-3 w-56 shadow-sm ${bg}`}>
@@ -108,9 +142,9 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
         <p className="text-[11px] text-gray-500 font-medium mb-2">
           {booking.services.map((s) => s.name).join(", ")}
         </p>
-
+ 
         {/* ── REQUESTED ──────────────────────────────────────────────────── */}
-        {status === "requested" && (
+        {currentStatus === "requested" && (
           <div className="flex gap-2 items-center">
             <Pill label="Requested" variant="default" disabled />
             {isBeautician && (
@@ -122,9 +156,9 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
             )}
           </div>
         )}
-
+ 
         {/* ── ACCEPTED ───────────────────────────────────────────────────── */}
-        {status === "accepted" && (
+        {currentStatus === "accepted" && (
           <div className="flex gap-2">
             {isBeautician ? (
               <Pill label="Accepted" variant="default" disabled />
@@ -138,23 +172,26 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
             )}
           </div>
         )}
-
+ 
         {/* ── CONFIRMED ──────────────────────────────────────────────────── */}
-        {status === "confirmed" && (
+        {currentStatus === "confirmed" && (
           <div className="flex gap-2 flex-wrap">
             <Pill label="Confirmed" variant="default" disabled />
             {!isBeautician && (
               <>
+                {/* Cancel: disabled if booking is within 3 days */}
                 <Pill
                   label="cancel"
                   variant="warning"
-                  disabled={loading}
+                  disabled={cancelDisabled}
                   onClick={() => callAction("cancel")}
                 />
+
+                {/* Complete: enabled only after the booking date+time has passed */}
                 <Pill
                   label="Completed"
                   variant="success"
-                  disabled={loading}
+                  disabled={!completeEnabled || loading}
                   onClick={() => setShowCompletionModal(true)}
                 />
               </>
@@ -163,12 +200,12 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
         )}
 
         {/* ── COMPLETED ──────────────────────────────────────────────────── */}
-        {status === "completed" && (
+        {currentStatus === "completed" && (
           <Pill label="Completed" variant="success" disabled />
         )}
-
+ 
         {/* ── REJECTED ───────────────────────────────────────────────────── */}
-        {status === "rejected" && (
+        {currentStatus === "rejected" && (
           <div>
             <Pill label="Rejected" variant="danger" disabled />
             {booking.rejectionReason && (
@@ -178,26 +215,30 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
             )}
           </div>
         )}
-
+ 
         {/* ── CANCELLED ──────────────────────────────────────────────────── */}
-        {status === "cancelled" && (
+        {currentStatus === "cancelled" && (
           <Pill label="Cancelled" variant="warning" disabled />
         )}
-
+ 
         {/* ── DISPUTE ────────────────────────────────────────────────────── */}
-        {status === "dispute" && (
+        {currentStatus === "dispute" && (
           <Pill label="Dispute" variant="danger" disabled />
         )}
-
+ 
         {/* ── REFUND_REQUESTED ───────────────────────────────────────────── */}
-        {status === "refund_requested" && (
+        {currentStatus === "refund_requested" && (
           <div className="flex flex-col gap-1">
             {isBeautician ? (
               <>
                 <p className="text-[11px] text-orange-700 font-semibold">
                   Refund confirmation request
                 </p>
-                <Pill label="Open" variant="ghost" onClick={() => setShowModal(true)} />
+                <Pill
+                  label="Open"
+                  variant="ghost"
+                  onClick={() => setShowRefundApprove(true)}
+                />
               </>
             ) : (
               <>
@@ -209,6 +250,16 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
                 )}
               </>
             )}
+          </div>
+        )}
+ 
+        {/* ── REFUND_APPROVED (local-only) ───────────────────────────────── */}
+        {currentStatus === "refund_approved" && (
+          <div className="flex flex-col gap-1">
+            <Pill label="Refund Approved" variant="success" disabled />
+            <p className="text-[10px] text-green-700 mt-1">
+              Amount will be returned via Razorpay.
+            </p>
           </div>
         )}
 
@@ -225,7 +276,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
         />
       )}
 
-      {/* Payment detail modal — shown to customer on "pay & confirm" */}
+      {/* Payment detail modal */}
       {showPayModal && !isBeautician && (
         <PaymentDetailModal
           booking={booking}
@@ -296,12 +347,27 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
             setRefundLoading(true);
             try {
               await BookingApi.requestRefund(bookingId, refundReason);
-              setBooking(prev => prev ? { ...prev, status: "refund_requested" } : null); // ← added
+              setBooking(prev => prev ? { ...prev, status: "refund_requested" } : null);
             } catch(err) {
               handleApiError(err);
             }
             setRefundLoading(false);
             setShowRefundConfirm(false);
+          }}
+        />
+      )}
+
+      {showRefundApprove && isBeautician && (
+        <RefundApproveModal
+          booking={booking}
+          onClose={() => setShowRefundApprove(false)}
+          onApproved={() => {
+            setBooking(prev => prev ? { ...prev, status: "completed" } : null);
+            setShowRefundApprove(false);
+          }}
+          onDispute={async () => {
+            await callAction("dispute");
+            setShowRefundApprove(false);
           }}
         />
       )}

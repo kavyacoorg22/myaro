@@ -40,5 +40,6 @@ export const publicApiRoutes={
   verifyPayment:'/payments/verify',
   //refund
   refundRequest:'/bookings/:bookingId/refund-request',
-  approverefund:'/bookings/:bookingId/refunds'
+  approverefund:'/bookings/:bookingId/refund-approve',
+  disputerefund:'/bookings/:bookingId/refund-dispute'
 }

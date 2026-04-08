@@ -18,6 +18,7 @@ export const BookingAction={
   CANCEL:'cancel',
   CONFIRM:'confirm',
     REQUEST_REFUND:'refund_request',
+    DISPUTE : 'dispute'
 }
 
 export type BookingStatusType=(typeof BookingStatus)[keyof typeof BookingStatus]

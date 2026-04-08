@@ -67,7 +67,13 @@ export interface IRequestRefundInput{
   refundReason:string
 }
 
-export interface IApproveRefundUInput{
+export interface IBeauticianApproveRefundUInput{
   bookingId:string,
   beauticianId:string
+}
+
+export interface IDisputeRefundUInput {
+  bookingId:     string;
+  beauticianId:  string;
+  disputeReason: string;
 }

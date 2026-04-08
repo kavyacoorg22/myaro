@@ -7,7 +7,7 @@ export const VALID_TRANSITIONS: Record<BookingStatus, BookingAction[]> = {
   [BookingStatus.COMPLETED]: [ BookingAction.REQUEST_REFUND],[BookingStatus.REJECTED]:   [],
   [BookingStatus.CANCELLED]:  [],
   [BookingStatus.DISPUTE]:    [],
-  [BookingStatus.REFUND_REQUESTED]:[BookingAction.APPROVE_REFUND],
+  [BookingStatus.REFUND_REQUESTED]:[BookingAction.APPROVE_REFUND,BookingAction.DISPUTE],
    [BookingStatus.CLOSED]: [],
    [BookingStatus.REFUND_APPROVED]:[]
 };
@@ -20,7 +20,8 @@ export const ACTION_TO_STATUS: Record<BookingAction, BookingStatus> = {
   [BookingAction.CANCEL]:  BookingStatus.CANCELLED,
   [BookingAction.CONFIRM]: BookingStatus.CONFIRMED,
     [BookingAction.REQUEST_REFUND]: BookingStatus.REFUND_REQUESTED,
-    [BookingAction.APPROVE_REFUND]:BookingStatus.REFUND_APPROVED
+    [BookingAction.APPROVE_REFUND]:BookingStatus.REFUND_APPROVED,
+    [BookingAction.DISPUTE]:BookingStatus.DISPUTE
 
 };
 
@@ -32,7 +33,8 @@ export const ACTION_MESSAGE: Record<BookingAction, string> = {
   [BookingAction.CANCEL]:  "Booking cancelled",
   [BookingAction.CONFIRM]: "Booking confirmed",
     [BookingAction.REQUEST_REFUND]: "Refund requested",
-    [BookingAction.APPROVE_REFUND]:'Approve Refund'
+    [BookingAction.APPROVE_REFUND]:'Approve Refund',
+    [BookingAction.DISPUTE]:'Refund disputed'
 
 };
 

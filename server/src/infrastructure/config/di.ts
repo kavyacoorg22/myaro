@@ -151,8 +151,9 @@ import { BookingValidatorService } from "../../application/services/bookingValid
 import { BookingHistoryService } from "../../application/services/bookingHistoryService";
 import { ChatMessageService } from "../../application/services/chatMessageService";
 import { PaymentLookupService } from "../../application/services/paymentLookupService";
-import { ApproveRefundUseCase } from "../../application/usecases/booking/approveRefundUseCase";
+import { BeauticianApproveRefundUseCase } from "../../application/usecases/booking/approveRefundUseCase";
 import { RefundRepository } from "../repositories/user/refundRepository";
+import { DisputeRefundUseCase } from "../../application/usecases/booking/disputerefundUseCase";
 
 
 
@@ -354,8 +355,9 @@ const chatMessageService=new ChatMessageService(messageRepository,chatRepository
 
 const paymentLookupService=new PaymentLookupService(paymentrepo)
 const requestRefundUseCase=new RequestRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,chatMessageService,paymentLookupService)
-const approveRefundRequestUseCase=new ApproveRefundUseCase(bookingRepo,paymentrepo,refundRepo,razorPayService,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService)
-export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase)
+const approveRefundRequestUseCase=new BeauticianApproveRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService,chatMessageService,refundRepo)
+const disputeRefundUC=new DisputeRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService,chatMessageService)
+export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase,disputeRefundUC)
 //like comment
 
 const likeRepo=new LikeRepository()

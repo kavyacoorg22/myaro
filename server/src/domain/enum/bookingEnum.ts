@@ -19,5 +19,6 @@ export enum BookingAction{
   CANCEL='cancel',
   CONFIRM='confirm',
   REQUEST_REFUND='refund_request',
-  APPROVE_REFUND='approve_refund'
+  APPROVE_REFUND='approve_refund',
+  DISPUTE = 'dispute'
 }
