@@ -1,7 +1,7 @@
 import { Booking, BookingServiceVO, BookingSlotVO } from "../../domain/entities/booking";
 import { BookingAction, BookingStatus } from "../../domain/enum/bookingEnum";
 import { UserRole } from "../../domain/enum/userEnum";
-import { IGetBookingByIdDto } from "../dtos/booking";
+import { ICancelBookingDto, IGetBookingByIdDto } from "../dtos/booking";
 
 export interface ICreateBookingInput {
   chatId:       string;
@@ -76,4 +76,13 @@ export interface IDisputeRefundUInput {
   bookingId:     string;
   beauticianId:  string;
   disputeReason: string;
+}
+
+export interface ICancelBookingInput {
+  bookingId: string;
+  userId: string;
+}
+ 
+export interface ICancelBookingOutput {
+  data:ICancelBookingDto
 }

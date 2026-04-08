@@ -35,6 +35,6 @@ export enum RefundMethod{
 
 export enum RefundStatus{
   PENDING='pending',
-  PROCESSED='processed',
+  SUCCESS='success',
   FAILED='failed'
 }

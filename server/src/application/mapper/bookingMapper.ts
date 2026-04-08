@@ -1,6 +1,8 @@
 import { Booking } from "../../domain/entities/booking";
+import { Payment } from "../../domain/entities/payment";
+import { Refund } from "../../domain/entities/refund";
 import { User } from "../../domain/entities/User";
-import { IGetBookingByIdDto } from "../dtos/booking";
+import { ICancelBookingDto, IGetBookingByIdDto } from "../dtos/booking";
 import { IBookingListItem } from "../interfaceType/booking";
 
 export function toBookingListItem(booking: Booking, user: User): IBookingListItem {
@@ -30,5 +32,16 @@ export function toGetBookingById(booking:Booking,user:User):IGetBookingByIdDto{
     rejectionReason:booking.rejectionReason??'',
     refundReason:booking.refundReason??'',
     fullName:user.fullName
+  }
+}
+
+export function toCancelBookingDto(result:{refund:Refund,payment:Payment}):ICancelBookingDto{
+
+  return{
+     success:          true,
+    refundId:         result.refund.id,
+    razorpayRefundId: result.refund.razorpayRefundId!,
+    refundAmount:     result.payment.amount,
+    message:          "Booking cancelled and refund initiated successfully.",
   }
 }

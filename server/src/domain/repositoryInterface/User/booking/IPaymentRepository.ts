@@ -22,4 +22,5 @@ findByRazorpayOrderId(razorpayOrderId: string): Promise<Payment | null>;
     id: string,
     data: Partial<Omit<Payment, "id" | "createdAt" | "updatedAt">>
   ): Promise<Payment | null>;
+  findById(id:string):Promise<Payment|null>
 }

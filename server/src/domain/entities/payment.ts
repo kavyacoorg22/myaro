@@ -13,7 +13,7 @@ export interface Payment {
   mode: PaymentMode
    failureReason?: string    
      refundReason?: string
-  refundedAt?: Date
+  refundedId?: string,
   paidAt?: Date
   releasedAt?: Date
   releasedBy?: string

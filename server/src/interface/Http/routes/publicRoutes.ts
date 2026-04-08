@@ -51,4 +51,6 @@ router.post('/payments/verify',authenticateCustomer,paymentController.verifyPaym
 router.post('/bookings/:bookingId/refund-request',authenticateCustomer, validateRequestRefund,bookingController.requestRefund)
 router.post('/bookings/:bookingId/refund-approve',authenticateBeautician,bookingController.approveRefund)
 router.post('/bookings/:bookingId/refund-dispute',authenticateBeautician,bookingController.disputeRefund)
+router.post('/bookings/:bookingId/cancel',authenticateCustomer,bookingController.cancelBooking)
+router.post('/payment/:paymentId/process-refund',authenticateAdmin,paymentController.processRefund)
 export default router

@@ -11,8 +11,9 @@ export const SOCKET_EVENTS = Object.freeze({
    REFUND_REQUESTED:'refund_requested',
   REFUND_APPROVED:'refund_approved',
   REFUND_DISPUTED : 'refund_disputed',
-
-  // server → client
+  REFUND_PROCESSED:'refund_processed',
+  BOOKING_CANCELLED:'booking_cancelled',
+  
   NEW_MESSAGE:      "new_message",
   NEW_NOTIFICATION: "new_notification",
   MESSAGE_SEEN:     "message_seen",

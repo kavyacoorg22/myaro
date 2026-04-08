@@ -17,3 +17,11 @@ export interface IGetBookingByIdDto{
   refundReason:string
 
 }
+
+export interface ICancelBookingDto {
+  success: boolean;
+  refundId: string;
+  razorpayRefundId: string;
+  refundAmount: number;
+  message: string;
+}

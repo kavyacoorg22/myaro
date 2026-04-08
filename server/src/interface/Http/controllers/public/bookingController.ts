@@ -9,9 +9,10 @@ import { IUpdateBookingStatusUseCase } from "../../../../application/interface/b
 import { IGetBookingByIdUseCase } from "../../../../application/interface/booking/IGetBookingById";
 import { ILockSlotUSeCase } from "../../../../application/interface/booking/ILockSlotUseCase";
 import { IRequestRefundUseCase } from "../../../../application/interface/booking/IRequestRefundUC";
-import { IApproveRefundUseCase } from "../../../../application/interface/booking/IApproveRefundUseCase";
+import { IBeauticianApproveRefundUseCase } from "../../../../application/interface/booking/IBeauticianApproveRefundUseCase";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { IDisputeRefundUseCase } from "../../../../application/interface/booking/IDisputeRefundUsecase";
+import { ICancelBookingUseCase } from "../../../../application/interface/booking/ICancelBooking";
 
 
 export class BookingController{
@@ -22,8 +23,9 @@ export class BookingController{
   private getBookingByIdUseCase:IGetBookingByIdUseCase,
   private lockSlotUseCase:ILockSlotUSeCase,
   private requestRefundUC:IRequestRefundUseCase,
-  private approveRefundUC:IApproveRefundUseCase,
-  private disputeRefundUC:IDisputeRefundUseCase
+  private beauticianApproveRefundUC:IBeauticianApproveRefundUseCase,
+  private disputeRefundUC:IDisputeRefundUseCase,
+  private cancleBookingUC:ICancelBookingUseCase
   ){}
 
   createBooking=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -167,7 +169,7 @@ export class BookingController{
  
       const { bookingId } = req.params;
  
-      const booking = await this.approveRefundUC.execute({
+      const booking = await this.beauticianApproveRefundUC.execute({
         bookingId,
         beauticianId,
       });
@@ -198,5 +200,24 @@ export class BookingController{
       next(err);
     }
   };
+
+ cancelBooking=async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+      const userId=req.user?.id
+      const {bookingId}=req.params
+       if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+       if(!bookingId) throw new AppError(generalMessages.ERROR.BAD_REQUEST)
+        const result=await this.cancleBookingUC.execute({bookingId,userId})
+
+       res.status(HttpStatus.OK).json({
+        success:true,
+        data:result.data
+       })
+
+    }catch(err)
+    {
+      next(err)
+    }
+  }
  
 }

@@ -61,7 +61,10 @@ async findByBookingId(bookingId: string): Promise<Payment | null> {
     });
     return doc ? this.map(doc) : null;
   }
-
+async findById(id: string): Promise<Payment | null> {
+   const doc=await PaymentModel.findById(id)
+   return doc?this.map(doc):null
+ }
 protected map(doc:PaymentDoc):Payment
 {
   const base=super.map(doc)
@@ -78,7 +81,7 @@ protected map(doc:PaymentDoc):Payment
     mode:doc.mode,
     failureReason:doc.failureReason,
     paidAt:doc.paidAt,
-    refundedAt:doc.refundedAt,
+    refundedId:doc.refundedId?.toString(),
     refundReason:doc.refundReason,
     releasedAt:doc.releasedAt,
     releasedBy:doc.releasedBy?.toString(),

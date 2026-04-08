@@ -35,4 +35,16 @@ export class BookingValidatorService {
     }
     return booking;
   }
+
+  async getAndValidateStatusOnly(
+  bookingId: string,
+  allowedStatuses: BookingStatus[],
+): Promise<Booking> {
+  const booking = await this.bookingRepo.findById(bookingId);
+  if (!booking) throw new AppError("Booking not found", HttpStatus.NOT_FOUND);
+  if (!allowedStatuses.includes(booking.status)) {
+    throw new AppError(`Invalid booking status`, HttpStatus.BAD_REQUEST);
+  }
+  return booking;
+}
 }

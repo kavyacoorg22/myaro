@@ -154,6 +154,8 @@ import { PaymentLookupService } from "../../application/services/paymentLookupSe
 import { BeauticianApproveRefundUseCase } from "../../application/usecases/booking/approveRefundUseCase";
 import { RefundRepository } from "../repositories/user/refundRepository";
 import { DisputeRefundUseCase } from "../../application/usecases/booking/disputerefundUseCase";
+import { CancelBookingUseCase } from "../../application/usecases/booking/cancelBookingUseCase";
+import { ProcessRefundUseCase } from "../../application/usecases/admin/management/booking/processRefundUseCase";
 
 
 
@@ -357,7 +359,8 @@ const paymentLookupService=new PaymentLookupService(paymentrepo)
 const requestRefundUseCase=new RequestRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,chatMessageService,paymentLookupService)
 const approveRefundRequestUseCase=new BeauticianApproveRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService,chatMessageService,refundRepo)
 const disputeRefundUC=new DisputeRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService,chatMessageService)
-export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase,disputeRefundUC)
+const cancelBookingUC=new CancelBookingUseCase(bookingValidatorService,paymentLookupService,bookinghistoryService,chatMessageService,socketEmitter,bookingRepo,paymentrepo,refundRepo,razorPayService)
+export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase,disputeRefundUC,cancelBookingUC)
 //like comment
 
 const likeRepo=new LikeRepository()
@@ -389,5 +392,5 @@ export const likeCommentController=new LikeCommetController(addLikeUC,removeLike
 const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayService)
 
 const verifyPaymentUC=new VerifyPaymentUsecase(paymentrepo,bookingRepo,razorPayService,blockBookedSlotUseCase)
-
-export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC)
+const processRefundUC=new ProcessRefundUseCase(bookingRepo,paymentrepo,refundRepo,razorPayService,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService)
+export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC,processRefundUC)

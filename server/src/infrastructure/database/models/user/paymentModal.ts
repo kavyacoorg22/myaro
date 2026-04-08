@@ -15,7 +15,7 @@ export type PaymentDoc=Document&{
    failureReason?: string;   
   paidAt?: Date;
     refundReason?: string
-  refundedAt?: Date
+  refundedId?: Types.ObjectId
   releasedAt?:Date,
   releasedBy?:Types.ObjectId,
   createdAt:Date,
@@ -34,7 +34,7 @@ const paymentSchema=new Schema<PaymentDoc>({
   mode:{type:String,enum:Object.values(PaymentMode)},
   failureReason:{type:String},
     refundReason:{type: String},
-  refundedAt:{type:Date},
+  refundedId:{type:Schema.Types.ObjectId},
   paidAt:{type:Date},
   releasedAt:{type:Date},
   releasedBy:{type:Schema.Types.ObjectId}
