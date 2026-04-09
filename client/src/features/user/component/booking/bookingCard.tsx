@@ -16,6 +16,7 @@ import { RefundConfirmationModal } from "../../../models/booking/refundDispute/r
 import { RefundReasonModal } from "../../../models/booking/refundDispute/refundReasonModal";
 import { handleApiError } from "../../../../lib/utils/handleApiError";
 import { RefundApproveModal } from "../../../models/booking/refundDispute/refundApproveModal";
+import { CancelBookingModal } from "../../../models/booking/refundDispute/cancelbooking";
 
 
 // Statuses where a local update has "won" and must not be overwritten by the prop
@@ -65,6 +66,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
   const [refundReason, setRefundReason]                   = useState("");
   const [refundLoading, setRefundLoading]                 = useState(false);
   const [showRefundApprove, setShowRefundApprove]         = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const isBeautician = role === UserRole.BEAUTICIAN;
   const navigate = useNavigate();
  
@@ -184,7 +186,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
                   label="cancel"
                   variant="warning"
                   disabled={cancelDisabled}
-                  onClick={() => callAction("cancel")}
+                  onClick={() => setShowCancelModal(true)}
                 />
 
                 {/* Complete: enabled only after the booking date+time has passed */}
@@ -371,6 +373,21 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
           }}
         />
       )}
+
+      {showCancelModal && !isBeautician && (
+  <CancelBookingModal
+    bookingId={bookingId}
+    services={booking.services.map(s => s.name)}
+    date={booking.slot?.date ? new Date(booking.slot.date).toLocaleDateString() : ""}
+    totalAmount={booking.totalPrice}
+    onClose={() => setShowCancelModal(false)}
+    onCancelled={() => {
+      setShowCancelModal(false);
+      setCurrentStatus("cancelled");
+      setBooking(prev => prev ? { ...prev, status: "cancelled" } : null);
+    }}
+  />
+)}
     </>
   );
 };

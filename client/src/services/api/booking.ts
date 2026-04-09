@@ -83,5 +83,10 @@ export const BookingApi = {
         disputeReason,
       }),
     );
-  }
+  },
+   cancelRefund:async(bookingId:string)=>{
+     return await axiosWrapper(
+      api.post(publicApiRoutes.cancelBooking.replace(":bookingId", bookingId)),
+    );
+  },
 };
