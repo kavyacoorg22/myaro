@@ -22,4 +22,6 @@ REFUND_PROCESSED:'refund_processed',
   USER_ONLINE: "user_online",
   USER_OFFLINE: "user_offline",
   NEW_NOTIFICATION: "new_notification",
+  PAYOUT_RELEASED:'payout_released',
+  DISPUTE_RESOLVED:'dispute_resolved'
 } as const);

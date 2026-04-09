@@ -5,3 +5,11 @@ export interface IProcessRefundDto {
   status:       string;
   message:      string;
 }
+
+export interface IReleasePayoutDto {
+  success:      boolean;
+  payoutId:     string;
+  payoutAmount: number;
+  status:       string;
+  message:      string;
+}

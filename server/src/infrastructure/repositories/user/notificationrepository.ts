@@ -13,7 +13,7 @@ export class NotificationRepository
     super(NotificationModel);
   }
 
-  async createNotification(
+  async create(
     data: Omit<Notification, "id" | "createdAt" | "updatedAt">
   ): Promise<Notification> {
     const doc = await NotificationModel.create({

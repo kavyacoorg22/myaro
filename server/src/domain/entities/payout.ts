@@ -7,6 +7,7 @@ export interface Payout{
   beauticianId:string,
   amount:number,
   status:PayoutStatus,
+  adminNote?:string,
   createdAt:Date,
   updatedAt:Date
 }

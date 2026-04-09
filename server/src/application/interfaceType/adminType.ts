@@ -2,7 +2,7 @@ import { ShopAddressVO } from "../../domain/entities/Beautician";
 import {  VerificationStatusFilter } from "../../domain/enum/beauticianEnum";
 import { SortFilter } from "../../domain/enum/sortFilterEnum";
 import { UserRoleFilter } from "../../domain/enum/userEnum";
-import { IProcessRefundDto } from "../dtos/admin";
+import { IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
 import { IBeauticianDTO} from "../dtos/beautician";
 import { IUserDto } from "../dtos/user";
 
@@ -72,4 +72,13 @@ export interface IProcessRefundInput {
 
 export interface IProcessRefundOutPut {
   data:IProcessRefundDto
+}
+export interface IReleasePayoutOutPut {
+  data:IReleasePayoutDto
+}
+
+export interface IReleasePayoutInput {
+  bookingId:string,
+  adminId:string,
+  adminNote?:string
 }

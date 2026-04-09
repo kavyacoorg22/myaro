@@ -1,7 +1,7 @@
 import { Notification } from "../../entities/notification";
 
 export interface INotificationRepository {
-  createNotification(data: Notification): Promise<Notification>;
+  create(data: Omit<Notification,'id'|'updatedAt'|'createdAt'>): Promise<Notification>;
   getUserNotifications(userId: string): Promise<Notification[]>;
   getUnreadNotifications(userId: string): Promise<Notification[]>;
   markAsRead(notificationId: string): Promise<void>;
