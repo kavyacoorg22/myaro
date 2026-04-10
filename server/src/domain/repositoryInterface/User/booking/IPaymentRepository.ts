@@ -23,4 +23,11 @@ findByRazorpayOrderId(razorpayOrderId: string): Promise<Payment | null>;
     data: Partial<Omit<Payment, "id" | "createdAt" | "updatedAt">>
   ): Promise<Payment | null>;
   findById(id:string):Promise<Payment|null>
+  findAll(params: {
+  page: number;
+  limit: number;
+  status?: PaymentStatus;
+}): Promise<{ payments: Payment[]; total: number }>;
+findByIds(ids: string[]): Promise<Payment[]>;
+
 }

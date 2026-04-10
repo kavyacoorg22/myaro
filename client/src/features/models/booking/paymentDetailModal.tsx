@@ -98,14 +98,7 @@ export const PaymentDetailModal = ({
               });
 
 
-  console.log('verify response:', verifyRes);
-
-      console.log('full verify:', verifyRes);
-    console.log('data:', verifyRes.data);
-    console.log('success:', verifyRes.data.data.success);
-
               if (verifyRes.data.data.success) {
-                // ── Step 6: All good → confirm booking ─────────────────────
                 onConfirm();
                 resolve();
               } else {

@@ -9,6 +9,7 @@ export interface Refund {
   refundType:RefundType,
   razorpayRefundId?: string
   reason?: string
+  adminNote?:string
   createdAt: Date,
   updatedAt:Date,
   processedAt?: Date

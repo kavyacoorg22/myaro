@@ -25,4 +25,9 @@ export interface IBookingRepository {
   endMinutes: number;
 }): Promise<Booking | null>;
 updateByBookingId(id:string,data:Partial<Omit<Booking, "id" | "createdAt" | "updatedAt">>):Promise<Booking|null>
+findByIds(ids: string[]): Promise<Booking[]>
+findDisputed(params: {
+  page: number;
+  limit: number;
+}): Promise<{ bookings: Booking[]; total: number }>;
 }

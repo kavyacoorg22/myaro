@@ -13,6 +13,13 @@ import { IBeauticianApproveRefundUseCase } from "../../../../application/interfa
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { IDisputeRefundUseCase } from "../../../../application/interface/booking/IDisputeRefundUsecase";
 import { ICancelBookingUseCase } from "../../../../application/interface/booking/ICancelBooking";
+import { IGetAllBookingsUseCase } from "../../../../application/interface/admin/management/booking/IGetAllBookingsUseCase";
+import { IGetBookingDetailUseCase } from "../../../../application/interface/admin/management/booking/IGetBookingDetailUseCase";
+import { IGetAllDisputesUseCase } from "../../../../application/interface/admin/management/booking/IGetAllDisputesUseCase";
+import { IGetDisputeDetailsUseCase } from "../../../../application/interface/admin/management/booking/IGetDisputeDetailUseCase";
+import { IGetAllRefundsUseCase } from "../../../../application/interface/admin/management/booking/IgetAllRefundsUseCase";
+import { IGetRefundDetailUseCase } from "../../../../application/interface/admin/management/booking/IGetRefundDetailUseCase";
+import { PaymentStatus } from "../../../../domain/enum/paymentEnum";
 
 
 export class BookingController{
@@ -25,7 +32,13 @@ export class BookingController{
   private requestRefundUC:IRequestRefundUseCase,
   private beauticianApproveRefundUC:IBeauticianApproveRefundUseCase,
   private disputeRefundUC:IDisputeRefundUseCase,
-  private cancleBookingUC:ICancelBookingUseCase
+  private cancleBookingUC:ICancelBookingUseCase,
+  private getAllBookingsUC:IGetAllBookingsUseCase,
+  private getBookingDetailUC:IGetBookingDetailUseCase,
+  private getAllDisputeUC:IGetAllDisputesUseCase,
+  private getDisputeDetailUC:IGetDisputeDetailsUseCase,
+  private getAllRefundUC:IGetAllRefundsUseCase,
+  private getRefundDetailUC:IGetRefundDetailUseCase
   ){}
 
   createBooking=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -219,5 +232,113 @@ export class BookingController{
       next(err)
     }
   }
- 
+  
+ getAllBookingsForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const {page,limit,paymentStatus}=req.query
+       
+        const result=await this.getAllBookingsUC.execute({
+          page: page?parseInt(page as string):1,
+          limit:limit?parseInt(limit as string):10,
+          paymentStatus:paymentStatus as PaymentStatus|undefined
+        })
+     res.send(HttpStatus.OK).json({
+      sucesss:true,
+      data:result.data
+     })
+    }catch(err)
+    {
+      next(err)
+    }
+ }
+  
+ getAllDisputeForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const {page,limit}=req.query
+       
+        const result=await this.getAllDisputeUC.execute({
+          page: page?parseInt(page as string):1,
+          limit:limit?parseInt(limit as string):10,
+        })
+     res.send(HttpStatus.OK).json({
+      sucesss:true,
+      data:result.data
+     })
+    }catch(err)
+    {
+      next(err)
+    }
+ }
+  
+ getAllRefunsForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const {page,limit}=req.query
+       
+        const result=await this.getAllRefundUC.execute({
+          page: page?parseInt(page as string):1,
+          limit:limit?parseInt(limit as string):10,
+        })
+     res.send(HttpStatus.OK).json({
+      sucesss:true,
+      data:result.data
+     })
+    }catch(err)
+    {
+      next(err)
+    }
+ }
+  getBookingDetailForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const {bookingId}=req.params
+       
+       if(!bookingId)
+       {
+        throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
+       }
+       const result=await this.getBookingDetailUC.execute(bookingId)
+     res.send(HttpStatus.OK).json({
+      sucesss:true,
+      data:result.data
+     })
+    }catch(err)
+    {
+      next(err)
+    }
+ }
+  getDisputeDetailForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const {bookingId}=req.params
+       
+       if(!bookingId)
+       {
+        throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
+       }
+       const result=await this.getDisputeDetailUC.execute(bookingId)
+     res.send(HttpStatus.OK).json({
+      sucesss:true,
+      data:result.data
+     })
+    }catch(err)
+    {
+      next(err)
+    }
+ }
+  getRefundDetailForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const {refundId}=req.params
+       
+       if(!refundId)
+       {
+        throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
+       }
+       const result=await this.getRefundDetailUC.execute(refundId)
+     res.send(HttpStatus.OK).json({
+      sucesss:true,
+      data:result.data
+     })
+    }catch(err)
+    {
+      next(err)
+    }
+ }
 }

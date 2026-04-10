@@ -81,6 +81,34 @@ async updateByBookingId(id: string, data: Partial<Omit<Booking, "id" | "createdA
   return doc?this.map(doc):null
 }
 
+async findByIds(ids: string[]): Promise<Booking[]> {
+  const objectIds = ids.map(id => new Types.ObjectId(id));
+  const docs = await BookingModel.find({ _id: { $in: objectIds } });
+  return docs.map(doc => this.map(doc));
+}
+
+async findDisputed(params: {
+  page: number;
+  limit: number;
+}): Promise<{ bookings: Booking[]; total: number }> {
+  const { page, limit } = params;
+  const skip = (page - 1) * limit;
+
+  const filter = { status: BookingStatus.DISPUTE };
+
+  const [docs, total] = await Promise.all([
+    BookingModel.find(filter)
+      .sort({ disputeAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    BookingModel.countDocuments(filter),
+  ]);
+
+  return {
+    bookings: docs.map((doc) => this.map(doc)),
+    total,
+  };
+}
   protected map(doc:BookingDoc):Booking {
    const base=super.map(doc)
    return{

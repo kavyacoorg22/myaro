@@ -65,7 +65,7 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
     // 5. Log history
     await this.bookingHistory.log({
       bookingId,
-      action:      BookingAction.DISPUTE,        // add to your enum if missing
+      action:      BookingAction.DISPUTE,        
       performedBy: beauticianId,
       role:        UserRole.BEAUTICIAN,
       fromStatus:  BookingStatus.REFUND_REQUESTED,

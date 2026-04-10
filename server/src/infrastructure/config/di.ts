@@ -156,6 +156,17 @@ import { RefundRepository } from "../repositories/user/refundRepository";
 import { DisputeRefundUseCase } from "../../application/usecases/booking/disputerefundUseCase";
 import { CancelBookingUseCase } from "../../application/usecases/booking/cancelBookingUseCase";
 import { ProcessRefundUseCase } from "../../application/usecases/admin/management/booking/processRefundUseCase";
+import { NotificationDispatchService } from "../../application/services/notificationDispatchService";
+import { NotificationRepository } from "../repositories/user/notificationrepository";
+import { RazorpayStatusResolverService } from "../../application/services/razorpayStatusResolverService";
+import { ReleasePayoutUseCase } from "../../application/usecases/admin/management/booking/releasePayoutUsecase";
+import { PayoutRepository } from "../repositories/admin/payoutRepository";
+import { GetAllBookingUseCase } from "../../application/usecases/admin/management/booking/getAllBookingsUseCase";
+import { GetAllDisputesUseCase } from "../../application/usecases/admin/management/booking/getAllDisputeUSeCase";
+import { GetAllRefundsUseCase } from "../../application/usecases/admin/management/booking/getAllRefundUseCase";
+import { GetBookingDetailUseCase } from "../../application/usecases/admin/management/booking/getBookingDetailUseCase";
+import { GetDisputeDetailsUseCase } from "../../application/usecases/admin/management/booking/getDisputeDetailsUseCase";
+import { GetRefundDetailUseCase } from "../../application/usecases/admin/management/booking/getrefundDetailUSeCase";
 
 
 
@@ -348,19 +359,28 @@ const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userR
 const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
 const blockBookedSlotUseCase=new BlockBookedSlotUseCase(scheduleRepo,recurringExceptionRepo,getAvailabilityUC)
 //services
+const notificationRepo=new NotificationRepository()
+const payoutRepo=new PayoutRepository()
 const refundRepo=new RefundRepository()
 const paymentrepo=new PaymentRepository()
 const razorPayService=new RazorPayService()
 const bookingValidatorService=new BookingValidatorService(bookingRepo)
 const bookinghistoryService=new BookingHistoryService(bookingHistoryRepo)
 const chatMessageService=new ChatMessageService(messageRepository,chatRepository,socketEmitter)
-
+const notificationDispatchService=new NotificationDispatchService(notificationRepo,socketEmitter)
+const razorPayStatusResolverService=new RazorpayStatusResolverService()
 const paymentLookupService=new PaymentLookupService(paymentrepo)
 const requestRefundUseCase=new RequestRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,chatMessageService,paymentLookupService)
 const approveRefundRequestUseCase=new BeauticianApproveRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService,chatMessageService,refundRepo)
 const disputeRefundUC=new DisputeRefundUseCase(bookingRepo,paymentrepo,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService,chatMessageService)
 const cancelBookingUC=new CancelBookingUseCase(bookingValidatorService,paymentLookupService,bookinghistoryService,chatMessageService,socketEmitter,bookingRepo,paymentrepo,refundRepo,razorPayService)
-export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase,disputeRefundUC,cancelBookingUC)
+const getAllBookingsForAdminUC=new GetAllBookingUseCase(bookingRepo,paymentrepo,userRepo)
+const getAllDisputeUC=new GetAllDisputesUseCase(bookingRepo,userRepo)
+const getAllRefundUC=new GetAllRefundsUseCase(refundRepo,paymentrepo,bookingRepo,userRepo)
+const getBookingDetailUC=new GetBookingDetailUseCase(bookingRepo,paymentrepo,userRepo)
+const getDisputeDetailUC=new GetDisputeDetailsUseCase(bookingRepo,paymentrepo,userRepo)
+const getRefundDetailUC=new GetRefundDetailUseCase(refundRepo,paymentrepo,bookingRepo,userRepo)
+export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase,disputeRefundUC,cancelBookingUC,getAllBookingsForAdminUC,getBookingDetailUC,getAllDisputeUC,getDisputeDetailUC,getAllRefundUC,getRefundDetailUC)
 //like comment
 
 const likeRepo=new LikeRepository()
@@ -392,5 +412,6 @@ export const likeCommentController=new LikeCommetController(addLikeUC,removeLike
 const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayService)
 
 const verifyPaymentUC=new VerifyPaymentUsecase(paymentrepo,bookingRepo,razorPayService,blockBookedSlotUseCase)
-const processRefundUC=new ProcessRefundUseCase(bookingRepo,paymentrepo,refundRepo,razorPayService,socketEmitter,bookingValidatorService,bookinghistoryService,paymentLookupService)
-export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC,processRefundUC)
+const processRefundUC=new ProcessRefundUseCase(bookingRepo,paymentrepo,refundRepo,razorPayService,bookingValidatorService,bookinghistoryService,paymentLookupService,notificationDispatchService,razorPayStatusResolverService)
+const releasePayoutUC=new ReleasePayoutUseCase(bookingRepo,paymentrepo,payoutRepo,razorPayService,bookingValidatorService,bookinghistoryService,paymentLookupService,notificationDispatchService,razorPayStatusResolverService)
+export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC,processRefundUC,releasePayoutUC)

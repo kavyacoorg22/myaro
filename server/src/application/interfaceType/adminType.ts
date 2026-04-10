@@ -1,8 +1,9 @@
 import { ShopAddressVO } from "../../domain/entities/Beautician";
 import {  VerificationStatusFilter } from "../../domain/enum/beauticianEnum";
+import { PaymentStatus } from "../../domain/enum/paymentEnum";
 import { SortFilter } from "../../domain/enum/sortFilterEnum";
 import { UserRoleFilter } from "../../domain/enum/userEnum";
-import { IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
+import { IGetAllBookingDto, IGetAllDisputesDto, IGetAllRefundsDto, IGetBookingDetailDto, IGetDisputeDetailDto, IGetRefundDetailDto, IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
 import { IBeauticianDTO} from "../dtos/beautician";
 import { IUserDto } from "../dtos/user";
 
@@ -66,8 +67,9 @@ export interface IVerificationRequest{
 }
 
 export interface IProcessRefundInput {
-  paymentId: string;
+  bookingId: string;
   adminId:   string;
+  adminNote?:string;
 }
 
 export interface IProcessRefundOutPut {
@@ -82,3 +84,55 @@ export interface IReleasePayoutInput {
   adminId:string,
   adminNote?:string
 }
+export interface IGetAllBookingsInput {
+  page: number;
+  limit: number;
+  paymentStatus?: PaymentStatus;
+}
+export interface IGetAllBookingOutPut {
+  data:       IGetAllBookingDto[];
+  total:      number;
+  page:       number;
+  totalPages: number;
+  hasMore:    boolean;
+}
+
+export interface IGetBookingDetailOutPut{
+data:IGetBookingDetailDto
+}
+
+export interface IGetAllDisputeOutPut{
+data:IGetAllDisputesDto[]
+  total:      number;
+  page:       number;
+  totalPages: number;
+  hasMore:    boolean;
+}
+
+export interface IGetAllDisputeInput {
+  page: number;
+  limit: number;
+}
+
+
+export interface IGetDisputeDetailOutput {
+  data:IGetDisputeDetailDto
+}
+
+export interface IGetAllRefundInput {
+  page: number;
+  limit: number;
+}
+export interface IGetAllRefundOutput {
+  data:IGetAllRefundsDto[]
+    total:      number;
+  page:       number;
+  totalPages: number;
+  hasMore:    boolean;
+}
+
+
+export interface IGetRefundDetailOutput {
+  data:IGetRefundDetailDto
+}
+ 

@@ -65,6 +65,40 @@ async findById(id: string): Promise<Payment | null> {
    const doc=await PaymentModel.findById(id)
    return doc?this.map(doc):null
  }
+
+ async findAll({
+  page,
+  limit,
+  status,
+}: {
+  page: number;
+  limit: number;
+  status?: PaymentStatus;
+}): Promise<{ payments: Payment[]; total: number }> {
+  const query: any = {};
+  if (status) query.status = status;
+
+  const skip = (page - 1) * limit;
+
+  const [docs, total] = await Promise.all([
+    PaymentModel.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    PaymentModel.countDocuments(query),
+  ]);
+
+  return {
+    payments: docs.map(doc => this.map(doc)),
+    total,
+  };
+}
+
+async findByIds(ids: string[]): Promise<Payment[]> {
+  const objectIds = ids.map(id => new Types.ObjectId(id));
+  const docs = await PaymentModel.find({ _id: { $in: objectIds } });
+  return docs.map(doc => this.map(doc));
+}
 protected map(doc:PaymentDoc):Payment
 {
   const base=super.map(doc)

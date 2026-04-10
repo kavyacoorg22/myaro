@@ -6,10 +6,12 @@ import { generalMessages } from "../../../../shared/constant/message/generalMess
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { IProcessRefundUseCase } from "../../../../application/interface/admin/management/booking/IProcessRefundUseCase";
+import { IReleasePayoutUSeCase } from "../../../../application/interface/admin/management/booking/IReleasePayoutUsecase";
 
 export class PaymentController{
   constructor(private createOrderUC:ICreateOrderUsecase,private verifyPaymentUC:IVerifyPaymentUsecase
-    ,private processRefundUC:IProcessRefundUseCase
+    ,private processRefundUC:IProcessRefundUseCase,
+    private releasePayoutUC:IReleasePayoutUSeCase
   ){}
   
   createOrder=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -48,22 +50,53 @@ export class PaymentController{
     }
   }
   processRefund=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+    try{
       const adminId=req.user?.id
-      const {paymentId}=req.params
+      const {bookingId}=req.params
+      const {adminNote}=req.body
       if(!adminId)
        {
         throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
        }
-       if(!paymentId)
+       if(!bookingId)
       {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
       }
 
-      const result=await this.processRefundUC.execute({paymentId,adminId})
+      const result=await this.processRefundUC.execute({bookingId,adminId,adminNote})
       res.status(HttpStatus.OK).json({
         success:true,
         data:result.data
       })
+    }catch(err)
+    {
+      next(err)
+    }
            
+  }
+
+  releasePayout=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+          try{
+      const adminId=req.user?.id
+      const {bookingId}=req.params
+      const {adminNote}=req.body
+      if(!adminId)
+       {
+        throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
+       }
+       if(!bookingId)
+      {
+        throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
+      }
+
+      const result=await this.releasePayoutUC.execute({bookingId,adminId,adminNote})
+      res.status(HttpStatus.OK).json({
+        success:true,
+        data:result.data
+      })
+    }catch(err)
+    {
+      next(err)
+    }
   }
 }

@@ -1,5 +1,6 @@
 
 import { Refund } from "../../../domain/entities/refund";
+import { RefundStatus } from "../../../domain/enum/paymentEnum";
 import { IRefundRepository } from "../../../domain/repositoryInterface/User/booking/IRefundRepository";
 import { RefundDoc, RefundModel } from "../../database/models/user/refundModel";
 import { GenericRepository } from "../genericRepository";
@@ -35,6 +36,43 @@ export class RefundRepository
     return doc ? this.map(doc) : null;
   }
 
+  async updateById(id: string, data: Partial<Omit<Refund, "id">>): Promise<Refund | null> {
+    const doc=await RefundModel.findByIdAndUpdate(id,
+      {$set:data},
+      {new:true}
+    )
+    return doc?this.map(doc):null
+  }
+  async findAll(params: {
+  page:    number;
+  limit:   number;
+  status?: RefundStatus;
+}): Promise<{ refunds: Refund[]; total: number }> {
+  const { page, limit, status } = params;
+  const skip = (page - 1) * limit;
+
+  const filter: Record<string, unknown> = {};
+  if (status) filter.status = status;
+
+  const [docs, total] = await Promise.all([
+    RefundModel.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    RefundModel.countDocuments(filter),
+  ]);
+
+  return {
+    refunds: docs.map((doc) => this.map(doc)),
+    total,
+  };
+}
+
+async findById(id: string): Promise<Refund | null> {
+  const doc = await RefundModel.findById(id);
+  return doc ? this.map(doc) : null;
+}
+
   protected map(doc: RefundDoc): Refund {
     const base = super.map(doc);
     return {
@@ -46,6 +84,7 @@ export class RefundRepository
       refundType:       doc.refundType,
       razorpayRefundId: doc.razorpayRefundId,
       reason:           doc.reason,
+      adminNote:doc.adminNote,
       processedAt:      doc.processedAt,
       createdAt:        doc.createdAt,
       updatedAt:        doc.updatedAt,

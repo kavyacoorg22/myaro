@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { adminController, adminUserManagementController, authenticateAdmin, refreshTokenController, categoryController, serviceController, customServiceController } from "../../../infrastructure/config/di";
+import { adminController, adminUserManagementController, authenticateAdmin, refreshTokenController, categoryController, serviceController, customServiceController, paymentController, bookingController } from "../../../infrastructure/config/di";
 import { valiadteAdminAuthInput, ValidateAdminCategoryInput, ValidateAdminServiceInput, ValidateCategoryUpdateInput } from "../middleware/validateAdminInput";
 const router =Router()
 
@@ -23,5 +23,14 @@ router.patch('/service/:id/status',authenticateAdmin,serviceController.toggleSer
 router.get('/custom-services',authenticateAdmin,customServiceController.getAllCustomServices)
 router.get('/custom-services/:id',authenticateAdmin,customServiceController.getCustomServiceDetail)
 router.patch('/custom-services/:id/status',authenticateAdmin,customServiceController.updateCustomServiceStatus)
+//refund-dispute -transaction
+router.post('/bookings/:bookingId/refund',authenticateAdmin,paymentController.processRefund)
+router.post('/bookings/:bookingId/payout',authenticateAdmin,)
 
+router.get('/bookings',authenticateAdmin,bookingController.getAllBookingsForAdmin)
+router.get('/bookings/:bookingId',authenticateAdmin,bookingController.getBookingDetailForAdmin)
+router.get('/disputes',authenticateAdmin,bookingController.getAllDisputeForAdmin)
+router.get('/bookings/:bookingId/dispute',authenticateAdmin,bookingController.getDisputeDetailForAdmin)
+router.get('/refunds',authenticateAdmin,bookingController.getAllRefunsForAdmin)
+router.get('/refunds/:refundId',authenticateAdmin,bookingController.getRefundDetailForAdmin)
 export  default router

@@ -10,6 +10,7 @@ export type RefundDoc=Document&{
     refundType:RefundType,
     razorpayRefundId?: string
     reason?: string
+    adminNote?:string
     createdAt: Date
     updatedAt:Date
     processedAt?: Date
@@ -22,7 +23,8 @@ export const RefundSchema=new Schema<RefundDoc>({
    status:{type:String,enum:Object.values(RefundStatus)},
    refundType:{type:String,enum:Object.values(RefundType)},
    razorpayRefundId:{type:String},
-   processedAt:{type:Date}
+   processedAt:{type:Date},
+   adminNote:{type:String}
 },{timestamps:true})
 
 export const RefundModel:Model<RefundDoc>=mongoose.models.Refund||mongoose.model<RefundDoc>('Refund',RefundSchema)

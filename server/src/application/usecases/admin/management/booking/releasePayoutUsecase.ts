@@ -150,6 +150,7 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
       });
     }
 
-    return toReleasePayoutDto({ payout: updatedPayout, payment });
+    const data=toReleasePayoutDto({ payout: updatedPayout, payment });
+    return {data}
   }
 }

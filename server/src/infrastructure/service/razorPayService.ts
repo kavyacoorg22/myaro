@@ -47,4 +47,15 @@ export class RazorPayService implements IPaymentService{
     status: refund.status,
   };
 }
+
+async releasePayout(
+  beauticianId: string,
+  amount: number
+): Promise<{ id: string; status: string }> {
+  await new Promise(res => setTimeout(res, 800));// dealayy addedd just to represent realism.......
+  return {
+    id: "payout_demo_" + Date.now(),
+    status: "processed",
+  };
+}
 }
