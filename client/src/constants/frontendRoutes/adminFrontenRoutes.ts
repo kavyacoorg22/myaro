@@ -5,5 +5,8 @@ export const adminFrontendRoute={
    checkBeautician:'/admin/beautician',
    viewBeautician:'/admin/beautician/view',
    services:'/admin/services',
-   customService:'/admin/customService'
+   customService:'/admin/customService',
+   refunds:'/admin/refunds',
+   booking:'/admin/bookings',
+   dispute:'/admin/disputes'
 }

@@ -193,7 +193,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
                 <Pill
                   label="Completed"
                   variant="success"
-                  disabled={!completeEnabled || loading}
+                  // disabled={!completeEnabled || loading}
                   onClick={() => setShowCompletionModal(true)}
                 />
               </>

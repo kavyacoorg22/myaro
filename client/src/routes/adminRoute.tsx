@@ -9,7 +9,7 @@ const UsersList =lazy(()=>import('../features/admin/component/userList'))
 const BeauticianListPage =lazy(()=>import('../features/admin/pages/BeauticianPage'))
 const ManageServicesCategoriesContainer =lazy(()=>import('../features/service/component/adminmanageServiceCategory'))
 const SubmissionsPage =lazy(()=>import('../features/service/pages/adminCustomServieReviewPage'))
-
+const RefundRequestsPage=lazy(()=>import('../features/admin/component/getAllRefundPage'))
 export const adminRoutes: RouteObject[] = [
   {
     path: adminFrontendRoute.dashboard,
@@ -49,6 +49,14 @@ export const adminRoutes: RouteObject[] = [
     element: (
       <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <SubmissionsPage/>
+      </PrivateRoute>
+    ),
+  },
+     {
+    path: adminFrontendRoute.refunds,
+    element: (
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
+        <RefundRequestsPage/>
       </PrivateRoute>
     ),
   },

@@ -15,4 +15,13 @@ export const adminApiRoute = {
   getAllCustomService: "/admin/custom-services",
   getCustomServiceDetail: "/admin/custom-services/:id",
   changeCustomServiceStatus: "/admin/custom-services/:id/status",
+  getBookings:'/admin/bookings',
+  getBookingdetails:'/admin/bookings/:bookingId',
+  getDisputes:'/admin/disputes',
+  getDisputeDetail:'/admin/bookings/:bookingId/dispute',
+  getRefunds:'/admin/refunds',
+  getrefundDetail:'/admin/refunds/:refundId',
+  processRefund:'/admin/bookings/:bookingId/refund',
+  releasePayout:'/admin/bookings/:bookingId/payout',
+
 };

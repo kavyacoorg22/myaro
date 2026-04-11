@@ -30,7 +30,6 @@ export class RequestRefundUseCase implements IRequestRefundUseCase {
   async execute(input: IRequestRefundInput): Promise<Booking> {
     const { bookingId, userId, refundReason} = input;
 
-    // ── 1. Validate booking + ownership + status ───────────────────────────
     const booking = await this.bookingValidator.getAndValidateStatus(
       bookingId,
       userId,
@@ -38,7 +37,6 @@ export class RequestRefundUseCase implements IRequestRefundUseCase {
       [BookingStatus.CONFIRMED],
     );
 
-    // ── 2. Validate payment state ──────────────────────────────────────────
     const payment = await this.paymentLookup.getAndValidateStatus(
       bookingId,
       [PaymentStatus.PAID],

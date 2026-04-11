@@ -278,7 +278,7 @@ export class BookingController{
           page: page?parseInt(page as string):1,
           limit:limit?parseInt(limit as string):10,
         })
-     res.send(HttpStatus.OK).json({
+     res.status(HttpStatus.OK).json({
       sucesss:true,
       data:result.data
      })
@@ -296,7 +296,7 @@ export class BookingController{
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
        }
        const result=await this.getBookingDetailUC.execute(bookingId)
-     res.send(HttpStatus.OK).json({
+     res.status(HttpStatus.OK).json({
       sucesss:true,
       data:result.data
      })
@@ -314,7 +314,7 @@ export class BookingController{
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
        }
        const result=await this.getDisputeDetailUC.execute(bookingId)
-     res.send(HttpStatus.OK).json({
+     res.status(HttpStatus.OK).json({
       sucesss:true,
       data:result.data
      })
@@ -332,7 +332,7 @@ export class BookingController{
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
        }
        const result=await this.getRefundDetailUC.execute(refundId)
-     res.send(HttpStatus.OK).json({
+     res.status(HttpStatus.OK).json({
       sucesss:true,
       data:result.data
      })

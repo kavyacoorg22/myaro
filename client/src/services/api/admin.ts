@@ -1,7 +1,7 @@
 import { adminApiRoute } from "../../constants/apiRoutes/adminRoutes";
 import type { CustomServiceStatusType } from "../../constants/types/service";
 import type { TabType } from "../../features/types/customServiceType";
-import type { IAdminLoginRequest, IApproveResponse, IBeauticianProfileResponse, IGetAllUserResponse, IGetBeauticianRequest, IGetBeauticianResponse, IGetUserListRequest, IRejectResponse, IToggleStatusRequest } from "../../types/api/admin";
+import type { IAdminLoginRequest, IApproveResponse, IBeauticianProfileResponse, IGetAllBookingOutPut, IGetAllBookingsInput, IGetAllDisputeInput, IGetAllDisputeOutPut, IGetAllRefundInput, IGetAllRefundOutput, IGetAllUserResponse, IGetBeauticianRequest, IGetBeauticianResponse, IGetBookingDetailOutPut, IGetDisputeDetailOutput, IGetRefundDetailOutput, IGetUserListRequest, IProcessRefundInput, IProcessRefundOutPut, IRejectResponse, IToggleStatusRequest } from "../../types/api/admin";
 import type { BackendResponse } from "../../types/api/api";
 import {  type IAddCategoryRequest, type IAddServiceRequest, type IGetAllCustomServiceResponse, type IServiceRequest } from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
@@ -65,8 +65,61 @@ export const adminApi={
         limit:10
       }
     }))},
-      updateCustomServiceStatus:async(status:CustomServiceStatusType,id:string)=>{
+    updateCustomServiceStatus:async(status:CustomServiceStatusType,id:string)=>{
       return await axiosWrapper<BackendResponse>(api.patch(adminApiRoute.changeCustomServiceStatus.replace(':id',id),{status:status}))
+    },
+getAllBookings: async ({ page, limit, paymentStatus }: IGetAllBookingsInput) => {
+  return await axiosWrapper<IGetAllBookingOutPut>(
+    api.get(adminApiRoute.getBookings, {
+      params: {
+        page,
+        limit,
+        paymentStatus
+      }
+    })
+  );
+},
+getAllDisputes: async ({ page, limit }: IGetAllDisputeInput) => {
+  return await axiosWrapper<IGetAllDisputeOutPut>(
+    api.get(adminApiRoute.getDisputes, {
+      params: {
+        page,
+        limit
+      }
+    })
+  );
+},
+getAllRefunds: async ({ page, limit }: IGetAllRefundInput) => {
+  return await axiosWrapper<IGetAllRefundOutput>(
+    api.get(adminApiRoute.getRefunds, {
+      params: {
+        page,
+        limit
+      }
+    })
+  );
+},
+getBookingdetail: async (bookingId:string) => {
+  return await axiosWrapper<IGetBookingDetailOutPut>(
+    api.get(adminApiRoute.getrefundDetail.replace(':bookingId',bookingId))
+  );
+},
+getDisputeDetail: async (bookingId:string) => {
+  return await axiosWrapper<IGetDisputeDetailOutput>(
+    api.get(adminApiRoute.getrefundDetail.replace(':bookingId',bookingId))
+  );
+},
+getRefundDetail: async (refundId:string) => {
+  return await axiosWrapper<IGetRefundDetailOutput>(
+    api.get(adminApiRoute.getrefundDetail.replace(':refundId',refundId))
+  );
+},
+processRefund:async({bookingId,adminNote}:IProcessRefundInput)=>{
+  return await axiosWrapper<IProcessRefundOutPut>(
+    api.post(adminApiRoute.processRefund.replace(':bookingId',bookingId),adminNote,{
+      params:{adminNote}
     }
-  
+  )
+  )
+}
 }

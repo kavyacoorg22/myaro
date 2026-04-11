@@ -25,7 +25,7 @@ router.get('/custom-services/:id',authenticateAdmin,customServiceController.getC
 router.patch('/custom-services/:id/status',authenticateAdmin,customServiceController.updateCustomServiceStatus)
 //refund-dispute -transaction
 router.post('/bookings/:bookingId/refund',authenticateAdmin,paymentController.processRefund)
-router.post('/bookings/:bookingId/payout',authenticateAdmin,)
+router.post('/bookings/:bookingId/payout',authenticateAdmin,paymentController.releasePayout)
 
 router.get('/bookings',authenticateAdmin,bookingController.getAllBookingsForAdmin)
 router.get('/bookings/:bookingId',authenticateAdmin,bookingController.getBookingDetailForAdmin)

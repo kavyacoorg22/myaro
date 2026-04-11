@@ -40,7 +40,6 @@ export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundU
       [BookingStatus.REFUND_REQUESTED],
     );
 
-    // 2. Validate payment is in REFUND_REQUESTED state
     const payment = await this.paymentLookup.getAndValidateStatus(
       bookingId,
       [PaymentStatus.REFUND_REQUESTED],
@@ -78,7 +77,6 @@ export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundU
       toStatus:    BookingStatus.REFUND_APPROVED, 
     });
 
-    // 6. Send chat message to CUSTOMER (not beautician!)
     await this.chatMessage.sendAndEmit({
       chatId:     booking.chatId,
       senderId:   beauticianId,

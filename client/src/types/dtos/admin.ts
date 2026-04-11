@@ -1,4 +1,4 @@
-import { PaymentMode, PaymentStatus, RefundStatus, RefundType } from "../../domain/enum/paymentEnum";
+import type { PaymentModeType, PaymentStatusType, RefundStatusType, RefundTypes } from "../../constants/types/payment";
 
 export interface IProcessRefundDto {
   success:      boolean;
@@ -23,7 +23,7 @@ export interface IGetAllBookingDto{
   bookedDate:string,
   serviceDate:string,
   amount:number,
-  paymentStatus:PaymentStatus
+  paymentStatus:PaymentStatusType
 }
 
 export interface IGetAllBookingDto{
@@ -33,7 +33,7 @@ export interface IGetAllBookingDto{
   bookedDate:string,
   serviceDate:string,
   amount:number,
-  paymentStatus:PaymentStatus
+  paymentStatus:PaymentStatusType
 }
 
 export interface IGetBookingDetailDto{
@@ -43,10 +43,10 @@ export interface IGetBookingDetailDto{
   bookedDate:string,
   serviceDate:string,
   amount:number,
-  paymentStatus:PaymentStatus
+  paymentStatus:PaymentStatusType
   services:string[],
   paymentId:string,
-  method:PaymentMode,
+  method:PaymentModeType,
   paidAt:string
 }
 
@@ -78,8 +78,8 @@ export interface IGetAllRefundsDto{
   bookingId:string,
   customerName:string,
   amount:number,
-  status:RefundStatus
-   refundType:RefundType
+  status:RefundStatusType
+   refundType:RefundTypes
     reason?:string
     createdAt?:string
 }
@@ -87,7 +87,7 @@ export interface IGetAllRefundsDto{
 export interface IGetRefundDetailDto{
   refundId:string,
   bookingId:string,
-    status:RefundStatus;
+    status:RefundStatusType;
   customerName:string,
   amount:number,
   refundReason?:string

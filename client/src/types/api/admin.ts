@@ -1,6 +1,8 @@
 import type { BeauticianStatusFilterType, BeauticianStatusType } from "../../constants/types/beautician";
+import type { PaymentStatusType } from "../../constants/types/payment";
 import type { SortFilterType } from "../../constants/types/sortFilter";
 import type { UserRoleFilterType } from "../../constants/types/User";
+import type { IGetAllBookingDto, IGetAllDisputesDto, IGetAllRefundsDto, IGetBookingDetailDto, IGetDisputeDetailDto, IGetRefundDetailDto, IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
 import type { IUserDto } from "../dtos/user";
 import type { BackendResponse } from "./api";
 import type { ShopAddressVO } from "./beautician";
@@ -78,10 +80,79 @@ export interface IRejectResponseData{
   verificationStatus:BeauticianStatusType
 }
 
+export interface IProcessRefundInput {
+  bookingId: string;
+  adminNote?:string;
+}
 
+export interface IProcessRefundOutPut {
+  data:IProcessRefundDto
+}
+export interface IReleasePayoutOutPut {
+  data:IReleasePayoutDto
+}
+
+export interface IReleasePayoutInput {
+  bookingId:string,
+  adminId:string,
+  adminNote?:string
+}
+export interface IGetAllBookingsInput {
+  page: number;
+  limit: number;
+  paymentStatus?: PaymentStatusType;
+}
+export interface IGetAllBookingOutPut {
+  data:       IGetAllBookingDto[];
+  total:      number;
+  page:       number;
+  totalPages: number;
+  hasMore:    boolean;
+}
+
+export interface IGetBookingDetailOutPut{
+data:IGetBookingDetailDto
+}
+
+export interface IGetAllDisputeOutPut{
+data:IGetAllDisputesDto[]
+  total:      number;
+  page:       number;
+  totalPages: number;
+  hasMore:    boolean;
+}
+
+export interface IGetAllDisputeInput {
+  page: number;
+  limit: number;
+}
+
+
+export interface IGetDisputeDetailOutput {
+  data:IGetDisputeDetailDto
+}
+
+export interface IGetAllRefundInput {
+  page: number;
+  limit: number;
+}
+export interface IGetAllRefundOutput {
+  data:IGetAllRefundsDto[]
+    total:      number;
+  page:       number;
+  totalPages: number;
+  hasMore:    boolean;
+}
+
+
+export interface IGetRefundDetailOutput {
+  data:IGetRefundDetailDto
+}
+ 
 
 export type IGetAllUserResponse = BackendResponse<IGetAllUserResponseData>;
 export type IGetBeauticianResponse=BackendResponse<IGetBeauticianResponseData>
 export type IBeauticianProfileResponse=BackendResponse<IBeauticianProfileResponseData>
 export type IApproveResponse=BackendResponse<IApproveResponseData>
 export type IRejectResponse=BackendResponse<IRejectResponseData>
+// export type IGetAllRefundOutput=BackendResponse<IGetAllRefundOutputData>

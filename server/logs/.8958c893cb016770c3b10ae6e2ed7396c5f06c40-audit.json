@@ -6,11 +6,6 @@
     "auditLog": "C:\\Users\\User\\Desktop\\completed\\week23\\myaro\\server\\logs\\.8958c893cb016770c3b10ae6e2ed7396c5f06c40-audit.json",
     "files": [
         {
-            "date": 1773132343932,
-            "name": "C:\\Users\\User\\Desktop\\completed\\week23\\myaro\\server\\logs\\error-2026-03-10.log",
-            "hash": "43a8156c0440c25e3b970c729f8819dda718671d78c6aa577241ffec5b84ac12"
-        },
-        {
             "date": 1773236317001,
             "name": "C:\\Users\\User\\Desktop\\completed\\week23\\myaro\\server\\logs\\error-2026-03-11.log",
             "hash": "0e9880c594401dd905ddfe3f266031ffa14b458b34b5911ac90a7eb617924e60"
@@ -94,6 +89,11 @@
             "date": 1775696401529,
             "name": "C:\\Users\\User\\Desktop\\completed\\week23\\myaro\\server\\logs\\error-2026-04-09.log",
             "hash": "df4d9891169fd960cc14c8c983a65a5bb1e4efca00acd44cd9289c089a2cf60c"
+        },
+        {
+            "date": 1775815844975,
+            "name": "C:\\Users\\User\\Desktop\\completed\\week23\\myaro\\server\\logs\\error-2026-04-10.log",
+            "hash": "f6984aa7c8496c039a1aba924c8c37f001ca9b8eac934471b21d8ea79ca0d196"
         }
     ],
     "hashType": "sha256"
