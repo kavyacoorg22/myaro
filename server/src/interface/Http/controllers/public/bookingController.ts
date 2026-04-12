@@ -19,7 +19,7 @@ import { IGetAllDisputesUseCase } from "../../../../application/interface/admin/
 import { IGetDisputeDetailsUseCase } from "../../../../application/interface/admin/management/booking/IGetDisputeDetailUseCase";
 import { IGetAllRefundsUseCase } from "../../../../application/interface/admin/management/booking/IgetAllRefundsUseCase";
 import { IGetRefundDetailUseCase } from "../../../../application/interface/admin/management/booking/IGetRefundDetailUseCase";
-import { PaymentStatus } from "../../../../domain/enum/paymentEnum";
+import { PaymentStatus, RefundStatus } from "../../../../domain/enum/paymentEnum";
 
 
 export class BookingController{
@@ -242,9 +242,9 @@ export class BookingController{
           limit:limit?parseInt(limit as string):10,
           paymentStatus:paymentStatus as PaymentStatus|undefined
         })
-     res.send(HttpStatus.OK).json({
+     res.status(HttpStatus.OK).json({
       sucesss:true,
-      data:result.data
+      data:result
      })
     }catch(err)
     {
@@ -260,9 +260,9 @@ export class BookingController{
           page: page?parseInt(page as string):1,
           limit:limit?parseInt(limit as string):10,
         })
-     res.send(HttpStatus.OK).json({
+     res.status(HttpStatus.OK).json({
       sucesss:true,
-      data:result.data
+      data:result
      })
     }catch(err)
     {
@@ -272,11 +272,12 @@ export class BookingController{
   
  getAllRefunsForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
     try{
-        const {page,limit}=req.query
-       
+        const {page,limit,status}=req.query
+        console.log('refund status',status)
         const result=await this.getAllRefundUC.execute({
           page: page?parseInt(page as string):1,
           limit:limit?parseInt(limit as string):10,
+           status:status as RefundStatus
         })
      res.status(HttpStatus.OK).json({
       sucesss:true,

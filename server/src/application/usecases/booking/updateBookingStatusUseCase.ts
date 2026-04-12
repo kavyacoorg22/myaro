@@ -1,8 +1,11 @@
 import { Booking } from "../../../domain/entities/booking";
+import { BookingStatus } from "../../../domain/enum/bookingEnum"; // ✅ add import
 import { MessageType } from "../../../domain/enum/messageEnum";
+import { PaymentStatus } from "../../../domain/enum/paymentEnum";
 import { AppError } from "../../../domain/errors/appError";
 import { IBookingHistoryRepository } from "../../../domain/repositoryInterface/User/booking/IBookingHistoryRepository";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
+import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository"; // ✅ use interface
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
 import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
 import { ACTION_MESSAGE, ACTION_TO_STATUS, VALID_TRANSITIONS } from "../../../domain/services/bookingStatusMachine";
@@ -12,20 +15,20 @@ import { IUpdateBookingStatusUseCase } from "../../interface/booking/IUpdateBook
 import { IUpdateBookingStatusInput } from "../../interfaceType/booking";
 import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 
-
-export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
-   constructor(
+export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase {
+  constructor(
     private bookingRepo:        IBookingRepository,
     private bookingHistoryRepo: IBookingHistoryRepository,
     private messageRepo:        IMessageRepository,
-    private chatRepo:           IChatRepository
-    ,
+    private chatRepo:           IChatRepository,
     private socketEmitter:      ISocketEmitter,
+    private paymentRepo:        IPaymentRepository, // ✅ use interface not concrete class
   ) {}
 
-  async execute(input: IUpdateBookingStatusInput): Promise<Booking|null> {
-    const { bookingId, performedBy, role, action, rejectionReason,beauticianNote } = input;
+  async execute(input: IUpdateBookingStatusInput): Promise<Booking | null> {
+    const { bookingId, performedBy, role, action, rejectionReason, beauticianNote } = input;
 
+    // 1. find booking
     const booking = await this.bookingRepo.findById(bookingId);
     if (!booking) throw new AppError("Booking not found.", HttpStatus.NOT_FOUND);
 
@@ -46,7 +49,7 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
       bookingId,
       toStatus,
       rejectionReason,
-      beauticianNote
+      beauticianNote,
     );
 
     // 4. record history
@@ -59,12 +62,22 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
       toStatus,
     });
 
-    // 5. determine receiver — opposite of who performed the action
+if (toStatus === BookingStatus.COMPLETED) {
+  const payment = await this.paymentRepo.findByBookingId(bookingId);
+  if (payment && payment.status !== PaymentStatus.READY_TO_RELEASE) {
+    await this.paymentRepo.updateStatus(
+      payment.id,
+      PaymentStatus.READY_TO_RELEASE, 
+    );
+  }
+}
+
+    // 6. determine receiver
     const receiverId = performedBy === booking.userId
       ? booking.beauticianId
       : booking.userId;
 
-    // 6. send booking status message to chat
+    // 7. send booking status message to chat
     const message = rejectionReason
       ? `${ACTION_MESSAGE[action]}: ${rejectionReason}`
       : ACTION_MESSAGE[action];
@@ -76,20 +89,21 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
       message,
       type:       MessageType.BOOKING,
       bookingId:  booking.id,
-      status:toStatus,
+      status:     toStatus,
       seen:       false,
     });
 
-    // 7. update chat last message
+    // 8. update chat last message
     await this.chatRepo.updateLastMessage(booking.chatId, message, saved.createdAt);
 
+    // 9. emit new message to chat room
     this.socketEmitter.emitToRoom(
       booking.chatId,
       SOCKET_EVENTS.NEW_MESSAGE,
       saved,
     );
 
-    // 9. notify receiver's personal room
+    // 10. notify receiver
     this.socketEmitter.emitToRoom(
       `user:${receiverId}`,
       SOCKET_EVENTS.NEW_NOTIFICATION,
@@ -101,5 +115,5 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase{
     );
 
     return updated;
-}
+  }
 }

@@ -48,6 +48,11 @@ export interface IGetBookingDetailDto{
   paymentId:string,
   method:PaymentModeType,
   paidAt:string
+       history?: {        
+    status:    string;
+    role:      string;
+    createdAt: Date;
+  }[];
 }
 
 export interface IGetAllDisputesDto{
@@ -71,6 +76,11 @@ export interface IGetDisputeDetailDto{
   disputeAt:          Date | undefined;
   paymentId:          string;
   amount:             number;
+    history?: {        
+    status:    string;
+    role:      string;
+    createdAt: Date;
+  }[];
 }
 
 export interface IGetAllRefundsDto{
@@ -93,6 +103,11 @@ export interface IGetRefundDetailDto{
   refundReason?:string
    customerStatement:    string;               
   beauticianResponse:   string; 
+    history?: {         
+    status:    string;
+    role:      string;
+    createdAt: Date;
+  }[];
 }
 
 

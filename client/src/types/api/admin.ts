@@ -1,5 +1,5 @@
 import type { BeauticianStatusFilterType, BeauticianStatusType } from "../../constants/types/beautician";
-import type { PaymentStatusType } from "../../constants/types/payment";
+import type { PaymentStatusType, RefundStatusType } from "../../constants/types/payment";
 import type { SortFilterType } from "../../constants/types/sortFilter";
 import type { UserRoleFilterType } from "../../constants/types/User";
 import type { IGetAllBookingDto, IGetAllDisputesDto, IGetAllRefundsDto, IGetBookingDetailDto, IGetDisputeDetailDto, IGetRefundDetailDto, IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
@@ -94,7 +94,6 @@ export interface IReleasePayoutOutPut {
 
 export interface IReleasePayoutInput {
   bookingId:string,
-  adminId:string,
   adminNote?:string
 }
 export interface IGetAllBookingsInput {
@@ -102,7 +101,7 @@ export interface IGetAllBookingsInput {
   limit: number;
   paymentStatus?: PaymentStatusType;
 }
-export interface IGetAllBookingOutPut {
+export interface IGetAllBookingOutPutData {
   data:       IGetAllBookingDto[];
   total:      number;
   page:       number;
@@ -114,7 +113,7 @@ export interface IGetBookingDetailOutPut{
 data:IGetBookingDetailDto
 }
 
-export interface IGetAllDisputeOutPut{
+export interface IGetAllDisputeOutPutData{
 data:IGetAllDisputesDto[]
   total:      number;
   page:       number;
@@ -135,6 +134,7 @@ export interface IGetDisputeDetailOutput {
 export interface IGetAllRefundInput {
   page: number;
   limit: number;
+  status:RefundStatusType
 }
 export interface IGetAllRefundOutput {
   data:IGetAllRefundsDto[]
@@ -155,4 +155,5 @@ export type IGetBeauticianResponse=BackendResponse<IGetBeauticianResponseData>
 export type IBeauticianProfileResponse=BackendResponse<IBeauticianProfileResponseData>
 export type IApproveResponse=BackendResponse<IApproveResponseData>
 export type IRejectResponse=BackendResponse<IRejectResponseData>
-// export type IGetAllRefundOutput=BackendResponse<IGetAllRefundOutputData>
+export type IGetAllDisputeOutput=BackendResponse<IGetAllDisputeOutPutData>
+export type IGetAllBookingOutPut=BackendResponse<IGetAllBookingOutPutData>

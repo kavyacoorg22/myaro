@@ -1,7 +1,7 @@
 import { adminApiRoute } from "../../constants/apiRoutes/adminRoutes";
 import type { CustomServiceStatusType } from "../../constants/types/service";
 import type { TabType } from "../../features/types/customServiceType";
-import type { IAdminLoginRequest, IApproveResponse, IBeauticianProfileResponse, IGetAllBookingOutPut, IGetAllBookingsInput, IGetAllDisputeInput, IGetAllDisputeOutPut, IGetAllRefundInput, IGetAllRefundOutput, IGetAllUserResponse, IGetBeauticianRequest, IGetBeauticianResponse, IGetBookingDetailOutPut, IGetDisputeDetailOutput, IGetRefundDetailOutput, IGetUserListRequest, IProcessRefundInput, IProcessRefundOutPut, IRejectResponse, IToggleStatusRequest } from "../../types/api/admin";
+import type { IAdminLoginRequest, IApproveResponse, IBeauticianProfileResponse, IGetAllBookingOutPut, IGetAllBookingsInput, IGetAllDisputeInput, IGetAllDisputeOutput, IGetAllRefundInput, IGetAllRefundOutput, IGetAllUserResponse, IGetBeauticianRequest, IGetBeauticianResponse, IGetBookingDetailOutPut, IGetDisputeDetailOutput, IGetRefundDetailOutput, IGetUserListRequest, IProcessRefundInput, IProcessRefundOutPut, IRejectResponse, IReleasePayoutInput, IReleasePayoutOutPut, IToggleStatusRequest } from "../../types/api/admin";
 import type { BackendResponse } from "../../types/api/api";
 import {  type IAddCategoryRequest, type IAddServiceRequest, type IGetAllCustomServiceResponse, type IServiceRequest } from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
@@ -80,7 +80,7 @@ getAllBookings: async ({ page, limit, paymentStatus }: IGetAllBookingsInput) => 
   );
 },
 getAllDisputes: async ({ page, limit }: IGetAllDisputeInput) => {
-  return await axiosWrapper<IGetAllDisputeOutPut>(
+  return await axiosWrapper<IGetAllDisputeOutput>(
     api.get(adminApiRoute.getDisputes, {
       params: {
         page,
@@ -89,24 +89,25 @@ getAllDisputes: async ({ page, limit }: IGetAllDisputeInput) => {
     })
   );
 },
-getAllRefunds: async ({ page, limit }: IGetAllRefundInput) => {
+getAllRefunds: async ({ page, limit,status }: IGetAllRefundInput) => {
   return await axiosWrapper<IGetAllRefundOutput>(
     api.get(adminApiRoute.getRefunds, {
       params: {
         page,
-        limit
+        limit,
+        status
       }
     })
   );
 },
 getBookingdetail: async (bookingId:string) => {
   return await axiosWrapper<IGetBookingDetailOutPut>(
-    api.get(adminApiRoute.getrefundDetail.replace(':bookingId',bookingId))
+    api.get(adminApiRoute.getBookingdetails.replace(':bookingId',bookingId))
   );
 },
 getDisputeDetail: async (bookingId:string) => {
   return await axiosWrapper<IGetDisputeDetailOutput>(
-    api.get(adminApiRoute.getrefundDetail.replace(':bookingId',bookingId))
+    api.get(adminApiRoute.getDisputeDetail.replace(':bookingId',bookingId))
   );
 },
 getRefundDetail: async (refundId:string) => {
@@ -116,9 +117,15 @@ getRefundDetail: async (refundId:string) => {
 },
 processRefund:async({bookingId,adminNote}:IProcessRefundInput)=>{
   return await axiosWrapper<IProcessRefundOutPut>(
-    api.post(adminApiRoute.processRefund.replace(':bookingId',bookingId),adminNote,{
-      params:{adminNote}
-    }
+    api.post(adminApiRoute.processRefund.replace(':bookingId',bookingId),
+      adminNote
+  )
+  )
+},
+releasePayout:async({bookingId,adminNote}:IReleasePayoutInput)=>{
+  return await axiosWrapper<IReleasePayoutOutPut>(
+    api.post(adminApiRoute.releasePayout.replace(':bookingId',bookingId),
+      adminNote
   )
   )
 }

@@ -42,12 +42,11 @@ export const MessageList = ({
   const navigate  = useNavigate();
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const bookingCacheRef = useRef<Record<string, IGetBookingByIdDto>>({});
-  const [bookingCache, setBookingCache] = useState<Record<string, IGetBookingByIdDto>>({});
+  const bookingCacheRef = useRef<Record<string, IGetBookingByIdDto | null>>({});
+  const [bookingCache, setBookingCache] = useState<Record<string, IGetBookingByIdDto | null>>({});
 
-  // ✅ Combined — reset cache on chatId change, then fetch for current messages
+  // Reset cache on chatId change, then fetch for current messages
   useEffect(() => {
-    // reset cache for new chat
     bookingCacheRef.current = {};
     setBookingCache({});
 
@@ -62,20 +61,21 @@ export const MessageList = ({
     ];
 
     ids.forEach((id) => {
-      bookingCacheRef.current[id] = {} as IGetBookingByIdDto;
+      bookingCacheRef.current[id] = null;
       BookingApi.getBookingByid(id)
         .then((res) => {
           const data = res.data?.data?.data;
-          if (data) {
-            bookingCacheRef.current[id] = data;
-            setBookingCache((prev) => ({ ...prev, [id]: data }));
-          }
+          bookingCacheRef.current[id] = data ?? null;
+          setBookingCache((prev) => ({ ...prev, [id]: data ?? null }));
         })
-        .catch(console.error);
+        .catch(() => {
+          bookingCacheRef.current[id] = null;
+          setBookingCache((prev) => ({ ...prev, [id]: null }));
+        });
     });
-  }, [chatId]); // ✅ only chatId — full reset when chat switches
+  }, [chatId]);
 
-  // ✅ Separate effect for new messages arriving (socket / load more)
+  // Pick up new booking messages from socket / load more
   useEffect(() => {
     if (messages.length === 0) return;
 
@@ -87,22 +87,23 @@ export const MessageList = ({
       ),
     ];
 
-    const missing = ids.filter((id) => !bookingCacheRef.current[id]);
+    const missing = ids.filter((id) => !(id in bookingCacheRef.current));
     if (missing.length === 0) return;
 
     missing.forEach((id) => {
-      bookingCacheRef.current[id] = {} as IGetBookingByIdDto;
+      bookingCacheRef.current[id] = null;
       BookingApi.getBookingByid(id)
         .then((res) => {
           const data = res.data?.data?.data;
-          if (data) {
-            bookingCacheRef.current[id] = data;
-            setBookingCache((prev) => ({ ...prev, [id]: data }));
-          }
+          bookingCacheRef.current[id] = data ?? null;
+          setBookingCache((prev) => ({ ...prev, [id]: data ?? null }));
         })
-        .catch(console.error);
+        .catch(() => {
+          bookingCacheRef.current[id] = null;
+          setBookingCache((prev) => ({ ...prev, [id]: null }));
+        });
     });
-  }, [messages]); // ✅ picks up new socket messages with new bookingIds
+  }, [messages]);
 
   const isBeautician   = participant?.role === "beautician";
   const hasHomeService = participant?.serviceModes?.includes("HOME");
@@ -168,48 +169,65 @@ export const MessageList = ({
         const isLastSent = isSelf && index === lastSentIndex;
         const isSeen     = lastSeen && new Date(msg.createdAt) <= lastSeen;
 
-        return (
-          <Bubble key={msg.id} isSelf={isSelf}>
-            {msg.type === "booking" ? (
-              bookingCache[msg.bookingId!] ? (
-                <BookingCard
-                  bookingId={msg.bookingId!}
-                  status={msg.status}
-                  initialBooking={bookingCache[msg.bookingId!]}
-                />
-              ) : (
+        if (msg.type === "booking") {
+          const isFetching  = msg.bookingId && !(msg.bookingId in bookingCache);
+          const bookingData = msg.bookingId ? bookingCache[msg.bookingId] : null;
+
+          // Still fetching — show loading placeholder
+          if (isFetching) {
+            return (
+              <Bubble key={msg.id} isSelf={isSelf}>
                 <div className="rounded-2xl border border-gray-200 p-3 w-56 bg-white">
                   <p className="text-xs text-gray-400 animate-pulse">Loading...</p>
                 </div>
-              )
-            ) : (
-              <div className="flex flex-col">
-                <span
-                  className={`px-4 py-2 rounded-2xl text-sm max-w-xs break-words ${
-                    isSelf
-                      ? "bg-indigo-500 text-white"
-                      : "bg-white border border-gray-200 text-gray-800"
-                  }`}
-                >
-                  {msg.message}
-                </span>
-                <span
-                  className={`text-[10px] text-gray-400 mt-0.5 flex items-center gap-1 ${
-                    isSelf ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  <span>{formatTime(msg.createdAt)}</span>
-                  {isSelf && (
-                    <span className={isSeen ? "text-indigo-400" : "text-gray-300"}>
-                      {isSeen ? "✓✓" : "✓"}
-                    </span>
-                  )}
-                  {isSelf && isLastSent && lastSeen && (
-                    <span className="text-gray-400">{timeAgo(lastSeen)}</span>
-                  )}
-                </span>
-              </div>
-            )}
+              </Bubble>
+            );
+          }
+
+          // Deleted or not found — render nothing
+          if (!bookingData) return null;
+
+          // Present — show booking card
+          return (
+            <Bubble key={msg.id} isSelf={isSelf}>
+              <BookingCard
+                bookingId={msg.bookingId!}
+                status={msg.status}
+                initialBooking={bookingData}
+              />
+            </Bubble>
+          );
+        }
+
+        // Plain text message — always show
+        return (
+          <Bubble key={msg.id} isSelf={isSelf}>
+            <div className="flex flex-col">
+              <span
+                className={`px-4 py-2 rounded-2xl text-sm max-w-xs break-words ${
+                  isSelf
+                    ? "bg-indigo-500 text-white"
+                    : "bg-white border border-gray-200 text-gray-800"
+                }`}
+              >
+                {msg.message}
+              </span>
+              <span
+                className={`text-[10px] text-gray-400 mt-0.5 flex items-center gap-1 ${
+                  isSelf ? "justify-end" : "justify-start"
+                }`}
+              >
+                <span>{formatTime(msg.createdAt)}</span>
+                {isSelf && (
+                  <span className={isSeen ? "text-indigo-400" : "text-gray-300"}>
+                    {isSeen ? "✓✓" : "✓"}
+                  </span>
+                )}
+                {isSelf && isLastSent && lastSeen && (
+                  <span className="text-gray-400">{timeAgo(lastSeen)}</span>
+                )}
+              </span>
+            </div>
           </Bubble>
         );
       })}

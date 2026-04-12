@@ -1,4 +1,5 @@
 import { Booking } from "../../domain/entities/booking";
+import { BookingHistory } from "../../domain/entities/bookingHistory";
 import { Payment } from "../../domain/entities/payment";
 import { Payout } from "../../domain/entities/payout";
 import { Refund } from "../../domain/entities/refund";

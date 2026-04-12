@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Table,  TableBody,  TableCell,  TableHead,  TableHeader,  TableRow,
-} from "../../../components/ui/table";
-import {  Pagination,  PaginationContent,  PaginationItem,  PaginationLink,  PaginationNext,  PaginationPrevious,
-} from "../../../components/ui/pagination";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../../../components/ui/pagination";
 import type { IGetAllRefundsDto } from "../../../types/dtos/admin";
 import { adminApi } from "../../../services/api/admin";
 import { SaidBar } from '../../user/component/saidBar/saidbar';
 import RefundDetailModal from "../../models/admin/refundDetailModal";
 
+type RefundStatusType = "pending" | "success" | "failed";
 
-type RefundStatusType = "pending" | "approved" | "rejected" | "processing";
- 
 const statusConfig: Record<RefundStatusType, { label: string; className: string }> = {
-  pending:    { label: "Pending",    className: "bg-amber-100 text-amber-700 border border-amber-200" },
-  approved:   { label: "Approved",   className: "bg-emerald-100 text-emerald-700 border border-emerald-200" },
-  rejected:   { label: "Rejected",   className: "bg-red-100 text-red-700 border border-red-200" },
-  processing: { label: "Processing", className: "bg-blue-100 text-blue-700 border border-blue-200" },
+  pending: { label: "Pending",  className: "bg-amber-100 text-amber-700 border border-amber-200" },
+  success: { label: "Approved", className: "bg-emerald-100 text-emerald-700 border border-emerald-200" },
+  failed:  { label: "Rejected", className: "bg-red-100 text-red-700 border border-red-200" },
 };
- 
+
 const StatusBadge = ({ status }: { status: RefundStatusType }) => {
   const config = statusConfig[status] ?? { label: status, className: "bg-gray-100 text-gray-600" };
   return (
@@ -26,32 +22,43 @@ const StatusBadge = ({ status }: { status: RefundStatusType }) => {
     </span>
   );
 };
- 
-/** Truncate long IDs (e.g. MongoDB ObjectIds) for display */
+
 const TruncatedId = ({ id }: { id: string }) => (
   <span title={id} className="font-mono text-xs text-gray-600 truncate block max-w-[140px]">
     {id}
   </span>
 );
- 
+
 const LIMIT = 10;
- 
+
+const STATUS_FILTER_OPTIONS: { label: string; value: string }[] = [
+  { label: "All",      value: ""        },
+  { label: "Pending",  value: "pending" },
+  { label: "Approved", value: "success" },
+  { label: "Rejected", value: "failed"  },
+];
+
 const RefundRequestsPage: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [refunds, setRefunds] = useState<IGetAllRefundsDto[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage]       = useState(1);
+  const [refunds, setRefunds]               = useState<IGetAllRefundsDto[]>([]);
+  const [totalPages, setTotalPages]         = useState(1);
+  const [loading, setLoading]               = useState(false);
+  const [error, setError]                   = useState<string | null>(null);
   const [selectedRefundId, setSelectedRefundId] = useState<string | null>(null);
- 
+  const [statusFilter, setStatusFilter]     = useState<string>(""); // ✅ filter state
+
   const columns = ["Refund ID", "Booking ID", "Customer", "Amount", "Status", "Initiated By", "Action"];
- 
+
   useEffect(() => {
     const fetchRefunds = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await adminApi.getAllRefunds({ page: currentPage, limit: LIMIT });
+        const res = await adminApi.getAllRefunds({
+          page:   currentPage,
+          limit:  LIMIT,
+          status: statusFilter, 
+        });
         const payload = (res as any)?.data ?? res;
         setRefunds(payload?.data ?? []);
         setTotalPages(payload?.totalPages ?? 1);
@@ -62,37 +69,56 @@ const RefundRequestsPage: React.FC = () => {
       }
     };
     fetchRefunds();
-  }, [currentPage]);
- 
+  }, [currentPage, statusFilter]);
+  // ✅ Reset to page 1 when filter changes
+  const handleFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <SaidBar />
- 
-      {/* Main content — offset by sidebar width */}
+
       <main className="flex-1 ml-64 p-8">
-        {/* Detail Modal */}
         {selectedRefundId && (
           <RefundDetailModal
             refundId={selectedRefundId}
             onClose={() => setSelectedRefundId(null)}
           />
         )}
- 
-        {/* Page Title */}
+
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Refund Requests</h1>
- 
-        {/* Table Card */}
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
+          <div className="bg-gray-100 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <h2 className="text-base font-semibold text-gray-700">Refund request</h2>
+
+            {/* ✅ Status filter */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500 font-medium">Filter by status:</span>
+              <div className="flex gap-1.5">
+                {STATUS_FILTER_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => handleFilterChange(opt.value)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                      statusFilter === opt.value
+                        ? "bg-indigo-500 text-white border-indigo-500"
+                        : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
- 
-          {/* overflow-x-hidden on the wrapper prevents the horizontal scrollbar */}
+
           <div className="overflow-x-hidden">
             <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow className="border-b border-gray-100">
-                  {/* Fixed column widths so nothing overflows */}
                   <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-[160px]">Refund ID</TableHead>
                   <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-[160px]">Booking ID</TableHead>
                   <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-[110px]">Customer</TableHead>
@@ -102,7 +128,7 @@ const RefundRequestsPage: React.FC = () => {
                   <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-[90px]">Action</TableHead>
                 </TableRow>
               </TableHeader>
- 
+
               <TableBody>
                 {loading ? (
                   <TableRow>
@@ -133,22 +159,12 @@ const RefundRequestsPage: React.FC = () => {
                         index % 2 === 0 ? "bg-white" : "bg-gray-50/40"
                       }`}
                     >
-                      <TableCell className="px-4 py-4">
-                        <TruncatedId id={refund.refundId} />
-                      </TableCell>
-                      <TableCell className="px-4 py-4">
-                        <TruncatedId id={refund.bookingId} />
-                      </TableCell>
+                      <TableCell className="px-4 py-4"><TruncatedId id={refund.refundId} /></TableCell>
+                      <TableCell className="px-4 py-4"><TruncatedId id={refund.bookingId} /></TableCell>
                       <TableCell className="px-4 py-4 text-sm text-gray-700">{refund.customerName}</TableCell>
-                      <TableCell className="px-4 py-4 text-sm font-semibold text-gray-800">
-                        ₹{refund.amount.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="px-4 py-4">
-                        <StatusBadge status={refund.status as RefundStatusType} />
-                      </TableCell>
-                      <TableCell className="px-4 py-4 text-sm text-gray-600 capitalize">
-                        {refund.refundType}
-                      </TableCell>
+                      <TableCell className="px-4 py-4 text-sm font-semibold text-gray-800">₹{refund.amount.toLocaleString()}</TableCell>
+                      <TableCell className="px-4 py-4"><StatusBadge status={refund.status as RefundStatusType} /></TableCell>
+                      <TableCell className="px-4 py-4 text-sm text-gray-600 capitalize">{refund.refundType}</TableCell>
                       <TableCell className="px-4 py-4">
                         <button
                           onClick={() => setSelectedRefundId(refund.refundId)}
@@ -164,8 +180,7 @@ const RefundRequestsPage: React.FC = () => {
             </Table>
           </div>
         </div>
- 
-        {/* Pagination */}
+
         <div className="mt-6 flex justify-center">
           <Pagination>
             <PaginationContent>
@@ -176,7 +191,6 @@ const RefundRequestsPage: React.FC = () => {
                   className={currentPage === 1 ? "pointer-events-none opacity-40" : ""}
                 />
               </PaginationItem>
- 
               {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
                 <PaginationItem key={page}>
                   <PaginationLink
@@ -193,7 +207,6 @@ const RefundRequestsPage: React.FC = () => {
                   </PaginationLink>
                 </PaginationItem>
               ))}
- 
               <PaginationItem>
                 <PaginationNext
                   href="#"
@@ -208,6 +221,5 @@ const RefundRequestsPage: React.FC = () => {
     </div>
   );
 };
- 
+
 export default RefundRequestsPage;
- 

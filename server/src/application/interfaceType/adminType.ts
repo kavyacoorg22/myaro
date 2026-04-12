@@ -1,6 +1,6 @@
 import { ShopAddressVO } from "../../domain/entities/Beautician";
 import {  VerificationStatusFilter } from "../../domain/enum/beauticianEnum";
-import { PaymentStatus } from "../../domain/enum/paymentEnum";
+import { PaymentStatus, RefundStatus } from "../../domain/enum/paymentEnum";
 import { SortFilter } from "../../domain/enum/sortFilterEnum";
 import { UserRoleFilter } from "../../domain/enum/userEnum";
 import { IGetAllBookingDto, IGetAllDisputesDto, IGetAllRefundsDto, IGetBookingDetailDto, IGetDisputeDetailDto, IGetRefundDetailDto, IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
@@ -122,10 +122,11 @@ export interface IGetDisputeDetailOutput {
 export interface IGetAllRefundInput {
   page: number;
   limit: number;
+  status:RefundStatus
 }
 export interface IGetAllRefundOutput {
   data:IGetAllRefundsDto[]
-    total:      number;
+  total:      number;
   page:       number;
   totalPages: number;
   hasMore:    boolean;

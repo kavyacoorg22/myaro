@@ -71,14 +71,12 @@ const [booking, setBooking] = useState<IGetBookingByIdDto | null>(initialBooking
   const isBeautician = role === UserRole.BEAUTICIAN;
   const navigate = useNavigate();
  
-  // ── Sync prop → currentStatus only when we haven't locally advanced ────────
   useEffect(() => {
     setCurrentStatus((prev) =>
       TERMINAL_LOCAL_STATUSES.has(prev) ? prev : status
     );
   }, [status]);
  
-  // ── fetch booking on mount ─────────────────────────────────────────────────
   useEffect(() => {
        if (initialBooking) return;
     BookingApi.getBookingByid(bookingId)
@@ -105,6 +103,7 @@ const [booking, setBooking] = useState<IGetBookingByIdDto | null>(initialBooking
         return;
       }
     }
+
       const res = await BookingApi.updateBookingStatus(
         bookingId,
         action as BookingActionType,

@@ -3,6 +3,7 @@ import PrivateRoute from "../components/routes/privateRoute";
 import { UserRole } from "../constants/types/User";
 import { adminFrontendRoute } from "../constants/frontendRoutes/adminFrontenRoutes";
 import { lazy } from "react";
+
 const ADMIN_ONLY         = [UserRole.ADMIN];
 const Dashboard =lazy(()=>import('../features/admin/pages/dashboard'))
 const UsersList =lazy(()=>import('../features/admin/component/userList'))
@@ -10,6 +11,8 @@ const BeauticianListPage =lazy(()=>import('../features/admin/pages/BeauticianPag
 const ManageServicesCategoriesContainer =lazy(()=>import('../features/service/component/adminmanageServiceCategory'))
 const SubmissionsPage =lazy(()=>import('../features/service/pages/adminCustomServieReviewPage'))
 const RefundRequestsPage=lazy(()=>import('../features/admin/component/getAllRefundPage'))
+const DisputePage=lazy(()=>import('../features/admin/component/getAllDispute'))
+const PaymentManagementPage=lazy(()=>import('../features/admin/component/paymentManagementPage'))
 export const adminRoutes: RouteObject[] = [
   {
     path: adminFrontendRoute.dashboard,
@@ -57,6 +60,22 @@ export const adminRoutes: RouteObject[] = [
     element: (
       <PrivateRoute allowedRoles={ADMIN_ONLY}>
         <RefundRequestsPage/>
+      </PrivateRoute>
+    ),
+  },
+    {
+    path: adminFrontendRoute.dispute,
+    element: (
+      <PrivateRoute allowedRoles={ADMIN_ONLY}>
+        <DisputePage/>
+      </PrivateRoute>
+    ),
+  },
+    {
+    path: adminFrontendRoute.booking,
+    element: (
+      <PrivateRoute allowedRoles={ADMIN_ONLY}>
+        <PaymentManagementPage/>
       </PrivateRoute>
     ),
   },

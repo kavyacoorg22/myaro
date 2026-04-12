@@ -350,11 +350,12 @@ export const chatController=new ChatController(getMessageByChatUC,createChatUC,g
 
 //booking
 const bookingRepo=new BookingRepository()
+const paymentrepo=new PaymentRepository()
 const lockSlotService=new LockSlotService()
 const lockSlotUseCase=new LockSlotUseCase(bookingRepo,lockSlotService)
 const bookingHistoryRepo=new BookingHistoryRepository()
 const createBookingUseCase=new CreateBookingUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter,getAvailabilityUC,lockSlotService)
-const updateBookingStatusUC=new UpdateBookingStatusUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter)
+const updateBookingStatusUC=new UpdateBookingStatusUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter,paymentrepo)
 const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userRepo)
 const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
 const blockBookedSlotUseCase=new BlockBookedSlotUseCase(scheduleRepo,recurringExceptionRepo,getAvailabilityUC)
@@ -362,7 +363,6 @@ const blockBookedSlotUseCase=new BlockBookedSlotUseCase(scheduleRepo,recurringEx
 const notificationRepo=new NotificationRepository()
 const payoutRepo=new PayoutRepository()
 const refundRepo=new RefundRepository()
-const paymentrepo=new PaymentRepository()
 const razorPayService=new RazorPayService()
 const bookingValidatorService=new BookingValidatorService(bookingRepo)
 const bookinghistoryService=new BookingHistoryService(bookingHistoryRepo)
@@ -377,9 +377,9 @@ const cancelBookingUC=new CancelBookingUseCase(bookingValidatorService,paymentLo
 const getAllBookingsForAdminUC=new GetAllBookingUseCase(bookingRepo,paymentrepo,userRepo)
 const getAllDisputeUC=new GetAllDisputesUseCase(bookingRepo,userRepo)
 const getAllRefundUC=new GetAllRefundsUseCase(refundRepo,paymentrepo,bookingRepo,userRepo)
-const getBookingDetailUC=new GetBookingDetailUseCase(bookingRepo,paymentrepo,userRepo)
-const getDisputeDetailUC=new GetDisputeDetailsUseCase(bookingRepo,paymentrepo,userRepo)
-const getRefundDetailUC=new GetRefundDetailUseCase(refundRepo,paymentrepo,bookingRepo,userRepo)
+const getBookingDetailUC=new GetBookingDetailUseCase(bookingRepo,paymentrepo,userRepo,bookingHistoryRepo)
+const getDisputeDetailUC=new GetDisputeDetailsUseCase(bookingRepo,paymentrepo,userRepo,bookingHistoryRepo)
+const getRefundDetailUC=new GetRefundDetailUseCase(refundRepo,paymentrepo,bookingRepo,userRepo,bookingHistoryRepo)
 export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase,disputeRefundUC,cancelBookingUC,getAllBookingsForAdminUC,getBookingDetailUC,getAllDisputeUC,getDisputeDetailUC,getAllRefundUC,getRefundDetailUC)
 //like comment
 

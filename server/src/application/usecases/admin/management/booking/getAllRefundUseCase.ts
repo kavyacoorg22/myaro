@@ -17,10 +17,10 @@ export class GetAllRefundsUseCase implements IGetAllRefundsUseCase {
     private userRepo:    IUserRepository,
   ) {}
 
-  async execute({ page = 1, limit = 10 }: IGetAllRefundInput): Promise<IGetAllRefundOutput> {
-
-    const { refunds, total } = await this.refundRepo.findAll({ page, limit });
-
+  async execute({ page = 1, limit = 10,status }: IGetAllRefundInput): Promise<IGetAllRefundOutput> {
+     console.log('status',status)
+    const { refunds, total } = await this.refundRepo.findAll({ page, limit,status });
+    console.log(refunds,total)
     const totalPages = Math.ceil(total / limit);
 
     if (refunds.length === 0) {

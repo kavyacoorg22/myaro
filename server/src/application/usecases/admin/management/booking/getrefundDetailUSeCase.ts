@@ -1,4 +1,5 @@
 import { IUserRepository }    from "../../../../../domain/repositoryInterface/IUserRepository";
+import { IBookingHistoryRepository } from "../../../../../domain/repositoryInterface/User/booking/IBookingHistoryRepository";
 import { IBookingRepository } from "../../../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { IPaymentRepository } from "../../../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { IRefundRepository }  from "../../../../../domain/repositoryInterface/User/booking/IRefundRepository";
@@ -12,6 +13,7 @@ export class GetRefundDetailUseCase implements IGetRefundDetailUseCase {
     private paymentRepo: IPaymentRepository,
     private bookingRepo: IBookingRepository,
     private userRepo:    IUserRepository,
+    private bookingHistoryRepo:IBookingHistoryRepository
   ) {}
 
   async execute(refundId: string): Promise<IGetRefundDetailOutput> {
@@ -28,14 +30,15 @@ export class GetRefundDetailUseCase implements IGetRefundDetailUseCase {
     const users = await this.userRepo.findUsersByIds([payment.userId]);
     const user  = users[0];
     if (!user) throw new Error("User not found");
-
+    const history = await this.bookingHistoryRepo.findByBookingId(payment.bookingId);
     return {
-      data: toAdminRefundDetail(
-        refund,
-        payment,
-        booking,
-        `${user.fullName}`,
-      ),
-    };
-  }
+  data: {
+    ...toAdminRefundDetail(refund, payment, booking, `${user.fullName}`),
+    history: history.map((h) => ({
+      status:    h.toStatus,  
+      role:      h.role,
+      createdAt: h.createdAt,
+    })),
 }
+}
+  }}
