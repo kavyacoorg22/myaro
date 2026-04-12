@@ -40,6 +40,7 @@ export const ChatWindow = ({
       />
 
       <MessageList
+        chatId={chatId} 
         messages={messages}
         userId={userId}
         participant={participant}

@@ -50,11 +50,12 @@ const isBookingTimePassed = (slotDate: Date | string): boolean => {
 export interface BookingCardProps {
   bookingId: string;
   status: BookingStatusType;
+    initialBooking?: IGetBookingByIdDto;
 }
 
-export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
+export const BookingCard = ({ bookingId, status , initialBooking}: BookingCardProps) => {
   const role = useSelector((s: RootState) => s.user.currentUser?.role);
-  const [booking, setBooking]                             = useState<IGetBookingByIdDto | null>(null);
+const [booking, setBooking] = useState<IGetBookingByIdDto | null>(initialBooking ?? null);
   const [currentStatus, setCurrentStatus]                 = useState<string>(status);
   const [loading, setLoading]                             = useState(false);
   const [showModal, setShowModal]                         = useState(false);
@@ -79,6 +80,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
  
   // ── fetch booking on mount ─────────────────────────────────────────────────
   useEffect(() => {
+       if (initialBooking) return;
     BookingApi.getBookingByid(bookingId)
       .then((res) => {
         if (res.data?.data?.data) {
@@ -93,6 +95,16 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
     if (!booking) return;
     setLoading(true);
     try {
+
+       if (action === "cancel") {
+      const res = await BookingApi.getBookingByid(bookingId);
+      const latestStatus = res.data?.data?.data?.status;
+      if (latestStatus === "confirmed") {
+        setBooking(prev => prev ? { ...prev, status: "confirmed" } : null);
+        setCurrentStatus("confirmed");
+        return;
+      }
+    }
       const res = await BookingApi.updateBookingStatus(
         bookingId,
         action as BookingActionType,
@@ -286,11 +298,7 @@ export const BookingCard = ({ bookingId, status }: BookingCardProps) => {
           onClose={() => setShowPayModal(false)}
           onConfirm={async () => {
             try {
-              await BookingApi.updateBookingStatus(
-                bookingId,
-                BookingAction.CONFIRM as BookingActionType,
-                role as Role,
-              );
+               
               setBooking(prev => prev ? { ...prev, status: 'confirmed' } : null);
               setShowPayModal(false);
               navigate(`/chat/${booking.chatId}`);

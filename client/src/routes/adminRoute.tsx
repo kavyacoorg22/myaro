@@ -3,7 +3,7 @@ import PrivateRoute from "../components/routes/privateRoute";
 import { UserRole } from "../constants/types/User";
 import { adminFrontendRoute } from "../constants/frontendRoutes/adminFrontenRoutes";
 import { lazy } from "react";
-
+const ADMIN_ONLY         = [UserRole.ADMIN];
 const Dashboard =lazy(()=>import('../features/admin/pages/dashboard'))
 const UsersList =lazy(()=>import('../features/admin/component/userList'))
 const BeauticianListPage =lazy(()=>import('../features/admin/pages/BeauticianPage'))
@@ -14,7 +14,7 @@ export const adminRoutes: RouteObject[] = [
   {
     path: adminFrontendRoute.dashboard,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
+      <PrivateRoute allowedRoles={ADMIN_ONLY}>
         <Dashboard />
       </PrivateRoute>
     ),
@@ -22,7 +22,7 @@ export const adminRoutes: RouteObject[] = [
   {
     path: adminFrontendRoute.checkUser,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
+      <PrivateRoute allowedRoles={ADMIN_ONLY}>
         <UsersList />
       </PrivateRoute>
     ),
@@ -31,7 +31,7 @@ export const adminRoutes: RouteObject[] = [
   {
     path: adminFrontendRoute.checkBeautician,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
+      <PrivateRoute allowedRoles={ADMIN_ONLY}>
         <BeauticianListPage />
       </PrivateRoute>
     ),
@@ -39,7 +39,7 @@ export const adminRoutes: RouteObject[] = [
    {
     path: adminFrontendRoute.services,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
+      <PrivateRoute allowedRoles={ADMIN_ONLY}>
         <ManageServicesCategoriesContainer/>
       </PrivateRoute>
     ),
@@ -55,7 +55,7 @@ export const adminRoutes: RouteObject[] = [
      {
     path: adminFrontendRoute.refunds,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
+      <PrivateRoute allowedRoles={ADMIN_ONLY}>
         <RefundRequestsPage/>
       </PrivateRoute>
     ),

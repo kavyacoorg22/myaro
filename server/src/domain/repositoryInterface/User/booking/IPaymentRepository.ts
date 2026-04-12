@@ -29,5 +29,6 @@ findByRazorpayOrderId(razorpayOrderId: string): Promise<Payment | null>;
   status?: PaymentStatus;
 }): Promise<{ payments: Payment[]; total: number }>;
 findByIds(ids: string[]): Promise<Payment[]>;
-
+findPaidByBookingId(bookingId: string): Promise<Payment | null>;
+findPendingByBookingId(bookingId: string): Promise<Payment | null>;
 }

@@ -99,6 +99,22 @@ async findByIds(ids: string[]): Promise<Payment[]> {
   const docs = await PaymentModel.find({ _id: { $in: objectIds } });
   return docs.map(doc => this.map(doc));
 }
+
+async findPaidByBookingId(bookingId: string): Promise<Payment | null> {
+  const doc = await PaymentModel.findOne({
+    bookingId: new Types.ObjectId(bookingId),
+    status: PaymentStatus.PAID,
+  });
+  return doc ? this.map(doc) : null;
+}
+
+async findPendingByBookingId(bookingId: string): Promise<Payment | null> {
+  const doc = await PaymentModel.findOne({
+    bookingId: new Types.ObjectId(bookingId),
+    status: PaymentStatus.PENDING,
+  });
+  return doc ? this.map(doc) : null;
+}
 protected map(doc:PaymentDoc):Payment
 {
   const base=super.map(doc)

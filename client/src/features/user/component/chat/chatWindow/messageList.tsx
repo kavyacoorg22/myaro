@@ -1,9 +1,11 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { MessageDto } from "../../../../../types/dtos/chat";
 import { Bubble } from "../bubble";
 import type { ChatParticipant } from "../../../../types/chat";
 import { BookingCard } from "../../booking/bookingCard";
+import type { IGetBookingByIdDto } from "../../../../../types/dtos/booking";
+import { BookingApi } from "../../../../../services/api/booking";
 
 const timeAgo = (date: Date): string => {
   const diff = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -16,36 +18,8 @@ const timeAgo = (date: Date): string => {
 const formatTime = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-// ✅ inline booking card — no API call, uses data already in the message
-const BookingBubble = ({ msg }: { msg: MessageDto }) => {
-  const status = msg.status ?? "requested";
-  const statusStyles: Record<string, string> = {
-    requested:  "bg-gray-100 text-gray-600",
-    accepted:   "bg-blue-100 text-blue-700",
-    confirmed:  "bg-green-100 text-green-700",
-    rejected:   "bg-red-100 text-red-700",
-    cancelled:  "bg-red-100 text-red-700",
-    completed:  "bg-purple-100 text-purple-700",
-  };
-
-  return (
-    <div className="px-4 py-3 rounded-2xl bg-orange-50 border border-orange-200 min-w-[180px] max-w-xs">
-      <p className="text-xs font-semibold text-orange-500 mb-2 flex items-center gap-1">
-        📅 Booking
-      </p>
-      <div className="bg-teal-50 rounded-xl px-3 py-2 text-sm text-gray-700 mb-2">
-        {msg.message}
-      </div>
-      <span className={`inline-block text-xs px-3 py-1 rounded-full font-medium capitalize ${
-        statusStyles[status.toLowerCase()] ?? "bg-gray-100 text-gray-600"
-      }`}>
-        {status}
-      </span>
-    </div>
-  );
-};
-
 interface MessageListProps {
+  chatId:      string;
   messages:    MessageDto[];
   userId:      string;
   participant: ChatParticipant | null;
@@ -56,6 +30,7 @@ interface MessageListProps {
 }
 
 export const MessageList = ({
+  chatId,
   messages,
   userId,
   participant,
@@ -67,10 +42,71 @@ export const MessageList = ({
   const navigate  = useNavigate();
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const bookingCacheRef = useRef<Record<string, IGetBookingByIdDto>>({});
+  const [bookingCache, setBookingCache] = useState<Record<string, IGetBookingByIdDto>>({});
+
+  // ✅ Combined — reset cache on chatId change, then fetch for current messages
+  useEffect(() => {
+    // reset cache for new chat
+    bookingCacheRef.current = {};
+    setBookingCache({});
+
+    if (messages.length === 0) return;
+
+    const ids = [
+      ...new Set(
+        messages
+          .filter((m) => m.type === "booking" && m.bookingId)
+          .map((m) => m.bookingId!)
+      ),
+    ];
+
+    ids.forEach((id) => {
+      bookingCacheRef.current[id] = {} as IGetBookingByIdDto;
+      BookingApi.getBookingByid(id)
+        .then((res) => {
+          const data = res.data?.data?.data;
+          if (data) {
+            bookingCacheRef.current[id] = data;
+            setBookingCache((prev) => ({ ...prev, [id]: data }));
+          }
+        })
+        .catch(console.error);
+    });
+  }, [chatId]); // ✅ only chatId — full reset when chat switches
+
+  // ✅ Separate effect for new messages arriving (socket / load more)
+  useEffect(() => {
+    if (messages.length === 0) return;
+
+    const ids = [
+      ...new Set(
+        messages
+          .filter((m) => m.type === "booking" && m.bookingId)
+          .map((m) => m.bookingId!)
+      ),
+    ];
+
+    const missing = ids.filter((id) => !bookingCacheRef.current[id]);
+    if (missing.length === 0) return;
+
+    missing.forEach((id) => {
+      bookingCacheRef.current[id] = {} as IGetBookingByIdDto;
+      BookingApi.getBookingByid(id)
+        .then((res) => {
+          const data = res.data?.data?.data;
+          if (data) {
+            bookingCacheRef.current[id] = data;
+            setBookingCache((prev) => ({ ...prev, [id]: data }));
+          }
+        })
+        .catch(console.error);
+    });
+  }, [messages]); // ✅ picks up new socket messages with new bookingIds
+
   const isBeautician   = participant?.role === "beautician";
   const hasHomeService = participant?.serviceModes?.includes("HOME");
 
-  // index of the last message sent by the current user
   const lastSentIndex = messages.reduce(
     (last, msg, i) => (msg.senderId === userId ? i : last),
     -1,
@@ -78,7 +114,7 @@ export const MessageList = ({
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, bookingCache]);
 
   return (
     <div
@@ -89,7 +125,6 @@ export const MessageList = ({
         }
       }}
     >
-      {/* Profile card */}
       {participant && (
         <div className="flex flex-col items-center gap-3 py-10 mb-2">
           {participant.profileImg ? (
@@ -135,10 +170,19 @@ export const MessageList = ({
 
         return (
           <Bubble key={msg.id} isSelf={isSelf}>
-            {msg.type === "booking" ?  (
-              
-              <BookingCard bookingId={msg.bookingId!} status={msg.status}/>
-            ): (
+            {msg.type === "booking" ? (
+              bookingCache[msg.bookingId!] ? (
+                <BookingCard
+                  bookingId={msg.bookingId!}
+                  status={msg.status}
+                  initialBooking={bookingCache[msg.bookingId!]}
+                />
+              ) : (
+                <div className="rounded-2xl border border-gray-200 p-3 w-56 bg-white">
+                  <p className="text-xs text-gray-400 animate-pulse">Loading...</p>
+                </div>
+              )
+            ) : (
               <div className="flex flex-col">
                 <span
                   className={`px-4 py-2 rounded-2xl text-sm max-w-xs break-words ${
@@ -149,21 +193,17 @@ export const MessageList = ({
                 >
                   {msg.message}
                 </span>
-
                 <span
                   className={`text-[10px] text-gray-400 mt-0.5 flex items-center gap-1 ${
                     isSelf ? "justify-end" : "justify-start"
                   }`}
                 >
                   <span>{formatTime(msg.createdAt)}</span>
-
                   {isSelf && (
                     <span className={isSeen ? "text-indigo-400" : "text-gray-300"}>
                       {isSeen ? "✓✓" : "✓"}
                     </span>
                   )}
-
-                  {/* only show "seen X ago" on the very last sent message */}
                   {isSelf && isLastSent && lastSeen && (
                     <span className="text-gray-400">{timeAgo(lastSeen)}</span>
                   )}

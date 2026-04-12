@@ -17,8 +17,15 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [lastSeen, setLastSeen] = useState<Date | null>(null);
 
+
   const loadingRef       = useRef<boolean>(false);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ✅ stable ref for participant id — avoids socket effect re-running
+  const participantIdRef = useRef(participant?.id);
+  useEffect(() => {
+    participantIdRef.current = participant?.id;
+  }, [participant?.id]);
 
   useJoinChat(chatId, userId);
   useMarkSeen(chatId, userId, messages);
@@ -34,13 +41,10 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
         if (!res.data.data) return;
         const { messages: newMsgs, nextCursor, hasMore: more } = res.data.data;
 
-        // ✅ if loading fresh (no cursor), replace messages entirely
-        // if paginating (has cursor), prepend older messages
         setMessages((prev) => cursorParam ? [...newMsgs, ...prev] : newMsgs);
         setCursor(nextCursor);
         setHasMore(more);
 
-        // derive lastSeen from messages we sent that the other person already read
         const latestSeenAt = newMsgs
           .filter((m) => m.senderId === userId && m.seen && m.seenAt)
           .map((m) => new Date(m.seenAt!))
@@ -62,19 +66,17 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
   );
 
   // ── reset + reload when chatId changes ────────────────────────────────────
-  // ✅ ONE effect only — reset everything and load fresh
   useEffect(() => {
-    // reset all state for the new chat
     setMessages([]);
     setCursor(null);
     setHasMore(true);
     setIsOnline(false);
     setIsTyping(false);
     setLastSeen(null);
-    loadingRef.current = false; // ✅ always reset the guard on chat switch
+    loadingRef.current = false;
 
     loadMessages(null);
-  }, [chatId]); // ✅ only chatId — loadMessages intentionally excluded
+  }, [chatId]); // ✅ only chatId
 
   // ── socket listeners ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -86,20 +88,19 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
       }
     };
 
+    // ✅ all handlers use ref — no participant in deps
     const handleOnline  = ({ userId: uid }: { userId: string }) => {
-      if (uid === participant?.id) setIsOnline(true);
+      if (uid === participantIdRef.current) setIsOnline(true);
     };
     const handleOffline = ({ userId: uid }: { userId: string }) => {
-      if (uid === participant?.id) setIsOnline(false);
+      if (uid === participantIdRef.current) setIsOnline(false);
     };
-
     const handleTypingStart = ({ userId: uid }: { userId: string }) => {
-      if (uid === participant?.id) setIsTyping(true);
+      if (uid === participantIdRef.current) setIsTyping(true);
     };
     const handleTypingStop  = ({ userId: uid }: { userId: string }) => {
-      if (uid === participant?.id) setIsTyping(false);
+      if (uid === participantIdRef.current) setIsTyping(false);
     };
-
     const handleSeen = ({ chatId: cid, seenAt }: { chatId: string; seenAt: string }) => {
       if (cid === chatId) setLastSeen(new Date(seenAt));
     };
@@ -119,10 +120,10 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
       socket.off(SOCKET_EVENTS.TYPING_STOP,  handleTypingStop);
       socket.off(SOCKET_EVENTS.MESSAGE_SEEN, handleSeen);
     };
-  }, [chatId, participant?.id, userId]);
+  }, [chatId, userId]); // ✅ stable deps only
 
   // ── actions ───────────────────────────────────────────────────────────────
-  const handleSend = (text: string) => {
+  const handleSend = useCallback((text: string) => {
     if (!participant || !text.trim()) return;
     sendMessage({
       chatId,
@@ -131,21 +132,20 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
       message:    text.trim(),
       type:       "text",
     });
-  };
+  }, [chatId, userId, participant]);
 
-  const handleTyping = () => {
+  const handleTyping = useCallback(() => {
     socket.emit(SOCKET_EVENTS.TYPING_START, { chatId, userId });
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
       socket.emit(SOCKET_EVENTS.TYPING_STOP, { chatId, userId });
     }, 2000);
-  };
+  }, [chatId, userId]);
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     if (hasMore && !loading) loadMessages(cursor);
-  };
+  }, [hasMore, loading, cursor, loadMessages]);
 
-  // ✅ expose reload for external triggers (e.g. after booking created)
   const reload = useCallback(() => {
     loadingRef.current = false;
     setMessages([]);

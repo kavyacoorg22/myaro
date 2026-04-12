@@ -6,6 +6,11 @@ import { customerFrontendRoutes } from "../constants/frontendRoutes/customerFron
 import { beauticianFrontendRoutes } from "../constants/frontendRoutes/beauticianFrontendRoutes";
 import { lazy } from "react";
 
+const CUSTOMER_ONLY      = [UserRole.CUSTOMER];
+const BEAUTICIAN_ONLY    = [UserRole.BEAUTICIAN];
+const CUSTOMER_BEAUTICIAN = [UserRole.CUSTOMER, UserRole.BEAUTICIAN];
+
+
 const ProfilePage = lazy(() => import("../features/user/pages/profile"));
 const BeauticianRegistration = lazy(
   () => import("../features/user/pages/beauticianRegistration"),
@@ -31,7 +36,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: publicFrontendRoutes.profile,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.CUSTOMER, UserRole.BEAUTICIAN]}>
+      <PrivateRoute allowedRoles={CUSTOMER_BEAUTICIAN}>
         <ProfilePage />
       </PrivateRoute>
     ),
@@ -39,7 +44,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: publicFrontendRoutes.profileByid,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.CUSTOMER, UserRole.BEAUTICIAN]}>
+      <PrivateRoute allowedRoles={CUSTOMER_BEAUTICIAN}>
         <ProfilePage />
       </PrivateRoute>
     ),
@@ -47,7 +52,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: customerFrontendRoutes.register,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.CUSTOMER]}>
+      <PrivateRoute allowedRoles={CUSTOMER_ONLY}>
         <BeauticianRegistration />
       </PrivateRoute>
     ),
@@ -55,7 +60,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: beauticianFrontendRoutes.aggrement,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
+      <PrivateRoute allowedRoles={BEAUTICIAN_ONLY}>
         <BeauticianAgreementScreen />
       </PrivateRoute>
     ),
@@ -64,7 +69,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: beauticianFrontendRoutes.editProfile,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN, UserRole.CUSTOMER]}>
+      <PrivateRoute allowedRoles={CUSTOMER_BEAUTICIAN}>
         <BeauticianProfileForm />
       </PrivateRoute>
     ),
@@ -72,7 +77,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: beauticianFrontendRoutes.serviceList,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
+      <PrivateRoute allowedRoles={BEAUTICIAN_ONLY}>
         <ServicePageList />
       </PrivateRoute>
     ),
@@ -80,7 +85,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: beauticianFrontendRoutes.Location,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
+      <PrivateRoute allowedRoles={BEAUTICIAN_ONLY}>
         <ServiceLocationForm />
       </PrivateRoute>
     ),
@@ -88,7 +93,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: publicFrontendRoutes.getServiceList,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN, UserRole.CUSTOMER]}>
+      <PrivateRoute allowedRoles={BEAUTICIAN_ONLY}>
         <ServicePageListForUser />
       </PrivateRoute>
     ),
@@ -96,7 +101,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: publicFrontendRoutes.chat,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN, UserRole.CUSTOMER]}>
+      <PrivateRoute allowedRoles={CUSTOMER_BEAUTICIAN}>
         <ChatList />
       </PrivateRoute>
     ),
@@ -104,7 +109,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: publicFrontendRoutes.specificChat,
     element: (
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN, UserRole.CUSTOMER]}>
+      <PrivateRoute allowedRoles={CUSTOMER_BEAUTICIAN}>
         <ChatList />
       </PrivateRoute>
     ),
@@ -112,7 +117,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: beauticianFrontendRoutes.booking,
     element:(
-      <PrivateRoute allowedRoles={[UserRole.BEAUTICIAN]}>
+      <PrivateRoute allowedRoles={BEAUTICIAN_ONLY}>
          <BeauticianBookingsPage/>
       </PrivateRoute>
     )

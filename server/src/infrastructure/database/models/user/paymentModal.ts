@@ -22,7 +22,7 @@ export type PaymentDoc=Document&{
   updatedAt:Date,
 }
 
-const paymentSchema=new Schema<PaymentDoc>({
+const PaymentSchema=new Schema<PaymentDoc>({
   bookingId:{type:Schema.Types.ObjectId},
   userId:{type:Schema.Types.ObjectId},
    razorpayOrderId:   { type: String, required: true },   
@@ -40,4 +40,11 @@ const paymentSchema=new Schema<PaymentDoc>({
   releasedBy:{type:Schema.Types.ObjectId}
 },{timestamps:true})
 
-export const PaymentModel:Model<PaymentDoc>=mongoose.models.Payment||mongoose.model<PaymentDoc>('Payment',paymentSchema)
+PaymentSchema.index(
+  { bookingId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: PaymentStatus.PAID }
+  }
+);
+export const PaymentModel:Model<PaymentDoc>=mongoose.models.Payment||mongoose.model<PaymentDoc>('Payment',PaymentSchema)
