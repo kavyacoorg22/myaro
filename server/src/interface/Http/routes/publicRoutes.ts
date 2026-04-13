@@ -52,4 +52,6 @@ router.post('/bookings/:bookingId/refund-request',authenticateCustomer, validate
 router.post('/bookings/:bookingId/refund-approve',authenticateBeautician,bookingController.approveRefund)
 router.post('/bookings/:bookingId/refund-dispute',authenticateBeautician,bookingController.disputeRefund)
 router.post('/bookings/:bookingId/cancel',authenticateCustomer,bookingController.cancelBooking)
+//wallet
+router.get('/wallet',authenticateCustomer,paymentController.getUserRefundSummery)
 export default router

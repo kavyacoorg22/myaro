@@ -167,6 +167,7 @@ import { GetAllRefundsUseCase } from "../../application/usecases/admin/managemen
 import { GetBookingDetailUseCase } from "../../application/usecases/admin/management/booking/getBookingDetailUseCase";
 import { GetDisputeDetailsUseCase } from "../../application/usecases/admin/management/booking/getDisputeDetailsUseCase";
 import { GetRefundDetailUseCase } from "../../application/usecases/admin/management/booking/getrefundDetailUSeCase";
+import { GetUserRefundSummeryUseCase } from "../../application/usecases/customer/getUserRefundSummeryUseCase";
 
 
 
@@ -414,4 +415,5 @@ const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayServi
 const verifyPaymentUC=new VerifyPaymentUsecase(paymentrepo,bookingRepo,razorPayService,blockBookedSlotUseCase,updateBookingStatusUC)
 const processRefundUC=new ProcessRefundUseCase(bookingRepo,paymentrepo,refundRepo,razorPayService,bookingValidatorService,bookinghistoryService,paymentLookupService,notificationDispatchService,razorPayStatusResolverService)
 const releasePayoutUC=new ReleasePayoutUseCase(bookingRepo,paymentrepo,payoutRepo,razorPayService,bookingValidatorService,bookinghistoryService,paymentLookupService,notificationDispatchService,razorPayStatusResolverService)
-export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC,processRefundUC,releasePayoutUC)
+const getUserRefundSummeryUC=new GetUserRefundSummeryUseCase(refundRepo)
+export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC,processRefundUC,releasePayoutUC,getUserRefundSummeryUC)

@@ -3,6 +3,7 @@ import { RefundMethod, RefundStatus, RefundType } from "../../../../domain/enum/
 
 export type RefundDoc=Document&{
     _id: Types.ObjectId
+    userId:Types.ObjectId
     paymentId: Types.ObjectId
     amount: number
     method: RefundMethod
@@ -17,6 +18,7 @@ export type RefundDoc=Document&{
 }
 
 export const RefundSchema=new Schema<RefundDoc>({
+    userId:{type:Schema.Types.ObjectId},
    paymentId:{type:Schema.Types.ObjectId},
    amount:{type:Number},
    method:{type:String,enum:Object.values(RefundMethod)},

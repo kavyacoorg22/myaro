@@ -7,11 +7,13 @@ import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { IProcessRefundUseCase } from "../../../../application/interface/admin/management/booking/IProcessRefundUseCase";
 import { IReleasePayoutUSeCase } from "../../../../application/interface/admin/management/booking/IReleasePayoutUsecase";
+import { IGetUserRefundSummeryUseCase } from "../../../../application/interface/customer/IGetUserRefundSummeryUseCase";
 
 export class PaymentController{
   constructor(private createOrderUC:ICreateOrderUsecase,private verifyPaymentUC:IVerifyPaymentUsecase
     ,private processRefundUC:IProcessRefundUseCase,
-    private releasePayoutUC:IReleasePayoutUSeCase
+    private releasePayoutUC:IReleasePayoutUSeCase,
+    private getUserRefundSummeryUC:IGetUserRefundSummeryUseCase
   ){}
   
   createOrder=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -98,5 +100,21 @@ export class PaymentController{
     {
       next(err)
     }
+  }
+  getUserRefundSummery=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+    try{
+      const id=req.user?.id
+      if(!id)
+      {
+        throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
+      }
+      const result=await this.getUserRefundSummeryUC.execute(id)
+      res.status(HttpStatus.OK).json({
+        data:result,
+        success:true
+      })}catch(err)
+      {
+        next(err)
+      }
   }
 }

@@ -13,4 +13,5 @@ export interface IRefundRepository{
     status?: RefundStatus;
   }): Promise<{ refunds: Refund[]; total: number }>;
   findById(id: string): Promise<Refund | null>;
+  getRefundsByUserId(userId:string):Promise<Refund[]>
 }

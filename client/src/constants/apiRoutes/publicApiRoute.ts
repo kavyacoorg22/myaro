@@ -43,5 +43,8 @@ export const publicApiRoutes={
   approverefund:'/bookings/:bookingId/refund-approve',
   disputerefund:'/bookings/:bookingId/refund-dispute',
   //cancel
-  cancelBooking:'/bookings/:bookingId/cancel'
+  cancelBooking:'/bookings/:bookingId/cancel',
+  //wallet
+  getWallet:'/wallet',
+  
 }

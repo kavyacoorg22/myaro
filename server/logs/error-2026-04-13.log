@@ -1,2 +1,9 @@
 2026-04-13 08:34:56 error: Error: read ECONNRESET
     at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-04-13 11:59:20 error: Error: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:642:11)
+    at ServerResponse.header (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\express\lib\response.js:684:10)
+    at ServerResponse.send (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\express\lib\response.js:161:12)
+    at ServerResponse.json (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\express\lib\response.js:250:15)
+    at PaymentController.getUserRefundSummery (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\public\paymentController.ts:112:31)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)

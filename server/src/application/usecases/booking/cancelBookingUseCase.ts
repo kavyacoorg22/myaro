@@ -90,9 +90,10 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
 
     // ── 8. Persist refund record ───────────────────────────────────────────
     const refund = await this.refundRepo.create({
+      userId:booking.userId,
       paymentId: payment.id,
       amount: payment.amount,
-      method: RefundMethod.SOURCE,
+      method: RefundMethod.WALLET,
       status:
         razorpayRefund.status === "processed"
           ? RefundStatus.SUCCESS
@@ -100,6 +101,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
       refundType: RefundType.CANCELLATION,
       razorpayRefundId: razorpayRefund.id,
       reason: "Customer cancelled booking more than 3 days in advance.",
+      processedAt: new Date()
     });
 
     await this.bookingRepo.updateByBookingId(bookingId, {

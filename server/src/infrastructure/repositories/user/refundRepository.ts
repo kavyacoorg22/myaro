@@ -1,6 +1,7 @@
 
+import { Types } from "mongoose";
 import { Refund } from "../../../domain/entities/refund";
-import { RefundStatus } from "../../../domain/enum/paymentEnum";
+import { RefundMethod, RefundStatus } from "../../../domain/enum/paymentEnum";
 import { IRefundRepository } from "../../../domain/repositoryInterface/User/booking/IRefundRepository";
 import { RefundDoc, RefundModel } from "../../database/models/user/refundModel";
 import { GenericRepository } from "../genericRepository";
@@ -73,10 +74,16 @@ async findById(id: string): Promise<Refund | null> {
   return doc ? this.map(doc) : null;
 }
 
+async getRefundsByUserId(userId: string): Promise<Refund[]> {
+  const docs=await RefundModel.find({userId:new Types.ObjectId(userId),method:RefundMethod.WALLET})
+  return docs.map((doc)=>this.map(doc))
+}
+
   protected map(doc: RefundDoc): Refund {
     const base = super.map(doc);
     return {
       id:               base.id.toString(),
+      userId:doc.userId.toString(),
       paymentId:        doc.paymentId.toString(),
       amount:           doc.amount,
       method:           doc.method,

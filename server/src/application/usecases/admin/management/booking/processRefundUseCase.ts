@@ -16,7 +16,6 @@ import { NotificationDispatchService } from "../../../../services/notificationDi
 import { RazorpayStatusResolverService } from "../../../../services/razorpayStatusResolverService";
 import { SOCKET_EVENTS } from "../../../../events/socketEvents";
 import { toProcessRefundDto } from "../../../../mapper/adminMapper";
-import { IProcessRefundDto } from "../../../../dtos/admin";
 import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
 
 export class ProcessRefundUseCase {
@@ -55,17 +54,16 @@ export class ProcessRefundUseCase {
     // ── 3. Find or create refund ───────────────────────────────────────────
     let refund = await this.refundRepo.findByPaymentId(payment.id);
 
-    // ── 4. Idempotency check ───────────────────────────────────────────────
     if (refund?.status === RefundStatus.SUCCESS) {
       throw new AppError("Refund already processed.", HttpStatus.CONFLICT);
     }
 
     if (!refund) {
-      // Dispute path: no refund created yet
       refund = await this.refundRepo.create({
+        userId:booking.userId,
         paymentId:  payment.id,
         amount:     payment.amount,
-        method:     RefundMethod.SOURCE,
+        method:     RefundMethod.WALLET,
         status:     RefundStatus.PENDING,
         refundType: RefundType.SERVICE_ISSUE,
         reason:     booking.refundReason ?? undefined,
@@ -85,15 +83,17 @@ export class ProcessRefundUseCase {
 
     const refundStatus = this.statusResolver.resolveRefundStatus(razorpayRefund.status);
 
-    const updatedRefund = await this.refundRepo.updateStatus(refund?.id, refundStatus);
-    if(!updatedRefund)
+const updatedRefund = await this.refundRepo.updateStatus(
+  refund.id,
+  refundStatus,
+  refundStatus === RefundStatus.SUCCESS ? { processedAt: new Date() } : undefined
+);    if(!updatedRefund)
     {
       throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
     }
-    // ── 8. Update payment + booking conditionally ──────────────────────────
     const bookingStatus = refundStatus === RefundStatus.SUCCESS
       ? BookingStatus.CLOSED
-      : booking.status; // keep for retry on failure
+      : booking.status; 
 
     if (refundStatus === RefundStatus.SUCCESS) {
       await this.paymentRepo.updateStatus(payment.id, PaymentStatus.REFUNDED);
@@ -107,7 +107,6 @@ export class ProcessRefundUseCase {
       throw new AppError("Failed to update booking.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // ── 9. Log history ─────────────────────────────────────────────────────
     await this.bookingHistory.log({
       bookingId,
       action:      BookingAction.PROCESS_REFUND,
@@ -117,7 +116,6 @@ export class ProcessRefundUseCase {
       toStatus:    bookingStatus,
     });
 
-    // ── 10. Notify customer ────────────────────────────────────────────────
     const customerMessage = refundStatus === RefundStatus.SUCCESS
       ? "Your refund has been processed successfully."
       : "Refund processing failed. Our team will retry shortly.";

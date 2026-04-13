@@ -47,9 +47,10 @@ export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundU
 
 
      await this.refundrepo.create({
+      userId:booking.userId,
       paymentId:  payment.id,
       amount:     payment.amount,
-      method:     RefundMethod.SOURCE,
+      method:     RefundMethod.WALLET,
       status:     RefundStatus.PENDING,        
       refundType: RefundType.SERVICE_ISSUE,
       reason:     booking.refundReason ?? undefined,
