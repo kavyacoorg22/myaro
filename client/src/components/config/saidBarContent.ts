@@ -5,7 +5,8 @@ import { beauticianFrontendRoutes } from "../../constants/frontendRoutes/beautic
 import { adminFrontendRoute } from "../../constants/frontendRoutes/adminFrontenRoutes";
 import { SquarePlusIcon } from "lucide-react";
 import { Wrench } from "lucide-react";
-import { CreditCard, AlertTriangle, RotateCcw } from "lucide-react";
+import { CreditCard, AlertTriangle, RotateCcw,Wallet } from "lucide-react";
+import { customerFrontendRoutes } from "../../constants/frontendRoutes/customerFrontendRoutes";
 
 
 
@@ -28,7 +29,7 @@ export const saidBarContent:SidebarContentType[]=[
    {label:"Message",icon:PaperPlaneTiltIcon,path:publicFrontendRoutes.chat,showWhenAuthenticatedOnly:true,},
     {label:"Profile",icon:UserIcon, path:publicFrontendRoutes.profile,showWhenAuthenticatedOnly:true,},
      {label:"Notification",icon:BellIcon,path:publicFrontendRoutes.notification,showWhenAuthenticatedOnly:true,},
-      {label:"Tips&Tricks",icon:CameraRotateIcon,path:publicFrontendRoutes.tipsRent,},
+      {label:"Tips&Rent",icon:CameraRotateIcon,path:publicFrontendRoutes.tipsRent,},
       {label:"Bookings",icon:CalendarDotsIcon,path:beauticianFrontendRoutes.booking,roles:['beautician']},
        {label:"Dashboard",icon:HouseIcon,path:adminFrontendRoute.dashboard,roles:['admin']},
   {label:"Users",icon:UserIcon,path:adminFrontendRoute.checkUser,roles:['admin']},
@@ -38,6 +39,7 @@ export const saidBarContent:SidebarContentType[]=[
       {label:"Refunds",icon:RotateCcw,path:adminFrontendRoute.refunds,roles:['admin']},
             {label:"Dispute",icon:AlertTriangle,path:adminFrontendRoute.dispute,roles:['admin']},
                   {label:"Payment",icon:CreditCard,path:adminFrontendRoute.booking,roles:['admin']},
+      {label:"Wallet",icon:Wallet,path:customerFrontendRoutes.wallet,roles:['customer']},
 
 
 

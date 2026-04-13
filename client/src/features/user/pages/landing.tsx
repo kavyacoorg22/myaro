@@ -32,7 +32,7 @@ export const Landing = () => {
   const currentUser = useSelector((store: RootState) => store.user.currentUser)
   const [searchQuery, setSearchQuery] = useState("")
   const { location, refetchLocation } = useUserLocation()
-
+  
   // Feed state
   const feedLoadingRef = useRef(false);
   const feedHasMoreRef = useRef(true);
@@ -150,10 +150,12 @@ export const Landing = () => {
     : location.isLoading
     ? 'Detecting location...'
     : 'Location unavailable'
-
+    
   return (
+  
     <div className="flex h-screen">
       <SaidBar />
+          {currentUser.role !== UserRole.ADMIN && (
 
       <div className="flex-1 bg-gray-50">
         <div className="flex flex-col border-gray-200 sticky top-0 z-10 bg-gray-50">
@@ -230,7 +232,7 @@ export const Landing = () => {
             isLoading={isSearchMode ? searchIsLoading : feedIsLoading}
           />
         </div>
-      </div>
+      </div>)}
     </div>
   )
 }

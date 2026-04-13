@@ -5,6 +5,7 @@ import { UserRole } from "../constants/types/User";
 import { customerFrontendRoutes } from "../constants/frontendRoutes/customerFrontendRoutes";
 import { beauticianFrontendRoutes } from "../constants/frontendRoutes/beauticianFrontendRoutes";
 import { lazy } from "react";
+// import WalletCard from "../features/wallet/walletCard";
 
 const CUSTOMER_ONLY      = [UserRole.CUSTOMER];
 const BEAUTICIAN_ONLY    = [UserRole.BEAUTICIAN];
@@ -32,6 +33,7 @@ const ServicePageListForUser = lazy(
 );
 const ChatList = lazy(() => import("../features/user/component/chat/chatList"));
 const BeauticianBookingsPage=lazy(()=>import('../features/beautician/booking/beautcianBookingsPage'))
+const WalletCard=lazy(()=>import('../features/wallet/walletCard'))
 export const userRoutes: RouteObject[] = [
   {
     path: publicFrontendRoutes.profile,
@@ -121,5 +123,13 @@ export const userRoutes: RouteObject[] = [
          <BeauticianBookingsPage/>
       </PrivateRoute>
     )
+  },
+  {
+    path: customerFrontendRoutes.wallet,
+    element: (
+      <PrivateRoute allowedRoles={CUSTOMER_ONLY}>
+        <WalletCard />
+      </PrivateRoute>
+    ),
   },
 ];
