@@ -157,7 +157,6 @@ export class BookingController{
  
       const { bookingId } = req.params;
       const { refundReason } = req.body;
-      console.log(refundReason)
       if(!refundReason|| !bookingId)
       {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
@@ -273,7 +272,6 @@ export class BookingController{
  getAllRefunsForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
     try{
         const {page,limit,status}=req.query
-        console.log('refund status',status)
         const result=await this.getAllRefundUC.execute({
           page: page?parseInt(page as string):1,
           limit:limit?parseInt(limit as string):10,

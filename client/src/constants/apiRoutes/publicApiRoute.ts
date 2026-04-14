@@ -46,5 +46,8 @@ export const publicApiRoutes={
   cancelBooking:'/bookings/:bookingId/cancel',
   //wallet
   getWallet:'/wallet',
-  
+  //notification
+  getNotification:'/notifications',
+  readAllNotification:'/notifications'
+
 }

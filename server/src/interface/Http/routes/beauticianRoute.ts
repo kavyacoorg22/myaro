@@ -10,7 +10,6 @@ import { ValidateComment } from '../middleware/validateUserInput';
 
 //user route
 router.get('/pamphlet/:id',authenticateUser,beauticianServiceController.getPamphletForCustomer)
-router.get('/location/:id',authenticateUser,beauticianController.getServiceArea)
 
 router.post('/register',authenticateCustomer,uploadFields(['portfolioImage', 'certificateImage', 'shopPhotos', 'shopLicence']),validateBeauticianFiles,validateBeauticianData,beauticianController.beauticianRegistration)
 router.get('/status', authenticateCustomer, beauticianController.verifiedStatus);
@@ -31,6 +30,7 @@ router.get('/pamhlet/:beauticianId',authenticateUser,beauticianServiceController
 router.get('/pamphlet',authenticateBeautician,beauticianServiceController.getPamphlet)
 
 //location
+router.get('/location/:beauticianId',authenticateCustomer,beauticianController.getServiceAreaForUser)
 router.get('/location',authenticateBeautician,beauticianController.getServiceArea)
 router.patch('/location',authenticateBeautician,beauticianController.addServiceArea)
 

@@ -7,4 +7,6 @@ export interface INotificationRepository {
   markAsRead(notificationId: string): Promise<void>;
   deleteNotification(notificationId: string): Promise<void>;
   clearAllNotifications(userId: string): Promise<void>;
+    markAllAsRead(userId: string): Promise<void>  
+
 }

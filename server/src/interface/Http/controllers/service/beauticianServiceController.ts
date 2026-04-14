@@ -40,10 +40,7 @@ export class BeauticianServiceController {
   ): Promise<void> => {
     try {
       const beauticianId = req.user?.id;
-        console.log('req.user:', req.user);
-    console.log('req.user?.id:', req.user?.id);
-    console.log('Type:', typeof req.user?.id);
-    console.log('beautician Id',beauticianId)
+     
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -144,7 +141,6 @@ export class BeauticianServiceController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      console.log('pamplet controller reached')
       const pamphletImg = req.file;
       const id = req.user?.id;
       if (!id) {
@@ -153,7 +149,6 @@ export class BeauticianServiceController {
           HttpStatus.UNAUTHORIZED,
         );
       }
-      console.log('pamplet img',pamphletImg?.originalname)
       if(!pamphletImg)
       {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
@@ -270,7 +265,6 @@ export class BeauticianServiceController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      console.log("controller of pamplet for customer reacheddddd........")
       const beauticianId = req.params.beauticianId;
 
       if (!beauticianId) {

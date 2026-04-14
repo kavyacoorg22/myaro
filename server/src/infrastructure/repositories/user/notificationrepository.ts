@@ -67,6 +67,13 @@ export class NotificationRepository
     if (!result) throw new Error("Notification not found");
   }
 
+  async markAllAsRead(userId: string): Promise<void> {
+  await NotificationModel.updateMany(
+    { userId: new Types.ObjectId(userId), isRead: false },
+    { $set: { isRead: true } }
+  )
+}
+
   async deleteNotification(notificationId: string): Promise<void> {
     const result = await NotificationModel.findByIdAndUpdate(
       notificationId,

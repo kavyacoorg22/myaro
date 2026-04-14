@@ -23,10 +23,16 @@ export interface IGetAvailabilitySlotDto {
   source:     scheduleSourceType;
     type?:      ScheduleTypeValue;
 }
+export interface IServiceLocation {
+  city: string;
+  lat: number;
+  lng: number;
+  formattedString: string;
+}
 
 export interface IGetServiceAreaDto {
-  homeServiceableLocation?: string[];
-  serviceableLocation?: string[];
+   homeServiceableLocation?: IServiceLocation[];
+  serviceableLocation?: IServiceLocation[];
 }
 
 

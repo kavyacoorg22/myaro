@@ -29,7 +29,6 @@ export class PostController {
     try {
       const beauticianId = req.user?.id;
       const input = req.body;
-      console.log(`create post input... `, input);
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -107,8 +106,7 @@ export class PostController {
       const postType = (req.query.postType as PostType) ?? PostType.POST;
       const cursor = (req.query.cursor as string) ?? null;
       const limit = Number(req.query.limit) || 12;
-      console.log("beautician post -> id of beautician", beauticianId);
-      console.log("post controller reached");
+    
       if (!beauticianId) {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST);
       }

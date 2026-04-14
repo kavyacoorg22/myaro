@@ -168,6 +168,9 @@ import { GetBookingDetailUseCase } from "../../application/usecases/admin/manage
 import { GetDisputeDetailsUseCase } from "../../application/usecases/admin/management/booking/getDisputeDetailsUseCase";
 import { GetRefundDetailUseCase } from "../../application/usecases/admin/management/booking/getrefundDetailUSeCase";
 import { GetUserRefundSummeryUseCase } from "../../application/usecases/customer/getUserRefundSummeryUseCase";
+import { GetUserNotificationsUseCase } from "../../application/usecases/notification/IGetNotificationUseCase";
+import { NotificationController } from "../../interface/Http/controllers/public/notification";
+import { MarkAllNotificationsReadUseCase } from "../../application/usecases/notification/markAllNotificationRead";
 
 
 
@@ -417,3 +420,7 @@ const processRefundUC=new ProcessRefundUseCase(bookingRepo,paymentrepo,refundRep
 const releasePayoutUC=new ReleasePayoutUseCase(bookingRepo,paymentrepo,payoutRepo,razorPayService,bookingValidatorService,bookinghistoryService,paymentLookupService,notificationDispatchService,razorPayStatusResolverService)
 const getUserRefundSummeryUC=new GetUserRefundSummeryUseCase(refundRepo)
 export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC,processRefundUC,releasePayoutUC,getUserRefundSummeryUC)
+// notification
+const getNotificationUC=new GetUserNotificationsUseCase(notificationRepo)
+const markAllNotificationReadUC=new MarkAllNotificationsReadUseCase(notificationRepo)
+export const notificationController=new NotificationController(getNotificationUC,markAllNotificationReadUC)

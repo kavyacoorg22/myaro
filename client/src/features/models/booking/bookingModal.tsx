@@ -10,6 +10,7 @@ import { TimeSlotPicker } from "./timeSlotPicker";
 import { DurationPicker } from "./durationPicker";
 import { getEndTimeLabel, hasConsecutiveBlock, mapBackendSlots, type TimeSlot } from "../../../lib/utils/BookingslotLable";
 import { BookingApi } from "../../../services/api/booking";
+import { handleApiError } from "../../../lib/utils/handleApiError";
 
 export default function BookingModal({
   isOpen = true,
@@ -222,6 +223,8 @@ export default function BookingModal({
         setSlots(mapBackendSlots(freshRes.data?.data?.availability?.slots ?? []));
         return;
       }
+       handleApiError(err)
+
       setSlotError("Something went wrong. Please try again.");
     }
   };

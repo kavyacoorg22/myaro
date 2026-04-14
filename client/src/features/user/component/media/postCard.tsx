@@ -11,9 +11,10 @@ export const PostCard: React.FC<PostCardProps> = ({
     onCommentClick, 
   className = "",
 }) => {
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(post.isLiked ?? false);
+const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
   const [saved, setSaved] = useState(false);
-  const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
+
   const [followed, setFollowed] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -175,11 +176,11 @@ export const PostCard: React.FC<PostCardProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
           <button onClick={handleLike} className="flex items-center gap-1.5 group transition-transform active:scale-90">
-      <Heart className={`w-5 h-5 transition-colors ${post.isLiked ? "fill-rose-500 text-rose-500" : "text-gray-700 group-hover:text-rose-400"}`} />
+<Heart className={`w-5 h-5 transition-colors ${liked ? "fill-rose-500 text-rose-500" : "text-gray-700 group-hover:text-rose-400"}`} />
       {localLikes > 0 && <span className="text-sm font-medium text-gray-700">{localLikes}</span>}
     </button>
               <button 
-      onClick={() => onCommentClick?.(post.id)}  // ← add onClick
+      onClick={() => onCommentClick?.(post.id)}  
       className="group transition-transform active:scale-90"
     >
       <MessageCircle className="w-5 h-5 text-gray-700 group-hover:text-blue-400 transition-colors" />

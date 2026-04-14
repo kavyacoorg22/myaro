@@ -1,10 +1,10 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, optionalAuth, paymentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, notificationController, optionalAuth, paymentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword, ValidateComment } from "../middleware/validateUserInput";
 import { validateCreatePostInput, validateSignedUrlRequest } from "../middleware/validateBeauticianINput";
-import { validateRequestRefund } from "../middleware/bookingValidation";
+import { validateCreateBooking, validateRequestRefund } from "../middleware/bookingValidation";
 const router=Router()
 
 router.get('/profile/me',authenticateUser,profileController.ownProfile)
@@ -40,7 +40,7 @@ router.get('/chat/:chatId/messages',authenticateUser,chatController.getMessageBy
 //booking
 router.post('/bookings/lock-slot', authenticateCustomer, bookingController.lockSlot);
 router.get('/bookings/:bookingId',authenticateUser,bookingController.getBookingById)
-router.post('/bookings',authenticateCustomer,bookingController.createBooking),
+router.post('/bookings',validateCreateBooking,authenticateCustomer,bookingController.createBooking),
 router.patch('/bookings/:bookingId/status',authenticateUser,bookingController.updateBookingStatus)
 
 //payment
@@ -54,4 +54,8 @@ router.post('/bookings/:bookingId/refund-dispute',authenticateBeautician,booking
 router.post('/bookings/:bookingId/cancel',authenticateCustomer,bookingController.cancelBooking)
 //wallet
 router.get('/wallet',authenticateCustomer,paymentController.getUserRefundSummery)
+//notification
+router.get('/notifications',authenticateUser,notificationController.getNotifications)
+router.patch("/notifications",authenticateUser, notificationController.markAllNotificationRead)
+
 export default router

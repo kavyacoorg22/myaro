@@ -34,7 +34,6 @@ export class CategoryController {
     try {
       const id = req.user?.id;
       const { name, description } = req.body;
-      console.log('category body',req.body)
 
       if (!id) {
         throw new AppError(

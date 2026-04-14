@@ -25,7 +25,6 @@ export class GetBeauticianServicesListUseCase implements IGetBeauticianServicesL
     const mapped = services.map((service) =>
       toGetBeauticianServiceList(service),
     );
-    console.log(mapped)
     return { services: mapped };
   }
 }

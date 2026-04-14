@@ -65,6 +65,9 @@ export const BeauticianApi = {
    getLocation:async()=>{
     return await axiosWrapper<IGetServiceAreaResponse>(api.get(beauticianApi.getLocation))
    },
+   getLocationForUser:async(beauticianId:string)=>{
+    return await axiosWrapper<IGetServiceAreaResponse>(api.get(beauticianApi.getLocationForUser.replace(':beauticianId',beauticianId)))
+   },
    addRecurringSchedule:async(data:IAddRecursionScheduleRequest)=>{
     return await axiosWrapper<BackendResponse>(api.post(beauticianApi.addRecurringSlot,data))
    },

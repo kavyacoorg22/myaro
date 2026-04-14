@@ -186,9 +186,7 @@ export class BeauticianController {
   ): Promise<void> => {
     try {
       const {id,role}= req.user!;
-      console.log('reached... update profileData controller')
       const data = req.body;
-      console.log(data)
       if (!id) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,
@@ -315,13 +313,16 @@ export class BeauticianController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const beauticianId = req.params.id;
+      const beauticianId = req.params.beauticianId;
+   console.log('............*********************************reached controller')
       if (!beauticianId) {
         throw new AppError(
           generalMessages.ERROR.BAD_REQUEST,
           HttpStatus.BAD_REQUEST,
         );
       }
+          res.set('Cache-Control', 'no-store'); // 👈 add this
+
       const data = await this._getServiceAreaUC.execute(beauticianId);
       res.status(HttpStatus.OK).json({
         success: true,

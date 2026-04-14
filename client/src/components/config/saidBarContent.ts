@@ -28,7 +28,7 @@ export const saidBarContent:SidebarContentType[]=[
   {label:"Search",icon:MagnifyingGlassIcon,showWhenAuthenticatedOnly:true,isButton:true},
    {label:"Message",icon:PaperPlaneTiltIcon,path:publicFrontendRoutes.chat,showWhenAuthenticatedOnly:true,},
     {label:"Profile",icon:UserIcon, path:publicFrontendRoutes.profile,showWhenAuthenticatedOnly:true,},
-     {label:"Notification",icon:BellIcon,path:publicFrontendRoutes.notification,showWhenAuthenticatedOnly:true,},
+     {label:"Notification",icon:BellIcon,path:publicFrontendRoutes.notification,showWhenAuthenticatedOnly:true,isButton:true},
       {label:"Tips&Rent",icon:CameraRotateIcon,path:publicFrontendRoutes.tipsRent,},
       {label:"Bookings",icon:CalendarDotsIcon,path:beauticianFrontendRoutes.booking,roles:['beautician']},
        {label:"Dashboard",icon:HouseIcon,path:adminFrontendRoute.dashboard,roles:['admin']},

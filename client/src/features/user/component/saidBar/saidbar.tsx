@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { publicFrontendRoutes } from "../../../../constants/frontendRoutes/publicFrontendRoutes";
 import { ScrollArea } from "../../../../components/ui/scrollArea";
 import { SearchModal } from "../../../models/user/Logic/searchLogic";
+import { NotificationModal } from "../../../models/notification/notification";
 
 export const SaidBar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,6 +23,8 @@ export const SaidBar = () => {
   const navigate = useNavigate()
   const role = currentUser?.role as Role | undefined
   const isAuthenticated = currentUser?.isAuthenticated ?? false;
+  const [showNotifications, setShowNotifications] = useState(false)
+
 
   function cansee(content: SidebarContentType, isAuthenticated: boolean, role: Role | undefined) {
     if (content.showWhenAuthenticatedOnly && !isAuthenticated) return false
@@ -51,6 +54,9 @@ export const SaidBar = () => {
     if (content.label === "Search") {
       setIsSearchOpen(true);
     }
+      if (content.label === "Notification") {
+    setShowNotifications(true)   
+  }
   }
 
   return (
@@ -85,7 +91,7 @@ export const SaidBar = () => {
                 icon={content.icon}
                 path={content.path}
                 isExpanded={isExpanded}
-                onClick={content.label === "Search" ? () => handleItemClick(content) : undefined}
+    onClick={content.isButton ? () => handleItemClick(content) : undefined}
               />
             ))}
           </nav>
@@ -102,6 +108,11 @@ export const SaidBar = () => {
       </div>
 
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+       <NotificationModal
+  isOpen={showNotifications}
+  onClose={() => setShowNotifications(false)}
+  isSidebarExpanded={isExpanded}   
+/>
     </>
   )
 }

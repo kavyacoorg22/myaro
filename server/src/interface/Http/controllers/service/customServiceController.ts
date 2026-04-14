@@ -128,7 +128,6 @@ export class CustomServiceController {
         status: CustomServiceAction;
       };
 
-      console.log('custom service status',status)
 
       if (!customServiceId || !adminId) {
         throw new AppError(
