@@ -11,6 +11,7 @@ import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
 import { IAddCommentInput } from "../../../../application/interfaceType/commetLike";
 import { CommentType } from "../../../../domain/enum/userEnum";
+import { IGetRepliesUseCase } from "../../../../application/interface/public/comment/IgetReplyCommentUSeCase";
 
 export class LikeCommetController {
   constructor(
@@ -20,6 +21,7 @@ export class LikeCommetController {
     private deleteCommentUC: IdeleteCommentUseCase,
     private getHomeServiceCommentUC: IGetHomeServiceCommetsUseCase,
     private getPostCommentUseCase: IGetPostCommetsUseCase,
+    private getReplyCommentUC:IGetRepliesUseCase
   ) {}
 
   addLike = async (
@@ -94,7 +96,7 @@ export class LikeCommetController {
 
     const postId = req.params.postId;             
     const beauticianId = req.params.beauticianId; 
-    const { text } = req.body;                   
+    const { text,parentId } = req.body;                   
 
     const input: IAddCommentInput = {
       userId,
@@ -102,6 +104,7 @@ export class LikeCommetController {
       beauticianId,
       text,
       type: postId ? CommentType.POST : CommentType.HOME,
+      ...(parentId && {parentId})
     };
 
     await this.addCommentUC.execute(input);
@@ -194,6 +197,38 @@ export class LikeCommetController {
 
       const data = await this.getHomeServiceCommentUC.execute(
         beauticianId,
+        limit,
+        cursor,
+      );
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: "Data returned",
+        data,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+  getReplyComments= async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parentId = req.params.commentId;
+      const limit = Number(req.query.limit) || 5;
+      const cursor = (req.query.cursor as string) || null;
+
+      if (!parentId) {
+        throw new AppError(
+          generalMessages.ERROR.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const data = await this.getReplyCommentUC.execute(
+        parentId,
         limit,
         cursor,
       );

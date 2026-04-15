@@ -9,12 +9,13 @@ import { IdeleteCommentUseCase } from "../../../interface/public/comment/Idelete
 export class DeleteCommentUseCase implements IdeleteCommentUseCase {
   constructor(
     private commentRepo: ICommentRepository,
-    private postRepo: IPostRepository,
+    private postRepo: IPostRepository
   ) {}
+
   async execute(
     userId: string,
     commentId: string,
-    postId: string | null,
+    postId: string | null
   ): Promise<void> {
     const comment = await this.commentRepo.findById(commentId);
     if (!comment) {
@@ -25,7 +26,6 @@ export class DeleteCommentUseCase implements IdeleteCommentUseCase {
     let isPostOwner = false;
     if (postId !== null && comment.type !== CommentType.HOME) {
       const post = await this.postRepo.findById(postId);
-
       if (post && post.beauticianId === userId) {
         isPostOwner = true;
       }
@@ -34,11 +34,17 @@ export class DeleteCommentUseCase implements IdeleteCommentUseCase {
     if (!isCommentOwner && !isPostOwner) {
       throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
+
     await this.commentRepo.delete(commentId);
 
-    if (postId) {
-      await this.postRepo.decrementCommentsCount(postId);
+    const isReply = !!comment.parentId;
+
+    if (isReply) {
+      await this.commentRepo.decrementReplyCount(comment.parentId!);
+    } else {
+      if (postId) {
+        await this.postRepo.decrementCommentsCount(postId);
+      }
     }
   }
-     
 }

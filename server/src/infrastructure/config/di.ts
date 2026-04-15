@@ -171,6 +171,7 @@ import { GetUserRefundSummeryUseCase } from "../../application/usecases/customer
 import { GetUserNotificationsUseCase } from "../../application/usecases/notification/IGetNotificationUseCase";
 import { NotificationController } from "../../interface/Http/controllers/public/notification";
 import { MarkAllNotificationsReadUseCase } from "../../application/usecases/notification/markAllNotificationRead";
+import { GetRepliesUseCase } from "../../application/usecases/public/comment/getReplyCommentUseCase";
 
 
 
@@ -410,7 +411,8 @@ const addCommentUC=new AddCommentUseCase(commentRepo,postRepo,beauticianRepo)
 const deleteCommentUC=new DeleteCommentUseCase(commentRepo,postRepo)
 const getHomeServiceCommentUC=new GetHomeServiceUseCase(commentRepo,userRepo)
 const getPostCommentUseCase=new GetPostCommentUSeCase(commentRepo,userRepo)
-export const likeCommentController=new LikeCommetController(addLikeUC,removeLikeUC,addCommentUC,deleteCommentUC,getHomeServiceCommentUC,getPostCommentUseCase)
+const getReplyCommentUC=new GetRepliesUseCase(commentRepo,userRepo)
+export const likeCommentController=new LikeCommetController(addLikeUC,removeLikeUC,addCommentUC,deleteCommentUC,getHomeServiceCommentUC,getPostCommentUseCase,getReplyCommentUC)
 
 //payment
 const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayService)

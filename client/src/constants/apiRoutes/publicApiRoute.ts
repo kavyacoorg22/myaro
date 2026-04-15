@@ -48,6 +48,7 @@ export const publicApiRoutes={
   getWallet:'/wallet',
   //notification
   getNotification:'/notifications',
-  readAllNotification:'/notifications'
-
+  readAllNotification:'/notifications',
+   //replay comment
+   getReplyComment:'/posts/:postId/comments/:commentId/replies',
 }

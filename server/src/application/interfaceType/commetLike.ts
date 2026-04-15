@@ -1,12 +1,13 @@
 import { CommentType } from "../../domain/enum/userEnum";
-import { IGetHomeServiceCommentsDto, IGetPostCommentsDto } from "../dtos/likeCommet";
+import { IGetHomeServiceCommentsDto, IGetPostCommentsDto, IGetReplyDto } from "../dtos/likeCommet";
 
 export  interface IAddCommentInput{
 userId:string,
 postId?:string,
 beauticianId?:string,
 text:string,
-type:CommentType
+type:CommentType,
+parentId?:string
 }
 
 export interface IGetPostCommentsOutPut{
@@ -17,4 +18,9 @@ export interface IGetPostCommentsOutPut{
 export interface IGetHomeServiceCommentsOutPut{
 comments:IGetHomeServiceCommentsDto[]
 nextCursor:string|null
+}
+
+export interface IGetRepliesOutput {
+  replies: IGetReplyDto[];
+  nextCursor: string | null;
 }

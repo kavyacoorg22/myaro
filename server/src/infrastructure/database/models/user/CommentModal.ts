@@ -6,6 +6,8 @@ export type CommentDoc=Document &{
   userId:Types.ObjectId,
   postId?:Types.ObjectId,
   beauticianId?:Types.ObjectId,
+  parentId?:Types.ObjectId|null,
+    replyCount?:number,
   text:string,
   type:CommentType,
   isDeleted:boolean,
@@ -17,9 +19,13 @@ const CommentSchema=new Schema<CommentDoc>({
    userId:{type:Schema.Types.ObjectId,required:true},
    postId:{type:Schema.Types.ObjectId},
    beauticianId:{type:Schema.Types.ObjectId},
+   parentId:{type:Schema.Types.ObjectId},
    text:{type:String,required:true},
    type:{type:String,enum:Object.values(CommentType)},
    isDeleted:{type:Boolean,default:false}
 },{timestamps:true})
+
+CommentSchema.index({ postId: 1, parentId: 1 });
+CommentSchema.index({ parentId: 1 });
 
 export const CommentModal:Model<CommentDoc>=mongoose.models.Comment||mongoose.model<CommentDoc>('Comment',CommentSchema)

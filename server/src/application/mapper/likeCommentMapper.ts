@@ -1,7 +1,7 @@
 import { Comment } from "../../domain/entities/comment";
 import { User } from "../../domain/entities/User";
 import { getTimeAgo } from "../../utils/schedule/dateHelper";
-import { IGetHomeServiceCommentsDto, IGetPostCommentsDto } from "../dtos/likeCommet";
+import { IGetHomeServiceCommentsDto, IGetPostCommentsDto, IGetReplyDto } from "../dtos/likeCommet";
 
 
 export function toGetHomeServiceCommentDto(cm:Comment,user:User):IGetHomeServiceCommentsDto{
@@ -33,6 +33,25 @@ export function toGetPostCommentDto(cm:Comment,user:User):IGetPostCommentsDto{
      userName:user.userName,
      fullName:user.fullName,
      profileImg:user.profileImg,
-     createdAt:getTimeAgo(cm.createdAt)
+     createdAt:getTimeAgo(cm.createdAt),
+     replyCount:cm.replyCount??0
   }
 }
+
+export const toGetReplyDto = (
+  reply: Comment,
+  user: User
+): IGetReplyDto => {
+  return {
+    id: reply.id,
+    text: reply.text,
+    userId: reply.userId,
+    parentId: reply.parentId!,
+    user: {
+      id: user.id,
+      name: user.fullName,
+      profileImg: user.profileImg??'',
+    },
+    createdAt: reply.createdAt,
+  };
+};

@@ -1,7 +1,7 @@
 import {  customerApiRoute } from "../../constants/apiRoutes/customerRoute"
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute"
 import type { BackendResponse } from "../../types/api/api"
-import type { IGetHomeServiceCommentsOutPut, IGetPostCommentsOutPut } from "../../types/api/commentLike"
+import type { IGetHomeServiceCommentsOutPut, IGetPostCommentsOutPut, IGetRepliesOutput } from "../../types/api/commentLike"
 import api, { axiosWrapper } from "../axiosWrapper"
 
 
@@ -12,9 +12,9 @@ export const CommentLikeApi={
    removeLike:async(postId:string)=>{
     return await axiosWrapper<BackendResponse>(api.delete(publicApiRoutes.removeLike.replace(':postId',postId)))
   },
-  addPostComment:async(text:string,postId:string)=>{
+  addPostComment:async(text:string,postId:string,parentId?:string)=>{
     return await axiosWrapper<BackendResponse>(api.post(publicApiRoutes.addPostComment.replace(':postId',postId),
-  {text}
+  {text,parentId}
   ))
   },
   getPostComment:async(postId:string,limit:number=10,cursor?:string|null)=>{
@@ -41,5 +41,13 @@ export const CommentLikeApi={
     }
     return await axiosWrapper<IGetHomeServiceCommentsOutPut>(api.get(customerApiRoute.getHomeServiceComment.replace(':beauticianId',beauticianId),{params}))
   },
+     getCommentReply:async(commentId:string,limit:number=5,cursor?:string|null)=>{
+    const params={
+      limit,
+      ...(cursor&&{cursor})
+    }
+    return await axiosWrapper<IGetRepliesOutput>(api.get(publicApiRoutes.getReplyComment.replace(':commentId',commentId),{params}))
+  },
+
 
 }

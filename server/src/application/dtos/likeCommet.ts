@@ -25,4 +25,18 @@ export interface IGetPostCommentsDto{
   fullName:string,
   profileImg?:string,
   createdAt:string
+  replyCount:number
+}
+
+export interface IGetReplyDto {
+  id: string;
+  text: string;
+  userId: string;
+  parentId: string;
+  user: {
+    id: string;
+    name: string;
+    profileImg: string;
+  };
+  createdAt: Date;
 }

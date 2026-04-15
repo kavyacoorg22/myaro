@@ -1,5 +1,5 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAdmin, authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, notificationController, optionalAuth, paymentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, notificationController, optionalAuth, paymentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword, ValidateComment } from "../middleware/validateUserInput";
@@ -32,6 +32,7 @@ router.delete('/posts/:postId/like',authenticateUser,likeCommentController.remov
 router.post('/posts/:postId/comment',authenticateUser,ValidateComment, likeCommentController.addComment)
 router.get('/posts/:postId/comment',authenticateUser,likeCommentController.getPostComment)
 router.delete('/posts/:postId/comment/:commentId',authenticateUser,likeCommentController.deleteComment)
+router.get('/posts/:postId/comments/:commentId/replies',authenticateUser,likeCommentController.getReplyComments)
 //chat
 router.post('/chats',authenticateUser,chatController.createChat)
 router.get('/chats',authenticateUser,chatController.getUserChats)

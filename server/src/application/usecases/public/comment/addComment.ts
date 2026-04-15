@@ -4,15 +4,22 @@ import { ICommentRepository } from "../../../../domain/repositoryInterface/User/
 import { IAddCommentUSeCase } from "../../../interface/public/comment/IaddCommentUSeCase";
 import { IAddCommentInput } from "../../../interfaceType/commetLike";
 
-
- export class AddCommentUseCase implements IAddCommentUSeCase {
+export class AddCommentUseCase implements IAddCommentUSeCase {
   constructor(
     private commentRepo: ICommentRepository,
-    private postRepo: IPostRepository,           
-    private beauticianRepo: IBeauticianRepository 
+    private postRepo: IPostRepository,
+    private beauticianRepo: IBeauticianRepository
   ) {}
 
   async execute(input: IAddCommentInput): Promise<void> {
+
+    if (!input.postId && !input.beauticianId) {
+      throw new Error("Either postId or beauticianId is required");
+    }
+
+    if (input.postId && input.beauticianId) {
+      throw new Error("Only one of postId or beauticianId is allowed");
+    }
 
     if (input.postId) {
       const post = await this.postRepo.findById(input.postId);
@@ -24,16 +31,35 @@ import { IAddCommentInput } from "../../../interfaceType/commetLike";
       if (!beautician) throw new Error("Beautician not found");
     }
 
+    if (input.parentId) {
+      const parentComment = await this.commentRepo.findById(input.parentId);
+
+      if (!parentComment) {
+        throw new Error("Parent comment not found");
+      }
+
+      if (
+        (input.postId && parentComment.postId?.toString() !== input.postId) ||
+        (input.beauticianId && parentComment.beauticianId?.toString() !== input.beauticianId)
+      ) {
+        throw new Error("Invalid reply: mismatched parent");
+      }
+    }
+
     await this.commentRepo.create({
       userId: input.userId,
-      postId: input.postId,
-      beauticianId: input.beauticianId,
+      postId: input.postId ,
+      beauticianId: input.beauticianId ,
       text: input.text,
-      type: input.type,
+      type: input.type, 
+      parentId: input.parentId??null,
       isDeleted: false,
     });
-
-      if (input.postId) {
+   
+    if (input.parentId) {
+  await this.commentRepo.incrementReplyCount(input.parentId);
+}
+    if (input.postId && !input.parentId) {
       await this.postRepo.incrementCommentsCount(input.postId);
     }
   }

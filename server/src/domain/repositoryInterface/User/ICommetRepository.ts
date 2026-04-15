@@ -6,5 +6,9 @@ export interface ICommentRepository{
     delete(id: string): Promise<void>;
   findById(id: string): Promise<Comment | null>;
   findByPostId(postId:string,limit:number,cursor?:string):Promise<{comments:Comment[];nextCursor:string|null}>
+  findReplies(parentId:string,limit:number,cursor?:string|null):Promise<{ replies: Comment[]; nextCursor: string | null }>
+  incrementReplyCount(commentId: string): Promise<void>
+   decrementReplyCount(commentId: string): Promise<void>
   findHomeServiceComments(beauticianId:string,limit:number,cursor?:string|null):Promise<{comments:Comment[];nextCursor:string|null}>
+
 }

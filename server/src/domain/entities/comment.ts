@@ -5,6 +5,8 @@ export interface Comment{
    userId:string,
    postId?:string,
    beauticianId?:string,
+   parentId?:string|null,
+   replyCount?:number,
    text:string,
    type:CommentType,
    isDeleted:boolean,
