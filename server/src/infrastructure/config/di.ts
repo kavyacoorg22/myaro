@@ -172,6 +172,11 @@ import { GetUserNotificationsUseCase } from "../../application/usecases/notifica
 import { NotificationController } from "../../interface/Http/controllers/public/notification";
 import { MarkAllNotificationsReadUseCase } from "../../application/usecases/notification/markAllNotificationRead";
 import { GetRepliesUseCase } from "../../application/usecases/public/comment/getReplyCommentUseCase";
+import { GetRevenueUC } from "../../application/usecases/admin/dashboard/getRevenueUseCase";
+import { GetDashboardOverviewUC } from "../../application/usecases/admin/dashboard/getOverViewOfDashBoardUseCase";
+import { GetBookingTrendUC } from "../../application/usecases/admin/dashboard/getBookingTrendUseCase";
+import { DashboardController } from "../../interface/Http/controllers/admin/dashBoardController";
+import { GetUserGrowthUseCae } from "../../application/usecases/admin/dashboard/getUserGrowthUseCase";
 
 
 
@@ -426,3 +431,9 @@ export const paymentController=new PaymentController(createOrderUC,verifyPayment
 const getNotificationUC=new GetUserNotificationsUseCase(notificationRepo)
 const markAllNotificationReadUC=new MarkAllNotificationsReadUseCase(notificationRepo)
 export const notificationController=new NotificationController(getNotificationUC,markAllNotificationReadUC)
+//dashboard
+const getUserGrowthUC=new GetUserGrowthUseCae(userRepo)
+const  getRevenueUC=new GetRevenueUC(paymentrepo)
+const getDashBoardOverView=new GetDashboardOverviewUC(userRepo,paymentrepo,beauticianRepo)
+const getBookingTrendUC=new GetBookingTrendUC(bookingRepo)
+export const dashboardController=new DashboardController(getDashBoardOverView,getUserGrowthUC,getBookingTrendUC,getRevenueUC)

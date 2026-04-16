@@ -1,3 +1,4 @@
+import { RevenueStatsDto } from "../../../../application/dtos/repo";
 import { Booking } from "../../../entities/booking";
 import { Payment } from "../../../entities/payment";
 import { PaymentStatus } from "../../../enum/paymentEnum";
@@ -31,4 +32,8 @@ findByRazorpayOrderId(razorpayOrderId: string): Promise<Payment | null>;
 findByIds(ids: string[]): Promise<Payment[]>;
 findPaidByBookingId(bookingId: string): Promise<Payment | null>;
 findPendingByBookingId(bookingId: string): Promise<Payment | null>;
+getHeldPayments():Promise<number>
+getDisputesCount():Promise<number>
+getRevenueStats(): Promise<RevenueStatsDto>
+ getTotalRefundAmount(): Promise<number>
 }

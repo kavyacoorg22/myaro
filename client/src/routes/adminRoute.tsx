@@ -5,7 +5,7 @@ import { adminFrontendRoute } from "../constants/frontendRoutes/adminFrontenRout
 import { lazy } from "react";
 
 const ADMIN_ONLY         = [UserRole.ADMIN];
-const Dashboard =lazy(()=>import('../features/admin/pages/dashboard'))
+const AdminDashboard=lazy(()=>import('../features/admin/component/dashboard/dashBoard'))
 const UsersList =lazy(()=>import('../features/admin/component/userList'))
 const BeauticianListPage =lazy(()=>import('../features/admin/pages/BeauticianPage'))
 const ManageServicesCategoriesContainer =lazy(()=>import('../features/service/component/adminmanageServiceCategory'))
@@ -18,7 +18,7 @@ export const adminRoutes: RouteObject[] = [
     path: adminFrontendRoute.dashboard,
     element: (
       <PrivateRoute allowedRoles={ADMIN_ONLY}>
-        <Dashboard />
+        <AdminDashboard />
       </PrivateRoute>
     ),
   },

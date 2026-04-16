@@ -5,6 +5,8 @@ import { Payout } from "../../domain/entities/payout";
 import { Refund } from "../../domain/entities/refund";
 import { User } from "../../domain/entities/User";
 import { IGetAllBookingDto, IGetAllDisputesDto, IGetAllRefundsDto, IGetBookingDetailDto, IGetDisputeDetailDto, IGetRefundDetailDto, IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
+import { BookingTrendDto, RevenueStatsDto, UserGrowthDto } from "../dtos/repo";
+import {  IDashboardOverviewOutput, } from "../interfaceType/adminType";
 
 export function toProcessRefundDto(result: {
   refund:   Refund;
@@ -147,3 +149,61 @@ export function toAdminRefundDetail(
   };
 }
 
+
+const formatINR = (amount: number): string => {
+  if (amount >= 100_000) return `₹${(amount / 100_000).toFixed(1)}L`;
+  if (amount >= 1_000)   return `₹${Math.round(amount / 1_000)}k`;
+  return `₹${amount}`;
+};
+ 
+
+export function toDashboardOverviewDto(raw: {
+  totalUsers:           number;
+  totalBeauticians:     number;
+  totalCustomers:       number;
+  pendingVerifications: number;
+  totalRefundAmount:    number;
+  heldPaymentAmount:    number;
+  disputesCount:        number;
+}): IDashboardOverviewOutput {
+  return {
+    data: {
+      totalUsers:           raw.totalUsers,
+      totalBeauticians:     raw.totalBeauticians,
+      totalCustomers:       raw.totalCustomers,
+      pendingVerifications: raw.pendingVerifications,
+      totalRefundAmount:    raw.totalRefundAmount,
+      heldPaymentAmount:    raw.heldPaymentAmount,
+      disputesCount:        raw.disputesCount,
+    },
+  };
+}
+ 
+
+export function toUserGrowthDto(data: UserGrowthDto): UserGrowthDto {
+  return {
+      month: data.month,   
+  customers: data.customers,
+  beauticians: data.beauticians
+
+  };
+}
+ 
+
+export function toBookingTrendDto(data: BookingTrendDto):BookingTrendDto  {
+  return { 
+    month: data.month,
+  completed: data.completed,
+  cancelled: data.cancelled,
+  refunded: data.refunded,
+  };
+}
+ 
+
+export function toRevenueDto(data: RevenueStatsDto):RevenueStatsDto {
+  return { 
+      completed: data.completed,   
+  refunded: data.refunded,   
+  held: data.held,
+  };
+}

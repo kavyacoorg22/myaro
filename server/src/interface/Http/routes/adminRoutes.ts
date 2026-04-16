@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { adminController, adminUserManagementController, authenticateAdmin, refreshTokenController, categoryController, serviceController, customServiceController, paymentController, bookingController } from "../../../infrastructure/config/di";
+import { adminController, adminUserManagementController, authenticateAdmin, refreshTokenController, categoryController, serviceController, customServiceController, paymentController, bookingController, dashboardController } from "../../../infrastructure/config/di";
 import { valiadteAdminAuthInput, ValidateAdminCategoryInput, ValidateAdminServiceInput, ValidateCategoryUpdateInput } from "../middleware/validateAdminInput";
 const router =Router()
 
@@ -33,4 +33,9 @@ router.get('/disputes',authenticateAdmin,bookingController.getAllDisputeForAdmin
 router.get('/bookings/:bookingId/dispute',authenticateAdmin,bookingController.getDisputeDetailForAdmin)
 router.get('/refunds',authenticateAdmin,bookingController.getAllRefunsForAdmin)
 router.get('/refunds/:refundId',authenticateAdmin,bookingController.getRefundDetailForAdmin)
+//dashboard
+router.get('/dashboard/user-growth',authenticateAdmin,dashboardController.getUserGrowth)
+router.get('/dashboard/revenue',authenticateAdmin,dashboardController.getRevenue)
+router.get('/dashboard/booking-trend',authenticateAdmin,dashboardController.getBookingTrend)
+router.get('/dashboard/overview',authenticateAdmin,dashboardController.getOverView)
 export  default router

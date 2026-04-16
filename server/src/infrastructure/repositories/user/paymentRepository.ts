@@ -5,6 +5,7 @@ import { PaymentDoc, PaymentModel } from "../../database/models/user/paymentModa
 import { GenericRepository } from "../genericRepository";
 import { Booking } from "../../../domain/entities/booking";
 import { PaymentStatus } from "../../../domain/enum/paymentEnum";
+import { RevenueStatsDto } from "../../../application/dtos/repo";
 
 export class PaymentRepository extends GenericRepository<Payment,PaymentDoc> implements IPaymentRepository{
 
@@ -115,6 +116,59 @@ async findPendingByBookingId(bookingId: string): Promise<Payment | null> {
   });
   return doc ? this.map(doc) : null;
 }
+
+ async getDisputesCount(): Promise<number> {
+  return PaymentModel.countDocuments({status:PaymentStatus.REFUND_DISPUTED})
+}
+async getHeldPayments(): Promise<number> {
+    return PaymentModel.countDocuments({status:PaymentStatus.PAID})
+}
+async getRevenueStats(): Promise<RevenueStatsDto> {
+  const raw = await PaymentModel.aggregate([
+    {
+      $match: {
+        status: {  
+          $in: [
+            PaymentStatus.RELEASED,
+            PaymentStatus.PAID,
+            PaymentStatus.REFUNDED,
+          ],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        completed: { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.RELEASED] }, "$amount", 0] } }, // ✅
+        refunded:  { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.REFUNDED] }, "$amount", 0] } }, // ✅
+        held:      { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.PAID]     }, "$amount", 0] } }, // ✅
+      },
+    },
+  ]);
+
+  if (!raw.length) return { completed: 0, refunded: 0, held: 0 };
+  const { completed, refunded, held } = raw[0];
+  return { completed, refunded, held };
+}
+  async getTotalRefundAmount(): Promise<number> {
+  const result = await PaymentModel.aggregate([
+    {
+      $match: {
+        status: PaymentStatus.REFUNDED,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalRefund: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  return result[0]?.totalRefund ?? 0;
+}
+
+
 protected map(doc:PaymentDoc):Payment
 {
   const base=super.map(doc)

@@ -4,6 +4,8 @@ import { BookingStatus } from "../../../domain/enum/bookingEnum";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { BookingDoc, BookingModel } from "../../database/models/user/bookingModal";
 import { GenericRepository } from "../genericRepository";
+import { BookingTrendDto } from "../../../application/dtos/repo";
+import { fillEmptyMonths, toMonthName } from "../../../utils/monthUtil";
 
 export class BookingRepository extends GenericRepository<Booking,BookingDoc> implements  IBookingRepository{
   constructor(){
@@ -108,6 +110,46 @@ async findDisputed(params: {
     bookings: docs.map((doc) => this.map(doc)),
     total,
   };
+}
+
+async getBookingTrendByMonth(year = new Date().getFullYear()): Promise<BookingTrendDto[]> {
+  const raw = await BookingModel.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $gte: new Date(`${year}-01-01`),
+          $lt:  new Date(`${year + 1}-01-01`),
+        },
+        status: {
+          $in: [
+            BookingStatus.COMPLETED,       // 'completed'
+            BookingStatus.CANCELLED,       // 'cancelled'
+            BookingStatus.REFUND_APPROVED, // 'refund_approved' ← closest to "refunded"
+          ]
+        },
+      },
+    },
+
+    {
+      $group: {
+        _id: { $month: "$createdAt" },
+        completed: { $sum: { $cond: [{ $eq: ["$status", BookingStatus.COMPLETED] }, 1, 0] } },
+        cancelled:  { $sum: { $cond: [{ $eq: ["$status", BookingStatus.CANCELLED] }, 1, 0] } },
+        refunded:   { $sum: { $cond: [{ $eq: ["$status", BookingStatus.REFUND_APPROVED] }, 1, 0] } },
+      },
+    },
+
+    { $sort: { _id: 1 } },
+  ]);
+
+  const named: BookingTrendDto[] = raw.map((r) => ({
+    month:     toMonthName(r._id),
+    completed: r.completed,
+    cancelled: r.cancelled,
+    refunded:  r.refunded,
+  }));
+
+  return fillEmptyMonths(named, { completed: 0, cancelled: 0, refunded: 0 });
 }
   protected map(doc:BookingDoc):Booking {
    const base=super.map(doc)

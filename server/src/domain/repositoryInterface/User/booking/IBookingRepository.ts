@@ -1,3 +1,4 @@
+import { BookingTrendDto } from "../../../../application/dtos/repo";
 import { Booking } from "../../../entities/booking";
 import { BookingStatus } from "../../../enum/bookingEnum";
 
@@ -30,4 +31,5 @@ findDisputed(params: {
   page: number;
   limit: number;
 }): Promise<{ bookings: Booking[]; total: number }>;
+getBookingTrendByMonth(year?:number): Promise<BookingTrendDto[]> 
 }

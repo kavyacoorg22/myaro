@@ -105,7 +105,11 @@ export const PostModal = ({
 
     try {
       const res = await CommentLikeApi.getCommentReply(commentId, 5, nextCursor);
-      const { replies: newReplies, nextCursor: next } = res.data?.data;
+      if(!res)
+      {
+        throw new Error('not available')
+      }
+      const { replies: newReplies, nextCursor: next } = res.data?.data??{};
 
       setRepliesMap((prev) => ({
         ...prev,

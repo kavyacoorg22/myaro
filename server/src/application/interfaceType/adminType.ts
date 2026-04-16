@@ -5,6 +5,7 @@ import { SortFilter } from "../../domain/enum/sortFilterEnum";
 import { UserRoleFilter } from "../../domain/enum/userEnum";
 import { IGetAllBookingDto, IGetAllDisputesDto, IGetAllRefundsDto, IGetBookingDetailDto, IGetDisputeDetailDto, IGetRefundDetailDto, IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
 import { IBeauticianDTO} from "../dtos/beautician";
+import { BookingTrendDto, DashboardOverviewDto, RevenueStatsDto, UserGrowthDto } from "../dtos/repo";
 import { IUserDto } from "../dtos/user";
 
 
@@ -136,4 +137,19 @@ export interface IGetAllRefundOutput {
 export interface IGetRefundDetailOutput {
   data:IGetRefundDetailDto
 }
- 
+
+export interface IUserGrowthOutPut{
+  data:UserGrowthDto[]
+}
+
+export interface IRevenueOutPut{
+  data:RevenueStatsDto
+}
+
+export interface IBookingTrendOutPut{
+  data:BookingTrendDto[]
+}
+
+export interface IDashboardOverviewOutput {
+  data: DashboardOverviewDto;
+}

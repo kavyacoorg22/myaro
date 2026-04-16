@@ -17,6 +17,7 @@ import { SOCKET_EVENTS } from "../../../../events/socketEvents";
 import { toReleasePayoutDto } from "../../../../mapper/adminMapper";
 import { IPayoutRepository } from "../../../../../domain/repositoryInterface/User/admin/IPayoutRepository";
 import { IReleasePayoutUSeCase } from "../../../../interface/admin/management/booking/IReleasePayoutUsecase";
+import { IBeauticianRepository } from "../../../../../domain/repositoryInterface/IBeauticianRepository";
 
 export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
   constructor(
@@ -29,6 +30,7 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
     private paymentLookup:        PaymentLookupService,
     private notificationDispatch: NotificationDispatchService,
     private statusResolver:       RazorpayStatusResolverService,
+    private Beauticianrepo:IBeauticianRepository
   ) {}
 
   async execute(input: IReleasePayoutInput): Promise<IReleasePayoutOutPut> {
@@ -94,11 +96,11 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
     const updatedBooking = await this.bookingRepo.updateByBookingId(bookingId, {
       status: bookingStatus,
     });
-
+ 
     if (!updatedBooking) {
       throw new AppError("Failed to update booking.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+    await this.Beauticianrepo.incrementHomeServiceCount(payout.beauticianId)
     // ── 9. Log history ─────────────────────────────────────────────────────
     await this.bookingHistory.log({
       bookingId,

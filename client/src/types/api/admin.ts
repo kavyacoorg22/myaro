@@ -2,7 +2,7 @@ import type { BeauticianStatusFilterType, BeauticianStatusType } from "../../con
 import type { PaymentStatusType, RefundStatusType } from "../../constants/types/payment";
 import type { SortFilterType } from "../../constants/types/sortFilter";
 import type { UserRoleFilterType } from "../../constants/types/User";
-import type { IGetAllBookingDto, IGetAllDisputesDto, IGetAllRefundsDto, IGetBookingDetailDto, IGetDisputeDetailDto, IGetRefundDetailDto, IProcessRefundDto, IReleasePayoutDto } from "../dtos/admin";
+import type { BookingTrendDto, DashboardOverviewDto, IGetAllBookingDto, IGetAllDisputesDto, IGetAllRefundsDto, IGetBookingDetailDto, IGetDisputeDetailDto, IGetRefundDetailDto, IProcessRefundDto, IReleasePayoutDto, RevenueStatsDto, UserGrowthDto } from "../dtos/admin";
 import type { IUserDto } from "../dtos/user";
 import type { BackendResponse } from "./api";
 import type { ShopAddressVO } from "./beautician";
@@ -148,7 +148,22 @@ export interface IGetAllRefundOutput {
 export interface IGetRefundDetailOutput {
   data:IGetRefundDetailDto
 }
- 
+
+export interface IUserGrowthOutPut{
+  data:UserGrowthDto[]
+}
+
+export interface IRevenueOutPut{
+  data:RevenueStatsDto
+}
+
+export interface IBookingTrendOutPut{
+  data:BookingTrendDto[]
+}
+
+export interface IDashboardOverviewOutput {
+  data: DashboardOverviewDto;
+}
 
 export type IGetAllUserResponse = BackendResponse<IGetAllUserResponseData>;
 export type IGetBeauticianResponse=BackendResponse<IGetBeauticianResponseData>

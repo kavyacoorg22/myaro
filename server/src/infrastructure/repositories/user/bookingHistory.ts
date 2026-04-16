@@ -18,6 +18,8 @@ export class BookingHistoryRepository extends GenericRepository<BookingHistory,B
     const docs=await BookingHistoryModel.find({bookingId:new Types.ObjectId(bookingId)})
     return docs.map((doc)=>this.map(doc))
   }
+
+  
   protected map(doc:BookingHistoryDoc):BookingHistory
   {
     const base=super.map(doc)

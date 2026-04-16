@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { Beautician } from "../../../domain/entities/Beautician";
-import { VerificationStatusFilter } from "../../../domain/enum/beauticianEnum";
+import { VerificationStatus, VerificationStatusFilter } from "../../../domain/enum/beauticianEnum";
 import { SortFilter } from "../../../domain/enum/sortFilterEnum";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import {
@@ -176,6 +176,16 @@ export class mongoBeauticianRepository
     return updatedDoc ? this.map(updatedDoc) : null;
   }
 
+  async getPendingBeauticians(): Promise<number> {
+    return  BeauticianModel.countDocuments({verificationStatus:VerificationStatus.PENDING})
+  }
+   async incrementHomeServiceCount(beauticianId: string): Promise<void> {
+     await BeauticianModel.updateOne(
+      {userId:new Types.ObjectId(beauticianId)},
+      {$inc:{homeserviceCount:1}}
+     )
+   }
+  
   protected map(doc: BeauticianDoc): Beautician {
     const base = super.map(doc) as any;
     return {

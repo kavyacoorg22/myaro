@@ -7,6 +7,8 @@ import { UserRole, UserRoleFilter } from "../../domain/enum/userEnum";
 import { Types } from "mongoose";
 import { GenericRepository } from "./genericRepository";
 import { IToggleActiveStatusRepository } from "../../domain/repositoryInterface/IToggleActiveRepository";
+import { UserGrowthDto } from "../../application/dtos/repo";
+import { fillEmptyMonths, toMonthName } from "../../utils/monthUtil";
 
 
 
@@ -229,6 +231,59 @@ async findUsersByIds(userIds: string[]): Promise<User[]> {
   return users.map((u)=>this.map(u))
 }
 
+async  getTotalUsers(): Promise<number> {
+  return  UserModel.countDocuments({isActive:true})
+}
+async  getTotalBeauticians(): Promise<number> {
+  return  UserModel.countDocuments({role:UserRole.BEAUTICIAN,isActive:true})
+}
+
+async getUserGrowthByMonth(year = new Date().getFullYear()): Promise<UserGrowthDto[]> {
+    const raw = await UserModel.aggregate([
+      // ── 1. filter current year only ──────────────────────────
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(`${year}-01-01`),
+            $lt:  new Date(`${year + 1}-01-01`),
+          },
+        },
+      },
+ 
+      // ── 2. group by month + role ──────────────────────────────
+      {
+        $group: {
+          _id: { month: { $month: "$createdAt" }, role: "$role" },
+          count: { $sum: 1 },
+        },
+      },
+ 
+      // ── 3. pivot: push each role count into a per-month doc ──
+    {
+  $group: {
+    _id: "$_id.month",
+    customers:   { $sum: { $cond: [{ $eq: ["$_id.role", UserRole.CUSTOMER]   }, "$count", 0] } },
+    beauticians: { $sum: { $cond: [{ $eq: ["$_id.role", UserRole.BEAUTICIAN] }, "$count", 0] } },
+  },
+},
+ 
+      // ── 4. sort ascending by month number ────────────────────
+      { $sort: { _id: 1 } },
+    ]);
+ 
+    // ── 5. convert month numbers → names ────────────────────────
+    const named: UserGrowthDto[] = raw.map((r) => ({
+      month:       toMonthName(r._id),
+      customers:   r.customers,
+      beauticians: r.beauticians,
+    }));
+ 
+    // ── 6. fill months that had 0 registrations ──────────────────
+    return fillEmptyMonths(named, { customers: 0, beauticians: 0 });
+  }
+async getTotalCustomers(): Promise<number> {
+    return  UserModel.countDocuments({role:UserRole.CUSTOMER,isActive:true})
+}
   protected map(doc:UserDoc):User{
     const base = super.map(doc) as any;
     return{

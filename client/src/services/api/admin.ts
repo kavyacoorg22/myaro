@@ -1,9 +1,10 @@
 import { adminApiRoute } from "../../constants/apiRoutes/adminRoutes";
 import type { CustomServiceStatusType } from "../../constants/types/service";
 import type { TabType } from "../../features/types/customServiceType";
-import type { IAdminLoginRequest, IApproveResponse, IBeauticianProfileResponse, IGetAllBookingOutPut, IGetAllBookingsInput, IGetAllDisputeInput, IGetAllDisputeOutput, IGetAllRefundInput, IGetAllRefundOutput, IGetAllUserResponse, IGetBeauticianRequest, IGetBeauticianResponse, IGetBookingDetailOutPut, IGetDisputeDetailOutput, IGetRefundDetailOutput, IGetUserListRequest, IProcessRefundInput, IProcessRefundOutPut, IRejectResponse, IReleasePayoutInput, IReleasePayoutOutPut, IToggleStatusRequest } from "../../types/api/admin";
+import type { IAdminLoginRequest, IApproveResponse, IBeauticianProfileResponse, IBookingTrendOutPut, IDashboardOverviewOutput, IGetAllBookingOutPut, IGetAllBookingsInput, IGetAllDisputeInput, IGetAllDisputeOutput, IGetAllRefundInput, IGetAllRefundOutput, IGetAllUserResponse, IGetBeauticianRequest, IGetBeauticianResponse, IGetBookingDetailOutPut, IGetDisputeDetailOutput, IGetRefundDetailOutput, IGetUserListRequest, IProcessRefundInput, IProcessRefundOutPut, IRejectResponse, IReleasePayoutInput, IReleasePayoutOutPut, IRevenueOutPut, IToggleStatusRequest, IUserGrowthOutPut } from "../../types/api/admin";
 import type { BackendResponse } from "../../types/api/api";
 import {  type IAddCategoryRequest, type IAddServiceRequest, type IGetAllCustomServiceResponse, type IServiceRequest } from "../../types/api/services";
+import type { BookingTrendDto, UserGrowthDto } from "../../types/dtos/admin";
 import api,{ axiosWrapper} from "../axiosWrapper";
 
 
@@ -128,5 +129,23 @@ releasePayout:async({bookingId,adminNote}:IReleasePayoutInput)=>{
       adminNote
   )
   )
+},
+getUseGrowth:async(year?:number)=>{
+  const params={
+  ...(year&& {year})}
+  return await axiosWrapper<IUserGrowthOutPut>(api.get(adminApiRoute.getUserGrowth,{params}))
+},
+getBookingTrend:async(year?:number)=>{
+  const params={
+  ...(year&& {year})}
+  return await axiosWrapper<IBookingTrendOutPut>(api.get(adminApiRoute.getBookingTrend,{params}))
+},
+getRevenue:async()=>{
+
+  return await axiosWrapper<IRevenueOutPut>(api.get(adminApiRoute.getRevenue))
+},
+getDashBoardOverview:async()=>{
+
+  return await axiosWrapper<IDashboardOverviewOutput>(api.get(adminApiRoute.getDashboardOverview))
 }
 }
