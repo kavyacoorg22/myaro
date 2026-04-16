@@ -22,7 +22,8 @@ const CommentSchema=new Schema<CommentDoc>({
    parentId:{type:Schema.Types.ObjectId},
    text:{type:String,required:true},
    type:{type:String,enum:Object.values(CommentType)},
-   isDeleted:{type:Boolean,default:false}
+   isDeleted:{type:Boolean,default:false},
+   replyCount:{type:Number}
 },{timestamps:true})
 
 CommentSchema.index({ postId: 1, parentId: 1 });

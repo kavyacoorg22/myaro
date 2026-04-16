@@ -11,7 +11,7 @@ comments:IGetHomeServiceCommentsDto[]
 nextCursor:string|null
 }
 
-export interface IGetRepliesOutput {
+export interface IGetRepliesOutputData {
   replies: IGetReplyDto[];
   nextCursor: string | null;
 }
@@ -22,3 +22,4 @@ export interface IGetRepliesInput {
 }
 export type IGetPostCommentsOutPut=BackendResponse<IGetPostCommentsOutPutData>
 export type IGetHomeServiceCommentsOutPut=BackendResponse<IGetHomeServiceCommentsOutPutData>
+export type IGetRepliesOutput=BackendResponse<IGetRepliesOutputData>

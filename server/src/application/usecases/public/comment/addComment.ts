@@ -12,7 +12,6 @@ export class AddCommentUseCase implements IAddCommentUSeCase {
   ) {}
 
   async execute(input: IAddCommentInput): Promise<void> {
-
     if (!input.postId && !input.beauticianId) {
       throw new Error("Either postId or beauticianId is required");
     }
