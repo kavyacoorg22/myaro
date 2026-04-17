@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react"
 import { X, Bell } from "lucide-react"
 import { NotificationApi } from "../../../services/api/notification"
 import type { INotificationDto } from "../../../types/dtos/notification"
+import { SOCKET_EVENTS } from "../../../constants/socketConstants"
+import socket from "../../../services/socket/socket"
 
 interface GroupedNotifications {
   today: INotificationDto[]
@@ -144,6 +146,20 @@ export const NotificationModal = ({ isOpen, onClose, isSidebarExpanded }: Props)
     }
     load()
   }, [isOpen])
+
+  useEffect(() => {
+  socket.on(SOCKET_EVENTS.NEW_NOTIFICATION, (notif: INotificationDto) => {
+    setGrouped(prev => ({
+      ...prev,
+      today: [notif, ...prev.today]   
+    }))
+    setUnreadCount(prev => prev + 1)
+  })
+
+  return () => {
+    socket.off(SOCKET_EVENTS.NEW_NOTIFICATION)
+  }
+}, [])
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

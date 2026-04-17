@@ -15,7 +15,8 @@ export interface Notification {
   }
   isRead: boolean
   isDeleted: boolean
-  scheduledFor?: Date   
+  scheduledFor?: Date 
+  isSent:boolean  
   createdAt: Date
   updatedAt: Date
 }

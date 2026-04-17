@@ -1,0 +1,16 @@
+import { Notification } from "../../../domain/entities/notification";
+import { INotificationRepository } from "../../../domain/repositoryInterface/User/INotificationRepository";
+import { IScheduleNotificationUseCase } from "../../interface/notification/IScheduleNotificationUseCase";
+import { ScheduleNotificatonInput } from "../../interfaceType/notificationType";
+
+export class ScheduleNotificationUseCase implements IScheduleNotificationUseCase{
+  constructor(private notificationRepo:INotificationRepository){}
+  async execute(input: ScheduleNotificatonInput): Promise<Notification> {
+        return this.notificationRepo.create({
+      ...input,
+      isRead:    false,
+      isDeleted: false,
+      isSent:    false,        
+    })
+  }
+ }

@@ -40,7 +40,7 @@ async findByBeauticianAndDate(id: string, date: Date): Promise<Schedule | null> 
 }
 
 async findByBeauticianId(beauticianId: string): Promise<Schedule | null> {
-  const doc=await ScheduleModel.findById({beauticianId:new Types.ObjectId(beauticianId)})
+  const doc=await ScheduleModel.findOne({beauticianId:new Types.ObjectId(beauticianId)})
   return doc?this.map(doc):null
 }
   protected map(doc:ScheduleDoc):Schedule{

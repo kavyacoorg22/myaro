@@ -16,6 +16,7 @@ export type NotificationDoc = Document & {
   isRead: boolean;
   isDeleted: boolean;
   scheduledFor?: Date;
+  isSent:boolean
   createdAt: Date;
   updatedAt: Date;
 };
@@ -66,7 +67,9 @@ export const NotificationSchema = new Schema<NotificationDoc>(
     },
     scheduledFor: {
       type: Date,
+      index:true
     },
+    isSent:{type:Boolean}
   },
   { timestamps: true }
 );

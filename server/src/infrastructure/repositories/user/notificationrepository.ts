@@ -90,6 +90,20 @@ export class NotificationRepository
     );
   }
 
+   async findDueNotifications(now: Date): Promise<Notification[]> {
+    const docs = await NotificationModel.find({
+      scheduledFor: { $lte: now },   // due time reached
+      isSent:       false,           // not already sent
+      isDeleted:    false,
+    }).limit(50)                    
+
+    return docs.map(this.map)
+  }
+
+   async markAsSent(id: string): Promise<void> {
+    await NotificationModel.updateOne({ _id: id }, { $set: { isSent: true } })
+  }
+
   protected map(doc: NotificationDoc): Notification {
     const base = super.map(doc);
 
@@ -110,6 +124,7 @@ export class NotificationRepository
       isRead: doc.isRead,
       isDeleted: doc.isDeleted,
       scheduledFor: doc.scheduledFor,
+      isSent:doc.isSent,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

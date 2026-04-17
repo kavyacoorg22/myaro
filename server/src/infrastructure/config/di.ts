@@ -177,6 +177,8 @@ import { GetDashboardOverviewUC } from "../../application/usecases/admin/dashboa
 import { GetBookingTrendUC } from "../../application/usecases/admin/dashboard/getBookingTrendUseCase";
 import { DashboardController } from "../../interface/Http/controllers/admin/dashBoardController";
 import { GetUserGrowthUseCae } from "../../application/usecases/admin/dashboard/getUserGrowthUseCase";
+import { ScheduleNotificationUseCase } from "../../application/usecases/notification/scheduleNotificationUseCase";
+import { NotificationCron} from "../cron/notificationCron";
 
 
 
@@ -359,18 +361,19 @@ const getUserChatsUC=new GetUserChatsUseCase(chatRepository,userRepo,messageRepo
 export const chatController=new ChatController(getMessageByChatUC,createChatUC,getChatByParticipantsUC,getUserChatsUC)
 
 //booking
+const notificationRepo=new NotificationRepository()
 const bookingRepo=new BookingRepository()
 const paymentrepo=new PaymentRepository()
 const lockSlotService=new LockSlotService()
 const lockSlotUseCase=new LockSlotUseCase(bookingRepo,lockSlotService)
 const bookingHistoryRepo=new BookingHistoryRepository()
-const createBookingUseCase=new CreateBookingUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter,getAvailabilityUC,lockSlotService)
+const scheduleNotificationUC=new ScheduleNotificationUseCase(notificationRepo)
+const createBookingUseCase=new CreateBookingUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter,getAvailabilityUC,lockSlotService,scheduleNotificationUC)
 const updateBookingStatusUC=new UpdateBookingStatusUseCase(bookingRepo,bookingHistoryRepo,messageRepository,chatRepository,socketEmitter,paymentrepo)
 const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userRepo)
 const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
 const blockBookedSlotUseCase=new BlockBookedSlotUseCase(scheduleRepo,recurringExceptionRepo,getAvailabilityUC)
 //services
-const notificationRepo=new NotificationRepository()
 const payoutRepo=new PayoutRepository()
 const refundRepo=new RefundRepository()
 const razorPayService=new RazorPayService()
@@ -424,7 +427,7 @@ const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayServi
 
 const verifyPaymentUC=new VerifyPaymentUsecase(paymentrepo,bookingRepo,razorPayService,blockBookedSlotUseCase,updateBookingStatusUC)
 const processRefundUC=new ProcessRefundUseCase(bookingRepo,paymentrepo,refundRepo,razorPayService,bookingValidatorService,bookinghistoryService,paymentLookupService,notificationDispatchService,razorPayStatusResolverService)
-const releasePayoutUC=new ReleasePayoutUseCase(bookingRepo,paymentrepo,payoutRepo,razorPayService,bookingValidatorService,bookinghistoryService,paymentLookupService,notificationDispatchService,razorPayStatusResolverService)
+const releasePayoutUC=new ReleasePayoutUseCase(bookingRepo,paymentrepo,payoutRepo,razorPayService,bookingValidatorService,bookinghistoryService,paymentLookupService,notificationDispatchService,razorPayStatusResolverService,beauticianRepo)
 const getUserRefundSummeryUC=new GetUserRefundSummeryUseCase(refundRepo)
 export const paymentController=new PaymentController(createOrderUC,verifyPaymentUC,processRefundUC,releasePayoutUC,getUserRefundSummeryUC)
 // notification
@@ -437,3 +440,6 @@ const  getRevenueUC=new GetRevenueUC(paymentrepo)
 const getDashBoardOverView=new GetDashboardOverviewUC(userRepo,paymentrepo,beauticianRepo)
 const getBookingTrendUC=new GetBookingTrendUC(bookingRepo)
 export const dashboardController=new DashboardController(getDashBoardOverView,getUserGrowthUC,getBookingTrendUC,getRevenueUC)
+//cron
+const notificationCron=new NotificationCron(notificationRepo,socketEmitter)
+notificationCron.start()

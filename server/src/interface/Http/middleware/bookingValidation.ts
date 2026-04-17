@@ -105,7 +105,6 @@ export function validateCreateBooking(
   }
 
   // ── phoneNumber ─────────────────────────────────────────
-  // ── phoneNumber ─────────────────────────────────────────
   if (!body.phoneNumber || typeof body.phoneNumber !== "string" || body.phoneNumber.trim() === "") {
     return res.status(400).json({ error: "phoneNumber is required" });
   }
@@ -164,33 +163,11 @@ export function validateCreateBooking(
     return res.status(400).json({ error: "slot.time is required" });
   }
 
-  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-  if (!timeRegex.test(time.trim())) {
-    return res.status(400).json({ error: "slot.time must be in HH:MM format (24h)" });
-  }
+const timeRangeRegex = /^(1[0-2]|0?[1-9]|1[0-9]|2[0-3]):[0-5]\d\s?(AM|PM)\s?–\s?(1[0-2]|0?[1-9]|1[0-9]|2[0-3]):[0-5]\d\s?(AM|PM)$/i;
+if (!timeRangeRegex.test(time.trim())) {
+  return res.status(400).json({ error: "slot.time must be in format 'HH:MM AM – HH:MM PM'" });
+}
 
-  // startMinutes
-  if (typeof startMinutes !== "number" || isNaN(startMinutes) || startMinutes < 0 || startMinutes > 1439) {
-    return res.status(400).json({ error: "slot.startMinutes must be between 0 and 1439" });
-  }
-
-  // endMinutes
-  if (typeof endMinutes !== "number" || isNaN(endMinutes) || endMinutes < 0 || endMinutes > 1439) {
-    return res.status(400).json({ error: "slot.endMinutes must be between 0 and 1439" });
-  }
-
-  if (endMinutes <= startMinutes) {
-    return res.status(400).json({ error: "slot.endMinutes must be greater than slot.startMinutes" });
-  }
-
-  const slotDuration = endMinutes - startMinutes;
-  if (slotDuration < 15) {
-    return res.status(400).json({ error: "Booking slot must be at least 15 minutes" });
-  }
-
-  if (slotDuration > 480) {
-    return res.status(400).json({ error: "Booking slot cannot exceed 8 hours" });
-  }
 
   // ── clientNote ──────────────────────────────────────────
   if (body.clientNote !== null && body.clientNote !== undefined) {

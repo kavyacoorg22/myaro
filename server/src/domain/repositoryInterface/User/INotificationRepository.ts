@@ -8,5 +8,6 @@ export interface INotificationRepository {
   deleteNotification(notificationId: string): Promise<void>;
   clearAllNotifications(userId: string): Promise<void>;
     markAllAsRead(userId: string): Promise<void>  
-
+     findDueNotifications(now: Date): Promise<Notification[]>
+markAsSent(id: string): Promise<void>
 }
