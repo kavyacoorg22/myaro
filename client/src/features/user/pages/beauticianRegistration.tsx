@@ -117,7 +117,8 @@ export default function BeauticianRegistration() {
       console.log('📤 Submitting payment details...');
       
       const response=await BeauticianApi.updateRegister(data);
-     
+       console.log("STEP 3 RESPONSE ROLE:", response.data.data?.role);
+console.log("BEFORE REFRESH:", currentUser.role);
         if (response.data?.data) {
       dispatch(setCurrentUser({
         userId: response.data.data.userId,

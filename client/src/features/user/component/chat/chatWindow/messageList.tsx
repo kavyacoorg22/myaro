@@ -150,7 +150,7 @@ export const MessageList = ({
             </button>
             {isBeautician && hasHomeService && (
               <button
-                onClick={() => navigate(`/book/${participant.id}`)}
+                
                 className="px-4 py-1.5 text-xs font-medium bg-orange-500 text-white rounded-full hover:bg-orange-600 transition flex items-center gap-1.5"
               >
                 🏠 Book home service

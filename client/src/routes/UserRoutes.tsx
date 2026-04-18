@@ -95,7 +95,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: publicFrontendRoutes.getServiceList,
     element: (
-      <PrivateRoute allowedRoles={CUSTOMER_ONLY}>
+      <PrivateRoute allowedRoles={CUSTOMER_BEAUTICIAN}>
         <ServicePageListForUser />
       </PrivateRoute>
     ),
@@ -119,7 +119,7 @@ export const userRoutes: RouteObject[] = [
   {
     path: beauticianFrontendRoutes.booking,
     element:(
-      <PrivateRoute allowedRoles={BEAUTICIAN_ONLY}>
+      <PrivateRoute allowedRoles={CUSTOMER_BEAUTICIAN}>
          <BeauticianBookingsPage/>
       </PrivateRoute>
     )

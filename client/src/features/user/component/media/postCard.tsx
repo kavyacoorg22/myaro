@@ -3,7 +3,7 @@ import type { PostCardProps } from "../../../types/mediaType";
 import { Bookmark, Heart, MessageCircle, MoreHorizontal, Play, Send, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { CommentLikeApi } from "../../../../services/api/commentLike";
 import { handleApiError } from "../../../../lib/utils/handleApiError";
-
+import { useNavigate } from "react-router-dom";
 export const PostCard: React.FC<PostCardProps> = ({
   post,
   onFollow,
@@ -14,7 +14,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   const [liked, setLiked] = useState(post.isLiked ?? false);
 const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
   const [saved, setSaved] = useState(false);
-
+const navigate = useNavigate();
   const [followed, setFollowed] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -33,7 +33,7 @@ const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
   setLiked(next);
   setLocalLikes((prev) => (next ? prev + 1 : prev - 1));
   onLike?.(post.id, next);
-  
+
   try {
     if (next) {
       await CommentLikeApi.addLike(post.id);
@@ -53,6 +53,10 @@ const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
     onFollow?.(post.user.id);
   };
 
+    const handleProfileClick = () => {
+  navigate(`/profile/${post.user.id}`);
+};
+
   return (
     <div
       className={`bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 w-full max-w-[470px] font-sans ${className}`}
@@ -62,12 +66,13 @@ const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <img
+            onClick={handleProfileClick}
             src={post.user.profileImg ?? `https://ui-avatars.com/api/?name=${post.user.userName}`}
             alt={post.user.userName}
-            className="w-9 h-9 rounded-full object-cover ring-2 ring-rose-300 ring-offset-1"
+            className="w-9 h-9 rounded-full object-cover ring-2 ring-rose-300 ring-offset-1 cursor-pointer"
           />
           <div className="flex flex-col leading-tight">
-  <span className="text-sm font-semibold text-gray-900 flex items-center gap-1">
+  <span onClick={handleProfileClick} className="text-sm font-semibold text-gray-900 flex items-center gap-1 cursor-pointer">
     {post.user.userName}
     {post.user.isVerified && (
       <svg className="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
@@ -96,13 +101,13 @@ const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
 </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* {!followed ? (
+          {!followed ? (
             <button onClick={handleFollow} className="text-xs font-semibold text-blue-500 hover:text-blue-700 transition-colors">
               follow
             </button>
           ) : (
             <button className="text-xs font-medium text-gray-400 cursor-default">following</button>
-          )} */}
+          )}
           <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50 transition">
             <MoreHorizontal className="w-4 h-4" />
           </button>

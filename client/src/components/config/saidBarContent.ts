@@ -30,7 +30,7 @@ export const saidBarContent:SidebarContentType[]=[
     {label:"Profile",icon:UserIcon, path:publicFrontendRoutes.profile,showWhenAuthenticatedOnly:true,},
      {label:"Notification",icon:BellIcon,path:publicFrontendRoutes.notification,showWhenAuthenticatedOnly:true,isButton:true},
       {label:"Tips&Rent",icon:CameraRotateIcon,path:publicFrontendRoutes.tipsRent,},
-      {label:"Bookings",icon:CalendarDotsIcon,path:beauticianFrontendRoutes.booking,roles:['beautician']},
+      {label:"Bookings",icon:CalendarDotsIcon,path:beauticianFrontendRoutes.booking,roles:['beautician','customer']},
        {label:"Dashboard",icon:HouseIcon,path:adminFrontendRoute.dashboard,roles:['admin']},
   {label:"Users",icon:UserIcon,path:adminFrontendRoute.checkUser,roles:['admin']},
   {label:"Beautician",icon:UserListIcon,path:adminFrontendRoute.checkBeautician,roles:['admin']},

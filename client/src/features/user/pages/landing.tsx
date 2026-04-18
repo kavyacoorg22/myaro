@@ -124,7 +124,6 @@ export const Landing = () => {
 
     debounceTimerRef.current = setTimeout(() => {
       setIsSearchMode(true);
-      // Reset search state for fresh query
       searchCursorRef.current = null;
       searchHasMoreRef.current = true;
       setSearchPosts([]);

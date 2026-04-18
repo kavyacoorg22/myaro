@@ -355,7 +355,7 @@ const ProfilePage = () => {
           }
           onMessage={() => handleStartChat(profileData.userId)}
           onFollow={() => console.log("Follow clicked")}
-          onBookService={() => navigate(`/book/${profileData.userId}`)}
+          onBookService={() => handleStartChat(profileData.userId)}
         />
 
         {/* ── Verification Banner ── */}

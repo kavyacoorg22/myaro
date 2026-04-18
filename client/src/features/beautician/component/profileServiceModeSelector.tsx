@@ -1,4 +1,3 @@
-// ─── Service Mode Selector ────────────────────────────────────────────────────
 
 import { CalendarHeart, Check, Home, MessageCircle, Store } from "lucide-react";
 import type { ServiceModesType } from "../../../constants/types/beautician";
