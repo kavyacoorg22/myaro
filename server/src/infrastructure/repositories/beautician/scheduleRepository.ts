@@ -43,6 +43,11 @@ async findByBeauticianId(beauticianId: string): Promise<Schedule | null> {
   const doc=await ScheduleModel.findOne({beauticianId:new Types.ObjectId(beauticianId)})
   return doc?this.map(doc):null
 }
+
+async deleteById(id: string): Promise<boolean> {
+  const doc = await ScheduleModel.findByIdAndDelete(id);
+  return !!doc;
+}
   protected map(doc:ScheduleDoc):Schedule{
     const base=super.map(doc) as any
     return{

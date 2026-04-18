@@ -15,13 +15,16 @@ export class DeleteAvailibilitySlotUseCase implements IDeleteAvailbilitySlotUseC
     scheduleId: string,
     slotToDelete: Slot,
   ): Promise<void> {
-    const schedule = await this._scheduleRepo.findByBeauticianId(beauticianId);
+  const schedule = await this._scheduleRepo.findById(scheduleId);
     if (!schedule) {
       throw new AppError(
         generalMessages.ERROR.BAD_REQUEST,
         HttpStatus.BAD_REQUEST,
       );
     }
+    console.log('[DeleteSlot] scheduleId from request:', scheduleId);
+  console.log('[DeleteSlot] schedule found by beauticianId:', schedule?.id, '| date:', schedule?.date);
+  console.log('[DeleteSlot] IDs match?', schedule?.id === scheduleId);
 
     if (beauticianId !== schedule.beauticianId) {
       throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
@@ -41,8 +44,7 @@ export class DeleteAvailibilitySlotUseCase implements IDeleteAvailbilitySlotUseC
       throw new AppError("Slot not found", HttpStatus.NOT_FOUND);
     }
 
-    await this._scheduleRepo.updateById(scheduleId, {
-      slots: updatedSlots,
-    });
+   await this._scheduleRepo.updateById(scheduleId, { slots: updatedSlots });
+
   }
 }

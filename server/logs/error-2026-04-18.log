@@ -11,3 +11,9 @@
     at processTimers (node:internal/timers:541:7)
 2026-04-18 12:02:33 error: Error: read ECONNRESET
     at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}
+2026-04-18 12:19:12 error: MongoServerError: E11000 duplicate key error collection: myaro.recurringexceptions index: recurringId_1_date_1 dup key: { recurringId: ObjectId('69e328d2423ae7fc66d543f3'), date: new Date(1776902400000) }
+    at InsertOneOperation.handleOk (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\mongodb\src\operations\insert.ts:79:13)
+    at tryOperation (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\mongodb\src\operations\execute_operation.ts:290:26)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at executeOperation (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\mongodb\src\operations\execute_operation.ts:119:12)
+    at Collection.insertOne (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\mongodb\src\collection.ts:294:12)

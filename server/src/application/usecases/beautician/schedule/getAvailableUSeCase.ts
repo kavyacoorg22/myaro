@@ -30,10 +30,9 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
       return { availability: { scheduleId: oneTime.id, slots: [], date: dateOnly, source: scheduleSourceType.MANUAL ,    type:ScheduleType.LEAVE,} };
     }
 
-    if (oneTime?.type === ScheduleType.AVAILABILITY) {
-      console.log('[GetAvailability] → one-time AVAILABILITY, slots:', oneTime);
-      return { availability: { ...toGetAvailabilitySlotDto(oneTime,scheduleSourceType.MANUAL), source: scheduleSourceType.MANUAL } };
-    }
+   if (oneTime?.type === ScheduleType.AVAILABILITY ) {
+  return { availability: { ...toGetAvailabilitySlotDto(oneTime, scheduleSourceType.MANUAL), source: scheduleSourceType.MANUAL } };
+}
 
     const allRecurring = (await this._recurringScheduleRepo.findByBeauticianId(beauticianId)) ?? [];
     console.log('[GetAvailability] allRecurring count:', allRecurring.length);

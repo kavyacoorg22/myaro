@@ -6,4 +6,7 @@ export interface IScheduleRepository{
    updateById(id:string,data:Partial<Omit<Schedule,'id'>>):Promise<Schedule|null>
    findByBeauticianAndDate(id:string,date:Date):Promise<Schedule|null>
    findByBeauticianId(beauticianId:string):Promise<Schedule|null>
+   deleteById(id: string): Promise<boolean>
+     findById(id: string): Promise<Schedule | null> 
+
 } 
