@@ -8,21 +8,21 @@ import { IGetAllDisputeInput, IGetAllDisputeOutPut } from "../../../../interface
 
 export class GetAllDisputesUseCase implements IGetAllDisputesUseCase {
   constructor(
-    private bookingRepo:    IBookingRepository,
-    private userRepo:       IUserRepository,
+    private _bookingRepo:    IBookingRepository,
+    private _userRepo:       IUserRepository,
   ) {}
 
   async execute({ page = 1, limit = 10 }: IGetAllDisputeInput): Promise<IGetAllDisputeOutPut> {
 
-    const { bookings, total } = await this.bookingRepo.findDisputed({ page, limit });
+    const { bookings, total } = await this._bookingRepo.findDisputed({ page, limit });
 
     const totalPages = Math.ceil(total / limit);
 
     const userIds       = [...new Set(bookings.map((b: Booking) => b.userId))];
     const beauticianIds = [...new Set(bookings.map((b: Booking) => b.beauticianId))];
 
-    const users       = await this.userRepo.findUsersByIds(userIds);
-    const beauticians = await this.userRepo.findUsersByIds(beauticianIds);
+    const users       = await this._userRepo.findUsersByIds(userIds);
+    const beauticians = await this._userRepo.findUsersByIds(beauticianIds);
 
     const userMap       = new Map(users.map(u => [u.id, u]));
     const beauticianMap = new Map(beauticians.map(b => [b.id, b]));

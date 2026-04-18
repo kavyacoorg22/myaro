@@ -10,11 +10,11 @@ import { toGetBookingById } from "../../mapper/bookingMapper";
 
 
 export class GetBookingByIdUSeCase implements IGetBookingByIdUseCase{
-    constructor(private bookingRepo: IBookingRepository,private userRepo:IUserRepository) {}
+    constructor(private _bookingRepo: IBookingRepository,private _userRepo:IUserRepository) {}
 
   async execute(bookingId: string, requesterId: string): Promise<IGetBookingByIdResponse> {
 
-    const booking = await this.bookingRepo.findById(bookingId);
+    const booking = await this._bookingRepo.findById(bookingId);
     if (!booking) throw new AppError("Booking not found.", HttpStatus.NOT_FOUND);
 
     const isParticipant =
@@ -24,7 +24,7 @@ export class GetBookingByIdUSeCase implements IGetBookingByIdUseCase{
     if (!isParticipant) {
       throw new AppError("Access denied.", HttpStatus.FORBIDDEN);
     }
-    const user=await this.userRepo.findByUserId(booking.userId)
+    const user=await this._userRepo.findByUserId(booking.userId)
     if(!user)
     {
       throw new AppError(generalMessages.ERROR.NOT_FOUND,HttpStatus.NOT_FOUND)

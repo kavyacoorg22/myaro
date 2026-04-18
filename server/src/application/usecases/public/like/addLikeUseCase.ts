@@ -6,11 +6,11 @@ import { IAddLikeUSeCase } from "../../../interface/public/like/IAddLikeUSeCase"
 
 export class AddLikeUseCase implements IAddLikeUSeCase {
   constructor(
-    private likeRepo: ILikeRepository,
-    private postRepo: IPostRepository,
+    private _likeRepo: ILikeRepository,
+    private _postRepo: IPostRepository,
   ) {}
   async execute(userId: string, postId: string): Promise<void> {
-    const existingLike = await this.likeRepo.findByUserIDAndPostId(
+    const existingLike = await this._likeRepo.findByUserIDAndPostId(
       userId,
       postId,
     );
@@ -18,11 +18,11 @@ export class AddLikeUseCase implements IAddLikeUSeCase {
       throw new AppError("Post already liked", HttpStatus.CONFLICT);
     }
 
-    await this.likeRepo.create({
+    await this._likeRepo.create({
       userId,
       postId,
     });
 
-    await this.postRepo.incrementLikesCount(postId);
+    await this._postRepo.incrementLikesCount(postId);
   }
 }

@@ -3,10 +3,10 @@ import { ITypingInput } from "../../interfaceType/chatType";
 import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 
 export class TypingIndicatorUseCase {
-  constructor(private socketEmitter: ISocketEmitter) {}
+  constructor(private _socketEmitter: ISocketEmitter) {}
 
   startTyping({ socketId, chatId, userId }: ITypingInput): void {
-    this.socketEmitter.emitToRoomExcept(
+    this._socketEmitter.emitToRoomExcept(
       socketId,
       chatId,
       SOCKET_EVENTS.TYPING_START,
@@ -15,7 +15,7 @@ export class TypingIndicatorUseCase {
   }
 
   stopTyping({ socketId, chatId, userId }: ITypingInput): void {
-    this.socketEmitter.emitToRoomExcept(
+    this._socketEmitter.emitToRoomExcept(
       socketId,
       chatId,
       SOCKET_EVENTS.TYPING_STOP,

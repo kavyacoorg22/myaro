@@ -10,9 +10,9 @@ import { toGetFeedDto } from "../../../mapper/beauticianMapper";
 
 export class GetTipsRentFeedUseCase implements IGetTipsRentUseCase {
   constructor(
-    private postRepo: IPostRepository,
-    private userRepo: IUserRepository,
-    private likeRepo:ILikeRepository
+    private _postRepo: IPostRepository,
+    private _userRepo: IUserRepository,
+    private _likeRepo:ILikeRepository
   ) {}
 
   async execute(
@@ -22,14 +22,14 @@ export class GetTipsRentFeedUseCase implements IGetTipsRentUseCase {
     limit: number = 10,
   ): Promise<IGetTipsAndRentOutput> {
     const { posts, nextCursorTips, nextCursorRent } =
-      await this.postRepo.findMixedFeedPosts(cursorTips, cursorRent, limit);
+      await this._postRepo.findMixedFeedPosts(cursorTips, cursorRent, limit);
 
     const beauticianIds = [...new Set(posts.map((p) => p.beauticianId))];
-    const users = await this.userRepo.findUsersByIds(beauticianIds);
+    const users = await this._userRepo.findUsersByIds(beauticianIds);
     const userMap = new Map(users.map((u) => [u.id, u]));
         
     const postIds = posts.map((p) => p.id);
-    const likedPostIds = await this.likeRepo.findLikedPostIds(userId, postIds);
+    const likedPostIds = await this._likeRepo.findLikedPostIds(userId, postIds);
     const likedSet = new Set(likedPostIds);
 
     const enrichedPosts = posts.map((post) => {

@@ -15,13 +15,13 @@ import { IGetRepliesUseCase } from "../../../../application/interface/public/com
 
 export class LikeCommetController {
   constructor(
-    private addLikeUC: IAddLikeUSeCase,
-    private RemoveLikeUC: IRemoveLikeUSeCase,
-    private addCommentUC: IAddCommentUSeCase,
-    private deleteCommentUC: IdeleteCommentUseCase,
-    private getHomeServiceCommentUC: IGetHomeServiceCommetsUseCase,
-    private getPostCommentUseCase: IGetPostCommetsUseCase,
-    private getReplyCommentUC:IGetRepliesUseCase
+    private _addLikeUC: IAddLikeUSeCase,
+    private _RemoveLikeUC: IRemoveLikeUSeCase,
+    private _addCommentUC: IAddCommentUSeCase,
+    private _deleteCommentUC: IdeleteCommentUseCase,
+    private _getHomeServiceCommentUC: IGetHomeServiceCommetsUseCase,
+    private _getPostCommentUseCase: IGetPostCommetsUseCase,
+    private _getReplyCommentUC:IGetRepliesUseCase
   ) {}
 
   addLike = async (
@@ -45,7 +45,7 @@ export class LikeCommetController {
         );
       }
 
-      await this.addLikeUC.execute(userId, postId);
+      await this._addLikeUC.execute(userId, postId);
 
       res.status(HttpStatus.CREATED).json({
         success: true,
@@ -77,7 +77,7 @@ export class LikeCommetController {
         );
       }
 
-      await this.RemoveLikeUC.execute(userId, postId);
+      await this._RemoveLikeUC.execute(userId, postId);
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -107,7 +107,7 @@ export class LikeCommetController {
       ...(parentId && {parentId})
     };
 
-    await this.addCommentUC.execute(input);
+    await this._addCommentUC.execute(input);
 
     res.status(HttpStatus.CREATED).json({ success: true, message: "Comment added" });
   } catch (err) {
@@ -135,7 +135,7 @@ export class LikeCommetController {
         );
       }
 
-      await this.deleteCommentUC.execute(userId, commentId, postId);
+      await this._deleteCommentUC.execute(userId, commentId, postId);
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -162,7 +162,7 @@ export class LikeCommetController {
         );
       }
 
-      const data = await this.getPostCommentUseCase.execute(
+      const data = await this._getPostCommentUseCase.execute(
         postId,
         limit,
         cursor,
@@ -195,7 +195,7 @@ export class LikeCommetController {
         );
       }
 
-      const data = await this.getHomeServiceCommentUC.execute(
+      const data = await this._getHomeServiceCommentUC.execute(
         beauticianId,
         limit,
         cursor,
@@ -227,7 +227,7 @@ export class LikeCommetController {
         );
       }
 
-      const data = await this.getReplyCommentUC.execute(
+      const data = await this._getReplyCommentUC.execute(
         parentId,
         limit,
         cursor,

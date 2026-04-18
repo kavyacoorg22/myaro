@@ -16,15 +16,15 @@ import { v4 as uuidv4 } from "uuid";
 
 export class CreateOrderUsecase implements ICreateOrderUsecase {
   constructor(
-    private paymentRepo: IPaymentRepository,
-    private bookingRepo: IBookingRepository,
-    private paymentService: IPaymentService,
+    private _paymentRepo: IPaymentRepository,
+    private _bookingRepo: IBookingRepository,
+    private _paymentService: IPaymentService,
   ) {}
 
   async execute({
     bookingId,
   }: ICreateOrderUsecaseInput): Promise<ICreateOrderOutput> {
-    const existingPaid = await this.paymentRepo.findPaidByBookingId(bookingId);
+    const existingPaid = await this._paymentRepo.findPaidByBookingId(bookingId);
     if (existingPaid) {
       throw new AppError("Booking Already paid", HttpStatus.CONFLICT);
     }
@@ -40,20 +40,20 @@ export class CreateOrderUsecase implements ICreateOrderUsecase {
       throw new AppError("Payment already in progress", HttpStatus.CONFLICT);
     }
 
-      const paidInsideLock = await this.paymentRepo.findPaidByBookingId(bookingId);
+      const paidInsideLock = await this._paymentRepo.findPaidByBookingId(bookingId);
   if (paidInsideLock) {
     throw new AppError("Booking already paid", HttpStatus.CONFLICT);
   }
     
     
-      const booking = await this.bookingRepo.findById(bookingId);
+      const booking = await this._bookingRepo.findById(bookingId);
       if (!booking) {
         throw new AppError("booking not found", HttpStatus.NOT_FOUND);
       }
 
-      const order = await this.paymentService.createOrder(booking.totalPrice);
+      const order = await this._paymentService.createOrder(booking.totalPrice);
 
-      await this.paymentRepo.create({
+      await this._paymentRepo.create({
         bookingId,
         userId: booking.userId,
         razorpayOrderId: order.id,

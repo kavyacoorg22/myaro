@@ -8,15 +8,15 @@ import { ICustomerEditProfileInput } from "../../interfaceType/customerType";
 
 
 export class CustomerEditProfileUseCase implements ICustomerEditProfileUseCase{
-  constructor(private readonly userRepo:IUserRepository){}
+  constructor(private readonly _userRepo:IUserRepository){}
 
   async execute(id: string, input: ICustomerEditProfileInput): Promise<void> {
-    const user=await this.userRepo.findByUserId(id)
+    const user=await this._userRepo.findByUserId(id)
     if(!user)
     {
       throw new AppError(generalMessages.ERROR.NOT_FOUND,HttpStatus.NOT_FOUND)
     }
 
-    await this.userRepo.updateByUserId(id,input)
+    await this._userRepo.updateByUserId(id,input)
   }
 }

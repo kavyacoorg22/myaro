@@ -10,9 +10,9 @@ import { rruleCoversDate } from "../../../../utils/schedule/RruleHelper";
 
 export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
   constructor(
-    private readonly scheduleRepo: IScheduleRepository,
-    private readonly recurringScheduleRepo: IReccuringScheduleRepository,
-    private readonly recurringExceptionRepo: IRecurringExceptionRepository,
+    private readonly _scheduleRepo: IScheduleRepository,
+    private readonly _recurringScheduleRepo: IReccuringScheduleRepository,
+    private readonly _recurringExceptionRepo: IRecurringExceptionRepository,
   ) {}
 
   async execute(
@@ -22,7 +22,7 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
     const dateOnly = toDateOnly(date);
     console.log('[GetAvailability] beauticianId:', beauticianId, '| dateOnly:', dateOnly);
 
-    const oneTime = await this.scheduleRepo.findByBeauticianAndDate(beauticianId, dateOnly);
+    const oneTime = await this._scheduleRepo.findByBeauticianAndDate(beauticianId, dateOnly);
     console.log('[GetAvailability] oneTime:', oneTime);
 
     if (oneTime?.type === ScheduleType.LEAVE) {
@@ -35,7 +35,7 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
       return { availability: { ...toGetAvailabilitySlotDto(oneTime,scheduleSourceType.MANUAL), source: scheduleSourceType.MANUAL } };
     }
 
-    const allRecurring = (await this.recurringScheduleRepo.findByBeauticianId(beauticianId)) ?? [];
+    const allRecurring = (await this._recurringScheduleRepo.findByBeauticianId(beauticianId)) ?? [];
     console.log('[GetAvailability] allRecurring count:', allRecurring.length);
     console.log('[GetAvailability] allRecurring:', JSON.stringify(allRecurring.map(r => ({ id: r.id, type: r.type, startDate: r.startDate, endDate: r.endDate, rrule: r.rrule }))));
 
@@ -63,7 +63,7 @@ export class GetAvailabilityUseCase implements IGetAvailbilityUseCase {
       return { availability: { scheduleId: '', slots: [], date: dateOnly, source: scheduleSourceType.RECURRING ,    type:       ScheduleType.AVAILABILITY} };
     }
 
-    const exceptions = await this.recurringExceptionRepo.findByBeauticianAndDate(beauticianId, dateOnly);
+    const exceptions = await this._recurringExceptionRepo.findByBeauticianAndDate(beauticianId, dateOnly);
     console.log('[GetAvailability] exceptions:', exceptions);
 
     const deletedRuleIds = new Set(exceptions.map((e) => e.recurringId));

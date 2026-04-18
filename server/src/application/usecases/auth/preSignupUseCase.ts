@@ -9,17 +9,17 @@ import { IPresignupUseCase } from "../../interface/auth/IPreSignupUsecase";
 import { appConfig } from "../../../infrastructure/config/config";
 
 export class PreSignupUseCase implements IPresignupUseCase {
-  constructor(private jwtSecret: string, private userRepo: IUserRepository) {}
+  constructor(private jwtSecret: string, private _userRepo: IUserRepository) {}
 
   async execute(input: IPreSignupInput): Promise<IPreSignupOutput> {
     const { email, userName, fullName, password } = input;
 
-    const existingByEmail = await this.userRepo.findByEmail(input.email);
+    const existingByEmail = await this._userRepo.findByEmail(input.email);
     if (existingByEmail) {
       throw new ConflictError("Email alredy registered");
     }
 
-    const existByUserName = await this.userRepo.findByUserName(input.userName);
+    const existByUserName = await this._userRepo.findByUserName(input.userName);
     if (existByUserName) {
       throw new ConflictError("User Name already taken");
     }

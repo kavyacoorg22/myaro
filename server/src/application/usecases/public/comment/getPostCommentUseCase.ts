@@ -7,12 +7,12 @@ import { IGetPostCommentsOutPut } from "../../../interfaceType/commetLike";
 import { toGetPostCommentDto } from "../../../mapper/likeCommentMapper";
 
 export class GetPostCommentUSeCase implements IGetPostCommetsUseCase{
-  constructor(private commentrepo:CommentRepository,private userRepo:IUserRepository ){}
+  constructor(private _commentrepo:CommentRepository,private _userRepo:IUserRepository ){}
   async execute(postId: string,limit:number=10,cursor?:string|null): Promise<IGetPostCommentsOutPut> {
-    const {comments,nextCursor}=await this.commentrepo.findByPostId(postId,limit,cursor)
+    const {comments,nextCursor}=await this._commentrepo.findByPostId(postId,limit,cursor)
     
     const userIds=[...new Set(comments.map((u)=>u.userId))]
-    const userData=await this.userRepo.findUsersByIds(userIds)
+    const userData=await this._userRepo.findUsersByIds(userIds)
     const userMap=new Map(userData.map((u)=>[u.id,u]))
     
     const enrichedComments=comments.map((cm)=>{

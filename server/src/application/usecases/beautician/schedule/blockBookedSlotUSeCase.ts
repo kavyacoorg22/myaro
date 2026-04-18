@@ -16,9 +16,9 @@ import { GetAvailabilityUseCase } from "./getAvailableUSeCase";
 
 export class BlockBookedSlotUseCase implements IBlockBookedSlotUSeCase {
   constructor(
-    private scheduleRepo: IScheduleRepository,
-    private recurringExceptionRepo: IRecurringExceptionRepository,
-    private getAvailabilityUC: GetAvailabilityUseCase,
+    private _scheduleRepo: IScheduleRepository,
+    private _recurringExceptionRepo: IRecurringExceptionRepository,
+    private _getAvailabilityUC: GetAvailabilityUseCase,
   ) {}
 
   async execute(input: IBlockBookedSlotInput): Promise<void> {
@@ -27,7 +27,7 @@ export class BlockBookedSlotUseCase implements IBlockBookedSlotUSeCase {
     const bookedStart = timeToMinutes(startTime);
     const bookedEnd = timeToMinutes(endTime);
 
-    const { availability } = await this.getAvailabilityUC.execute(
+    const { availability } = await this._getAvailabilityUC.execute(
       beauticianId,
       date,
     );
@@ -37,20 +37,20 @@ export class BlockBookedSlotUseCase implements IBlockBookedSlotUSeCase {
     const carved = this.carveOut(availability.slots, bookedStart, bookedEnd);
 
     if (availability.source === scheduleSourceType.MANUAL) {
-      await this.scheduleRepo.updateById(availability.scheduleId, {
+      await this._scheduleRepo.updateById(availability.scheduleId, {
         slots: carved,
       });
     } else {
       const dateOnly = toDateOnly(date);
 
-      await this.recurringExceptionRepo.create({
+      await this._recurringExceptionRepo.create({
         recurringId: availability.scheduleId,
         beauticianId,
         date: dateOnly,
       });
 
       if (carved.length > 0) {
-        await this.scheduleRepo.create({
+        await this._scheduleRepo.create({
           beauticianId,
           date: dateOnly,
           slots: carved,

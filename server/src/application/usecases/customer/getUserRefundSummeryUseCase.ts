@@ -5,11 +5,11 @@ import { IGetUserRefundSummeryOutPut } from "../../interfaceType/customerType";
 import { toGetRefundSummeryDto } from "../../mapper/customerMapper";
 
 export class GetUserRefundSummeryUseCase implements IGetUserRefundSummeryUseCase{
-  constructor(private refundRepo:IRefundRepository){}
+  constructor(private _refundRepo:IRefundRepository){}
   
 
   async execute(userId: string): Promise<IGetUserRefundSummeryOutPut> {
-    const refunds = await this.refundRepo.getRefundsByUserId(userId);
+    const refunds = await this._refundRepo.getRefundsByUserId(userId);
     const totalBalance = refunds
       .filter(r => r.status === RefundStatus.SUCCESS)
       .reduce((sum, r) => sum + r.amount, 0);

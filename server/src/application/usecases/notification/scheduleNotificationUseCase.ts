@@ -4,9 +4,9 @@ import { IScheduleNotificationUseCase } from "../../interface/notification/ISche
 import { ScheduleNotificatonInput } from "../../interfaceType/notificationType";
 
 export class ScheduleNotificationUseCase implements IScheduleNotificationUseCase{
-  constructor(private notificationRepo:INotificationRepository){}
+  constructor(private _notificationRepo:INotificationRepository){}
   async execute(input: ScheduleNotificatonInput): Promise<Notification> {
-        return this.notificationRepo.create({
+        return this._notificationRepo.create({
       ...input,
       isRead:    false,
       isDeleted: false,

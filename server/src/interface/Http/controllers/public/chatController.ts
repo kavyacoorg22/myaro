@@ -10,10 +10,10 @@ import { IGetUserChatsUseCase } from "../../../../application/interface/chat/IGe
 
 export class ChatController {
   constructor(
-    private getMessagesByChatUC: IGetMessagesByChatUseCase,
-    private createChatUC: ICreateChatUSeCase,
-    private getChatByParticipantsUseCase: IGetChatByParticipants,
-    private getUserChatsUC: IGetUserChatsUseCase,
+    private _getMessagesByChatUC: IGetMessagesByChatUseCase,
+    private _createChatUC: ICreateChatUSeCase,
+    private _getChatByParticipantsUseCase: IGetChatByParticipants,
+    private _getUserChatsUC: IGetUserChatsUseCase,
   ) {}
 
   getMessageByChat = async (
@@ -38,7 +38,7 @@ export class ChatController {
         );
       }
 
-      const result = await this.getMessagesByChatUC.execute({
+      const result = await this._getMessagesByChatUC.execute({
         chatId,
         userId,
         cursor: typeof cursor === "string" ? cursor : undefined,
@@ -72,7 +72,7 @@ export class ChatController {
           HttpStatus.BAD_REQUEST,
         );
       }
-     const data= await this.createChatUC.execute({ participantA, participantB });
+     const data= await this._createChatUC.execute({ participantA, participantB });
     res.status(HttpStatus.CREATED).json({
   success: true,
   message: "chat created",
@@ -104,7 +104,7 @@ export class ChatController {
           HttpStatus.BAD_REQUEST,
         );
       }
-      const chat = await this.getChatByParticipantsUseCase.execute({
+      const chat = await this._getChatByParticipantsUseCase.execute({
         participantA,
         participantB,
       });
@@ -133,7 +133,7 @@ export class ChatController {
 
       const { cursor, limit } = req.query;
 
-      const result = await this.getUserChatsUC.execute({
+      const result = await this._getUserChatsUC.execute({
         userId,
         cursor: typeof cursor === "string" ? cursor : undefined,
         limit: limit ? parseInt(limit as string) : 20,

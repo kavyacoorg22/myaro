@@ -10,14 +10,14 @@ import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 
 export class SendMessageUseCase implements ISendMessageUSeCase {
   constructor(
-    private messageRepo: IMessageRepository,
-    private chatRepo: IChatRepository,
-    private socketEmitter: ISocketEmitter,
+    private _messageRepo: IMessageRepository,
+    private _chatRepo: IChatRepository,
+    private _socketEmitter: ISocketEmitter,
   ) {}
   async execute(input: ISendMessageInput): Promise<void> {
     const { chatId, senderId, receiverId, message, bookingId } = input;
     const type = input.type ?? MessageType.TEXT;
-    const chat = await this.chatRepo.findById(chatId);
+    const chat = await this._chatRepo.findById(chatId);
     if (!chat)
       throw new AppError(`Chat ${chatId} not found.`, HttpStatus.NOT_FOUND);
 
@@ -25,7 +25,7 @@ export class SendMessageUseCase implements ISendMessageUSeCase {
       throw new AppError(`Access denied.`, HttpStatus.FORBIDDEN);
     }
 
-    const saved = await this.messageRepo.create({
+    const saved = await this._messageRepo.create({
       chatId,
       senderId,
       receiverId,
@@ -35,11 +35,11 @@ export class SendMessageUseCase implements ISendMessageUSeCase {
       seen: false
     });
 
-    await this.chatRepo.updateLastMessage(chatId, message, saved.createdAt);
+    await this._chatRepo.updateLastMessage(chatId, message, saved.createdAt);
 
-   this.socketEmitter.emitToRoom(chatId, SOCKET_EVENTS.NEW_MESSAGE, saved);
+   this._socketEmitter.emitToRoom(chatId, SOCKET_EVENTS.NEW_MESSAGE, saved);
 
-   this.socketEmitter.emitToRoom(`user:${receiverId}`, SOCKET_EVENTS.NEW_NOTIFICATION, {
+   this._socketEmitter.emitToRoom(`user:${receiverId}`, SOCKET_EVENTS.NEW_NOTIFICATION, {
   chatId,
   lastMessage:   message,
   lastMessageAt: saved.createdAt,

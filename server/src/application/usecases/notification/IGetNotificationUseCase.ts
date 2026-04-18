@@ -5,10 +5,10 @@ import { toNotificationDto } from "../../mapper/userMapper"
 
 
 export class GetUserNotificationsUseCase implements IGetUserNotificationsUseCase {
-  constructor(private notificationRepo: INotificationRepository) {}
+  constructor(private _notificationRepo: INotificationRepository) {}
 
   async execute(userId: string): Promise<IGetUserNotificationsOutput> {
-    const notifications = await this.notificationRepo.getUserNotifications(userId)
+    const notifications = await this._notificationRepo.getUserNotifications(userId)
 
     const active = notifications.filter(n => !n.isDeleted)
 

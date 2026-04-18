@@ -7,8 +7,8 @@ import { ISendMailService } from "../../serviceInterface/mailService";
 
 export class CreateOtpUseCase implements ICreateOtpUseCase {
   constructor(
-    private otpService: IOtpService,
-    private mailService: ISendMailService,
+    private _otpService: IOtpService,
+    private _mailService: ISendMailService,
   ) {}
 
   async execute(input: ISendOtpInput) {
@@ -16,9 +16,9 @@ export class CreateOtpUseCase implements ICreateOtpUseCase {
 
     const otp = generateOtp(4);
 
-    await this.otpService.setOtp(email, otp);
+    await this._otpService.setOtp(email, otp);
 
-    await this.mailService.sendOtp(email, otp);
+    await this._mailService.sendOtp(email, otp);
 
     return { success: true, message: "OTP sent" };
   }

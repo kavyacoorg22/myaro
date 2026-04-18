@@ -7,8 +7,8 @@ import { ICompleteSignupUseCase } from "../../interface/auth/ICompleteSignupUseC
 
 export class CompleteSignupUseCase implements ICompleteSignupUseCase {
   constructor(
-    private verifyOtpUC: IVerifyOtpUseCase,
-    private registerUserUC: IRegisterUserUseCase
+    private _verifyOtpUC: IVerifyOtpUseCase,
+    private _registerUserUC: IRegisterUserUseCase
   ) {}
 
   async execute(input:ICompleteSignupInput):Promise<IResponse> {
@@ -23,7 +23,7 @@ export class CompleteSignupUseCase implements ICompleteSignupUseCase {
 
     const email = (payload as any).email as string;
 
-    await this.verifyOtpUC.execute({ email, signupToken, otp });
+    await this._verifyOtpUC.execute({ email, signupToken, otp });
 
     const userName = (payload as any).userName as string;
     const fullName = (payload as any).fullName as string;
@@ -41,7 +41,7 @@ export class CompleteSignupUseCase implements ICompleteSignupUseCase {
     };
 
     try {
-      await this.registerUserUC.execute(registerInput);
+      await this._registerUserUC.execute(registerInput);
       return { success: true, message:"User created" };
     } catch (err) {
       if (err instanceof ConflictError) throw err;

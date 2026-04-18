@@ -8,7 +8,7 @@ import { toGetBeauticianPostDto, toGetFeedDto } from "../../../mapper/beautician
 
 export class GetBeauticianPostUseCase implements IGetBeauticianPostUSeCase{
 
-  constructor(private postRepo:IPostRepository,private likeRepo:ILikeRepository){}
+  constructor(private _postRepo:IPostRepository,private _likeRepo:ILikeRepository){}
 
 async execute(
   userId:string,
@@ -17,14 +17,14 @@ async execute(
   cursor: string | null = null,
   limit: number = 12
 ): Promise<IGetBeauticianPostOutPut> {
-  const { posts, nextCursor } = await this.postRepo.findByBeauticianIdWithCursor(
+  const { posts, nextCursor } = await this._postRepo.findByBeauticianIdWithCursor(
     beauticianId,
     postType,
     cursor,
     limit
   );
   const postIds=posts.map((u)=>u.id)
-  const likedPostIds = await this.likeRepo.findLikedPostIds(userId, postIds);
+  const likedPostIds = await this._likeRepo.findLikedPostIds(userId, postIds);
       const likedSet = new Set(likedPostIds);
 
 

@@ -4,7 +4,6 @@ import type { TabType } from "../../features/types/customServiceType";
 import type { IAdminLoginRequest, IApproveResponse, IBeauticianProfileResponse, IBookingTrendOutPut, IDashboardOverviewOutput, IGetAllBookingOutPut, IGetAllBookingsInput, IGetAllDisputeInput, IGetAllDisputeOutput, IGetAllRefundInput, IGetAllRefundOutput, IGetAllUserResponse, IGetBeauticianRequest, IGetBeauticianResponse, IGetBookingDetailOutPut, IGetDisputeDetailOutput, IGetRefundDetailOutput, IGetUserListRequest, IProcessRefundInput, IProcessRefundOutPut, IRejectResponse, IReleasePayoutInput, IReleasePayoutOutPut, IRevenueOutPut, IToggleStatusRequest, IUserGrowthOutPut } from "../../types/api/admin";
 import type { BackendResponse } from "../../types/api/api";
 import {  type IAddCategoryRequest, type IAddServiceRequest, type IGetAllCustomServiceResponse, type IServiceRequest } from "../../types/api/services";
-import type { BookingTrendDto, UserGrowthDto } from "../../types/dtos/admin";
 import api,{ axiosWrapper} from "../axiosWrapper";
 
 

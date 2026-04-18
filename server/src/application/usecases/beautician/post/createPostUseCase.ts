@@ -12,13 +12,13 @@ import { validateVideoFromS3 } from "../../../../interface/Http/middleware/video
 
 export class CreatePostUseCase implements ICreatePostUSeCase {
   constructor(
-    private postRepo: IPostRepository,
-    private userRepo: IUserRepository,
-    private fileStorage: IFileStorage
+    private _postRepo: IPostRepository,
+    private _userRepo: IUserRepository,
+    private _fileStorage: IFileStorage
   ) {}
 
   async execute(beauticianId: string, input: ICreatePostInput): Promise<void> {
-    const user = await this.userRepo.findByUserId(beauticianId);
+    const user = await this._userRepo.findByUserId(beauticianId);
     if (!user || user.role !== UserRole.BEAUTICIAN) {
       throw new AppError(authMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
@@ -38,7 +38,7 @@ export class CreatePostUseCase implements ICreatePostUSeCase {
           item.trimEnd !== undefined &&
           item.trimEnd > item.trimStart
         ) {
-          return await this.fileStorage.trimAndReplaceVideo(
+          return await this._fileStorage.trimAndReplaceVideo(
             item.s3Key,
             item.trimStart,
             item.trimEnd,
@@ -49,7 +49,7 @@ export class CreatePostUseCase implements ICreatePostUSeCase {
       })
     );
 
-    await this.postRepo.create({
+    await this._postRepo.create({
       beauticianId,
       description: input.description,
       postType: input.postType as any,

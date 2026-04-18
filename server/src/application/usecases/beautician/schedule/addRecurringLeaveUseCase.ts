@@ -12,12 +12,12 @@ import { IAddRecursionScheduleInput } from "../../../interfaceType/scheduleType"
 
 export class AddRecurringLeaveUseCase implements IAddRecurringLeaveScheduleUseCase{
   constructor(
-    private readonly recurringScheduleRepo: IReccuringScheduleRepository,
-    private readonly userRepo: IUserRepository
+    private readonly _recurringScheduleRepo: IReccuringScheduleRepository,
+    private readonly _userRepo: IUserRepository
   ) {}
 
   async execute(beauticianId: string, input: IAddRecursionScheduleInput): Promise<void> {
-    const user = await this.userRepo.findByUserId(beauticianId);
+    const user = await this._userRepo.findByUserId(beauticianId);
     if (!user || user.role !== UserRole.BEAUTICIAN) {
       throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
@@ -38,20 +38,20 @@ export class AddRecurringLeaveUseCase implements IAddRecurringLeaveScheduleUseCa
       rrule:     input.rrule,
     });
 
-    const existing = await this.recurringScheduleRepo.findByBeauticianId(beauticianId) ?? [];
+    const existing = await this._recurringScheduleRepo.findByBeauticianId(beauticianId) ?? [];
 
     // Leave overrides everything — split both availability and leave rules that overlap
     for (const rule of existing) {
       const result = computeSplit(rule, input.startDate, newEnd);
       if (!result) continue;
-      await this.recurringScheduleRepo.deleteById(result.deleteId);
+      await this._recurringScheduleRepo.deleteById(result.deleteId);
       for (const seg of result.segments) {
-        await this.recurringScheduleRepo.create({ beauticianId, ...seg });
+        await this._recurringScheduleRepo.create({ beauticianId, ...seg });
       }
     }
 
     // Save the new leave rule as-is
-    await this.recurringScheduleRepo.create({
+    await this._recurringScheduleRepo.create({
       beauticianId,
       rrule:     input.rrule,
       timeFrom:  input.timeFrom,

@@ -6,7 +6,7 @@ import { IGetChatByParticipants } from "../../interface/chat/IGetChatByParticipa
 import { IGetChatByParticipantsInput } from "../../interfaceType/chatType";
 
 export class GetChatByParticipants implements IGetChatByParticipants {
-  constructor(private chatRepo: IChatRepository) {}
+  constructor(private _chatRepo: IChatRepository) {}
   async execute(input: IGetChatByParticipantsInput): Promise<Chat | null> {
     const { participantA, participantB } = input;
 
@@ -17,6 +17,6 @@ export class GetChatByParticipants implements IGetChatByParticipants {
       );
     }
 
-    return this.chatRepo.getChatByParticipants({ participantA, participantB });
+    return this._chatRepo.getChatByParticipants({ participantA, participantB });
   }
 }

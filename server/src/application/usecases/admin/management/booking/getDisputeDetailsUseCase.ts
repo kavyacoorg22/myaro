@@ -8,23 +8,23 @@ import { toAdminDisputeDetail } from "../../../../mapper/adminMapper";
 
 export class GetDisputeDetailsUseCase implements IGetDisputeDetailsUseCase {
   constructor(
-    private bookingRepo:        IBookingRepository,
-    private paymentRepo:        IPaymentRepository,
-    private userRepo:           IUserRepository,
-    private bookingHistoryRepo: IBookingHistoryRepository,
+    private _bookingRepo:        IBookingRepository,
+    private _paymentRepo:        IPaymentRepository,
+    private _userRepo:           IUserRepository,
+    private _bookingHistoryRepo: IBookingHistoryRepository,
   ) {}
 
   async execute(bookingId: string): Promise<IGetDisputeDetailOutput> {
-    const booking = await this.bookingRepo.findById(bookingId);
+    const booking = await this._bookingRepo.findById(bookingId);
     if (!booking) throw new Error("Booking not found");
 
-    const payment = await this.paymentRepo.findByBookingId(bookingId);
+    const payment = await this._paymentRepo.findByBookingId(bookingId);
     if (!payment) throw new Error("Payment not found");
 
     const [[user], [beautician], history] = await Promise.all([
-      this.userRepo.findUsersByIds([booking.userId]),
-      this.userRepo.findUsersByIds([booking.beauticianId]),
-      this.bookingHistoryRepo.findByBookingId(bookingId),
+      this._userRepo.findUsersByIds([booking.userId]),
+      this._userRepo.findUsersByIds([booking.beauticianId]),
+      this._bookingHistoryRepo.findByBookingId(bookingId),
     ]);
 
     if (!user || !beautician) throw new Error("User or beautician not found");

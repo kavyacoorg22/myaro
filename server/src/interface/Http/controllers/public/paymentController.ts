@@ -10,10 +10,10 @@ import { IReleasePayoutUSeCase } from "../../../../application/interface/admin/m
 import { IGetUserRefundSummeryUseCase } from "../../../../application/interface/customer/IGetUserRefundSummeryUseCase";
 
 export class PaymentController{
-  constructor(private createOrderUC:ICreateOrderUsecase,private verifyPaymentUC:IVerifyPaymentUsecase
-    ,private processRefundUC:IProcessRefundUseCase,
-    private releasePayoutUC:IReleasePayoutUSeCase,
-    private getUserRefundSummeryUC:IGetUserRefundSummeryUseCase
+  constructor(private _createOrderUC:ICreateOrderUsecase,private _verifyPaymentUC:IVerifyPaymentUsecase
+    ,private _processRefundUC:IProcessRefundUseCase,
+    private _releasePayoutUC:IReleasePayoutUSeCase,
+    private _getUserRefundSummeryUC:IGetUserRefundSummeryUseCase
   ){}
   
   createOrder=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -23,7 +23,7 @@ export class PaymentController{
       {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
       }
-      const result=await this.createOrderUC.execute({bookingId})
+      const result=await this._createOrderUC.execute({bookingId})
       res.status(HttpStatus.OK).json({
         success:true,
         message:"order returned",
@@ -39,7 +39,7 @@ export class PaymentController{
     try{
           const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-   const result= await this.verifyPaymentUC.execute({
+   const result= await this._verifyPaymentUC.execute({
       razorpay_order_id:   razorpay_order_id,
       razorpay_payment_id: razorpay_payment_id,
       razorpay_signature: razorpay_signature,
@@ -65,7 +65,7 @@ export class PaymentController{
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
       }
 
-      const result=await this.processRefundUC.execute({bookingId,adminId,adminNote})
+      const result=await this._processRefundUC.execute({bookingId,adminId,adminNote})
       res.status(HttpStatus.OK).json({
         success:true,
         data:result.data
@@ -91,7 +91,7 @@ export class PaymentController{
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
       }
 
-      const result=await this.releasePayoutUC.execute({bookingId,adminId,adminNote})
+      const result=await this._releasePayoutUC.execute({bookingId,adminId,adminNote})
       res.status(HttpStatus.OK).json({
         success:true,
         data:result.data
@@ -108,7 +108,7 @@ export class PaymentController{
       {
         throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
       }
-      const result=await this.getUserRefundSummeryUC.execute(id)
+      const result=await this._getUserRefundSummeryUC.execute(id)
       res.status(HttpStatus.OK).json({
         data:result,
         success:true

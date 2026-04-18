@@ -10,28 +10,28 @@ import { IBookingHistoryRepository } from "../../../../../domain/repositoryInter
 
 export class GetBookingDetailUseCase implements IGetBookingDetailUseCase {
   constructor(
-    private bookingRepo:    IBookingRepository,
-    private paymentRepo:    IPaymentRepository,
-    private userRepo:       IUserRepository,
-    private bookingHistoryRepo:IBookingHistoryRepository
+    private _bookingRepo:    IBookingRepository,
+    private _paymentRepo:    IPaymentRepository,
+    private _userRepo:       IUserRepository,
+    private _bookingHistoryRepo:IBookingHistoryRepository
   ) {}
 
   async execute(bookingId: string): Promise<IGetBookingDetailOutPut> {
 
-    const booking = await this.bookingRepo.findById(bookingId);
+    const booking = await this._bookingRepo.findById(bookingId);
     if (!booking) throw new AppError("Booking not found", HttpStatus.NOT_FOUND);
 
-    const payment = await this.paymentRepo.findByBookingId(bookingId);
+    const payment = await this._paymentRepo.findByBookingId(bookingId);
     if (!payment) throw new AppError("Payment not found", HttpStatus.NOT_FOUND);
 
     const [user, beautician] = await Promise.all([
-      this.userRepo.findByUserId(booking.userId),
-      this.userRepo.findByUserId(booking.beauticianId),
+      this._userRepo.findByUserId(booking.userId),
+      this._userRepo.findByUserId(booking.beauticianId),
     ]);
 
     if (!user)       throw new AppError("Customer not found",   HttpStatus.NOT_FOUND);
     if (!beautician) throw new AppError("Beautician not found", HttpStatus.NOT_FOUND);
-        const history = await this.bookingHistoryRepo.findByBookingId(payment.bookingId);
+        const history = await this._bookingHistoryRepo.findByBookingId(payment.bookingId);
 
     return {
       data:{... toAdminBookingDetailDto(booking, payment, user, beautician),

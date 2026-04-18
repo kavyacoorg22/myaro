@@ -6,12 +6,12 @@ import { IRemoveLikeUSeCase } from "../../../interface/public/like/IRemoveLikeUs
 
 export class RemoveLikeUseCase implements IRemoveLikeUSeCase {
   constructor(
-    private likeRepo: ILikeRepository,
-    private postRepo: IPostRepository,
+    private _likeRepo: ILikeRepository,
+    private _postRepo: IPostRepository,
   ) {}
 
   async execute(userId: string, postId: string): Promise<void> {
-    const existingLike = await this.likeRepo.findByUserIDAndPostId(
+    const existingLike = await this._likeRepo.findByUserIDAndPostId(
       userId,
       postId,
     );
@@ -19,7 +19,7 @@ export class RemoveLikeUseCase implements IRemoveLikeUSeCase {
       throw new AppError("Like not found", HttpStatus.NOT_FOUND);
     }
 
-    await this.likeRepo.delete(userId, postId);
-    await this.postRepo.decrementLikesCount(postId);
+    await this._likeRepo.delete(userId, postId);
+    await this._postRepo.decrementLikesCount(postId);
   }
 }

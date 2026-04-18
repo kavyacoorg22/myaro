@@ -6,7 +6,7 @@ import { authMessages } from "../../../../shared/constant/message/authMessages"
 import { MarkAllNotificationsReadUseCase } from "../../../../application/usecases/notification/markAllNotificationRead"
 
 export class NotificationController {
-  constructor(private getUserNotifications: GetUserNotificationsUseCase,private markAllNotificationReadUC:MarkAllNotificationsReadUseCase) {}
+  constructor(private _getUserNotifications: GetUserNotificationsUseCase,private _markAllNotificationReadUC:MarkAllNotificationsReadUseCase) {}
 
    getNotifications=async(req: Request, res: Response,next:NextFunction): Promise<void>=> {
     try{
@@ -15,7 +15,7 @@ export class NotificationController {
       {
         throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
       } 
-    const result = await this.getUserNotifications.execute(userId)
+    const result = await this._getUserNotifications.execute(userId)
 
     res.status(HttpStatus.OK).json({
       success: true,
@@ -33,7 +33,7 @@ export class NotificationController {
       {
         throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
       } 
-    const result = await this.markAllNotificationReadUC.execute(userId)
+    const result = await this._markAllNotificationReadUC.execute(userId)
 
     res.status(HttpStatus.OK).json({
       success: true,

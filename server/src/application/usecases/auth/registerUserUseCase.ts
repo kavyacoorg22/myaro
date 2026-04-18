@@ -1,6 +1,6 @@
 import {
   IUserRepository,
-  CreateUserDTO,
+ 
 } from "../../../domain/repositoryInterface/IUserRepository";
 import { User } from "../../../domain/entities/User";
 import bcrypt from "bcrypt";
@@ -13,15 +13,15 @@ import { customAlphabet } from 'nanoid';
 export type SafeUser = Omit<User, "passwordHash">;
 
 export class RegisterUserUseCase implements IRegisterUserUseCase {
-  constructor(private userRepo: IUserRepository, private bcryptRound = 10) {}
+  constructor(private _userRepo: IUserRepository, private bcryptRound = 10) {}
 
   async execute(input: IRegisterInput): Promise<IResponse> {
-    const existingByEmail = await this.userRepo.findByEmail(input.email);
+    const existingByEmail = await this._userRepo.findByEmail(input.email);
     if (existingByEmail) {
       throw new ConflictError("Email alredy registered");
     }
 
-    const existByUserName = await this.userRepo.findByUserName(input.userName);
+    const existByUserName = await this._userRepo.findByUserName(input.userName);
     if (existByUserName) {
       throw new ConflictError("User Name already taken");
     }
@@ -29,7 +29,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     const passwordHash = await bcrypt.hash(input.password, this.bcryptRound);
    const nanoid = customAlphabet('0123456789', 8);
 const id = nanoid();
-    const dto: CreateUserDTO = {
+    const dto = {
       userId:id,
       email: input.email,
 
@@ -41,7 +41,7 @@ const id = nanoid();
       isActive: true,
     };
 
-    await this.userRepo.create(dto);
+    await this._userRepo.create(dto);
 
     return { success: true, message: "user created" };
   }

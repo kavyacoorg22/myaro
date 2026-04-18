@@ -8,8 +8,8 @@ import { toBookingListItem } from "../../mapper/bookingMapper";
 
 export class GetBeauticianBookingsUSeCase implements IGetBeauticianBookingsUseCase{
   constructor(
-    private bookingRepo: IBookingRepository,
-    private userRepo:    IUserRepository,
+    private _bookingRepo: IBookingRepository,
+    private _userRepo:    IUserRepository,
   ) {}
 
   async execute({
@@ -20,7 +20,7 @@ export class GetBeauticianBookingsUSeCase implements IGetBeauticianBookingsUseCa
   }: IGetBeauticianBookingsInput): Promise<IGetBeauticianBookingsResult> {
 
 
-    const { bookings, total } = await this.bookingRepo.findByBeauticianId(
+    const { bookings, total } = await this._bookingRepo.findByBeauticianId(
       beauticianId,
       page,
       limit,
@@ -30,7 +30,7 @@ export class GetBeauticianBookingsUSeCase implements IGetBeauticianBookingsUseCa
     const totalPages = Math.ceil(total / limit);
 
     const userIds = [...new Set<string>(bookings.map((b:Booking) => b.userId))];
-    const users   = await this.userRepo.findUsersByIds(userIds);
+    const users   = await this._userRepo.findUsersByIds(userIds);
     const userMap = new Map(users.map((u) => [u.id, u]));
 
     const enriched = bookings

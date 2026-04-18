@@ -5,12 +5,12 @@ import { appConfig } from "../../../../infrastructure/config/config";
 import { ILoginUseCase } from "../../../../application/interface/auth/ILoginUseCase";
 
 export class Logincontroller {
-  constructor(private LoginUseCase: ILoginUseCase) {}
+  constructor(private _LoginUseCase: ILoginUseCase) {}
 
   async handle(req: Request, res: Response, next: NextFunction) {
     try {
       const { ...input } = req.body;
-      const response = await this.LoginUseCase.execute(input);
+      const response = await this._LoginUseCase.execute(input);
 
       const accessToken = response.accessToken;
       const refreshToken = response.refreshToken;

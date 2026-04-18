@@ -13,12 +13,12 @@ import { extractBYDAY } from "../../../../utils/schedule/dateHelper";
 
 export class AddRecurringAvailabilityUseCase implements IAddRecursionScheduleUseCase {
   constructor(
-    private readonly recurringScheduleRepo: IReccuringScheduleRepository,
-    private readonly userRepo: IUserRepository
+    private readonly _recurringScheduleRepo: IReccuringScheduleRepository,
+    private readonly _userRepo: IUserRepository
   ) {}
 
   async execute(beauticianId: string, input: IAddRecursionScheduleInput): Promise<void> {
-    const user = await this.userRepo.findByUserId(beauticianId);
+    const user = await this._userRepo.findByUserId(beauticianId);
     if (!user || user.role !== UserRole.BEAUTICIAN) {
       throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
@@ -44,7 +44,7 @@ export class AddRecurringAvailabilityUseCase implements IAddRecursionScheduleUse
       rrule:     input.rrule,
     });
 
-    const existing   = await this.recurringScheduleRepo.findByBeauticianId(beauticianId) ?? [];
+    const existing   = await this._recurringScheduleRepo.findByBeauticianId(beauticianId) ?? [];
     const availRules = existing.filter(r => r.type === ScheduleType.AVAILABILITY);
     const leaveRules = existing.filter(r => r.type === ScheduleType.LEAVE);
 
@@ -52,9 +52,9 @@ export class AddRecurringAvailabilityUseCase implements IAddRecursionScheduleUse
     for (const rule of availRules) {
       const result = computeSplit(rule, input.startDate, newEnd);
       if (!result) continue;
-      await this.recurringScheduleRepo.deleteById(result.deleteId);
+      await this._recurringScheduleRepo.deleteById(result.deleteId);
       for (const seg of result.segments) {
-        await this.recurringScheduleRepo.create({ beauticianId, ...seg });
+        await this._recurringScheduleRepo.create({ beauticianId, ...seg });
       }
     }
 
@@ -88,7 +88,7 @@ export class AddRecurringAvailabilityUseCase implements IAddRecursionScheduleUse
       : [newAvailSegment];
 
     for (const seg of toSave) {
-      await this.recurringScheduleRepo.create({ beauticianId, ...seg });
+      await this._recurringScheduleRepo.create({ beauticianId, ...seg });
     }
   }
 }

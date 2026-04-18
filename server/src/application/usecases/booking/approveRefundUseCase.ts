@@ -1,6 +1,11 @@
 import { Booking } from "../../../domain/entities/booking";
 import { BookingAction, BookingStatus } from "../../../domain/enum/bookingEnum";
-import { PaymentStatus, RefundMethod, RefundStatus, RefundType } from "../../../domain/enum/paymentEnum";
+import {
+  PaymentStatus,
+  RefundMethod,
+  RefundStatus,
+  RefundType,
+} from "../../../domain/enum/paymentEnum";
 import { UserRole } from "../../../domain/enum/userEnum";
 import { AppError } from "../../../domain/errors/appError";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
@@ -19,94 +24,96 @@ import { IBeauticianApproveRefundUseCase } from "../../interface/booking/IBeauti
 
 export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundUseCase {
   constructor(
-    private bookingRepo:      IBookingRepository,
-    private paymentRepo:      IPaymentRepository,     
-    private socketEmitter:    ISocketEmitter,
-    private bookingValidator: BookingValidatorService,
-    private bookingHistory:   BookingHistoryService,
-    private paymentLookup:    PaymentLookupService,
-   private chatMessage:      ChatMessageService,
-   private refundrepo:IRefundRepository
-    
+    private _bookingRepo: IBookingRepository,
+    private _paymentRepo: IPaymentRepository,
+    private _socketEmitter: ISocketEmitter,
+    private _bookingValidator: BookingValidatorService,
+    private _bookingHistory: BookingHistoryService,
+    private _paymentLookup: PaymentLookupService,
+    private _chatMessage: ChatMessageService,
+    private _refundrepo: IRefundRepository,
   ) {}
 
   async execute(input: IBeauticianApproveRefundUInput): Promise<Booking> {
     const { bookingId, beauticianId } = input;
 
-    const booking = await this.bookingValidator.getAndValidateStatus(
+    const booking = await this._bookingValidator.getAndValidateStatus(
       bookingId,
       beauticianId,
       "beauticianId",
       [BookingStatus.REFUND_REQUESTED],
     );
 
-    const payment = await this.paymentLookup.getAndValidateStatus(
-      bookingId,
-      [PaymentStatus.REFUND_REQUESTED],
-    );
+    const payment = await this._paymentLookup.getAndValidateStatus(bookingId, [
+      PaymentStatus.REFUND_REQUESTED,
+    ]);
 
-
-     await this.refundrepo.create({
-      userId:booking.userId,
-      paymentId:  payment.id,
-      amount:     payment.amount,
-      method:     RefundMethod.WALLET,
-      status:     RefundStatus.PENDING,        
+    await this._refundrepo.create({
+      userId: booking.userId,
+      paymentId: payment.id,
+      amount: payment.amount,
+      method: RefundMethod.WALLET,
+      status: RefundStatus.PENDING,
       refundType: RefundType.SERVICE_ISSUE,
-      reason:     booking.refundReason ?? undefined,
+      reason: booking.refundReason ?? undefined,
     });
 
-    await this.paymentRepo.updateStatus(
+    await this._paymentRepo.updateStatus(
       payment.id,
-      PaymentStatus.BEAUTICIAN_APPROVED_REFUND, 
+      PaymentStatus.BEAUTICIAN_APPROVED_REFUND,
     );
 
-    const updatedBooking = await this.bookingRepo.updateByBookingId(bookingId, {
-      status: BookingStatus.REFUND_APPROVED, 
-    });
+    const updatedBooking = await this._bookingRepo.updateByBookingId(
+      bookingId,
+      {
+        status: BookingStatus.REFUND_APPROVED,
+      },
+    );
 
     if (!updatedBooking) {
-      throw new AppError("Failed to update booking", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new AppError(
+        "Failed to update booking",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 
-    await this.bookingHistory.log({
+    await this._bookingHistory.log({
       bookingId,
-      action:      BookingAction.APPROVE_REFUND,
+      action: BookingAction.APPROVE_REFUND,
       performedBy: beauticianId,
-      role:        UserRole.BEAUTICIAN,
-      fromStatus:  BookingStatus.REFUND_REQUESTED,
-      toStatus:    BookingStatus.REFUND_APPROVED, 
+      role: UserRole.BEAUTICIAN,
+      fromStatus: BookingStatus.REFUND_REQUESTED,
+      toStatus: BookingStatus.REFUND_APPROVED,
     });
 
-    await this.chatMessage.sendAndEmit({
-      chatId:     booking.chatId,
-      senderId:   beauticianId,
-      receiverId: booking.userId,           
-      message:    `Your refund has been approved and is being processed.`,
-      type:       MessageType.BOOKING,
+    await this._chatMessage.sendAndEmit({
+      chatId: booking.chatId,
+      senderId: beauticianId,
+      receiverId: booking.userId,
+      message: `Your refund has been approved and is being processed.`,
+      type: MessageType.BOOKING,
       bookingId,
-      status:     BookingStatus.REFUND_APPROVED, 
+      status: BookingStatus.REFUND_APPROVED,
     });
 
-
-    this.socketEmitter.emitToRoom(
+    this._socketEmitter.emitToRoom(
       `user:${booking.userId}`,
       SOCKET_EVENTS.REFUND_APPROVED,
       {
         bookingId,
-        amount:  payment.amount,
+        amount: payment.amount,
         message: "Your refund has been approved and will be processed shortly.",
       },
     );
 
-    this.socketEmitter.emitToRoom(
+    this._socketEmitter.emitToRoom(
       `user:${booking.userId}`,
       SOCKET_EVENTS.NEW_NOTIFICATION,
       {
-        chatId:        booking.chatId,
-        lastMessage:   "Your refund has been approved",
+        chatId: booking.chatId,
+        lastMessage: "Your refund has been approved",
         lastMessageAt: new Date(),
-        type:          "refund_approved",
+        type: "refund_approved",
       },
     );
 

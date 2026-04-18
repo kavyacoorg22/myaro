@@ -13,16 +13,16 @@ import { toGetUserChats } from "../../mapper/chatMapper";
 
 export class GetUserChatsUseCase implements IGetUserChatsUseCase {
   constructor(
-    private chatRepo: IChatRepository,
-    private userRepo: IUserRepository,
-    private messageRepo: IMessageRepository,
-    private beauticianRepo: IBeauticianRepository, 
+    private _chatRepo: IChatRepository,
+    private _userRepo: IUserRepository,
+    private _messageRepo: IMessageRepository,
+    private _beauticianRepo: IBeauticianRepository, 
   ) {}
 
   async execute({ userId, limit = 20, cursor }: IGetUserChatsInput): Promise<IGetUserChatsOutput> {
     if (!userId) throw new Error("userId is required");
 
-    const chats = await this.chatRepo.findByUserId(userId, limit + 1, cursor);
+    const chats = await this._chatRepo.findByUserId(userId, limit + 1, cursor);
     const hasMore = chats.length > limit;
     if (hasMore) chats.pop();
 
@@ -35,9 +35,9 @@ export class GetUserChatsUseCase implements IGetUserChatsUseCase {
       .filter((id): id is string => id !== undefined);
 
     const [users, unreadCounts] = await Promise.all([
-      this.userRepo.findUsersByIds(otherUserIds),
+      this._userRepo.findUsersByIds(otherUserIds),
       Promise.all(
-        chats.map((chat) => this.messageRepo.getUnreadCount(chat.id, userId)),
+        chats.map((chat) => this._messageRepo.getUnreadCount(chat.id, userId)),
       ),
     ]);
 
@@ -49,7 +49,7 @@ export class GetUserChatsUseCase implements IGetUserChatsUseCase {
     if (beauticianUsers.length > 0) {
       await Promise.all(
         beauticianUsers.map(async (u) => {
-          const b = await this.beauticianRepo.findByUserId(u.id);
+          const b = await this._beauticianRepo.findByUserId(u.id);
           if (b) beauticianMap.set(u.id, b);
         })
       );

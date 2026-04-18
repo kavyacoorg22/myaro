@@ -7,13 +7,13 @@ import { IChangePasswordInput } from "../../interfaceType/authtypes";
 import bcrypt from 'bcrypt'
 
 export class ChangePasswordUseCase implements IChangePasswordUseCase{
-  constructor(private readonly userRespository:IUserRepository){
+  constructor(private readonly _userRespository:IUserRepository){
 
   }
 
   async execute(id: string, input: IChangePasswordInput): Promise<void> {
     const {oldPassword,newPassword}=input
-    const user=await this.userRespository.findByUserId(id)
+    const user=await this._userRespository.findByUserId(id)
 
     if(!user)
     {
@@ -33,7 +33,7 @@ export class ChangePasswordUseCase implements IChangePasswordUseCase{
     }
 
     const passwordHash=await bcrypt.hash(newPassword,10)
-    await this.userRespository.updateByUserId(id,{passwordHash})
+    await this._userRespository.updateByUserId(id,{passwordHash})
     
 
     

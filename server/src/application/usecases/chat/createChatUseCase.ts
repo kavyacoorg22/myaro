@@ -5,20 +5,20 @@ import { ICreateChatUSeCase } from "../../interface/chat/ICreateChatUSeCase";
 import { ICreateChatInput } from "../../interfaceType/chatType";
 
 export class CreateChatUseCase implements ICreateChatUSeCase {
-  constructor(private chatRepo: IChatRepository) {}
+  constructor(private _chatRepo: IChatRepository) {}
   async execute(input: ICreateChatInput): Promise<Chat> {
     const { participantA, participantB } = input;
     if (participantA === participantB) {
       throw new AppError("Can't create chat with youself");
     }
 
-    const existing = await this.chatRepo.getChatByParticipants({
+    const existing = await this._chatRepo.getChatByParticipants({
       participantA,
       participantB,
     });
     if (existing) return existing;
 
-    return this.chatRepo.create({
+    return this._chatRepo.create({
       participants: [participantA, participantB],
       lastMessage: "",
       lastMessageAt: new Date(),

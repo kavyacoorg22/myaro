@@ -11,15 +11,15 @@ import { IGetAllRefundsDto } from "../../../../dtos/admin";
 
 export class GetAllRefundsUseCase implements IGetAllRefundsUseCase {
   constructor(
-    private refundRepo:  IRefundRepository,
-    private paymentRepo: IPaymentRepository,
-    private bookingRepo: IBookingRepository,
-    private userRepo:    IUserRepository,
+    private _refundRepo:  IRefundRepository,
+    private _paymentRepo: IPaymentRepository,
+    private _bookingRepo: IBookingRepository,
+    private _userRepo:    IUserRepository,
   ) {}
 
   async execute({ page = 1, limit = 10,status }: IGetAllRefundInput): Promise<IGetAllRefundOutput> {
      console.log('status',status)
-    const { refunds, total } = await this.refundRepo.findAll({ page, limit,status });
+    const { refunds, total } = await this._refundRepo.findAll({ page, limit,status });
     console.log(refunds,total)
     const totalPages = Math.ceil(total / limit);
 
@@ -28,15 +28,15 @@ export class GetAllRefundsUseCase implements IGetAllRefundsUseCase {
     }
 
     const paymentIds = [...new Set(refunds.map((r: Refund) => r.paymentId))];
-    const payments   = await this.paymentRepo.findByIds(paymentIds);
+    const payments   = await this._paymentRepo.findByIds(paymentIds);
     const paymentMap = new Map(payments.map((p: Payment) => [p.id, p]));
 
     const bookingIds = [...new Set(payments.map((p: Payment) => p.bookingId))];
-    const bookings   = await this.bookingRepo.findByIds(bookingIds);
+    const bookings   = await this._bookingRepo.findByIds(bookingIds);
     const bookingMap = new Map(bookings.map(b => [b.id, b]));
 
     const userIds = [...new Set(bookings.map(b => b.userId))];
-    const users   = await this.userRepo.findUsersByIds(userIds);
+    const users   = await this._userRepo.findUsersByIds(userIds);
     const userMap = new Map(users.map(u => [u.id, u]));
 
     const data = refunds

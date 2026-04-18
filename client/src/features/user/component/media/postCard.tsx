@@ -96,13 +96,13 @@ const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
 </div>
         </div>
         <div className="flex items-center gap-2">
-          {!followed ? (
+          {/* {!followed ? (
             <button onClick={handleFollow} className="text-xs font-semibold text-blue-500 hover:text-blue-700 transition-colors">
               follow
             </button>
           ) : (
             <button className="text-xs font-medium text-gray-400 cursor-default">following</button>
-          )}
+          )} */}
           <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50 transition">
             <MoreHorizontal className="w-4 h-4" />
           </button>

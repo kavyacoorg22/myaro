@@ -8,8 +8,8 @@ import { IdeleteCommentUseCase } from "../../../interface/public/comment/Idelete
 
 export class DeleteCommentUseCase implements IdeleteCommentUseCase {
   constructor(
-    private commentRepo: ICommentRepository,
-    private postRepo: IPostRepository
+    private _commentRepo: ICommentRepository,
+    private _postRepo: IPostRepository
   ) {}
 
   async execute(
@@ -17,7 +17,7 @@ export class DeleteCommentUseCase implements IdeleteCommentUseCase {
     commentId: string,
     postId: string | null
   ): Promise<void> {
-    const comment = await this.commentRepo.findById(commentId);
+    const comment = await this._commentRepo.findById(commentId);
     if (!comment) {
       throw new AppError("Comment not exists", HttpStatus.NOT_FOUND);
     }
@@ -25,7 +25,7 @@ export class DeleteCommentUseCase implements IdeleteCommentUseCase {
     const isCommentOwner = userId === comment.userId;
     let isPostOwner = false;
     if (postId !== null && comment.type !== CommentType.HOME) {
-      const post = await this.postRepo.findById(postId);
+      const post = await this._postRepo.findById(postId);
       if (post && post.beauticianId === userId) {
         isPostOwner = true;
       }
@@ -35,15 +35,15 @@ export class DeleteCommentUseCase implements IdeleteCommentUseCase {
       throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
 
-    await this.commentRepo.delete(commentId);
+    await this._commentRepo.delete(commentId);
 
     const isReply = !!comment.parentId;
 
     if (isReply) {
-      await this.commentRepo.decrementReplyCount(comment.parentId!);
+      await this._commentRepo.decrementReplyCount(comment.parentId!);
     } else {
       if (postId) {
-        await this.postRepo.decrementCommentsCount(postId);
+        await this._postRepo.decrementCommentsCount(postId);
       }
     }
   }

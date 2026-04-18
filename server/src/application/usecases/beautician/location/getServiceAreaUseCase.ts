@@ -6,12 +6,12 @@ import { toGetServiceAreaDto } from "../../../mapper/beauticianMapper";
 
 export class getServiceAreaUseCase implements IGetServiceAreaUseCase{
   constructor(
-    private readonly serviceAreaRepo: IServiceAreaRepository,
+    private readonly _serviceAreaRepo: IServiceAreaRepository,
   ) {}
  
   async execute(beauticianId: string): Promise<IGetServiceAreaResponse> {
     
-    const data = await this.serviceAreaRepo.findByBeauticianId(beauticianId);
+    const data = await this._serviceAreaRepo.findByBeauticianId(beauticianId);
     if(!data)
     {
       return {

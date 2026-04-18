@@ -4,12 +4,12 @@ import { ICompleteSignupUseCase } from "../../../../application/interface/auth/I
 import { error } from "console";
 
 export class CompleteSignupController {
-  constructor(private completeSignupUC: ICompleteSignupUseCase) {}
+  constructor(private _completeSignupUC: ICompleteSignupUseCase) {}
 
   async handle(req: Request, res: Response) {
     try {
       const { signupToken, otp } = req.body;
-      const user = await this.completeSignupUC.execute({ signupToken, otp });
+      const user = await this._completeSignupUC.execute({ signupToken, otp });
 
       return res.status(201).json({ success: true, data: user });
     } catch (err: unknown) {

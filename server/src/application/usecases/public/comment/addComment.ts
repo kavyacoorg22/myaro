@@ -6,9 +6,9 @@ import { IAddCommentInput } from "../../../interfaceType/commetLike";
 
 export class AddCommentUseCase implements IAddCommentUSeCase {
   constructor(
-    private commentRepo: ICommentRepository,
-    private postRepo: IPostRepository,
-    private beauticianRepo: IBeauticianRepository
+    private _commentRepo: ICommentRepository,
+    private _postRepo: IPostRepository,
+    private _beauticianRepo: IBeauticianRepository
   ) {}
 
   async execute(input: IAddCommentInput): Promise<void> {
@@ -21,17 +21,17 @@ export class AddCommentUseCase implements IAddCommentUSeCase {
     }
 
     if (input.postId) {
-      const post = await this.postRepo.findById(input.postId);
+      const post = await this._postRepo.findById(input.postId);
       if (!post) throw new Error("Post not found");
     }
 
     if (input.beauticianId) {
-      const beautician = await this.beauticianRepo.findByUserId(input.beauticianId);
+      const beautician = await this._beauticianRepo.findByUserId(input.beauticianId);
       if (!beautician) throw new Error("Beautician not found");
     }
 
     if (input.parentId) {
-      const parentComment = await this.commentRepo.findById(input.parentId);
+      const parentComment = await this._commentRepo.findById(input.parentId);
 
       if (!parentComment) {
         throw new Error("Parent comment not found");
@@ -45,7 +45,7 @@ export class AddCommentUseCase implements IAddCommentUSeCase {
       }
     }
 
-    await this.commentRepo.create({
+    await this._commentRepo.create({
       userId: input.userId,
       postId: input.postId ,
       beauticianId: input.beauticianId ,
@@ -56,10 +56,10 @@ export class AddCommentUseCase implements IAddCommentUSeCase {
     });
    
     if (input.parentId) {
-  await this.commentRepo.incrementReplyCount(input.parentId);
+  await this._commentRepo.incrementReplyCount(input.parentId);
 }
     if (input.postId && !input.parentId) {
-      await this.postRepo.incrementCommentsCount(input.postId);
+      await this._postRepo.incrementCommentsCount(input.postId);
     }
   }
 }

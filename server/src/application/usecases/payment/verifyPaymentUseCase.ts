@@ -19,26 +19,26 @@ import { IPaymentService } from "../../serviceInterface/IPaymentServie";
 
 export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
   constructor(
-    private paymentRepo: IPaymentRepository,
-    private bookingRepo: IBookingRepository,
-    private paymentService: IPaymentService,
-    private blockSlotUC: IBlockBookedSlotUSeCase,
-        private updateBookingStatusUC: IUpdateBookingStatusUseCase,
+    private _paymentRepo: IPaymentRepository,
+    private _bookingRepo: IBookingRepository,
+    private _paymentService: IPaymentService,
+    private _blockSlotUC: IBlockBookedSlotUSeCase,
+        private _updateBookingStatusUC: IUpdateBookingStatusUseCase,
 
   ) {}
   async execute(
     data: IVerifyPaymentUsecaseInput,
   ): Promise<IVerifyPaymentOutPut> {
-    const isValid = this.paymentService.verifySignature(data);
+    const isValid = this._paymentService.verifySignature(data);
 
     if (!isValid) {
-      await this.paymentRepo.updateByRazorpayOrderId(data.razorpay_order_id, {
+      await this._paymentRepo.updateByRazorpayOrderId(data.razorpay_order_id, {
         status: PaymentStatus.FAILED,
       });
       throw new AppError("Invalid payment signature", HttpStatus.BAD_REQUEST);
     }
 
-    const payment = await this.paymentRepo.updateByRazorpayOrderId(
+    const payment = await this._paymentRepo.updateByRazorpayOrderId(
       data.razorpay_order_id,
       {
         razorpayPaymentId: data.razorpay_payment_id,
@@ -48,7 +48,7 @@ export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
     );
     if (!payment)
       throw new AppError("Payment record not found", HttpStatus.NOT_FOUND);
-    const booking = await this.bookingRepo.findById(payment.bookingId);
+    const booking = await this._bookingRepo.findById(payment.bookingId);
     if (!booking) throw new AppError("Booking not found", HttpStatus.NOT_FOUND);
 
     const lockKey = `payment_lock:${payment.bookingId}`;
@@ -57,14 +57,14 @@ export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
       await releaseLock(lockKey, storedValue);
     }
 
-     await this.updateBookingStatusUC.execute({
+     await this._updateBookingStatusUC.execute({
       bookingId:   payment.bookingId,
       performedBy: booking.userId,     
       role:        UserRole.CUSTOMER,
       action:      BookingAction.CONFIRM, 
     });
     const [startTime, endTime] = booking.slot.time.split(" – ");
-    await this.blockSlotUC.execute({
+    await this._blockSlotUC.execute({
       beauticianId: booking.beauticianId,
       date: new Date(booking.slot.date),
       startTime: startTime.trim(),

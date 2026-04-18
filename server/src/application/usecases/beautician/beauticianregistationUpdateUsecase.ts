@@ -12,15 +12,15 @@ import { BankDetailsVO } from "../../../domain/entities/Beautician";
 export class BeauticianUpdateRegistartionUseCase
   implements IBeauticianUpdateRegistrationUseCase
 {
-  private beauticianRepo: IBeauticianRepository;
-  private userRepo: IUserRepository;
+  private _beauticianRepo: IBeauticianRepository;
+  private _userRepo: IUserRepository;
 
   constructor(
     beauticianRepo: IBeauticianRepository,
     userRepo: IUserRepository
   ) {
-    this.beauticianRepo = beauticianRepo;
-    this.userRepo = userRepo;
+    this._beauticianRepo = beauticianRepo;
+    this._userRepo = userRepo;
   }
 
   async execute(
@@ -33,7 +33,7 @@ export class BeauticianUpdateRegistartionUseCase
         HttpStatus.BAD_REQUEST
       );
     }
-    const updatedBeautician = await this.beauticianRepo.addPaymentDetails(
+    const updatedBeautician = await this._beauticianRepo.addPaymentDetails(
       userId,
       { bankDetails: payment }
     );
@@ -45,7 +45,7 @@ export class BeauticianUpdateRegistartionUseCase
       );
     }
 
-    const updatedUser = await this.userRepo.updateRoleAndVerification(
+    const updatedUser = await this._userRepo.updateRoleAndVerification(
       userId,
       UserRole.BEAUTICIAN,
       true

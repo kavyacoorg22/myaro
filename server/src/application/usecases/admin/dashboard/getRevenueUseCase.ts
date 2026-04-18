@@ -4,10 +4,10 @@ import { IRevenueOutPut } from "../../../interfaceType/adminType";
 import { toRevenueDto } from "../../../mapper/adminMapper";
 
 export class GetRevenueUC implements IGetRevenueUSeCase{
-  constructor(private readonly paymentRepo: IPaymentRepository) {}
+  constructor(private readonly _paymentRepo: IPaymentRepository) {}
  
   async execute(): Promise<IRevenueOutPut> {
-    const result = await this.paymentRepo.getRevenueStats();
+    const result = await this._paymentRepo.getRevenueStats();
     const data= toRevenueDto(result ?? { completed: 0, refunded: 0, held: 0 });
     return {data}
   }

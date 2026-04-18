@@ -7,16 +7,16 @@ import { getErrorMessage } from "../../../../domain/errors/systemError";
 
 export class OtpController {
   constructor(
-    private createOtpUC: ICreateOtpUseCase,
-    private resendOtpUC: IResendOtpUseCase,
-    private verifyOtpUC: IVerifyOtpUseCase
+    private _createOtpUC: ICreateOtpUseCase,
+    private _resendOtpUC: IResendOtpUseCase,
+    private _verifyOtpUC: IVerifyOtpUseCase
   ) {}
 
   async sendOtp(req: Request, res: Response) {
     try {
       const { email, signupToken = null } = req.body;
 
-      await this.createOtpUC.execute({ email, signupToken });
+      await this._createOtpUC.execute({ email, signupToken });
 
       return res.json({ success: true, message: "OTP sent" });
     } catch (err: unknown) {
@@ -29,7 +29,7 @@ export class OtpController {
   async resendOtp(req: Request, res: Response) {
     try {
       const { email, signupToken } = req.body;
-      await this.resendOtpUC.execute({ email, signupToken });
+      await this._resendOtpUC.execute({ email, signupToken });
       return res.json({ success: true, message: "OTP resent" });
     } catch (err: unknown) {
       return res
@@ -42,7 +42,7 @@ export class OtpController {
     try {
       const { email, signupToken, otp } = req.body;
 
-      await this.verifyOtpUC.execute({ email, signupToken, otp });
+      await this._verifyOtpUC.execute({ email, signupToken, otp });
 
       return res.json({ success: true, message: "OTP verified" });
     } catch (err: unknown) {

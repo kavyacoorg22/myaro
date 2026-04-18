@@ -5,7 +5,7 @@ import { authMessages } from "../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 
 export class ChangePasswordController{
-  constructor(private readonly ChangePasswordUC:IChangePasswordUseCase){}
+  constructor(private readonly _ChangePasswordUC:IChangePasswordUseCase){}
 
  async handle(req:Request,res:Response,next:NextFunction)
   {
@@ -17,7 +17,7 @@ export class ChangePasswordController{
         throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
        }
       
-       await this.ChangePasswordUC.execute(id,{oldPassword,newPassword})
+       await this._ChangePasswordUC.execute(id,{oldPassword,newPassword})
      
        return res.status(HttpStatus.OK).json({
         success:true,

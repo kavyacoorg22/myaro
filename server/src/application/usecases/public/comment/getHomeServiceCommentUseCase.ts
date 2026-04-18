@@ -6,15 +6,15 @@ import { IGetHomeServiceCommentsOutPut } from "../../../interfaceType/commetLike
 import { toGetHomeServiceCommentDto } from "../../../mapper/likeCommentMapper";
 
 export class GetHomeServiceUseCase implements IGetHomeServiceCommetsUseCase{
-  constructor(private commentRepo:ICommentRepository,private userRepo:IUserRepository){}
+  constructor(private _commentRepo:ICommentRepository,private _userRepo:IUserRepository){}
   async execute(beauticianId: string,  limit: number = 10,
   cursor?: string|null): Promise<IGetHomeServiceCommentsOutPut> {
     
-    const {comments,nextCursor}=await this.commentRepo.findHomeServiceComments(beauticianId,limit,cursor)
+    const {comments,nextCursor}=await this._commentRepo.findHomeServiceComments(beauticianId,limit,cursor)
 
     const userIds=[...new Set(comments.map((u)=>u.userId))]
 
-    const userData=await this.userRepo.findUsersByIds(userIds)
+    const userData=await this._userRepo.findUsersByIds(userIds)
 
     const userMap=new Map(userData.map((u)=>[u.id,u]))
 

@@ -10,7 +10,7 @@ import { toGetMonthlyAvailabilityDto } from "../../../mapper/scheduleMapper";
 
 export class GetMonthlyAvailabilityUseCase implements IGetMonthlyAvailabilityUSeCase{
 
-  constructor(private getAvailabilityUC:IGetAvailbilityUseCase){}
+  constructor(private _getAvailabilityUC:IGetAvailbilityUseCase){}
  async execute(beauticianId: string, month: number, year: number): Promise<IGetmonthlyAvailabilityOutput> {
   const daysInMonth = new Date(year, month, 0).getDate();
   const dates: IGetmonthlyAvailabilityDto[] = [];
@@ -18,7 +18,7 @@ export class GetMonthlyAvailabilityUseCase implements IGetMonthlyAvailabilityUSe
   await Promise.all(
     Array.from({ length: daysInMonth }, async (_, i) => {
       const date = new Date(Date.UTC(year, month - 1, i + 1));
-      const { availability } = await this.getAvailabilityUC.execute(beauticianId, date);
+      const { availability } = await this._getAvailabilityUC.execute(beauticianId, date);
 
       if (availability.type === ScheduleType.LEAVE) {
         dates.push(toGetMonthlyAvailabilityDto(availability.date, ScheduleType.LEAVE));

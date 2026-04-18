@@ -7,8 +7,8 @@ import { toGetReplyDto } from "../../../mapper/likeCommentMapper";
 
 export class GetRepliesUseCase implements IGetRepliesUseCase {
   constructor(
-    private commentRepo: CommentRepository,
-    private userRepo: IUserRepository
+    private _commentRepo: CommentRepository,
+    private _userRepo: IUserRepository
   ) {}
 
   async execute(
@@ -17,7 +17,7 @@ export class GetRepliesUseCase implements IGetRepliesUseCase {
     cursor?: string | null
   ): Promise<IGetRepliesOutput> {
 
-    const { replies, nextCursor } = await this.commentRepo.findReplies(
+    const { replies, nextCursor } = await this._commentRepo.findReplies(
       parentId,
       limit,
       cursor
@@ -29,7 +29,7 @@ export class GetRepliesUseCase implements IGetRepliesUseCase {
 
     const userIds = [...new Set(replies.map((r) => r.userId))];
 
-    const userData = await this.userRepo.findUsersByIds(userIds);
+    const userData = await this._userRepo.findUsersByIds(userIds);
     const userMap = new Map(userData.map((u) => [u.id, u]));
 
     const enrichedReplies = replies

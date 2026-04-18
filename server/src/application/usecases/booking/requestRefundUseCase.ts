@@ -18,32 +18,32 @@ import { IRequestRefundInput } from "../../interfaceType/booking";
 
 export class RequestRefundUseCase implements IRequestRefundUseCase {
   constructor(
-    private bookingRepo:      IBookingRepository,
-    private paymentRepo:      IPaymentRepository,
-    private socketEmitter:    ISocketEmitter,
-    private bookingValidator: BookingValidatorService,
-    private bookingHistory:   BookingHistoryService,
-    private chatMessage:      ChatMessageService,
-    private paymentLookup:    PaymentLookupService,
+    private _bookingRepo:      IBookingRepository,
+    private _paymentRepo:      IPaymentRepository,
+    private _socketEmitter:    ISocketEmitter,
+    private _bookingValidator: BookingValidatorService,
+    private _bookingHistory:   BookingHistoryService,
+    private _chatMessage:      ChatMessageService,
+    private _paymentLookup:    PaymentLookupService,
   ) {}
 
   async execute(input: IRequestRefundInput): Promise<Booking> {
     const { bookingId, userId, refundReason} = input;
 
-    const booking = await this.bookingValidator.getAndValidateStatus(
+    const booking = await this._bookingValidator.getAndValidateStatus(
       bookingId,
       userId,
       "userId",
       [BookingStatus.CONFIRMED],
     );
 
-    const payment = await this.paymentLookup.getAndValidateStatus(
+    const payment = await this._paymentLookup.getAndValidateStatus(
       bookingId,
       [PaymentStatus.PAID],
     );
 
     // ── 3. Update booking ──────────────────────────────────────────────────
-    const updatedBooking = await this.bookingRepo.updateByBookingId(bookingId, {
+    const updatedBooking = await this._bookingRepo.updateByBookingId(bookingId, {
       status:     BookingStatus.REFUND_REQUESTED,
       refundReason,
       refundType: RefundType.SERVICE_ISSUE,
@@ -54,12 +54,12 @@ export class RequestRefundUseCase implements IRequestRefundUseCase {
     }
 
     // ── 4. Update payment ──────────────────────────────────────────────────
-    await this.paymentRepo.updateStatus(payment.id, PaymentStatus.REFUND_REQUESTED, {
+    await this._paymentRepo.updateStatus(payment.id, PaymentStatus.REFUND_REQUESTED, {
       refundReason,
     });
 
     // ── 5. Log history ─────────────────────────────────────────────────────
-    await this.bookingHistory.log({
+    await this._bookingHistory.log({
       bookingId,
       action:      BookingAction.REQUEST_REFUND,
       performedBy: userId,
@@ -69,7 +69,7 @@ export class RequestRefundUseCase implements IRequestRefundUseCase {
     });
 
     // ── 6. Send chat message + notify ─────────────────────────────────────
-    await this.chatMessage.sendAndEmit({
+    await this._chatMessage.sendAndEmit({
       chatId:     booking.chatId,
       senderId:   userId,
       receiverId: booking.beauticianId,
@@ -80,7 +80,7 @@ export class RequestRefundUseCase implements IRequestRefundUseCase {
     });
 
     // ── 7. Extra socket event for beautician's refund card ─────────────────
-    this.socketEmitter.emitToRoom(
+    this._socketEmitter.emitToRoom(
       `user:${booking.beauticianId}`,
       SOCKET_EVENTS.REFUND_REQUESTED,
       {

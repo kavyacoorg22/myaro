@@ -21,30 +21,30 @@ import { IBeauticianRepository } from "../../../../../domain/repositoryInterface
 
 export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
   constructor(
-    private bookingRepo:          IBookingRepository,
-    private paymentRepo:          IPaymentRepository,
-    private payoutRepo:           IPayoutRepository,
-    private paymentService:       IPaymentService,
-    private bookingValidator:     BookingValidatorService,
-    private bookingHistory:       BookingHistoryService,
-    private paymentLookup:        PaymentLookupService,
-    private notificationDispatch: NotificationDispatchService,
-    private statusResolver:       RazorpayStatusResolverService,
-    private Beauticianrepo:IBeauticianRepository
+    private _bookingRepo:          IBookingRepository,
+    private _paymentRepo:          IPaymentRepository,
+    private _payoutRepo:           IPayoutRepository,
+    private _paymentService:       IPaymentService,
+    private _bookingValidator:     BookingValidatorService,
+    private _bookingHistory:       BookingHistoryService,
+    private _paymentLookup:        PaymentLookupService,
+    private _notificationDispatch: NotificationDispatchService,
+    private _statusResolver:       RazorpayStatusResolverService,
+    private _Beauticianrepo:IBeauticianRepository
   ) {}
 
   async execute(input: IReleasePayoutInput): Promise<IReleasePayoutOutPut> {
     const { bookingId, adminId, adminNote } = input;
 
 
-    const booking = await this.bookingValidator.getAndValidateStatusOnly(
+    const booking = await this._bookingValidator.getAndValidateStatusOnly(
       bookingId,
       [BookingStatus.COMPLETED, BookingStatus.DISPUTE],
     );
 
     const isDispute = booking.status === BookingStatus.DISPUTE;
 
-    const payment = await this.paymentLookup.getAndValidateStatus(bookingId, [
+    const payment = await this._paymentLookup.getAndValidateStatus(bookingId, [
       PaymentStatus.PAID,
       PaymentStatus.REFUND_DISPUTED,
     ]);
@@ -57,13 +57,13 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
     }
 
     // ── 3. Idempotency check ───────────────────────────────────────────────
-    const existingPayout = await this.payoutRepo.findByPaymentId(payment.id);
+    const existingPayout = await this._payoutRepo.findByPaymentId(payment.id);
     if (existingPayout?.status === PayoutStatus.COMPLETED) {
       throw new AppError("Payout already completed.", HttpStatus.CONFLICT);
     }
 
     // ── 4. Create payout record ────────────────────────────────────────────
-    const payout = await this.payoutRepo.create({
+    const payout = await this._payoutRepo.create({
       paymentId:    payment.id,
       customerId:   booking.userId,
       beauticianId: booking.beauticianId,
@@ -73,16 +73,16 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
     });
 
     // ── 5. Call Razorpay payout ────────────────────────────────────────────
-    const razorpayPayout = await this.paymentService.releasePayout(
+    const razorpayPayout = await this._paymentService.releasePayout(
       booking.beauticianId,
       payment.amount,
     );
 
     // ── 6. Resolve status ──────────────────────────────────────────────────
-    const payoutStatus = this.statusResolver.resolvePayoutStatus(razorpayPayout.status);
+    const payoutStatus = this._statusResolver.resolvePayoutStatus(razorpayPayout.status);
 
     // ── 7. Update payout ───────────────────────────────────────────────────
-    const updatedPayout = await this.payoutRepo.updateStatus(payout.id, payoutStatus);
+    const updatedPayout = await this._payoutRepo.updateStatus(payout.id, payoutStatus);
 
     // ── 8. Update payment + booking conditionally ──────────────────────────
     const bookingStatus = payoutStatus === PayoutStatus.COMPLETED
@@ -90,19 +90,19 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
       : booking.status; 
 
     if (payoutStatus === PayoutStatus.COMPLETED) {
-      await this.paymentRepo.updateStatus(payment.id, PaymentStatus.RELEASED);
+      await this._paymentRepo.updateStatus(payment.id, PaymentStatus.RELEASED);
     }
 
-    const updatedBooking = await this.bookingRepo.updateByBookingId(bookingId, {
+    const updatedBooking = await this._bookingRepo.updateByBookingId(bookingId, {
       status: bookingStatus,
     });
  
     if (!updatedBooking) {
       throw new AppError("Failed to update booking.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    await this.Beauticianrepo.incrementHomeServiceCount(payout.beauticianId)
+    await this._Beauticianrepo.incrementHomeServiceCount(payout.beauticianId)
     // ── 9. Log history ─────────────────────────────────────────────────────
-    await this.bookingHistory.log({
+    await this._bookingHistory.log({
       bookingId,
       action:      BookingAction.RELEASE_PAYOUT,
       performedBy: adminId,
@@ -118,7 +118,7 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
         : `₹${payment.amount} has been credited to your account.`
       : `Payout attempt failed. Admin will retry shortly.`;
 
-    await this.notificationDispatch.notify({
+    await this._notificationDispatch.notify({
       userId:        booking.beauticianId,
       type:          payoutStatus === PayoutStatus.COMPLETED
                        ? NotificationType.DISPUTE_RESOLVED
@@ -138,7 +138,7 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
         ? `Your dispute was reviewed. Amount released to beautician. Reason: ${adminNote ?? "No reason provided."}`
         : `Dispute is still under review. We will update you shortly.`;
 
-      await this.notificationDispatch.notify({
+      await this._notificationDispatch.notify({
         userId:        booking.userId,
         type:          payoutStatus === PayoutStatus.COMPLETED
                          ? NotificationType.DISPUTE_RESOLVED

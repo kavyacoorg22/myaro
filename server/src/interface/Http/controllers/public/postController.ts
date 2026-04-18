@@ -13,12 +13,12 @@ import { generalMessages } from "../../../../shared/constant/message/generalMess
 
 export class PostController {
   constructor(
-    private createPostUC: ICreatePostUSeCase,
-    private getHomeFeedUC: IGetHomeFeedUseCase,
-    private getTipsRentFeedUC: IGetTipsRentUseCase,
-    private getBeauticianPostUC: IGetBeauticianPostUSeCase,
-    private searchPostUseCase: ISearchPostUSeCase,
-    private getSignedUrlsUseCase: IGetSignedUploadUrlsUseCase,
+    private _createPostUC: ICreatePostUSeCase,
+    private _getHomeFeedUC: IGetHomeFeedUseCase,
+    private _getTipsRentFeedUC: IGetTipsRentUseCase,
+    private _getBeauticianPostUC: IGetBeauticianPostUSeCase,
+    private _searchPostUseCase: ISearchPostUSeCase,
+    private _getSignedUrlsUseCase: IGetSignedUploadUrlsUseCase,
   ) {}
 
   createPost = async (
@@ -36,7 +36,7 @@ export class PostController {
         );
       }
 
-      await this.createPostUC.execute(beauticianId, input);
+      await this._createPostUC.execute(beauticianId, input);
       res.status(HttpStatus.CREATED).json({
         success: true,
         message: "Post created successfully",
@@ -56,7 +56,7 @@ export class PostController {
       const cursor = (req.query.cursor as string) ?? null;
       const limit = Number(req.query.limit) || 10;
      
-      const result = await this.getHomeFeedUC.execute(userId!, cursor, limit);
+      const result = await this._getHomeFeedUC.execute(userId!, cursor, limit);
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -79,7 +79,7 @@ export class PostController {
       const cursorRent = (req.query.cursorRent as string) ?? null;
       const limit = Number(req.query.limit) || 10;
 
-      const result = await this.getTipsRentFeedUC.execute(
+      const result = await this._getTipsRentFeedUC.execute(
         userId!,
         cursorTips,
         cursorRent,
@@ -111,7 +111,7 @@ export class PostController {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST);
       }
 
-      const posts = await this.getBeauticianPostUC.execute(
+      const posts = await this._getBeauticianPostUC.execute(
         beauticianId,
         beauticianId,
         postType,
@@ -143,7 +143,7 @@ export class PostController {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST);
       }
 
-      const posts = await this.getBeauticianPostUC.execute(
+      const posts = await this._getBeauticianPostUC.execute(
         userId,
         beauticianId,
         postType,
@@ -174,7 +174,7 @@ export class PostController {
         return;
       }
 
-      const result = await this.searchPostUseCase.execute(query, cursor);
+      const result = await this._searchPostUseCase.execute(query, cursor);
       res.status(HttpStatus.OK).json({
         sucess: true,
         ...result,
@@ -191,7 +191,7 @@ export class PostController {
   ): Promise<void> => {
     try {
       const { files } = req.body;
-      const data = await this.getSignedUrlsUseCase.execute(files);
+      const data = await this._getSignedUrlsUseCase.execute(files);
       res.status(HttpStatus.OK).json({ data });
     } catch (err) {
       next(err);

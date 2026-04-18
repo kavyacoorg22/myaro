@@ -3,13 +3,13 @@ import { ConflictError } from "../../../../domain/errors/systemError";
 import { IRegisterUserUseCase } from "../../../../application/interface/auth/IRegisterUserUseCase";
 
 export class RegisterUserController {
-  constructor(private RegisterUserUseCase: IRegisterUserUseCase) {}
+  constructor(private _registerUserUseCase: IRegisterUserUseCase) {}
 
   async handle(req: Request, res: Response) {
     try {
       const { ...input } = req.body;
 
-      const user = await this.RegisterUserUseCase.execute(input);
+      const user = await this._registerUserUseCase.execute(input);
 
       res.setHeader(
         "Cache-Control",

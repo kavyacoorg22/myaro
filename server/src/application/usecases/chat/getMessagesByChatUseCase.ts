@@ -10,8 +10,8 @@ import {
 
 export class GetMessagesByChatUseCase implements IGetMessagesByChatUseCase {
   constructor(
-    private messageRepo: IMessageRepository,
-    private chatRepo: IChatRepository,
+    private _messageRepo: IMessageRepository,
+    private _chatRepo: IChatRepository,
   ) {}
   async execute({
     chatId,
@@ -19,14 +19,14 @@ export class GetMessagesByChatUseCase implements IGetMessagesByChatUseCase {
     limit = 30,
     cursor,
   }: IGetMessagesByChatInput): Promise<IGetMessagesByChatOutput> {
-    const chat = await this.chatRepo.findById(chatId);
+    const chat = await this._chatRepo.findById(chatId);
     if (!chat)
       throw new AppError(`Chat ${chatId} not found.`, HttpStatus.NOT_FOUND);
 
     if (!chat.participants.some((p) => p.toString() === userId)) {
       throw new AppError(`Access denied.`, HttpStatus.FORBIDDEN);
     }
-    const messages = await this.messageRepo.findByChatId(
+    const messages = await this._messageRepo.findByChatId(
       chatId,
       limit + 1,
       cursor,

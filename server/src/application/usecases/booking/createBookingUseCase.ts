@@ -23,14 +23,14 @@ import { GetAvailabilityUseCase } from "../beautician/schedule/getAvailableUSeCa
 
 export class CreateBookingUseCase implements ICreateBookingUseCase {
   constructor(
-    private bookingRepo: IBookingRepository,
-    private bookingHistoryRepo: IBookingHistoryRepository,
-    private messageRepo: IMessageRepository,
-    private chatRepo: IChatRepository,
-    private socketEmitter: ISocketEmitter,
-    private getAvailabilityUC: GetAvailabilityUseCase,
-    private lockSlotService: ILockSlotService,
-    private scheduleNotification: IScheduleNotificationUseCase,
+    private _bookingRepo: IBookingRepository,
+    private _bookingHistoryRepo: IBookingHistoryRepository,
+    private _messageRepo: IMessageRepository,
+    private _chatRepo: IChatRepository,
+    private _socketEmitter: ISocketEmitter,
+    private _getAvailabilityUC: GetAvailabilityUseCase,
+    private _lockSlotService: ILockSlotService,
+    private _scheduleNotification: IScheduleNotificationUseCase,
 
   ) {}
 
@@ -48,7 +48,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     } = input;
 
     // ── 1. Chat validation ─────────────────────────────────────────────────
-    const chat = await this.chatRepo.findById(chatId);
+    const chat = await this._chatRepo.findById(chatId);
     if (!chat) throw new AppError("Chat not found.", HttpStatus.NOT_FOUND);
     if (!chat.participants.includes(userId)) {
       throw new AppError("Access denied", HttpStatus.FORBIDDEN);
@@ -65,7 +65,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     const endMinutes = timeToMinutes(endStr.trim());
 
     // ── 3. Validate slot is within beautician availability ─────────────────
-    const { availability } = await this.getAvailabilityUC.execute(
+    const { availability } = await this._getAvailabilityUC.execute(
       beauticianId,
       new Date(slot.date),
     );
@@ -92,7 +92,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     const dateStr = toDateString(slot.date);
     const lockKey = `lock:${beauticianId}:${dateStr}:${startStr.trim()}-${endStr.trim()}`;
 
-    const lockedBy = await this.lockSlotService.get(lockKey);
+    const lockedBy = await this._lockSlotService.get(lockKey);
     console.log("lockKey:", lockKey);
     console.log("lockedBy:", lockedBy);
     console.log("userId:", userId);
@@ -104,7 +104,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
       );
     }
     // ── 4. Check for overlapping bookings (ACCEPTED or CONFIRMED) ──────────
-    const overlapping = await this.bookingRepo.findOverlapping({
+    const overlapping = await this._bookingRepo.findOverlapping({
       beauticianId,
       date: new Date(slot.date),
       startMinutes,
@@ -119,7 +119,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     }
 
     // ── 5. Create booking ──────────────────────────────────────────────────
-    const booking = await this.bookingRepo.create({
+    const booking = await this._bookingRepo.create({
       chatId,
       userId,
       beauticianId,
@@ -136,7 +136,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     });
 
     // ── 6. History ─────────────────────────────────────────────────────────
-    await this.bookingHistoryRepo.create({
+    await this._bookingHistoryRepo.create({
       bookingId: booking.id,
       action: BookingAction.REQUEST,
       performedBy: userId,
@@ -146,7 +146,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     });
 
     // ── 7. Chat message ────────────────────────────────────────────────────
-    const saved = await this.messageRepo.create({
+    const saved = await this._messageRepo.create({
       chatId,
       senderId: userId,
       receiverId: beauticianId,
@@ -156,28 +156,28 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
       seen: false,
     });
 
-    await this.chatRepo.updateLastMessage(
+    await this._chatRepo.updateLastMessage(
       chatId,
       saved.message,
       saved.createdAt,
     );
 
-//     const bookingDate = new Date(slot.date)
+    const bookingDate = new Date(slot.date)
 
 
-//     await this.scheduleNotification.execute({
-//   userId,
-//   type:     NotificationType.REMINDER,
-//   category: NotificationCategory.SYSTEM,
-//   title:    'Upcoming Appointment',
-//   message:  `Your appointment is tomorrow at ${startStr}`,
-//   metadata: { bookingId: booking.id },
-//   scheduledFor: new Date(bookingDate.getTime() - 24 * 60 * 60 * 1000),
-// })
+    await this._scheduleNotification.execute({
+  userId,
+  type:     NotificationType.REMINDER,
+  category: NotificationCategory.SYSTEM,
+  title:    'Upcoming Appointment',
+  message:  `Your appointment is tomorrow at ${startStr}`,
+  metadata: { bookingId: booking.id },
+  scheduledFor: new Date(bookingDate.getTime() - 24 * 60 * 60 * 1000),
+})
 
     // ── 8. Socket ──────────────────────────────────────────────────────────
-    this.socketEmitter.emitToRoom(chatId, SOCKET_EVENTS.NEW_MESSAGE, saved);
-    this.socketEmitter.emitToRoom(
+    this._socketEmitter.emitToRoom(chatId, SOCKET_EVENTS.NEW_MESSAGE, saved);
+    this._socketEmitter.emitToRoom(
       `user:${beauticianId}`,
       SOCKET_EVENTS.NEW_NOTIFICATION,
       {

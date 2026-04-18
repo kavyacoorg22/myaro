@@ -7,15 +7,15 @@ import { HttpStatus } from "../../../../shared/enum/httpStatus";
 
 export class DashboardController {
   constructor(
-    private readonly getOverviewUC:IGetDashboardOverviewUseCase,
-    private readonly getUserGrowthUC:IGetUserGrowthUSeCase,
-    private readonly getBookingTrendUC:IGetBookingTrendUSeCase,
-    private readonly getRevenueUC: IGetRevenueUSeCase,
+    private readonly _getOverviewUC:IGetDashboardOverviewUseCase,
+    private readonly _getUserGrowthUC:IGetUserGrowthUSeCase,
+    private readonly _getBookingTrendUC:IGetBookingTrendUSeCase,
+    private readonly _getRevenueUC: IGetRevenueUSeCase,
   ) {}
 
   getOverView=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
      try{
-         const result=await this.getOverviewUC.execute()
+         const result=await this._getOverviewUC.execute()
          res.status(HttpStatus.OK).json({
           sucess:true,
           data:result.data
@@ -29,7 +29,7 @@ export class DashboardController {
    getUserGrowth=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
      try{
       const year=Number(req.query?.year)
-         const result=await this.getUserGrowthUC.execute(year)
+         const result=await this._getUserGrowthUC.execute(year)
          res.status(HttpStatus.OK).json({
           sucess:true,
           data:result.data
@@ -43,7 +43,7 @@ export class DashboardController {
    getBookingTrend=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
      try{
     const year=Number(req.query?.year)
-         const result=await this.getBookingTrendUC.execute(year)
+         const result=await this._getBookingTrendUC.execute(year)
          res.status(HttpStatus.OK).json({
           sucess:true,
           data:result.data
@@ -55,7 +55,7 @@ export class DashboardController {
   }
    getRevenue=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
      try{
-         const result=await this.getRevenueUC.execute()
+         const result=await this._getRevenueUC.execute()
          res.status(HttpStatus.OK).json({
           sucess:true,
           data:result.data

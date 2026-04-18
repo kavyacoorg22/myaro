@@ -20,26 +20,26 @@ import { generalMessages } from "../../../../../shared/constant/message/generalM
 
 export class ProcessRefundUseCase {
   constructor(
-    private bookingRepo:          IBookingRepository,
-    private paymentRepo:          IPaymentRepository,
-    private refundRepo:           IRefundRepository,
-    private paymentService:       IPaymentService,
-    private bookingValidator:     BookingValidatorService,
-    private bookingHistory:       BookingHistoryService,
-    private paymentLookup:        PaymentLookupService,
-    private notificationDispatch: NotificationDispatchService,
-    private statusResolver:       RazorpayStatusResolverService,
+    private _bookingRepo:          IBookingRepository,
+    private _paymentRepo:          IPaymentRepository,
+    private _refundRepo:           IRefundRepository,
+    private _paymentService:       IPaymentService,
+    private _bookingValidator:     BookingValidatorService,
+    private _bookingHistory:       BookingHistoryService,
+    private _paymentLookup:        PaymentLookupService,
+    private _notificationDispatch: NotificationDispatchService,
+    private _statusResolver:       RazorpayStatusResolverService,
   ) {}
 
   async execute(input: IProcessRefundInput): Promise<IProcessRefundOutPut> {
     const { bookingId, adminId, adminNote } = input;
 
-    const booking = await this.bookingValidator.getAndValidateStatusOnly(
+    const booking = await this._bookingValidator.getAndValidateStatusOnly(
       bookingId,
       [BookingStatus.REFUND_APPROVED, BookingStatus.DISPUTE],
     );
 
-    const payment = await this.paymentLookup.getAndValidateStatus(bookingId, [
+    const payment = await this._paymentLookup.getAndValidateStatus(bookingId, [
       PaymentStatus.BEAUTICIAN_APPROVED_REFUND,
       PaymentStatus.REFUND_DISPUTED,
     ]);
@@ -52,14 +52,14 @@ export class ProcessRefundUseCase {
     }
 
     // ── 3. Find or create refund ───────────────────────────────────────────
-    let refund = await this.refundRepo.findByPaymentId(payment.id);
+    let refund = await this._refundRepo.findByPaymentId(payment.id);
 
     if (refund?.status === RefundStatus.SUCCESS) {
       throw new AppError("Refund already processed.", HttpStatus.CONFLICT);
     }
 
     if (!refund) {
-      refund = await this.refundRepo.create({
+      refund = await this._refundRepo.create({
         userId:booking.userId,
         paymentId:  payment.id,
         amount:     payment.amount,
@@ -70,20 +70,20 @@ export class ProcessRefundUseCase {
         adminNote:  adminNote ?? undefined,
       });
     } else {
-      refund = await this.refundRepo.updateById(refund.id, {adminNote});
+      refund = await this._refundRepo.updateById(refund.id, {adminNote});
     }
 
     if (!refund) {
      throw new AppError("Refund not found", HttpStatus.INTERNAL_SERVER_ERROR);
      }
-    const razorpayRefund = await this.paymentService.refundPayment(
+    const razorpayRefund = await this._paymentService.refundPayment(
       payment.razorpayPaymentId,
       payment.amount,
     );
 
-    const refundStatus = this.statusResolver.resolveRefundStatus(razorpayRefund.status);
+    const refundStatus = this._statusResolver.resolveRefundStatus(razorpayRefund.status);
 
-const updatedRefund = await this.refundRepo.updateStatus(
+const updatedRefund = await this._refundRepo.updateStatus(
   refund.id,
   refundStatus,
   refundStatus === RefundStatus.SUCCESS ? { processedAt: new Date() } : undefined
@@ -96,10 +96,10 @@ const updatedRefund = await this.refundRepo.updateStatus(
       : booking.status; 
 
     if (refundStatus === RefundStatus.SUCCESS) {
-      await this.paymentRepo.updateStatus(payment.id, PaymentStatus.REFUNDED);
+      await this._paymentRepo.updateStatus(payment.id, PaymentStatus.REFUNDED);
     }
 
-    const updatedBooking = await this.bookingRepo.updateByBookingId(bookingId, {
+    const updatedBooking = await this._bookingRepo.updateByBookingId(bookingId, {
       status: bookingStatus,
     });
 
@@ -107,7 +107,7 @@ const updatedRefund = await this.refundRepo.updateStatus(
       throw new AppError("Failed to update booking.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    await this.bookingHistory.log({
+    await this._bookingHistory.log({
       bookingId,
       action:      BookingAction.PROCESS_REFUND,
       performedBy: adminId,
@@ -120,7 +120,7 @@ const updatedRefund = await this.refundRepo.updateStatus(
       ? "Your refund has been processed successfully."
       : "Refund processing failed. Our team will retry shortly.";
 
-    await this.notificationDispatch.notify({
+    await this._notificationDispatch.notify({
       userId:        booking.userId,
       type:          refundStatus === RefundStatus.SUCCESS
                        ? NotificationType.REFUND_PROCESSED
@@ -138,7 +138,7 @@ const updatedRefund = await this.refundRepo.updateStatus(
       ? `Refund of ₹${payment.amount} was issued to the customer. Reason: ${adminNote ?? "No reason provided."}`
       : `Refund attempt failed. Admin will retry.`;
 
-    await this.notificationDispatch.notify({
+    await this._notificationDispatch.notify({
       userId:        booking.beauticianId,
       type:          refundStatus === RefundStatus.SUCCESS
                        ? NotificationType.DISPUTE_RESOLVED

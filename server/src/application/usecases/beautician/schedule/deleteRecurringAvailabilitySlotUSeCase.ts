@@ -10,25 +10,25 @@ import { IDeleteRecursionScheduleInput } from "../../../interfaceType/scheduleTy
 
 
 export class DeleteRecurringAvailabilityUseCase implements IDeleteRecurringAvailabilitySlotUseCase{
-  constructor(private userRepo:IUserRepository,
-    private recurringExceptionRepo:IRecurringExceptionRepository,
-    private recurringScheduleRepo:IReccuringScheduleRepository
+  constructor(private _userRepo:IUserRepository,
+    private _recurringExceptionRepo:IRecurringExceptionRepository,
+    private _recurringScheduleRepo:IReccuringScheduleRepository
   ){}
 
   async execute(beauticianId: string, input: IDeleteRecursionScheduleInput): Promise<void> {
     const {recurringId,date}=input
-    const beautician=await this.userRepo.findByUserId(beauticianId)
+    const beautician=await this._userRepo.findByUserId(beauticianId)
     if(!beautician)
     {
       throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
     }
-      const rule = await this.recurringScheduleRepo.findById(recurringId);
+      const rule = await this._recurringScheduleRepo.findById(recurringId);
     if (!rule || rule.beauticianId !== beauticianId) {
       throw new AppError(generalMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
    
-    await this.recurringExceptionRepo.create({
+    await this._recurringExceptionRepo.create({
       recurringId,
       beauticianId,
       date,

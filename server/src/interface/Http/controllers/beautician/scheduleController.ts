@@ -21,10 +21,10 @@ export class ScheduleController {
     addAvailabilityUC: IAddAvailbilityUseCase,
     deleteAvailabilitySlotUC: IDeleteAvailbilitySlotUseCase,
     getAvailabilityUC: IGetAvailbilityUseCase,
-    private addRecurringAvailabilityUseCase: IAddRecursionScheduleUseCase,
-    private addRecurringLeaveUseCase: IAddRecurringLeaveScheduleUseCase,
-    private deleteRecurringSlotUC: IDeleteRecurringAvailabilitySlotUseCase,
-    private getMonthlyAvailabilityUC: IGetMonthlyAvailabilityUSeCase,
+    private _addRecurringAvailabilityUseCase: IAddRecursionScheduleUseCase,
+    private _addRecurringLeaveUseCase: IAddRecurringLeaveScheduleUseCase,
+    private _deleteRecurringSlotUC: IDeleteRecurringAvailabilitySlotUseCase,
+    private _getMonthlyAvailabilityUC: IGetMonthlyAvailabilityUSeCase,
   ) {
     ((this._addAvailabilityUC = addAvailabilityUC),
       (this._deleteAvailabilitySlotUC = deleteAvailabilitySlotUC),
@@ -117,7 +117,7 @@ export class ScheduleController {
         );
       }
 
-      await this.deleteRecurringSlotUC.execute(beauticianId, {
+      await this._deleteRecurringSlotUC.execute(beauticianId, {
         recurringId,
         date: new Date(date),
       });
@@ -218,9 +218,9 @@ export class ScheduleController {
         }
 
         if (input.type === ScheduleType.LEAVE) {
-          await this.addRecurringLeaveUseCase.execute(beauticianId, input);
+          await this._addRecurringLeaveUseCase.execute(beauticianId, input);
         } else {
-          await this.addRecurringAvailabilityUseCase.execute(
+          await this._addRecurringAvailabilityUseCase.execute(
             beauticianId,
             input,
           );
@@ -246,7 +246,7 @@ export class ScheduleController {
     if (!beauticianId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     if (!month || !year) throw new AppError(generalMessages.ERROR.BAD_REQUEST, HttpStatus.BAD_REQUEST);
 
-    const data = await this.getMonthlyAvailabilityUC.execute(
+    const data = await this._getMonthlyAvailabilityUC.execute(
       beauticianId,
       Number(month),
       Number(year)

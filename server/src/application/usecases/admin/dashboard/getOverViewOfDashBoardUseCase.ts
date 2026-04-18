@@ -7,9 +7,9 @@ import { toDashboardOverviewDto } from "../../../mapper/adminMapper";
 
 export class GetDashboardOverviewUC implements IGetDashboardOverviewUseCase {
   constructor(
-    private readonly userRepo:    IUserRepository,
-    private readonly paymentRepo: IPaymentRepository,
-    private readonly beauticianRepo:IBeauticianRepository
+    private readonly _userRepo:    IUserRepository,
+    private readonly _paymentRepo: IPaymentRepository,
+    private readonly _beauticianRepo:IBeauticianRepository
   ) {}
  
   async execute(): Promise<IDashboardOverviewOutput> {
@@ -22,13 +22,13 @@ export class GetDashboardOverviewUC implements IGetDashboardOverviewUseCase {
       heldPaymentAmount,
       disputesCount,
     ] = await Promise.all([
-      this.userRepo.getTotalUsers(),
-      this.userRepo.getTotalBeauticians(),
-      this.userRepo.getTotalCustomers(),
-      this.beauticianRepo.getPendingBeauticians(),
-      this.paymentRepo.getTotalRefundAmount(),
-      this.paymentRepo.getHeldPayments(),
-      this.paymentRepo.getDisputesCount(),
+      this._userRepo.getTotalUsers(),
+      this._userRepo.getTotalBeauticians(),
+      this._userRepo.getTotalCustomers(),
+      this._beauticianRepo.getPendingBeauticians(),
+      this._paymentRepo.getTotalRefundAmount(),
+      this._paymentRepo.getHeldPayments(),
+      this._paymentRepo.getDisputesCount(),
     ]);
  
     return toDashboardOverviewDto({

@@ -24,21 +24,21 @@ import { PaymentStatus, RefundStatus } from "../../../../domain/enum/paymentEnum
 
 export class BookingController{
   constructor(
-  private getBeauticianBookingUseCase:IGetBeauticianBookingsUseCase,
-  private createBookingUseCase:ICreateBookingUseCase,
-  private updateBookingStatusUseCase:IUpdateBookingStatusUseCase,
-  private getBookingByIdUseCase:IGetBookingByIdUseCase,
-  private lockSlotUseCase:ILockSlotUSeCase,
-  private requestRefundUC:IRequestRefundUseCase,
-  private beauticianApproveRefundUC:IBeauticianApproveRefundUseCase,
-  private disputeRefundUC:IDisputeRefundUseCase,
-  private cancleBookingUC:ICancelBookingUseCase,
-  private getAllBookingsUC:IGetAllBookingsUseCase,
-  private getBookingDetailUC:IGetBookingDetailUseCase,
-  private getAllDisputeUC:IGetAllDisputesUseCase,
-  private getDisputeDetailUC:IGetDisputeDetailsUseCase,
-  private getAllRefundUC:IGetAllRefundsUseCase,
-  private getRefundDetailUC:IGetRefundDetailUseCase
+  private _getBeauticianBookingUseCase:IGetBeauticianBookingsUseCase,
+  private _createBookingUseCase:ICreateBookingUseCase,
+  private _updateBookingStatusUseCase:IUpdateBookingStatusUseCase,
+  private _getBookingByIdUseCase:IGetBookingByIdUseCase,
+  private _lockSlotUseCase:ILockSlotUSeCase,
+  private _requestRefundUC:IRequestRefundUseCase,
+  private _beauticianApproveRefundUC:IBeauticianApproveRefundUseCase,
+  private _disputeRefundUC:IDisputeRefundUseCase,
+  private _cancleBookingUC:ICancelBookingUseCase,
+  private _getAllBookingsUC:IGetAllBookingsUseCase,
+  private _getBookingDetailUC:IGetBookingDetailUseCase,
+  private _getAllDisputeUC:IGetAllDisputesUseCase,
+  private _getDisputeDetailUC:IGetDisputeDetailsUseCase,
+  private _getAllRefundUC:IGetAllRefundsUseCase,
+  private _getRefundDetailUC:IGetRefundDetailUseCase
   ){}
 
   createBooking=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -57,7 +57,7 @@ export class BookingController{
       clientNote
     } = req.body;
 
-    const booking = await this.createBookingUseCase.execute({
+    const booking = await this._createBookingUseCase.execute({
       chatId,
       userId,
       beauticianId,
@@ -82,7 +82,7 @@ export class BookingController{
 
     const { status, page, limit } = req.query;
 
-    const result = await this.getBeauticianBookingUseCase.execute({
+    const result = await this._getBeauticianBookingUseCase.execute({
       beauticianId,
       status: status as BookingStatus | undefined,
       page:   page   ? parseInt(page  as string) : 1,
@@ -102,7 +102,7 @@ export class BookingController{
 
     const { bookingId } = req.params;
 
-    const booking = await this.getBookingByIdUseCase.execute(bookingId, requesterId);
+    const booking = await this._getBookingByIdUseCase.execute(bookingId, requesterId);
 
     res.status(HttpStatus.OK).json({ success: true, data: booking });
    }catch(err)
@@ -118,7 +118,7 @@ export class BookingController{
     const { bookingId } = req.params;
     const { action, rejectionReason, role } = req.body;
 
-    const booking = await this.updateBookingStatusUseCase.execute({
+    const booking = await this._updateBookingStatusUseCase.execute({
       bookingId,
       performedBy,
       role,
@@ -139,7 +139,7 @@ export class BookingController{
     {
       throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
     }
-    const result = await this.lockSlotUseCase.execute({
+    const result = await this._lockSlotUseCase.execute({
       beauticianId, date, startTime, endTime, userId,
     });
 
@@ -162,7 +162,7 @@ export class BookingController{
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
       }
  
-      const booking = await this.requestRefundUC.execute({
+      const booking = await this._requestRefundUC.execute({
         bookingId,
         userId,
         refundReason,
@@ -181,7 +181,7 @@ export class BookingController{
  
       const { bookingId } = req.params;
  
-      const booking = await this.beauticianApproveRefundUC.execute({
+      const booking = await this._beauticianApproveRefundUC.execute({
         bookingId,
         beauticianId,
       });
@@ -201,7 +201,7 @@ export class BookingController{
 
       if(!disputeReason) throw new AppError(generalMessages.ERROR.BAD_REQUEST)
  
-      const booking = await this.disputeRefundUC.execute({
+      const booking = await this._disputeRefundUC.execute({
         bookingId,
         beauticianId,
         disputeReason
@@ -219,7 +219,7 @@ export class BookingController{
       const {bookingId}=req.params
        if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
        if(!bookingId) throw new AppError(generalMessages.ERROR.BAD_REQUEST)
-        const result=await this.cancleBookingUC.execute({bookingId,userId})
+        const result=await this._cancleBookingUC.execute({bookingId,userId})
 
        res.status(HttpStatus.OK).json({
         success:true,
@@ -236,7 +236,7 @@ export class BookingController{
     try{
         const {page,limit,paymentStatus}=req.query
        
-        const result=await this.getAllBookingsUC.execute({
+        const result=await this._getAllBookingsUC.execute({
           page: page?parseInt(page as string):1,
           limit:limit?parseInt(limit as string):10,
           paymentStatus:paymentStatus as PaymentStatus|undefined
@@ -255,7 +255,7 @@ export class BookingController{
     try{
         const {page,limit}=req.query
        
-        const result=await this.getAllDisputeUC.execute({
+        const result=await this._getAllDisputeUC.execute({
           page: page?parseInt(page as string):1,
           limit:limit?parseInt(limit as string):10,
         })
@@ -272,7 +272,7 @@ export class BookingController{
  getAllRefunsForAdmin=async(req:Request,res:Response,next:NextFunction)=>{
     try{
         const {page,limit,status}=req.query
-        const result=await this.getAllRefundUC.execute({
+        const result=await this._getAllRefundUC.execute({
           page: page?parseInt(page as string):1,
           limit:limit?parseInt(limit as string):10,
            status:status as RefundStatus
@@ -294,7 +294,7 @@ export class BookingController{
        {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
        }
-       const result=await this.getBookingDetailUC.execute(bookingId)
+       const result=await this._getBookingDetailUC.execute(bookingId)
      res.status(HttpStatus.OK).json({
       sucesss:true,
       data:result.data
@@ -312,7 +312,7 @@ export class BookingController{
        {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
        }
-       const result=await this.getDisputeDetailUC.execute(bookingId)
+       const result=await this._getDisputeDetailUC.execute(bookingId)
      res.status(HttpStatus.OK).json({
       sucesss:true,
       data:result.data
@@ -330,7 +330,7 @@ export class BookingController{
        {
         throw new AppError(generalMessages.ERROR.BAD_REQUEST,HttpStatus.BAD_REQUEST)
        }
-       const result=await this.getRefundDetailUC.execute(refundId)
+       const result=await this._getRefundDetailUC.execute(refundId)
      res.status(HttpStatus.OK).json({
       sucesss:true,
       data:result.data

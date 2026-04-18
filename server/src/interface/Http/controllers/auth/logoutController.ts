@@ -5,12 +5,12 @@ import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { ILogoutUseCase } from "../../../../application/interface/auth/logoutUseCase";
 
 export class LogoutController{
-  constructor(private logoutUseCase:ILogoutUseCase){}
+  constructor(private _logoutUseCase:ILogoutUseCase){}
 
   async handle(req:Request,res:Response,next:NextFunction){
     try{
          
-        await this.logoutUseCase.execute(req,res)
+        await this._logoutUseCase.execute(req,res)
      
 
    

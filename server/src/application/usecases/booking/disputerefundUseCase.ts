@@ -19,20 +19,20 @@ import { IDisputeRefundUseCase } from "../../interface/booking/IDisputeRefundUse
 
 export class DisputeRefundUseCase implements IDisputeRefundUseCase {
   constructor(
-    private bookingRepo:      IBookingRepository,
-    private paymentRepo:      IPaymentRepository,
-    private socketEmitter:    ISocketEmitter,
-    private bookingValidator: BookingValidatorService,
-    private bookingHistory:   BookingHistoryService,
-    private paymentLookup:    PaymentLookupService,
-    private chatMessage:      ChatMessageService,
+    private _bookingRepo:      IBookingRepository,
+    private _paymentRepo:      IPaymentRepository,
+    private _socketEmitter:    ISocketEmitter,
+    private _bookingValidator: BookingValidatorService,
+    private _bookingHistory:   BookingHistoryService,
+    private _paymentLookup:    PaymentLookupService,
+    private _chatMessage:      ChatMessageService,
   ) {}
 
   async execute(input: IDisputeRefundUInput): Promise<Booking> {
     const { bookingId, beauticianId, disputeReason } = input;
 
     // 1. Validate booking is in REFUND_REQUESTED state
-    const booking = await this.bookingValidator.getAndValidateStatus(
+    const booking = await this._bookingValidator.getAndValidateStatus(
       bookingId,
       beauticianId,
       "beauticianId",
@@ -40,13 +40,13 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
     );
 
     // 2. Validate payment is in REFUND_REQUESTED state
-    const payment = await this.paymentLookup.getAndValidateStatus(
+    const payment = await this._paymentLookup.getAndValidateStatus(
       bookingId,
       [PaymentStatus.REFUND_REQUESTED],
     );
 
     // 3. Update booking → DISPUTE, store beautician's reason
-    const updatedBooking = await this.bookingRepo.updateByBookingId(bookingId, {
+    const updatedBooking = await this._bookingRepo.updateByBookingId(bookingId, {
       status:        BookingStatus.DISPUTE,
       disputeReason,
       disputeAt:     new Date(),
@@ -57,13 +57,13 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
     }
 
     // 4. Update payment → REFUND_DISPUTED (admin will arbitrate)
-    await this.paymentRepo.updateStatus(
+    await this._paymentRepo.updateStatus(
       payment.id,
       PaymentStatus.REFUND_DISPUTED,
     );
 
     // 5. Log history
-    await this.bookingHistory.log({
+    await this._bookingHistory.log({
       bookingId,
       action:      BookingAction.DISPUTE,        
       performedBy: beauticianId,
@@ -73,7 +73,7 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
     });
 
     // 6. Notify customer via chat
-    await this.chatMessage.sendAndEmit({
+    await this._chatMessage.sendAndEmit({
       chatId:     booking.chatId,
       senderId:   beauticianId,
       receiverId: booking.userId,
@@ -84,7 +84,7 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
     });
 
     // 7. Notify customer via socket
-    this.socketEmitter.emitToRoom(
+    this._socketEmitter.emitToRoom(
       `user:${booking.userId}`,
       SOCKET_EVENTS.REFUND_DISPUTED,        // add to your SOCKET_EVENTS if missing
       {
@@ -94,7 +94,7 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
       },
     );
 
-    this.socketEmitter.emitToRoom(
+    this._socketEmitter.emitToRoom(
       `user:${booking.userId}`,
       SOCKET_EVENTS.NEW_NOTIFICATION,
       {

@@ -10,25 +10,25 @@ import { toAdminBookingListItem } from "../../../../mapper/adminMapper";
 
 export class GetAllBookingUseCase implements IGetAllBookingsUseCase{
  constructor(
-    private bookingRepo:    IBookingRepository,
-    private paymentRepo:    IPaymentRepository,
-    private userRepo:       IUserRepository,
+    private _bookingRepo:    IBookingRepository,
+    private _paymentRepo:    IPaymentRepository,
+    private _userRepo:       IUserRepository,
   ) {}
 
   async execute({ page = 1, limit = 10, paymentStatus }: IGetAllBookingsInput): Promise<IGetAllBookingOutPut> {
 
-    const { payments, total } = await this.paymentRepo.findAll({ page, limit, status: paymentStatus });
+    const { payments, total } = await this._paymentRepo.findAll({ page, limit, status: paymentStatus });
 
     const totalPages = Math.ceil(total / limit);
 
     const bookingIds = payments.map((p: Payment) => p.bookingId);
-    const bookings   = await this.bookingRepo.findByIds(bookingIds);
+    const bookings   = await this._bookingRepo.findByIds(bookingIds);
 
     const userIds       = [...new Set(bookings.map(b => b.userId))];
     const beauticianIds = [...new Set(bookings.map(b => b.beauticianId))];
 
-    const users       = await this.userRepo.findUsersByIds(userIds);
-    const beauticians = await this.userRepo.findUsersByIds(beauticianIds);
+    const users       = await this._userRepo.findUsersByIds(userIds);
+    const beauticians = await this._userRepo.findUsersByIds(beauticianIds);
 
     const userMap       = new Map(users.map(u => [u.id, u]));
     const beauticianMap = new Map(beauticians.map(b => [b.id, b]));

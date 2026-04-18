@@ -28,22 +28,22 @@ import { PaymentLookupService } from "../../services/paymentLookupService";
 
 export class CancelBookingUseCase implements ICancelBookingUseCase {
   constructor(
-    private bookingValidator: BookingValidatorService,
-    private paymentLookup: PaymentLookupService,
-    private bookingHistory: BookingHistoryService,
-    private chatMessage: ChatMessageService,
-    private socketEmitter: ISocketEmitter,
-    private bookingRepo: IBookingRepository,
-    private paymentRepo: IPaymentRepository,
-    private refundRepo: IRefundRepository,
-    private paymentService: IPaymentService,
+    private _bookingValidator: BookingValidatorService,
+    private _paymentLookup: PaymentLookupService,
+    private _bookingHistory: BookingHistoryService,
+    private _chatMessage: ChatMessageService,
+    private _socketEmitter: ISocketEmitter,
+    private _bookingRepo: IBookingRepository,
+    private _paymentRepo: IPaymentRepository,
+    private _refundRepo: IRefundRepository,
+    private _paymentService: IPaymentService,
   ) {}
 
   async execute(input: ICancelBookingInput): Promise<ICancelBookingOutput> {
     const { bookingId, userId } = input;
 
     // ── 1. Validate: ownership + must be CONFIRMED ─────────────────────────
-    const booking = await this.bookingValidator.getAndValidateStatus(
+    const booking = await this._bookingValidator.getAndValidateStatus(
       bookingId,
       userId,
       "userId",
@@ -62,7 +62,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     }
 
     // ── 3. Validate: payment exists and is in a refundable state ───────────
-    const payment = await this.paymentLookup.getAndValidateStatus(bookingId, [
+    const payment = await this._paymentLookup.getAndValidateStatus(bookingId, [
       PaymentStatus.PAID,
     ]);
 
@@ -74,7 +74,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     }
 
     // ── 4. Idempotency: ensure refund doesn't already exist ────────────────
-    const existing = await this.refundRepo.findByPaymentId(payment.id);
+    const existing = await this._refundRepo.findByPaymentId(payment.id);
     if (existing) {
       throw new AppError(
         "A refund for this booking already exists.",
@@ -83,14 +83,14 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     }
 
     // ── 7. Call Razorpay refund directly (no admin approval needed) ─────────
-    const razorpayRefund = await this.paymentService.refundPayment(
+    const razorpayRefund = await this._paymentService.refundPayment(
       payment.razorpayPaymentId,
       payment.amount,
     );
 
     // ── 8. Persist refund record ───────────────────────────────────────────
-    const refund = await this.refundRepo.create({
-      userId:booking.userId,
+    const refund = await this._refundRepo.create({
+      userId: booking.userId,
       paymentId: payment.id,
       amount: payment.amount,
       method: RefundMethod.WALLET,
@@ -101,10 +101,10 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
       refundType: RefundType.CANCELLATION,
       razorpayRefundId: razorpayRefund.id,
       reason: "Customer cancelled booking more than 3 days in advance.",
-      processedAt: new Date()
+      processedAt: new Date(),
     });
 
-    await this.bookingRepo.updateByBookingId(bookingId, {
+    await this._bookingRepo.updateByBookingId(bookingId, {
       status: BookingStatus.CANCELLED,
       cancelledAt: new Date(),
       ...(razorpayRefund.status === "processed" && {
@@ -112,17 +112,17 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
       }),
     });
 
-    await this.paymentRepo.updateById(payment.id, {
+    await this._paymentRepo.updateById(payment.id, {
       status:
         razorpayRefund.status === "processed"
           ? PaymentStatus.REFUNDED
           : PaymentStatus.REFUND_INITIATED,
 
-      refundedId:refund.id,
+      refundedId: refund.id,
       refundReason: "Customer cancelled booking",
     });
     // ── 9. Log booking history ─────────────────────────────────────────────
-    await this.bookingHistory.log({
+    await this._bookingHistory.log({
       bookingId,
       action: BookingAction.CANCEL,
       performedBy: userId,
@@ -132,7 +132,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     });
 
     // ── 10. Notify beautician via chat + socket ────────────────────────────
-    await this.chatMessage.sendAndEmit({
+    await this._chatMessage.sendAndEmit({
       chatId: booking.chatId,
       senderId: userId,
       receiverId: booking.beauticianId,
@@ -143,7 +143,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
       status: BookingStatus.CANCELLED,
     });
 
-    this.socketEmitter.emitToRoom(
+    this._socketEmitter.emitToRoom(
       `user:${booking.beauticianId}`,
       SOCKET_EVENTS.BOOKING_CANCELLED,
       { bookingId, refundAmount: payment.amount },

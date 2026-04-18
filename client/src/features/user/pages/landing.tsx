@@ -30,6 +30,7 @@ function mapPost(p: any): PostCardProps["post"] {
 
 export const Landing = () => {
   const currentUser = useSelector((store: RootState) => store.user.currentUser)
+  console.log(currentUser)
   const [searchQuery, setSearchQuery] = useState("")
   const { location, refetchLocation } = useUserLocation()
   
