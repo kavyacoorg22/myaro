@@ -6,10 +6,13 @@ export enum NotificationType {
   DISPUTE_RESOLVED = "dispute_resolved",
 
   REMINDER = "reminder",
+  BOOKING = "booking",
+  PAYMENT = "payment",
 }
 
 export enum NotificationCategory {
   REFUND = "refund",
   DISPUTE = "dispute",
   SYSTEM = "system",
+  BOOKING = "booking",
 }

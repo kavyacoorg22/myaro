@@ -9,6 +9,7 @@ import { releaseLock } from "../../../infrastructure/shared/releaseLock";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IBlockBookedSlotUSeCase } from "../../interface/beautician/schedule/IBlockBookedSlotUSeCase";
 import { IUpdateBookingStatusUseCase } from "../../interface/booking/IUpdateBookingStatusUSeCase";
+import { IScheduleNotificationUseCase } from "../../interface/notification/IScheduleNotificationUseCase";
 import { IVerifyPaymentUsecase } from "../../interface/payment/IVerifyPaymentUseCase";
 import {
   IVerifyPaymentOutPut,
@@ -16,6 +17,11 @@ import {
 } from "../../interfaceType/paymentType";
 import { toVerifyPayment } from "../../mapper/paymentMapper";
 import { IPaymentService } from "../../serviceInterface/IPaymentServie";
+import {
+  NotificationCategory,
+  NotificationType,
+} from "../../../domain/enum/notificationEnum";
+import { toDateOnly } from "../../../utils/schedule/dateHelper";
 
 export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
   constructor(
@@ -23,8 +29,8 @@ export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
     private _bookingRepo: IBookingRepository,
     private _paymentService: IPaymentService,
     private _blockSlotUC: IBlockBookedSlotUSeCase,
-        private _updateBookingStatusUC: IUpdateBookingStatusUseCase,
-
+    private _updateBookingStatusUC: IUpdateBookingStatusUseCase,
+    private _scheduleNotification: IScheduleNotificationUseCase,
   ) {}
   async execute(
     data: IVerifyPaymentUsecaseInput,
@@ -57,12 +63,13 @@ export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
       await releaseLock(lockKey, storedValue);
     }
 
-     await this._updateBookingStatusUC.execute({
-      bookingId:   payment.bookingId,
-      performedBy: booking.userId,     
-      role:        UserRole.CUSTOMER,
-      action:      BookingAction.CONFIRM, 
+    await this._updateBookingStatusUC.execute({
+      bookingId: payment.bookingId,
+      performedBy: booking.userId,
+      role: UserRole.CUSTOMER,
+      action: BookingAction.CONFIRM,
     });
+
     const [startTime, endTime] = booking.slot.time.split(" – ");
     await this._blockSlotUC.execute({
       beauticianId: booking.beauticianId,
@@ -71,6 +78,44 @@ export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
       endTime: endTime.trim(),
     });
 
+const bookingDate = toDateOnly(new Date(booking.slot.date));
+// toDateOnly uses Date.UTC internally → always UTC midnight ✅
+
+bookingDate.setUTCHours(
+  Math.floor(booking.slot.startMinutes / 60),
+  booking.slot.startMinutes % 60,
+  0, 0
+);
+
+const scheduledFor = new Date(
+  bookingDate.getTime() - 24 * 60 * 60 * 1000
+);
+
+console.log('[Reminder] scheduledFor:', scheduledFor);
+console.log('[Reminder] now:', new Date());
+console.log('[Reminder] will schedule?', scheduledFor > new Date());
+
+if (scheduledFor > new Date()) {
+  await this._scheduleNotification.execute({
+    userId:      booking.userId,
+    type:        NotificationType.REMINDER,
+    category:    NotificationCategory.SYSTEM,
+    title:       'Upcoming Appointment',
+    message:     `Your appointment is tomorrow at ${startTime.trim()}`,
+    metadata:    { bookingId: booking.id },
+    scheduledFor,
+  });
+
+  await this._scheduleNotification.execute({
+    userId:      booking.beauticianId,
+    type:        NotificationType.REMINDER,
+    category:    NotificationCategory.SYSTEM,
+    title:       'Upcoming Appointment',
+    message:     `You have an appointment tomorrow at ${startTime.trim()}`,
+    metadata:    { bookingId: booking.id },
+    scheduledFor,
+  });
+}
     const dto = toVerifyPayment(payment, true);
     return { data: dto };
   }

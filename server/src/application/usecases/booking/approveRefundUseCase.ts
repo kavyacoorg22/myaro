@@ -21,6 +21,16 @@ import { MessageType } from "../../../domain/enum/messageEnum";
 import { IRefundRepository } from "../../../domain/repositoryInterface/User/booking/IRefundRepository";
 import { IBeauticianApproveRefundUInput } from "../../interfaceType/booking";
 import { IBeauticianApproveRefundUseCase } from "../../interface/booking/IBeauticianApproveRefundUseCase";
+import { NotificationDispatchService } from "../../services/notificationDispatchService";
+import {
+  ACTION_MESSAGE,
+  ACTION_TITLE,
+  CHAT_ACTION_MESSAGE,
+} from "../../../domain/services/bookingStatusMachine";
+import {
+  NotificationCategory,
+  NotificationType,
+} from "../../../domain/enum/notificationEnum";
 
 export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundUseCase {
   constructor(
@@ -32,6 +42,7 @@ export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundU
     private _paymentLookup: PaymentLookupService,
     private _chatMessage: ChatMessageService,
     private _refundrepo: IRefundRepository,
+    private _notificationService: NotificationDispatchService,
   ) {}
 
   async execute(input: IBeauticianApproveRefundUInput): Promise<Booking> {
@@ -85,37 +96,33 @@ export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundU
       fromStatus: BookingStatus.REFUND_REQUESTED,
       toStatus: BookingStatus.REFUND_APPROVED,
     });
-
+    const message = ACTION_MESSAGE[BookingAction.APPROVE_REFUND];
+    const chatMessage = CHAT_ACTION_MESSAGE[BookingAction.APPROVE_REFUND];
+    const title = ACTION_TITLE[BookingAction.APPROVE_REFUND];
     await this._chatMessage.sendAndEmit({
       chatId: booking.chatId,
       senderId: beauticianId,
       receiverId: booking.userId,
-      message: `Your refund has been approved and is being processed.`,
+      message: chatMessage,
       type: MessageType.BOOKING,
       bookingId,
       status: BookingStatus.REFUND_APPROVED,
     });
 
-    this._socketEmitter.emitToRoom(
-      `user:${booking.userId}`,
-      SOCKET_EVENTS.REFUND_APPROVED,
-      {
+    await this._notificationService.notify({
+      userId: booking.userId,
+      type: NotificationType.BOOKING,
+      category: NotificationCategory.BOOKING,
+      title,
+      message,
+      socketEvent: SOCKET_EVENTS.REFUND_APPROVED,
+      socketPayload: {
         bookingId,
         amount: payment.amount,
-        message: "Your refund has been approved and will be processed shortly.",
+        message,
       },
-    );
-
-    this._socketEmitter.emitToRoom(
-      `user:${booking.userId}`,
-      SOCKET_EVENTS.NEW_NOTIFICATION,
-      {
-        chatId: booking.chatId,
-        lastMessage: "Your refund has been approved",
-        lastMessageAt: new Date(),
-        type: "refund_approved",
-      },
-    );
+      metadata: { bookingId },
+    });
 
     return updatedBooking;
   }

@@ -1,4 +1,3 @@
-// usecases/booking/disputeRefundUseCase.ts
 import { Booking } from "../../../domain/entities/booking";
 import { BookingAction, BookingStatus } from "../../../domain/enum/bookingEnum";
 import { PaymentStatus } from "../../../domain/enum/paymentEnum";
@@ -16,16 +15,26 @@ import { MessageType } from "../../../domain/enum/messageEnum";
 import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { IDisputeRefundUInput } from "../../interfaceType/booking";
 import { IDisputeRefundUseCase } from "../../interface/booking/IDisputeRefundUsecase";
+import {
+  NotificationCategory,
+  NotificationType,
+} from "../../../domain/enum/notificationEnum";
+import {
+  ACTION_MESSAGE,
+  ACTION_TITLE,
+  CHAT_ACTION_MESSAGE,
+} from "../../../domain/services/bookingStatusMachine";
+import { NotificationDispatchService } from "../../services/notificationDispatchService";
 
 export class DisputeRefundUseCase implements IDisputeRefundUseCase {
   constructor(
-    private _bookingRepo:      IBookingRepository,
-    private _paymentRepo:      IPaymentRepository,
-    private _socketEmitter:    ISocketEmitter,
+    private _bookingRepo: IBookingRepository,
+    private _paymentRepo: IPaymentRepository,
     private _bookingValidator: BookingValidatorService,
-    private _bookingHistory:   BookingHistoryService,
-    private _paymentLookup:    PaymentLookupService,
-    private _chatMessage:      ChatMessageService,
+    private _bookingHistory: BookingHistoryService,
+    private _paymentLookup: PaymentLookupService,
+    private _chatMessage: ChatMessageService,
+    private _notificationService: NotificationDispatchService,
   ) {}
 
   async execute(input: IDisputeRefundUInput): Promise<Booking> {
@@ -40,20 +49,25 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
     );
 
     // 2. Validate payment is in REFUND_REQUESTED state
-    const payment = await this._paymentLookup.getAndValidateStatus(
-      bookingId,
-      [PaymentStatus.REFUND_REQUESTED],
-    );
+    const payment = await this._paymentLookup.getAndValidateStatus(bookingId, [
+      PaymentStatus.REFUND_REQUESTED,
+    ]);
 
     // 3. Update booking → DISPUTE, store beautician's reason
-    const updatedBooking = await this._bookingRepo.updateByBookingId(bookingId, {
-      status:        BookingStatus.DISPUTE,
-      disputeReason,
-      disputeAt:     new Date(),
-    });
+    const updatedBooking = await this._bookingRepo.updateByBookingId(
+      bookingId,
+      {
+        status: BookingStatus.DISPUTE,
+        disputeReason,
+        disputeAt: new Date(),
+      },
+    );
 
     if (!updatedBooking) {
-      throw new AppError("Failed to update booking", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new AppError(
+        "Failed to update booking",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 
     // 4. Update payment → REFUND_DISPUTED (admin will arbitrate)
@@ -65,45 +79,41 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
     // 5. Log history
     await this._bookingHistory.log({
       bookingId,
-      action:      BookingAction.DISPUTE,        
+      action: BookingAction.DISPUTE,
       performedBy: beauticianId,
-      role:        UserRole.BEAUTICIAN,
-      fromStatus:  BookingStatus.REFUND_REQUESTED,
-      toStatus:    BookingStatus.DISPUTE,
+      role: UserRole.BEAUTICIAN,
+      fromStatus: BookingStatus.REFUND_REQUESTED,
+      toStatus: BookingStatus.DISPUTE,
     });
+    const chatMsg = CHAT_ACTION_MESSAGE[BookingAction.DISPUTE];
+    const message = ACTION_MESSAGE[BookingAction.DISPUTE];
+    const title = ACTION_TITLE[BookingAction.DISPUTE];
 
     // 6. Notify customer via chat
     await this._chatMessage.sendAndEmit({
-      chatId:     booking.chatId,
-      senderId:   beauticianId,
+      chatId: booking.chatId,
+      senderId: beauticianId,
       receiverId: booking.userId,
-      message:    `Your refund request is under dispute: "${disputeReason}"`,
-      type:       MessageType.BOOKING,
+      message: chatMsg,
+      type: MessageType.BOOKING,
       bookingId,
-      status:     BookingStatus.DISPUTE,
+      status: BookingStatus.DISPUTE,
     });
 
-    // 7. Notify customer via socket
-    this._socketEmitter.emitToRoom(
-      `user:${booking.userId}`,
-      SOCKET_EVENTS.REFUND_DISPUTED,        // add to your SOCKET_EVENTS if missing
-      {
-        bookingId,
-        disputeReason,
-        message: "The beautician has disputed your refund. Admin will review.",
-      },
-    );
-
-    this._socketEmitter.emitToRoom(
-      `user:${booking.userId}`,
-      SOCKET_EVENTS.NEW_NOTIFICATION,
-      {
-        chatId:        booking.chatId,
-        lastMessage:   "Your refund request is under dispute",
+    await this._notificationService.notify({
+      userId: booking.chatId,
+      type: NotificationType.BOOKING,
+      category: NotificationCategory.BOOKING,
+      title,
+      message,
+      socketEvent: SOCKET_EVENTS.NEW_NOTIFICATION,
+      socketPayload: {
+        chatId: booking.chatId,
+        message,
         lastMessageAt: new Date(),
-        type:          "refund_disputed",
       },
-    );
+      metadata: { bookingId: booking.id },
+    });
 
     return updatedBooking;
   }

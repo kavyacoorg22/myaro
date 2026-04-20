@@ -1,0 +1,4 @@
+2026-04-20 21:15:32 error: TypeError: Cannot read properties of undefined (reading 'notify')
+    at RequestRefundUseCase.execute (C:\Users\User\Desktop\completed\week23\myaro\server\src\application\usecases\booking\requestRefundUseCase.ts:105:37)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at BookingController.requestRefund (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\public\bookingController.ts:165:23)

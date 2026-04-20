@@ -34,7 +34,8 @@ export class NotificationDispatchService {
       message:  input.message,
       metadata: input.metadata,
       isRead:false,
-      isDeleted:false
+      isDeleted:false,
+      isSent:true
     });
 
     // ── 2. Emit socket ─────────────────────────────────────────────────────

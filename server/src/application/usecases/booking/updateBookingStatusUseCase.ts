@@ -1,28 +1,27 @@
 import { Booking } from "../../../domain/entities/booking";
 import { BookingStatus } from "../../../domain/enum/bookingEnum"; // ✅ add import
 import { MessageType } from "../../../domain/enum/messageEnum";
+import { NotificationCategory, NotificationType } from "../../../domain/enum/notificationEnum";
 import { PaymentStatus } from "../../../domain/enum/paymentEnum";
 import { AppError } from "../../../domain/errors/appError";
 import { IBookingHistoryRepository } from "../../../domain/repositoryInterface/User/booking/IBookingHistoryRepository";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository"; // ✅ use interface
-import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
-import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
 import { ACTION_MESSAGE, ACTION_TO_STATUS, VALID_TRANSITIONS } from "../../../domain/services/bookingStatusMachine";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { IUpdateBookingStatusUseCase } from "../../interface/booking/IUpdateBookingStatusUSeCase";
 import { IUpdateBookingStatusInput } from "../../interfaceType/booking";
-import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
+import { ChatMessageService } from "../../services/chatMessageService";
+import { NotificationDispatchService } from "../../services/notificationDispatchService";
 
 export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase {
   constructor(
     private _bookingRepo:        IBookingRepository,
     private _bookingHistoryRepo: IBookingHistoryRepository,
-    private _messageRepo:        IMessageRepository,
-    private _chatRepo:           IChatRepository,
-    private _socketEmitter:      ISocketEmitter,
     private _paymentRepo:        IPaymentRepository, 
+    private _notificationService:NotificationDispatchService,
+    private _chatMessageService:ChatMessageService
   ) {}
 
   async execute(input: IUpdateBookingStatusInput): Promise<Booking | null> {
@@ -81,8 +80,8 @@ if (toStatus === BookingStatus.COMPLETED) {
     const message = rejectionReason
       ? `${ACTION_MESSAGE[action]}: ${rejectionReason}`
       : ACTION_MESSAGE[action];
-
-    const saved = await this._messageRepo.create({
+//create + send message
+      await this._chatMessageService.sendAndEmit({
       chatId:     booking.chatId,
       senderId:   performedBy,
       receiverId,
@@ -90,29 +89,18 @@ if (toStatus === BookingStatus.COMPLETED) {
       type:       MessageType.BOOKING,
       bookingId:  booking.id,
       status:     toStatus,
-      seen:       false,
     });
-
-    // 8. update chat last message
-    await this._chatRepo.updateLastMessage(booking.chatId, message, saved.createdAt);
-
-    // 9. emit new message to chat room
-    this._socketEmitter.emitToRoom(
-      booking.chatId,
-      SOCKET_EVENTS.NEW_MESSAGE,
-      saved,
-    );
-
-    // 10. notify receiver
-    this._socketEmitter.emitToRoom(
-      `user:${receiverId}`,
-      SOCKET_EVENTS.NEW_NOTIFICATION,
-      {
-        chatId:        booking.chatId,
-        lastMessage:   message,
-        lastMessageAt: saved.createdAt,
-      },
-    );
+//notify
+  await this._notificationService.notify({
+      userId:        receiverId,
+      type:          NotificationType.BOOKING,
+      category:      NotificationCategory.BOOKING,
+      title:         ACTION_MESSAGE[action],
+      message,
+      socketEvent:   SOCKET_EVENTS.NEW_NOTIFICATION,
+      socketPayload: { chatId: booking.chatId, lastMessage: message, lastMessageAt: new Date() },
+      metadata:      { bookingId: booking.id },
+    });
 
     return updated;
   }

@@ -1,13 +1,20 @@
 import { Booking } from "../../../domain/entities/booking";
 import { BookingAction, BookingStatus } from "../../../domain/enum/bookingEnum";
 import { MessageType } from "../../../domain/enum/messageEnum";
-import { NotificationCategory, NotificationType } from "../../../domain/enum/notificationEnum";
+import {
+  NotificationCategory,
+  NotificationType,
+} from "../../../domain/enum/notificationEnum";
+
 import { UserRole } from "../../../domain/enum/userEnum";
 import { AppError } from "../../../domain/errors/appError";
-import { IBookingHistoryRepository } from "../../../domain/repositoryInterface/User/booking/IBookingHistoryRepository";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
-import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
+import {
+  ACTION_MESSAGE,
+  ACTION_TITLE,
+  CHAT_ACTION_MESSAGE,
+} from "../../../domain/services/bookingStatusMachine";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import {
   timeToMinutes,
@@ -15,23 +22,22 @@ import {
 } from "../../../utils/schedule/dateHelper";
 import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { ICreateBookingUseCase } from "../../interface/booking/ICreateBooking";
-import { IScheduleNotificationUseCase } from "../../interface/notification/IScheduleNotificationUseCase";
 import { ICreateBookingInput } from "../../interfaceType/booking";
 import { ILockSlotService } from "../../serviceInterface/ILockSlotService";
-import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
+import { BookingHistoryService } from "../../services/bookingHistoryService";
+import { ChatMessageService } from "../../services/chatMessageService";
+import { NotificationDispatchService } from "../../services/notificationDispatchService";
 import { GetAvailabilityUseCase } from "../beautician/schedule/getAvailableUSeCase";
 
 export class CreateBookingUseCase implements ICreateBookingUseCase {
   constructor(
     private _bookingRepo: IBookingRepository,
-    private _bookingHistoryRepo: IBookingHistoryRepository,
-    private _messageRepo: IMessageRepository,
     private _chatRepo: IChatRepository,
-    private _socketEmitter: ISocketEmitter,
     private _getAvailabilityUC: GetAvailabilityUseCase,
     private _lockSlotService: ILockSlotService,
-    private _scheduleNotification: IScheduleNotificationUseCase,
-
+    private _chatMessage: ChatMessageService,
+    private _notificationService: NotificationDispatchService,
+    private _bookingHistory: BookingHistoryService,
   ) {}
 
   async execute(input: ICreateBookingInput): Promise<Booking> {
@@ -93,9 +99,6 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     const lockKey = `lock:${beauticianId}:${dateStr}:${startStr.trim()}-${endStr.trim()}`;
 
     const lockedBy = await this._lockSlotService.get(lockKey);
-    console.log("lockKey:", lockKey);
-    console.log("lockedBy:", lockedBy);
-    console.log("userId:", userId);
 
     if (!lockedBy || lockedBy !== userId) {
       throw new AppError(
@@ -136,7 +139,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     });
 
     // ── 6. History ─────────────────────────────────────────────────────────
-    await this._bookingHistoryRepo.create({
+    await this._bookingHistory.log({
       bookingId: booking.id,
       action: BookingAction.REQUEST,
       performedBy: userId,
@@ -146,46 +149,30 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     });
 
     // ── 7. Chat message ────────────────────────────────────────────────────
-    const saved = await this._messageRepo.create({
+    const chatMsg = CHAT_ACTION_MESSAGE[BookingAction.REQUEST];
+    const message = ACTION_MESSAGE[BookingAction.REQUEST];
+    const title = ACTION_TITLE[BookingAction.REQUEST];
+
+    await this._chatMessage.sendAndEmit({
       chatId,
       senderId: userId,
       receiverId: beauticianId,
-      message: `Booking request for ${services.map((s) => s.name).join(", ")}`,
+      message: chatMsg,
       type: MessageType.BOOKING,
       bookingId: booking.id,
-      seen: false,
+      status: BookingStatus.REQUESTED,
     });
 
-    await this._chatRepo.updateLastMessage(
-      chatId,
-      saved.message,
-      saved.createdAt,
-    );
-
-    const bookingDate = new Date(slot.date)
-
-
-    await this._scheduleNotification.execute({
-  userId,
-  type:     NotificationType.REMINDER,
-  category: NotificationCategory.SYSTEM,
-  title:    'Upcoming Appointment',
-  message:  `Your appointment is tomorrow at ${startStr}`,
-  metadata: { bookingId: booking.id },
-  scheduledFor: new Date(bookingDate.getTime() - 24 * 60 * 60 * 1000),
-})
-
-    // ── 8. Socket ──────────────────────────────────────────────────────────
-    this._socketEmitter.emitToRoom(chatId, SOCKET_EVENTS.NEW_MESSAGE, saved);
-    this._socketEmitter.emitToRoom(
-      `user:${beauticianId}`,
-      SOCKET_EVENTS.NEW_NOTIFICATION,
-      {
-        chatId,
-        lastMessage: saved.message,
-        lastMessageAt: saved.createdAt,
-      },
-    );
+    await this._notificationService.notify({
+      userId: beauticianId,
+      type: NotificationType.BOOKING,
+      category: NotificationCategory.BOOKING,
+      title,
+      message,
+      socketEvent: SOCKET_EVENTS.NEW_NOTIFICATION,
+      socketPayload: { chatId, message, lastMessageAt: new Date() },
+      metadata: { bookingId: booking.id },
+    });
 
     return booking;
   }

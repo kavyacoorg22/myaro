@@ -41,6 +41,11 @@ export class NotificationRepository
     const docs = await NotificationModel.find({
       userId: new Types.ObjectId(userId),
       isDeleted: false,
+        $or: [
+      { isSent: true },
+      { scheduledFor: null },
+      { scheduledFor: { $exists: false } },
+    ]
     })
       .sort({ createdAt: -1 });
 
@@ -52,6 +57,11 @@ export class NotificationRepository
       userId: new Types.ObjectId(userId),
       isDeleted: false,
       isRead: false,
+       $or: [
+      { isSent: true },         
+      { scheduledFor: null },     
+      { scheduledFor: { $exists: false } },
+    ],
     })
       .sort({ createdAt: -1 });
 
@@ -92,8 +102,8 @@ export class NotificationRepository
 
    async findDueNotifications(now: Date): Promise<Notification[]> {
     const docs = await NotificationModel.find({
-      scheduledFor: { $lte: now },   // due time reached
-      isSent:       false,           // not already sent
+      scheduledFor: { $exists: true, $ne: null, $lte: now },  
+      isSent:       false,          
       isDeleted:    false,
     }).limit(50)                    
 

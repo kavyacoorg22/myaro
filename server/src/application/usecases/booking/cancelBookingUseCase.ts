@@ -1,6 +1,10 @@
 import { BookingAction, BookingStatus } from "../../../domain/enum/bookingEnum";
 import { MessageType } from "../../../domain/enum/messageEnum";
 import {
+  NotificationCategory,
+  NotificationType,
+} from "../../../domain/enum/notificationEnum";
+import {
   PaymentStatus,
   RefundMethod,
   RefundStatus,
@@ -11,6 +15,11 @@ import { AppError } from "../../../domain/errors/appError";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { IRefundRepository } from "../../../domain/repositoryInterface/User/booking/IRefundRepository";
+import {
+  ACTION_MESSAGE,
+  ACTION_TITLE,
+  CHAT_ACTION_MESSAGE,
+} from "../../../domain/services/bookingStatusMachine";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { ICancelBookingUseCase } from "../../interface/booking/ICancelBooking";
@@ -24,6 +33,7 @@ import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 import { BookingHistoryService } from "../../services/bookingHistoryService";
 import { BookingValidatorService } from "../../services/bookingValidatorService";
 import { ChatMessageService } from "../../services/chatMessageService";
+import { NotificationDispatchService } from "../../services/notificationDispatchService";
 import { PaymentLookupService } from "../../services/paymentLookupService";
 
 export class CancelBookingUseCase implements ICancelBookingUseCase {
@@ -37,6 +47,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     private _paymentRepo: IPaymentRepository,
     private _refundRepo: IRefundRepository,
     private _paymentService: IPaymentService,
+    private _notificationService: NotificationDispatchService,
   ) {}
 
   async execute(input: ICancelBookingInput): Promise<ICancelBookingOutput> {
@@ -130,24 +141,34 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
       fromStatus: BookingStatus.CONFIRMED,
       toStatus: BookingStatus.CANCELLED,
     });
+    const message = ACTION_MESSAGE[BookingAction.CANCEL];
+    const chatMessage = CHAT_ACTION_MESSAGE[BookingAction.CANCEL];
+    const title = ACTION_TITLE[BookingAction.CANCEL];
 
-    // ── 10. Notify beautician via chat + socket ────────────────────────────
     await this._chatMessage.sendAndEmit({
       chatId: booking.chatId,
       senderId: userId,
       receiverId: booking.beauticianId,
-      message:
-        "The customer has cancelled this booking. A refund has been initiated.",
+      message: chatMessage,
       type: MessageType.BOOKING,
       bookingId,
       status: BookingStatus.CANCELLED,
     });
 
-    this._socketEmitter.emitToRoom(
-      `user:${booking.beauticianId}`,
-      SOCKET_EVENTS.BOOKING_CANCELLED,
-      { bookingId, refundAmount: payment.amount },
-    );
+    await this._notificationService.notify({
+      userId: booking.beauticianId,
+      type: NotificationType.BOOKING,
+      category: NotificationCategory.BOOKING,
+      title,
+      message,
+      socketEvent: SOCKET_EVENTS.BOOKING_CANCELLED,
+      socketPayload: {
+        bookingId,
+        amount: payment.amount,
+        message,
+      },
+      metadata: { bookingId },
+    });
 
     const data = toCancelBookingDto({ refund, payment });
 
