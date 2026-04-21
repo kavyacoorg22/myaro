@@ -1,7 +1,7 @@
 import {  customerApiRoute } from "../../constants/apiRoutes/customerRoute"
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute"
 import type { BackendResponse } from "../../types/api/api"
-import type { IGetHomeServiceCommentsOutPut, IGetPostCommentsOutPut, IGetRepliesOutput } from "../../types/api/commentLike"
+import type { IGetHomeServiceCommentsOutPut, IGetLikedUserListResponse, IGetPostCommentsOutPut, IGetRepliesOutput } from "../../types/api/commentLike"
 import api, { axiosWrapper } from "../axiosWrapper"
 
 
@@ -48,6 +48,12 @@ export const CommentLikeApi={
     }
     return await axiosWrapper<IGetRepliesOutput>(api.get(publicApiRoutes.getReplyComment.replace(':commentId',commentId),{params}))
   },
-
+  getUserLikeList:async(postId:string,limit:number,cursor?:string|null)=>{
+     const params={
+      limit,
+      ...(cursor&&{cursor})
+    }
+        return await axiosWrapper<IGetLikedUserListResponse>(api.get(publicApiRoutes.getLikeList.replace(':postId',postId),{params}))
+  }
 
 }

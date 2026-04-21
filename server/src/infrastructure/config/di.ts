@@ -181,6 +181,7 @@ import { ScheduleNotificationUseCase } from "../../application/usecases/notifica
 import { NotificationCron} from "../cron/notificationCron";
 import { GetCustomerBookingsUseCase } from "../../application/usecases/booking/getCustomerBookingUseCase";
 import { GetBeauticianDashboardUseCase } from "../../application/usecases/beautician/beauticianDashboard";
+import { GetLikedUserListUseCase } from "../../application/usecases/public/like/getLikedUserUseCase";
 
 
 
@@ -425,7 +426,8 @@ const deleteCommentUC=new DeleteCommentUseCase(commentRepo,postRepo)
 const getHomeServiceCommentUC=new GetHomeServiceUseCase(commentRepo,userRepo)
 const getPostCommentUseCase=new GetPostCommentUSeCase(commentRepo,userRepo)
 const getReplyCommentUC=new GetRepliesUseCase(commentRepo,userRepo)
-export const likeCommentController=new LikeCommetController(addLikeUC,removeLikeUC,addCommentUC,deleteCommentUC,getHomeServiceCommentUC,getPostCommentUseCase,getReplyCommentUC)
+const getLikedUserListUC=new GetLikedUserListUseCase(postRepo,likeRepo,userRepo)
+export const likeCommentController=new LikeCommetController(addLikeUC,removeLikeUC,addCommentUC,deleteCommentUC,getHomeServiceCommentUC,getPostCommentUseCase,getReplyCommentUC,getLikedUserListUC)
 
 //payment
 const createOrderUC=new CreateOrderUsecase(paymentrepo,bookingRepo,razorPayService)

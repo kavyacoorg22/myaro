@@ -12,6 +12,7 @@ import { generalMessages } from "../../../../shared/constant/message/generalMess
 import { IAddCommentInput } from "../../../../application/interfaceType/commetLike";
 import { CommentType } from "../../../../domain/enum/userEnum";
 import { IGetRepliesUseCase } from "../../../../application/interface/public/comment/IgetReplyCommentUSeCase";
+import { IGetLikedUserListUseCase } from "../../../../application/interface/public/like/IGetLikedUserList";
 
 export class LikeCommetController {
   constructor(
@@ -21,7 +22,8 @@ export class LikeCommetController {
     private _deleteCommentUC: IdeleteCommentUseCase,
     private _getHomeServiceCommentUC: IGetHomeServiceCommetsUseCase,
     private _getPostCommentUseCase: IGetPostCommetsUseCase,
-    private _getReplyCommentUC:IGetRepliesUseCase
+    private _getReplyCommentUC:IGetRepliesUseCase,
+    private _getLikedUserListUseCase:IGetLikedUserListUseCase
   ) {}
 
   addLike = async (
@@ -241,5 +243,22 @@ export class LikeCommetController {
     } catch (err) {
       next(err);
     }
+
   };
+  getLikedUserList=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+    try{
+       const postId=req.params.postId
+          const limit = Number(req.query.limit) || 10;
+      const cursor = (req.query.cursor as string) || null;
+
+      const data=await this._getLikedUserListUseCase.execute(postId,limit,cursor)
+      res.status(HttpStatus.OK).json({
+        success:true,
+        data
+      })
+    }catch(err)
+    {
+      next(err)
+    }
+  }
 }

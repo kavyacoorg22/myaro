@@ -1,5 +1,5 @@
 import { CommentType } from "../../domain/enum/userEnum";
-import { IGetHomeServiceCommentsDto, IGetPostCommentsDto, IGetReplyDto } from "../dtos/likeCommet";
+import { IGetHomeServiceCommentsDto, IGetLikedUserListDto, IGetPostCommentsDto, IGetReplyDto } from "../dtos/likeCommet";
 
 export  interface IAddCommentInput{
 userId:string,
@@ -22,5 +22,10 @@ nextCursor:string|null
 
 export interface IGetRepliesOutput {
   replies: IGetReplyDto[];
+  nextCursor: string | null;
+}
+
+export interface IGetLikedUserListResponse{
+  data:IGetLikedUserListDto[],
   nextCursor: string | null;
 }

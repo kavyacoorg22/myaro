@@ -6,5 +6,5 @@ export interface ILikeRepository{
     delete(userId: string, postId: string): Promise<void>;
   findByUserIDAndPostId(userID:string,postId:string):Promise<Like|null>
     findLikedPostIds(userID:string,postIds:string[]):Promise<string[]>
-
+  findByPostId(postId:string,limit:number,cursor?:string|null):Promise<{likes:Like[],nextCursor:string|null}>
 }

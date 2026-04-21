@@ -1,4 +1,4 @@
-import type { IGetHomeServiceCommentsDto, IGetPostCommentsDto, IGetReplyDto } from "../dtos/commetLike"
+import type { IGetHomeServiceCommentsDto, IGetLikedUserListDto, IGetPostCommentsDto, IGetReplyDto } from "../dtos/commetLike"
 import type { BackendResponse } from "./api"
 
 export interface IGetPostCommentsOutPutData{
@@ -20,6 +20,12 @@ export interface IGetRepliesInput {
     limit?: number,
     cursor?: string | null
 }
+
+export interface IGetLikedUserListResponse{
+  data:IGetLikedUserListDto[],
+  nextCursor: string | null;
+}
 export type IGetPostCommentsOutPut=BackendResponse<IGetPostCommentsOutPutData>
 export type IGetHomeServiceCommentsOutPut=BackendResponse<IGetHomeServiceCommentsOutPutData>
 export type IGetRepliesOutput=BackendResponse<IGetRepliesOutputData>
+// export type IGetLikedUserListResponse=BackendResponse<IGetLikedUserListResponseData>

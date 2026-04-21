@@ -29,6 +29,7 @@ router.post('/posts/upload',authenticateBeautician,  validateSignedUrlRequest,po
 //comment like
 router.post('/posts/:postId/like',authenticateUser,likeCommentController.addLike)
 router.delete('/posts/:postId/like',authenticateUser,likeCommentController.removeLike)
+router.get('/posts/:postId/likes',authenticateUser,likeCommentController.getLikedUserList)
 router.post('/posts/:postId/comment',authenticateUser,ValidateComment, likeCommentController.addComment)
 router.get('/posts/:postId/comment',authenticateUser,likeCommentController.getPostComment)
 router.delete('/posts/:postId/comment/:commentId',authenticateUser,likeCommentController.deleteComment)

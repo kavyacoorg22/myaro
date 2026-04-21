@@ -40,3 +40,10 @@ export interface IGetReplyDto {
   };
   createdAt: Date;
 }
+
+export interface IGetLikedUserListDto{
+  id:string,
+  fullName:string,
+  userName:string,
+  profileImg?:string
+}
