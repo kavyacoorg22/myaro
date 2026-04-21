@@ -10,6 +10,7 @@ import {
   type ICreateBookingRequest,
   type IGetBeauticianBookingsResponse,
   type IUpdateBookingResponse,
+  type IGetCustomerBookingsResult,
 } from "../../types/api/booking";
 import type { BookingDto } from "../../types/dtos/booking";
 import api, { axiosWrapper } from "../axiosWrapper";
@@ -87,6 +88,21 @@ export const BookingApi = {
    cancelRefund:async(bookingId:string)=>{
      return await axiosWrapper(
       api.post(publicApiRoutes.cancelBooking.replace(":bookingId", bookingId)),
+    );
+  },
+
+    getCustomerBookings: async (
+    status: BookingStatusType,
+    page: number,
+    limit: number,
+  ) => {
+    let params = {
+      status,
+      page,
+      limit,
+    };
+    return await axiosWrapper<IGetCustomerBookingsResult>(
+      api.get(publicApiRoutes.getCustomerBooking, { params }),
     );
   },
 };

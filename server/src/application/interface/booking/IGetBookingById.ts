@@ -1,4 +1,3 @@
-import { Booking } from "../../../domain/entities/booking";
 import { IGetBookingByIdResponse } from "../../interfaceType/booking";
 
 

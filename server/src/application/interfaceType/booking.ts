@@ -31,6 +31,13 @@ export interface IGetBeauticianBookingsInput {
   limit?:       number;
 }
 
+export interface IGetCustomerBookingsInput {
+  userId: string;
+  status?:      BookingStatus;
+  page?:        number;
+  limit?:       number;
+}
+
 export interface IBookingListItem {
   booking: Booking;
   user: {
@@ -42,6 +49,14 @@ export interface IBookingListItem {
 }
 
 export interface IGetBeauticianBookingsResult {
+  bookings:    IBookingListItem[];
+  total:       number;
+  page:        number;
+  totalPages:  number;
+  hasMore:     boolean;
+}
+
+export interface IGetCustomerBookingsResult {
   bookings:    IBookingListItem[];
   total:       number;
   page:        number;

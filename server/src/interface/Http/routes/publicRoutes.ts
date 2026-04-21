@@ -58,5 +58,6 @@ router.get('/wallet',authenticateCustomer,paymentController.getUserRefundSummery
 //notification
 router.get('/notifications',authenticateUser,notificationController.getNotifications)
 router.patch("/notifications",authenticateUser, notificationController.markAllNotificationRead)
+router.get('/bookings', authenticateCustomer, bookingController.getUserBookings)
 
 export default router

@@ -20,6 +20,7 @@ import { IGetDisputeDetailsUseCase } from "../../../../application/interface/adm
 import { IGetAllRefundsUseCase } from "../../../../application/interface/admin/management/booking/IgetAllRefundsUseCase";
 import { IGetRefundDetailUseCase } from "../../../../application/interface/admin/management/booking/IGetRefundDetailUseCase";
 import { PaymentStatus, RefundStatus } from "../../../../domain/enum/paymentEnum";
+import { IGetCustomerBookingsUseCase } from "../../../../application/interface/booking/IGetCustomerBookings";
 
 
 export class BookingController{
@@ -38,7 +39,8 @@ export class BookingController{
   private _getAllDisputeUC:IGetAllDisputesUseCase,
   private _getDisputeDetailUC:IGetDisputeDetailsUseCase,
   private _getAllRefundUC:IGetAllRefundsUseCase,
-  private _getRefundDetailUC:IGetRefundDetailUseCase
+  private _getRefundDetailUC:IGetRefundDetailUseCase,
+  private _getCustomerBookingsUC:IGetCustomerBookingsUseCase
   ){}
 
   createBooking=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
@@ -95,6 +97,25 @@ export class BookingController{
     next(err)
    }
   }
+  getUserBookings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = req.user?.id
+    if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED)
+
+    const { status, page, limit } = req.query
+
+    const result = await this._getCustomerBookingsUC.execute({
+      userId,
+      status: status as BookingStatus | undefined,
+      page:   page  ? parseInt(page  as string) : 1,
+      limit:  limit ? parseInt(limit as string) : 10,
+    })
+
+    res.status(HttpStatus.OK).json({ success: true, data: result })
+  } catch (err) {
+    next(err)
+  }
+}
     getBookingById=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
    try{
        const requesterId = req.user?.id;

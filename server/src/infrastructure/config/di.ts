@@ -179,6 +179,7 @@ import { DashboardController } from "../../interface/Http/controllers/admin/dash
 import { GetUserGrowthUseCae } from "../../application/usecases/admin/dashboard/getUserGrowthUseCase";
 import { ScheduleNotificationUseCase } from "../../application/usecases/notification/scheduleNotificationUseCase";
 import { NotificationCron} from "../cron/notificationCron";
+import { GetCustomerBookingsUseCase } from "../../application/usecases/booking/getCustomerBookingUseCase";
 
 
 
@@ -393,7 +394,8 @@ const getAllRefundUC=new GetAllRefundsUseCase(refundRepo,paymentrepo,bookingRepo
 const getBookingDetailUC=new GetBookingDetailUseCase(bookingRepo,paymentrepo,userRepo,bookingHistoryRepo)
 const getDisputeDetailUC=new GetDisputeDetailsUseCase(bookingRepo,paymentrepo,userRepo,bookingHistoryRepo)
 const getRefundDetailUC=new GetRefundDetailUseCase(refundRepo,paymentrepo,bookingRepo,userRepo,bookingHistoryRepo)
-export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase,disputeRefundUC,cancelBookingUC,getAllBookingsForAdminUC,getBookingDetailUC,getAllDisputeUC,getDisputeDetailUC,getAllRefundUC,getRefundDetailUC)
+const getCustomerBookingsUC=new GetCustomerBookingsUseCase(bookingRepo,userRepo)
+export const bookingController=new BookingController(getBeauticianBookingsUC,createBookingUseCase,updateBookingStatusUC,getBookingByIdUseCase,lockSlotUseCase,requestRefundUseCase,approveRefundRequestUseCase,disputeRefundUC,cancelBookingUC,getAllBookingsForAdminUC,getBookingDetailUC,getAllDisputeUC,getDisputeDetailUC,getAllRefundUC,getRefundDetailUC,getCustomerBookingsUC)
 //like comment
 
 const likeRepo=new LikeRepository()

@@ -32,7 +32,7 @@ const ServicePageListForUser = lazy(
   () => import("../features/user/component/viewServicePage"),
 );
 const ChatList = lazy(() => import("../features/user/component/chat/chatList"));
-const BeauticianBookingsPage=lazy(()=>import('../features/beautician/booking/beautcianBookingsPage'))
+const BookingsPage=lazy(()=>import('../features/beautician/booking/beautcianBookingsPage'))
 const WalletCard=lazy(()=>import('../features/wallet/walletCard'))
 export const userRoutes: RouteObject[] = [
   {
@@ -120,7 +120,7 @@ export const userRoutes: RouteObject[] = [
     path: beauticianFrontendRoutes.booking,
     element:(
       <PrivateRoute allowedRoles={CUSTOMER_BEAUTICIAN}>
-         <BeauticianBookingsPage/>
+         <BookingsPage/>
       </PrivateRoute>
     )
   },

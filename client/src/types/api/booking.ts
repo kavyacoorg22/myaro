@@ -79,6 +79,23 @@ export interface IUpdateBookingResponseData{
   cancelledAt:Date|null,
 }
 
+
+export interface IGetCustomerBookingsInput {
+  userId: string;
+  status?:      BookingStatusType;
+  page?:        number;
+  limit?:       number;
+}
+
+export interface IGetCustomerBookingsResultData {
+  bookings:    IBookingListItem[];
+  total:       number;
+  page:        number;
+  totalPages:  number;
+  hasMore:     boolean;
+}
+
 export type IGetBookingByIdResponse=BackendResponse<IGetBookingByIdResponseData>
 export type IUpdateBookingResponse=BackendResponse<IUpdateBookingResponseData>
 export type IGetBeauticianBookingsResponse=BackendResponse<IGetBeauticianBookingsResponseData>
+export type IGetCustomerBookingsResult=BackendResponse<IGetCustomerBookingsResultData>

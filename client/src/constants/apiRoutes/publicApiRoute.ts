@@ -51,4 +51,7 @@ export const publicApiRoutes={
   readAllNotification:'/notifications',
    //replay comment
    getReplyComment:'/posts/:postId/comments/:commentId/replies',
+   //get customer booking
+   getCustomerBooking:'bookings',
+  
 }

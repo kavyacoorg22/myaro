@@ -50,6 +50,20 @@ async findByBeauticianId(beauticianId: string,  page: number, limit: number,stat
 
 }
 
+async findByUserId(userId: string, page: number, limit: number, status?: BookingStatus): Promise<{bookings: Booking[], total: number}> {
+  const query: any = { userId: new Types.ObjectId(userId) }
+  if (status) query.status = status
+
+  const skip = (page - 1) * limit
+
+  const [bookings, total] = await Promise.all([
+    BookingModel.find(query).sort({'slot.date': -1}).skip(skip).limit(limit),
+    BookingModel.countDocuments(query)
+  ])
+
+  return { bookings: bookings.map((b) => this.map(b)), total }
+}
+
 async findOverlapping({
   beauticianId,
   date,
