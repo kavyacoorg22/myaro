@@ -4,7 +4,7 @@ import { Post } from "../../domain/entities/post";
 import { SearchHistory } from "../../domain/entities/searchHistory";
 import { User } from "../../domain/entities/User";
 import { getTimeAgo } from "../../utils/schedule/dateHelper";
-import { IBeauticianDTO, IBeauticianProfileDTO, IBeauticianViewEditProfileDTO, IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto, ISearchBeauticianResultDto, IUpdateRegistrationDTO, IVerificationStatusDto } from "../dtos/beautician";
+import { BeauticianDashboardDto, ChartPointDto, DashboardStatsDto, EarningsSummaryDto, IBeauticianDTO, IBeauticianProfileDTO, IBeauticianViewEditProfileDTO, IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto, ISearchBeauticianResultDto, IUpdateRegistrationDTO, IVerificationStatusDto, RecentPayoutDto } from "../dtos/beautician";
 import { IRecentSearchDto } from "../dtos/user";
 import { IGetBeauticianPostOutPut } from "../interfaceType/beauticianType";
 
@@ -149,4 +149,24 @@ export function toGetBeauticianPostDto(post:Post,isLiked: boolean):IGetBeauticia
        isLiked
        
   }
+}
+
+
+
+
+
+export function toBeauticianDashboardDto(raw: {
+  stats:         DashboardStatsDto;
+  earnings:      EarningsSummaryDto;
+  weeklyChart:   ChartPointDto[];
+  monthlyChart:  ChartPointDto[];
+  recentPayouts: RecentPayoutDto[];
+}): BeauticianDashboardDto {
+  return {
+    stats:         raw.stats,
+    earnings:      raw.earnings,
+    weeklyChart:   raw.weeklyChart,
+    monthlyChart:  raw.monthlyChart,
+    recentPayouts: raw.recentPayouts,
+  };
 }

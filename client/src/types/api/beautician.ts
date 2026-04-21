@@ -1,7 +1,7 @@
 import type { BeauticianStatusType, ScheduleEndType, ScheduleTypeValue, ServiceModesType} from "../../constants/types/beautician";
 import type { UserRoleType } from "../../constants/types/User";
 
-import type { IGetAllPostsDto, IGetAvailabilitySlotDto, IGetBeauticianPostsDto, IGetmonthlyAvailabilityDto, IGetServiceAreaDto } from "../dtos/beautician";
+import type { BeauticianDashboardDto, IGetAllPostsDto, IGetAvailabilitySlotDto, IGetBeauticianPostsDto, IGetmonthlyAvailabilityDto, IGetServiceAreaDto } from "../dtos/beautician";
 import type { BackendResponse } from "./api";
 
 export interface ShopAddressVO {
@@ -153,6 +153,10 @@ export interface IGetBeauticianPostResponseData{
 
 export interface IGetmonthlyAvailabilityReponseData{
   dates:IGetmonthlyAvailabilityDto[]
+}
+
+export interface IGetBeauticianDashboardResponse{
+  data:BeauticianDashboardDto
 }
 
 export type IBeauticianProfileUpdate = Partial<IProfileUpdateRequest> & Partial<IBankDeatilUpdateRequest>;

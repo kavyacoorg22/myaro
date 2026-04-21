@@ -6,6 +6,7 @@ import { BookingDoc, BookingModel } from "../../database/models/user/bookingModa
 import { GenericRepository } from "../genericRepository";
 import { BookingTrendDto } from "../../../application/dtos/repo";
 import { fillEmptyMonths, toMonthName } from "../../../utils/monthUtil";
+import { ChartPointDto, DashboardStatsDto } from "../../../application/dtos/beautician";
 
 export class BookingRepository extends GenericRepository<Booking,BookingDoc> implements  IBookingRepository{
   constructor(){
@@ -165,6 +166,141 @@ async getBookingTrendByMonth(year = new Date().getFullYear()): Promise<BookingTr
 
   return fillEmptyMonths(named, { completed: 0, cancelled: 0, refunded: 0 });
 }
+
+
+async getDashboardStats(beauticianId: string): Promise<DashboardStatsDto> {
+  const now       = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,  0,  0);
+  const todayEnd   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [todayAgg, monthAgg] = await Promise.all([
+
+    BookingModel.aggregate([
+      {
+        $match: {
+          beauticianId: new Types.ObjectId(beauticianId),
+          "slot.date":  { $gte: todayStart, $lte: todayEnd },
+        },
+      },
+      {
+        $group: {
+          _id:          null,
+          total:        { $sum: 1 },
+          completed:    { $sum: { $cond: [{ $eq: ["$status", BookingStatus.COMPLETED] }, 1, 0] } },
+          upcoming:     { $sum: { $cond: [{ $in:  ["$status", [BookingStatus.CONFIRMED, BookingStatus.ACCEPTED]] }, 1, 0] } },
+          pending:      { $sum: { $cond: [{ $eq: ["$status", BookingStatus.REQUESTED] }, 1, 0] } },
+          todayEarnings:{ $sum: { $cond: [{ $eq: ["$status", BookingStatus.COMPLETED] }, "$totalPrice", 0] } },
+        },
+      },
+    ]),
+
+    BookingModel.aggregate([
+      {
+        $match: {
+          beauticianId: new Types.ObjectId(beauticianId),
+          "slot.date":  { $gte: monthStart, $lte: todayEnd },
+          status:       BookingStatus.COMPLETED,
+        },
+      },
+      {
+        $group: {
+          _id:             null,
+          monthlyEarnings: { $sum: "$totalPrice" },
+        },
+      },
+    ]),
+
+  ]);
+
+  const t = todayAgg[0];
+  return {
+    todayBookingsCount:   t?.total          ?? 0,
+    completedToday:       t?.completed      ?? 0,
+    upcomingToday:        t?.upcoming       ?? 0,
+    pendingRequestsCount: t?.pending        ?? 0,
+    todayEarnings:        t?.todayEarnings  ?? 0,
+    monthlyEarnings:      monthAgg[0]?.monthlyEarnings ?? 0,
+  };
+}
+
+async getWeeklyEarnings(beauticianId: string): Promise<ChartPointDto[]> {
+  const now        = new Date();
+  const weekStart  = new Date(now);
+  weekStart.setDate(now.getDate() - 6);
+  weekStart.setHours(0, 0, 0, 0);
+
+  const raw = await BookingModel.aggregate([
+    {
+      $match: {
+        beauticianId: new Types.ObjectId(beauticianId),
+        status:       BookingStatus.COMPLETED,
+        "slot.date":  { $gte: weekStart },
+      },
+    },
+    {
+      $group: {
+        _id:      { $dayOfWeek: "$slot.date" }, // 1=Sun … 7=Sat
+        earnings: { $sum: "$totalPrice" },
+      },
+    },
+  ]);
+
+  const DAY_LABEL: Record<number, string> = {
+    1: "Sun", 2: "Mon", 3: "Tue",
+    4: "Wed", 5: "Thu", 6: "Fri", 7: "Sat",
+  };
+
+  const result: ChartPointDto[] = [];
+  for (let i = 0; i < 7; i++) {
+    const d   = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    const dow   = d.getDay() + 1;
+    const found = raw.find((r) => r._id === dow);
+    result.push({ label: DAY_LABEL[dow], earnings: found?.earnings ?? 0 });
+  }
+
+  return result;
+}
+
+async getMonthlyEarnings(beauticianId: string): Promise<ChartPointDto[]> {
+  const now        = new Date();
+  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+  const raw = await BookingModel.aggregate([
+    {
+      $match: {
+        beauticianId: new Types.ObjectId(beauticianId),
+        status:       BookingStatus.COMPLETED,
+        "slot.date":  { $gte: sixMonthsAgo },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          year:  { $year:  "$slot.date" },
+          month: { $month: "$slot.date" },
+        },
+        earnings: { $sum: "$totalPrice" },
+      },
+    },
+    { $sort: { "_id.year": 1, "_id.month": 1 } },
+  ]);
+
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  const result: ChartPointDto[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d     = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const found = raw.find(
+      (r) => r._id.year === d.getFullYear() && r._id.month === d.getMonth() + 1
+    );
+    result.push({ label: MONTHS[d.getMonth()], earnings: found?.earnings ?? 0 });
+  }
+
+  return result;
+}
+
   protected map(doc:BookingDoc):Booking {
    const base=super.map(doc)
    return{

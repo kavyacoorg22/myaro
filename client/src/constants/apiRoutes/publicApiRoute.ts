@@ -52,6 +52,6 @@ export const publicApiRoutes={
    //replay comment
    getReplyComment:'/posts/:postId/comments/:commentId/replies',
    //get customer booking
-   getCustomerBooking:'bookings',
-  
+   getCustomerBooking:'/bookings',
+   
 }

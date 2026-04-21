@@ -1,3 +1,4 @@
+import { ChartPointDto, DashboardStatsDto } from "../../../../application/dtos/beautician";
 import { BookingTrendDto } from "../../../../application/dtos/repo";
 import { Booking } from "../../../entities/booking";
 import { BookingStatus } from "../../../enum/bookingEnum";
@@ -33,4 +34,7 @@ findDisputed(params: {
   limit: number;
 }): Promise<{ bookings: Booking[]; total: number }>;
 getBookingTrendByMonth(year?:number): Promise<BookingTrendDto[]> 
+getDashboardStats(beauticianId: string): Promise<DashboardStatsDto>;
+getWeeklyEarnings(beauticianId: string): Promise<ChartPointDto[]>;
+getMonthlyEarnings(beauticianId: string): Promise<ChartPointDto[]>;
 }

@@ -36,4 +36,5 @@ getHeldPayments():Promise<number>
 getDisputesCount():Promise<number>
 getRevenueStats(): Promise<RevenueStatsDto>
  getTotalRefundAmount(): Promise<number>
+ 
 }

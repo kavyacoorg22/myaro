@@ -116,3 +116,40 @@ export interface IGetAllPostsDto{
   timeAgo:string,
   isLiked: boolean
 }
+
+
+export interface DashboardStatsDto {
+  todayBookingsCount:   number;
+  completedToday:       number;
+  upcomingToday:        number;
+  pendingRequestsCount: number;
+  todayEarnings:        number;
+  monthlyEarnings:      number;
+}
+
+export interface EarningsSummaryDto {
+  totalEarnings:      number;
+  withdrawableAmount: number;
+  pendingAmount:      number;
+  joinedSince:        string;
+}
+
+export interface ChartPointDto {
+  label:    string;
+  earnings: number;
+}
+
+export interface RecentPayoutDto {
+  payoutId:  string;
+  amount:    number;
+  status:    string;
+  createdAt: string;
+}
+
+export interface BeauticianDashboardDto {
+  stats:         DashboardStatsDto;
+  earnings:      EarningsSummaryDto;
+  weeklyChart:   ChartPointDto[];
+  monthlyChart:  ChartPointDto[];
+  recentPayouts: RecentPayoutDto[];
+}

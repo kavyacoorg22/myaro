@@ -15,6 +15,7 @@ import { IAddServiceAreaUseCase } from "../../../../application/interface/beauti
 import { IAddServiceAreaRequest } from "../../../../application/interfaceType/beauticianType";
 import { IViewEditProfileUseCase } from "../../../../application/interface/customer/IViewEditProfileUseCase";
 import { ICustomerEditProfileUseCase } from "../../../../application/interface/customer/IEditProfileUseCase";
+import { IGetBeauticianDashboardUseCase } from "../../../../application/interface/beautician/IBeauticianDashBoardUseCase";
 
 export class BeauticianController {
   private _beauticianRegistrationUC: IBeauticianRegisterUseCase;
@@ -38,7 +39,8 @@ export class BeauticianController {
     getServiceAreaUC: IGetServiceAreaUseCase,
     addServiceAreaUC: IAddServiceAreaUseCase,
     viewProfileUC:IViewEditProfileUseCase,
-    customerEditProfile:ICustomerEditProfileUseCase
+    customerEditProfile:ICustomerEditProfileUseCase,
+    private _BeauticianDashboard:IGetBeauticianDashboardUseCase
   ) {
     this._beauticianRegistrationUC = beauticianRegistrationUC;
     this._beauticianVerificationStatusUseCase = verificationStatusUC;
@@ -333,4 +335,27 @@ export class BeauticianController {
       next(err);
     }
   };
+
+   async getDashboard(req: Request, res: Response,next:NextFunction): Promise<void> {
+    try{
+    const beauticianId = req.user?.id;
+    if(!beauticianId)
+    {
+        throw new AppError(
+          generalMessages.ERROR.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST,
+        );
+    }
+
+    const result= await this._BeauticianDashboard.execute(beauticianId);
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      data:result.data
+    });
+  }catch(err)
+  {
+    next(err)
+  }
+  }
 }

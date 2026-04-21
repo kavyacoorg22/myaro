@@ -3,7 +3,6 @@ import { Payment } from "../../../domain/entities/payment";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { PaymentDoc, PaymentModel } from "../../database/models/user/paymentModal";
 import { GenericRepository } from "../genericRepository";
-import { Booking } from "../../../domain/entities/booking";
 import { PaymentStatus } from "../../../domain/enum/paymentEnum";
 import { RevenueStatsDto } from "../../../application/dtos/repo";
 

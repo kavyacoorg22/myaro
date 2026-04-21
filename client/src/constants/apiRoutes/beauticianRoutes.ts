@@ -20,5 +20,6 @@ export const beauticianApi = {
   deleteRecurringSlot:'/beautician/schedules/recurring/:id',
  
   getBeauticianPost:'/beautician/posts/me',
-  getBeauticianBookings:'/beautician/bookings'
+  getBeauticianBookings:'/beautician/bookings',
+  getDashBoard:'/beautician/dashboard'
 };

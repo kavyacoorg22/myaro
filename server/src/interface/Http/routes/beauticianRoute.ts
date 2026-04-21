@@ -53,5 +53,7 @@ router.get('/bookings',authenticateBeautician,bookingController.getBeauticianBoo
 //home service review/comments
 router.post('/:beauticianId/comment',authenticateUser,ValidateComment, likeCommentController.addComment)
 router.get('/:beauticianId/comment',authenticateUser,likeCommentController.getHomeServiceComment)
+//dashboard
+router.get('/dashboard',authenticateBeautician,beauticianController.getDashboard)
 
 export  default router

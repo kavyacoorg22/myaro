@@ -2,7 +2,7 @@ import { beauticianApi } from "../../constants/apiRoutes/beauticianRoutes";
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
 import type { PostType } from "../../features/types/mediaType";
 import type { BackendResponse } from "../../types/api/api";
-import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse,  type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest, type IGetmonthlyAvailabilityReponse, type IGetBeauticianPostResponse, type IGetBeauticianPostResponseData,  } from "../../types/api/beautician";
+import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse,  type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest, type IGetmonthlyAvailabilityReponse, type IGetBeauticianPostResponse, type IGetBeauticianPostResponseData, type IGetBeauticianDashboardResponse,  } from "../../types/api/beautician";
 import type { ICreatePostInput } from "../../types/api/public";
 import { type IGetPamphletResponse, type IAddCustomServiceRequest, type IBeauticianServiceSelectionResponse, type IGetBeauticianServicesListResponse, type IUpsertBeauticianServiceRequest, type PriceFilter,} from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
@@ -89,5 +89,8 @@ export const BeauticianApi = {
     ...(cursor&&{cursor})
    }
   return await axiosWrapper<IGetBeauticianPostResponseData>(api.get(beauticianApi.getBeauticianPost,{params}))
+  },
+  getDashBoard:async()=>{
+      return await axiosWrapper<IGetBeauticianDashboardResponse>(api.get(beauticianApi.getDashBoard))
   }
 };

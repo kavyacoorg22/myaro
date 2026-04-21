@@ -180,6 +180,7 @@ import { GetUserGrowthUseCae } from "../../application/usecases/admin/dashboard/
 import { ScheduleNotificationUseCase } from "../../application/usecases/notification/scheduleNotificationUseCase";
 import { NotificationCron} from "../cron/notificationCron";
 import { GetCustomerBookingsUseCase } from "../../application/usecases/booking/getCustomerBookingUseCase";
+import { GetBeauticianDashboardUseCase } from "../../application/usecases/beautician/beauticianDashboard";
 
 
 
@@ -255,15 +256,18 @@ const beauticianViewEditProfileUC=new BeauticianViewEditProfileUseCase(beauticia
 const beauticianEditProfileUC=new BeauticianEditProfileUseCase(beauticianRepo,userRepo)
 const searchResultUC=new SearchResultUseCase(userRepo)
 //location
+const bookingRepo=new BookingRepository()
 const serviceAreaRepo=new ServiceAreaRepository()
 
 const addServiceAreaUC=new AddServiceAreaUseCase(beauticianRepo,serviceAreaRepo)
 const getServiceAreaUC=new getServiceAreaUseCase(serviceAreaRepo)
 const customerViewEditProfile=new CustomerViewProfileUseCase(userRepo)
 const customerEditProfileUseCase=new CustomerEditProfileUseCase(userRepo)
+const payoutRepo=new PayoutRepository()
+const getBeauticianDashboardUC=new GetBeauticianDashboardUseCase(bookingRepo,payoutRepo,userRepo)
 const beauticianController=new BeauticianController(beauticianRegisterUC,beauticianVerificationStatusUC,
   beauticianUpdateRegistartionUC,beauticianViewEditProfileUC,
-  beauticianEditProfileUC,searchResultUC,getServiceAreaUC,addServiceAreaUC,customerViewEditProfile,customerEditProfileUseCase)
+  beauticianEditProfileUC,searchResultUC,getServiceAreaUC,addServiceAreaUC,customerViewEditProfile,customerEditProfileUseCase,getBeauticianDashboardUC)
 
 export  {beauticianController}
 
@@ -367,7 +371,7 @@ const bookingHistoryRepo=new BookingHistoryRepository()
 const bookinghistoryService=new BookingHistoryService(bookingHistoryRepo)
 const notificationDispatchService=new NotificationDispatchService(notificationRepo,socketEmitter)
 const chatMessageService=new ChatMessageService(messageRepository,chatRepository,socketEmitter)
-const bookingRepo=new BookingRepository()
+
 const paymentrepo=new PaymentRepository()
 const lockSlotService=new LockSlotService()
 const lockSlotUseCase=new LockSlotUseCase(bookingRepo,lockSlotService)
@@ -378,7 +382,6 @@ const getBeauticianBookingsUC=new GetBeauticianBookingsUSeCase(bookingRepo,userR
 const getBookingByIdUseCase=new GetBookingByIdUSeCase(bookingRepo,userRepo)
 const blockBookedSlotUseCase=new BlockBookedSlotUseCase(scheduleRepo,recurringExceptionRepo,getAvailabilityUC)
 //services
-const payoutRepo=new PayoutRepository()
 const refundRepo=new RefundRepository()
 const razorPayService=new RazorPayService()
 const bookingValidatorService=new BookingValidatorService(bookingRepo)
