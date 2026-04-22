@@ -28,6 +28,8 @@ import { ShareModal } from "../../models/beautician/media/shareModal";
 import type { MediaItemWithTrim } from "../../types/mediaType";
 import PostsTab from "../../post/page/postTab";
 import { ChatApi } from "../../../services/api/chat";
+import { FollowApi } from "../../../services/api/follow";
+import { FollowingModal } from "../../models/followListModel";
 
 interface BeauticianInfo {
   isBeautician: boolean;
@@ -49,7 +51,7 @@ const ProfilePage = () => {
   const [beauticianInfo, setBeauticianInfo] = useState<BeauticianInfo>({
     isBeautician: false,
   });
-
+ const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>("posts");
 
   const [selectedDates, setSelectedDates] = useState<number[]>([]);
@@ -59,6 +61,7 @@ const ProfilePage = () => {
   const [cropFileType, setCropFileType] = useState<"image" | "video" | null>(
     null,
   );
+  const [followingCount, setFollowingCount] = useState<number>(profileData?.followingCount ?? 0);
   const [showEdit, setShowEdit] = useState(false);
   const [editData, setEditData] = useState<{
     preview: string;
@@ -72,6 +75,7 @@ const ProfilePage = () => {
   const extrasRef = useRef<{ src: string; fileType: "image" | "video" }[]>([]);
 
   const currentUser = useSelector((store: RootState) => store.user.currentUser);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
   const isOwnProfile = currentUser?.userId === profileData?.userId;
   const viewMode = isOwnProfile
@@ -92,12 +96,14 @@ const ProfilePage = () => {
         setError(null);
 
         if (id) {
-          console.log(`use param id in frontend ${id}`);
           const profile = await publicAPi.callById(id);
           if (profile?.data?.data) {
             setProfileData(profile?.data?.data);
           } else {
             setError("Profile data structure is incorrect");
+          }
+          if (profile?.data?.data?.isFollowing !== undefined) {
+            setIsFollowing(profile.data.data.isFollowing);
           }
         } else {
           const profile = await publicAPi.ownProfile();
@@ -118,7 +124,7 @@ const ProfilePage = () => {
     };
 
     loadProfile();
-  }, [id, currentUser]);
+  }, [id, currentUser,showFollowingModal]);
 
   const handleStartChat = async (participantB: string) => {
     try {
@@ -146,7 +152,6 @@ const ProfilePage = () => {
   const fetchBeauticianStatus = async () => {
     try {
       const response = await BeauticianApi.getStatus();
-      console.log("✅ Beautician status:", response.data?.data);
       setBeauticianInfo({
         isBeautician: true,
         verificationStatus: response.data?.data?.verificationStatus,
@@ -165,7 +170,6 @@ const ProfilePage = () => {
     try {
       console.log("📤 Sending to API:", request);
       const response = await BeauticianApi.addAvailabilitySchedule(request);
-      console.log("✅ Availability saved successfully:", response);
       toast.success("Availability saved successfully!");
     } catch (error) {
       console.error("❌ Error saving availability:", error);
@@ -224,6 +228,21 @@ const ProfilePage = () => {
     setEditData(null);
     setCropPreview(null);
     setCropFileType(null);
+  };
+
+  const handleFollow = async () => {
+    if (!profileData?.userId) return;
+    try {
+      if (isFollowing) {
+        await FollowApi.unfollowBeautician(profileData.userId);
+        setIsFollowing(false);
+      } else {
+        await FollowApi.followBeautician(profileData.userId);
+        setIsFollowing(true);
+      }
+    } catch (err) {
+      handleApiError(err);
+    }
   };
 
   const handleCustomerDateSelect = async (
@@ -342,6 +361,9 @@ const ProfilePage = () => {
           shopCity={profileData.beauticianData?.shopAddress?.city}
           homeServiceCount={profileData.beauticianData?.homeservicecount}
           isVerified={profileData.isVerified}
+          isFollowing={isFollowing}
+          followingCount={profileData.followingCount}
+          
           hideButtons={shouldHideButtons}
           onEditProfile={() => navigate(beauticianFrontendRoutes.editProfile)}
           onCalender={handleCalendarClick}
@@ -354,8 +376,9 @@ const ProfilePage = () => {
             })
           }
           onMessage={() => handleStartChat(profileData.userId)}
-          onFollow={() => console.log("Follow clicked")}
+          onFollow={handleFollow}
           onBookService={() => handleStartChat(profileData.userId)}
+          onFollowingClick={() => setShowFollowingModal(true)}
         />
 
         {/* ── Verification Banner ── */}
@@ -389,7 +412,11 @@ const ProfilePage = () => {
                 beauticianUserId={isOwnProfile ? null : profileData.userId}
                 viewMode={viewMode}
                 postType="post"
-                user={{userName:profileData.userName,fullName:profileData.fullName,profileImg:profileData.profileImg}}
+                user={{
+                  userName: profileData.userName,
+                  fullName: profileData.fullName,
+                  profileImg: profileData.profileImg,
+                }}
               />
             )}
 
@@ -398,8 +425,11 @@ const ProfilePage = () => {
                 beauticianUserId={isOwnProfile ? null : profileData.userId}
                 viewMode={viewMode}
                 postType="tips"
-                user={{userName:profileData.userName,fullName:profileData.fullName,profileImg:profileData.profileImg}}
-
+                user={{
+                  userName: profileData.userName,
+                  fullName: profileData.fullName,
+                  profileImg: profileData.profileImg,
+                }}
               />
             )}
 
@@ -408,8 +438,11 @@ const ProfilePage = () => {
                 beauticianUserId={isOwnProfile ? null : profileData.userId}
                 viewMode={viewMode}
                 postType="rent"
-              user={{userName:profileData.userName,fullName:profileData.fullName,profileImg:profileData.profileImg}}
-
+                user={{
+                  userName: profileData.userName,
+                  fullName: profileData.fullName,
+                  profileImg: profileData.profileImg,
+                }}
               />
             )}
           </div>
@@ -521,6 +554,11 @@ const ProfilePage = () => {
           onClose={handlePostFlowClose}
           onShare={async () => {}}
         />
+        <FollowingModal
+  isOpen={showFollowingModal}
+  onClose={() => setShowFollowingModal(false)}
+  onCountChange={(n) => setFollowingCount(n)}
+/>
       </div>
     </>
   );

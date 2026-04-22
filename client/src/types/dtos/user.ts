@@ -1,6 +1,6 @@
 import type { ServiceModesType } from "../../constants/types/beautician";
 
-export type Role = 'customer' | 'beautician' ;
+export type Role = "customer" | "beautician";
 
 export interface IUserProfile {
   userId: string;
@@ -9,9 +9,8 @@ export interface IUserProfile {
   profileImg?: string;
   isVerified: boolean;
   role: Role;
-  
-  
- 
+  isFollowing?: boolean;
+    followingCount?: number;
   beauticianData?: {
     yearsOfExperience: number;
     about: string;
@@ -22,22 +21,20 @@ export interface IUserProfile {
       city: string;
       pincode: string;
     };
-    serviceModes:ServiceModesType[]
+    serviceModes: ServiceModesType[];
     homeservicecount: number;
     verificationStatus: string;
   };
-  
 }
-
 
 export interface IUserDto {
   id: string;
   fullName: string;
-  userName:string;
+  userName: string;
   email: string;
   role: Role;
   profileImage?: string;
   isActive?: boolean;
   isVerified?: boolean;
-  createdAt?:Date
+  createdAt?: Date;
 }

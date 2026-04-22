@@ -35,13 +35,7 @@ export class LikeRepository
       userId: new Types.ObjectId(userId),
       postId: { $in: postIds.map((id) => new Types.ObjectId(id)) }, // only checks these 10-12 ids
     });
-    console.log("userId:", userId);
-    console.log("postIds passed in:", postIds);
-    console.log("docs found:", docs.length);
-    console.log(
-      "returned postIds:",
-      docs.map((doc) => doc.postId.toString()),
-    );
+  
     return docs.map((doc) => doc.postId.toString());
   }
 

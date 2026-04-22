@@ -1,6 +1,6 @@
 import express from 'express';
 const router=express.Router();
-import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, bookingController, customServiceController, likeCommentController, postController, scheduleController } from '../../../infrastructure/config/di'
+import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, bookingController, customServiceController, followController, likeCommentController, postController, scheduleController } from '../../../infrastructure/config/di'
 import { uploadFields, uploadMediaArray, uploadSingle } from '../middleware/multer';
 import { validateBeauticianFiles } from '../validator/validateFileUpload';
 import { validatePaymentDetails,validateBeauticianData, validateAddCustomServiceInput, validateCreatePostInput } from '../middleware/validateBeauticianINput';
@@ -55,5 +55,8 @@ router.post('/:beauticianId/comment',authenticateUser,ValidateComment, likeComme
 router.get('/:beauticianId/comment',authenticateUser,likeCommentController.getHomeServiceComment)
 //dashboard
 router.get('/dashboard',authenticateBeautician,beauticianController.getDashboard)
+//follow
+router.post('/:beauticianId/follow',authenticateCustomer,followController.followBeautician)
+router.delete('/:beauticianId/follow',authenticateCustomer,followController.unFollowBeautician)
 
 export  default router

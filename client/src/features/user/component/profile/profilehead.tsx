@@ -1,6 +1,9 @@
 import React from "react";
 import type { ViewMode, ProfileData, ProfileActions } from "./types";
-import { BeauticianOwnButtons, CustomerOwnButtons } from "./profileActionButton";
+import {
+  BeauticianOwnButtons,
+  CustomerOwnButtons,
+} from "./profileActionButton";
 
 interface Props extends ProfileData, ProfileActions {
   viewMode: ViewMode;
@@ -19,6 +22,8 @@ export const ProfileHeader: React.FC<Props> = ({
   homeServiceCount,
   isVerified,
   role,
+  isFollowing,
+  followingCount,
   ...rest
 }) => {
   return (
@@ -26,7 +31,10 @@ export const ProfileHeader: React.FC<Props> = ({
       {/* Banner */}
       <div
         className="h-36 w-full"
-        style={{ background: "linear-gradient(135deg, #3d0a14 0%, #7c1f2e 60%, #b45309 100%)" }}
+        style={{
+          background:
+            "linear-gradient(135deg, #3d0a14 0%, #7c1f2e 60%, #b45309 100%)",
+        }}
       />
 
       <div className="px-5 pb-5">
@@ -36,17 +44,45 @@ export const ProfileHeader: React.FC<Props> = ({
           <div className="relative shrink-0">
             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-md bg-rose-500">
               {profileImg ? (
-                <img src={profileImg} alt={userName} className="w-full h-full object-cover" />
+                <img
+                  src={profileImg}
+                  alt={userName}
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-white text-4xl font-bold">
                   {userName?.charAt(0).toUpperCase()}
                 </div>
               )}
             </div>
+         {viewMode === "own-customer" && (
+  <div className="flex mt-4 border-y border-gray-100">
+    <button
+      onClick={rest.onFollowingClick}   // add this prop
+      className="py-3 pr-6 text-left hover:opacity-70 transition-opacity"
+    >
+      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
+        Following
+      </p>
+      <p className="text-[13px] font-semibold text-gray-800">
+        {followingCount ?? 0}
+      </p>
+    </button>
+  </div>
+)}
+ 
             {isVerified && (
               <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-teal-500 border-2 border-white flex items-center justify-center">
-                <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg
+                  className="w-2.5 h-2.5 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
             )}
@@ -55,11 +91,16 @@ export const ProfileHeader: React.FC<Props> = ({
           {/* Action buttons */}
           <div className="flex gap-2 pb-1">
             {!hideButtons && viewMode === "own-beautician" && (
-              <BeauticianOwnButtons {...rest} isVerified={isVerified} role={role} />
+              <BeauticianOwnButtons
+                {...rest}
+                isVerified={isVerified}
+                role={role}
+              />
             )}
             {!hideButtons && viewMode === "own-customer" && (
               <CustomerOwnButtons {...rest} />
             )}
+
             {!hideButtons && viewMode === "view-beautician" && (
               <>
                 <button
@@ -98,13 +139,19 @@ export const ProfileHeader: React.FC<Props> = ({
           <div className="flex mt-4 border-y border-gray-100">
             {shopName && (
               <div className="flex-1 py-3 pl-0 pr-4 border-r border-gray-100">
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">Shop</p>
-                <p className="text-[13px] font-semibold text-gray-800 truncate">{shopName}</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
+                  Shop
+                </p>
+                <p className="text-[13px] font-semibold text-gray-800 truncate">
+                  {shopName}
+                </p>
               </div>
             )}
             {(shopAddress || shopCity) && (
               <div className="flex-1 py-3 px-4 border-r border-gray-100">
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">Location</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
+                  Location
+                </p>
                 <p className="text-[13px] font-semibold text-gray-800 truncate">
                   {[shopAddress, shopCity].filter(Boolean).join(", ")}
                 </p>
@@ -112,13 +159,21 @@ export const ProfileHeader: React.FC<Props> = ({
             )}
             {yearsOfExperience !== undefined && (
               <div className="flex-1 py-3 px-4 border-r border-gray-100">
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">Experience</p>
-                <p className="text-[13px] font-semibold text-gray-800">{yearsOfExperience} yrs</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
+                  Experience
+                </p>
+                <p className="text-[13px] font-semibold text-gray-800">
+                  {yearsOfExperience} yrs
+                </p>
               </div>
             )}
             <div className="flex-1 py-3 px-4">
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">Home services</p>
-              <p className="text-[13px] font-semibold text-gray-800">{homeServiceCount ?? 0} listed</p>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
+                Home services
+              </p>
+              <p className="text-[13px] font-semibold text-gray-800">
+                {homeServiceCount ?? 0} listed
+              </p>
             </div>
           </div>
         )}
@@ -134,9 +189,13 @@ export const ProfileHeader: React.FC<Props> = ({
             </button>
             <button
               onClick={rest.onFollow}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold border text-rose-700 border-rose-200 bg-rose-50 hover:bg-rose-100 transition-all"
+              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-all ${
+                isFollowing
+                  ? "bg-rose-700 text-white border-rose-700 hover:bg-rose-800"
+                  : "text-rose-700 border-rose-200 bg-rose-50 hover:bg-rose-100"
+              }`}
             >
-              Follow
+              {isFollowing ? "Following" : "Follow"}
             </button>
             <button
               onClick={rest.onBookService}

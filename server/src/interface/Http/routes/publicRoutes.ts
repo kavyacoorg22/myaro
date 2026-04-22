@@ -1,5 +1,5 @@
 import {  NextFunction, Request, Response, Router } from "express"
-import { authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, likeCommentController, notificationController, optionalAuth, paymentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
+import { authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, followController, likeCommentController, notificationController, optionalAuth, paymentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
 import { validateChangePassword, ValidateComment } from "../middleware/validateUserInput";
@@ -60,5 +60,6 @@ router.get('/wallet',authenticateCustomer,paymentController.getUserRefundSummery
 router.get('/notifications',authenticateUser,notificationController.getNotifications)
 router.patch("/notifications",authenticateUser, notificationController.markAllNotificationRead)
 router.get('/bookings', authenticateCustomer, bookingController.getUserBookings)
-
+//follow
+router.get('/follow',authenticateCustomer,followController.getFollowingList)
 export default router

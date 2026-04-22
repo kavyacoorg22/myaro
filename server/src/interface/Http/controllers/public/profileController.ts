@@ -18,28 +18,26 @@ export class ProfileController {
     this._profileImageChangeUC = profileImageChange;
   }
 
-  ownProfile = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-  
-      const id = req.params.id || req.user?.id;
-      if (!id) {
-        throw new Error("User ID is required");
-      }
-      const user = await this._ownProfileUC.execute(id);
-      
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: userMessages.SUCCESS.PROFILE_FETCHED,
-        data: user,
-      });
-    } catch (error) {
-      next(error);
+ ownProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const targetId = req.params.id || req.user?.id; 
+    const requesterId = req.user?.id;               
+
+    if (!targetId) {
+      throw new Error("User ID is required");
     }
-  };
+
+    const user = await this._ownProfileUC.execute(targetId, requesterId);
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: userMessages.SUCCESS.PROFILE_FETCHED,
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
   changeProfileImage = async (
     req: Request,

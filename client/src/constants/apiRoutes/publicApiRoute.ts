@@ -54,4 +54,8 @@ export const publicApiRoutes = {
   getReplyComment: "/posts/:postId/comments/:commentId/replies",
   //get customer booking
   getCustomerBooking: "/bookings",
+  //follow
+  getFollowingList: "/follow",
+  followBeautician: "/beautician/:beauticianId/follow",
+  unfollowBeautician: "/beautician/:beauticianId/follow",
 };

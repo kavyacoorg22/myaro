@@ -9,8 +9,8 @@ export interface IOwnProfileOutput{
   profileImg?: string;
   isVerified?: boolean;
   role: string;
-  
-  
+  isFollowing?:boolean,
+  followingCount?:number,
  
   beauticianData?: {
     yearsOfExperience: number;

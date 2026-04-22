@@ -16,7 +16,8 @@ export interface ProfileData {
   shopAddress?:string,
   shopCity?:string,
   isVerified?:boolean
-  role?:UserRoleType| undefined
+  role?:UserRoleType| undefined,
+  isFollowing?:boolean
 
 
 }
@@ -33,4 +34,5 @@ export interface ProfileActions {
   onPosts?: () => void;
   onTips?: () => void;
   onRent?: () => void;
+  onFollowingClick?:()=>void
 }

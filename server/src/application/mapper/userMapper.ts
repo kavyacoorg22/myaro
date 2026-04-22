@@ -1,5 +1,6 @@
 import { Notification } from "../../domain/entities/notification";
 import { User } from "../../domain/entities/User";
+import { IFollowingListDto } from "../dtos/follow";
 import { INotificationDto } from "../dtos/notification";
 import { ILoginOutputDto, IUserDto } from "../dtos/user";
 
@@ -49,4 +50,13 @@ export function toNotificationDto(n: Notification): INotificationDto {
     isRead:    n.isRead,
     createdAt: n.createdAt.toISOString(),
   }
+}
+
+export function toFollowingListDto(user: User): IFollowingListDto {
+  return {
+    id: user.id,
+    userName: user.userName,
+    fullName: user.fullName,
+    profileImg: user.profileImg??'',
+  };
 }

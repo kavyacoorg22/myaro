@@ -182,6 +182,11 @@ import { NotificationCron} from "../cron/notificationCron";
 import { GetCustomerBookingsUseCase } from "../../application/usecases/booking/getCustomerBookingUseCase";
 import { GetBeauticianDashboardUseCase } from "../../application/usecases/beautician/beauticianDashboard";
 import { GetLikedUserListUseCase } from "../../application/usecases/public/like/getLikedUserUseCase";
+import { FollowBeauticianUseCase } from "../../application/usecases/public/follow/followBeautician";
+import { FollowRepository } from "../repositories/user/followRepository";
+import { UnFollowBeauticianUseCase } from "../../application/usecases/public/follow/unFollowUseCase";
+import { GetFollowingListUseCase } from "../../application/usecases/public/follow/getFollowlist";
+import { FollowController } from "../../interface/Http/controllers/public/followController";
 
 
 
@@ -243,7 +248,9 @@ const beauticianRepo=new mongoBeauticianRepository()
 export {registerController,preSignupController,otpController,completeSignupController,
   loginController,logoutController,refreshTokenController,resetPasswordController,googleLoginController};
 //profile
-const ownProfileUseCase=new OwnProfileUseCase(userRepo,beauticianRepo)
+const followRepo=new FollowRepository()
+
+const ownProfileUseCase=new OwnProfileUseCase(userRepo,beauticianRepo,followRepo)
 const profileImageChangeUseCase=new ProfileImageChangeUseCase(userRepo,fileUpload)
 export const profileController=new ProfileController(ownProfileUseCase,profileImageChangeUseCase)
 
@@ -450,3 +457,9 @@ export const dashboardController=new DashboardController(getDashBoardOverView,ge
 //cron
 const notificationCron=new NotificationCron(notificationRepo,socketEmitter,bookingRepo)
 notificationCron.start()
+
+//follow
+const followBeauticianUC=new FollowBeauticianUseCase(followRepo,userRepo)
+const unFollowBeauticianUC=new UnFollowBeauticianUseCase(followRepo)
+const getFollowingListUC=new GetFollowingListUseCase(followRepo,userRepo)
+export const followController=new FollowController(followBeauticianUC,unFollowBeauticianUC,getFollowingListUC)
