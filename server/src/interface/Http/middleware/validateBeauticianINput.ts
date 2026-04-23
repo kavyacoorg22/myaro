@@ -56,7 +56,14 @@ export const validateBeauticianData = (
         );
       }
     }
-    const files = req.files as any;
+type MulterFiles = {
+  portfolioImage?: Express.Multer.File[];
+  certificateImage?: Express.Multer.File[];
+  shopPhotos?: Express.Multer.File[];
+  shopLicence?: Express.Multer.File[];
+};
+
+const files = req.files as MulterFiles;
     
       const beauticianFiles: BeauticianFiles = {
       portfolioImage: files?.portfolioImage ?? [],
@@ -259,7 +266,7 @@ export const validateEditBeauticianProfile = (
 
     
     // BANK DETAILS 
-    const bankData: any = {};
+   const bankData: Partial<IBeauticianEditProfileInput> = {};
 
     if (accountHolderName !== undefined) {
       if (typeof accountHolderName !== "string" || accountHolderName.trim().length < 2) {

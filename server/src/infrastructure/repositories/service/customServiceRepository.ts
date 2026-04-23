@@ -1,3 +1,4 @@
+import { FilterQuery } from "mongoose";
 import { CustomService } from "../../../domain/entities/customService";
 import { ICustomServiceRepository } from "../../../domain/repositoryInterface/ICustomService";
 import {
@@ -29,7 +30,7 @@ export class CustomServiceRepository
   }
 
   async fetchAllService(
-    query: any,
+    query: FilterQuery<CustomService>,
     skip: number,
     limit: number,
   ): Promise<{ data: CustomService[]; total: number }> {
@@ -61,7 +62,7 @@ export class CustomServiceRepository
   }
 
   protected map(doc: CustomServiceDoc): CustomService {
-    const base = super.map(doc) as any;
+    const base = super.map(doc)
     return {
       id: base.id,
       type: doc.type,

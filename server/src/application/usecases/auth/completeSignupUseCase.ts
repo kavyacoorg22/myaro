@@ -2,16 +2,20 @@ import { ConflictError } from "../../../domain/errors/systemError";
 import { verifySignupToken } from "../../../services/tokenService";
 import { IVerifyOtpUseCase } from "../../interface/auth/IVerifyOtpUseCase";
 import { IRegisterUserUseCase } from "../../interface/auth/IRegisterUserUseCase";
-import { ICompleteSignupInput, IRegisterInput, IResponse } from "../../interfaceType/authtypes";
+import {
+  ICompleteSignupInput,
+  IRegisterInput,
+  IResponse,
+} from "../../interfaceType/authtypes";
 import { ICompleteSignupUseCase } from "../../interface/auth/ICompleteSignupUseCase";
 
 export class CompleteSignupUseCase implements ICompleteSignupUseCase {
   constructor(
     private _verifyOtpUC: IVerifyOtpUseCase,
-    private _registerUserUC: IRegisterUserUseCase
+    private _registerUserUC: IRegisterUserUseCase,
   ) {}
 
-  async execute(input:ICompleteSignupInput):Promise<IResponse> {
+  async execute(input: ICompleteSignupInput): Promise<IResponse> {
     const { signupToken, otp } = input;
     if (!signupToken) throw new Error("Missing signup token");
     if (!otp) throw new Error("Missing otp");
@@ -20,14 +24,20 @@ export class CompleteSignupUseCase implements ICompleteSignupUseCase {
     if (!payload || typeof payload !== "object" || !("email" in payload)) {
       throw new Error("Invalid or expired signup token");
     }
+    type SignupPayload = {
+      email: string;
+      userName: string;
+      fullName?: string;
+      password: string;
+    };
 
-    const email = (payload as any).email as string;
+    const email = (payload as SignupPayload).email as string;
 
     await this._verifyOtpUC.execute({ email, signupToken, otp });
-
-    const userName = (payload as any).userName as string;
-    const fullName = (payload as any).fullName as string;
-    const password = (payload as any).password as string;
+    const typedPayload = payload as SignupPayload;
+    const userName = typedPayload.userName;
+    const fullName = typedPayload.fullName ?? "";
+    const password = typedPayload.password;
 
     if (!password) {
       throw new Error("Signup token missing password");
@@ -42,11 +52,12 @@ export class CompleteSignupUseCase implements ICompleteSignupUseCase {
 
     try {
       await this._registerUserUC.execute(registerInput);
-      return { success: true, message:"User created" };
+      return { success: true, message: "User created" };
     } catch (err) {
       if (err instanceof ConflictError) throw err;
 
-      if ((err as any)?.code === 11000) {
+      const mongoError = err as { code?: number };
+      if (mongoError.code === 11000) {
         throw new ConflictError("Email or username already taken");
       }
       throw err;

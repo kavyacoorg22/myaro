@@ -31,11 +31,11 @@ export class CustomServiceController {
     approveCustomServiceUC: IApproveCustomServiceUseCase,
     rejectCustomServiceUC: IRejectCustomServiceUseCase,
   ) {
-    ((this._addCustomServiceUC = addCustomService),
-      (this._getAllCustomServiceUC = getAllCustomServiceUC),
-      (this._getCustomServiceDetailUC = getCustomServiceDetailUC),
-      (this._approveCustomServiceUC = approveCustomServiceUC),
-      (this._rejectCustomServiceUC = rejectCustomServiceUC));
+    this._addCustomServiceUC = addCustomService
+      this._getAllCustomServiceUC = getAllCustomServiceUC
+      this._getCustomServiceDetailUC = getCustomServiceDetailUC
+      this._approveCustomServiceUC = approveCustomServiceUC
+      this._rejectCustomServiceUC = rejectCustomServiceUC
   }
   addCustomService = async (
     req: Request,

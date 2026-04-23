@@ -54,9 +54,11 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
       if (!user.googleId) {
         user = await this._userRepo.update(user.id!, { googleId });
       }
+      if (!user) throw new Error("User not found");
+
 
       if (picture && picture !== user?.profileImg) {
-        user = await this._userRepo.update(user?.id!, { profileImg: picture });
+        user = await this._userRepo.update(user.id, { profileImg: picture });
       }
     } else {
       const userRole = role || UserRole.CUSTOMER;

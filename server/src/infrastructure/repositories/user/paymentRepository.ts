@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import { Payment } from "../../../domain/entities/payment";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { PaymentDoc, PaymentModel } from "../../database/models/user/paymentModal";
@@ -75,7 +75,7 @@ async findById(id: string): Promise<Payment | null> {
   limit: number;
   status?: PaymentStatus;
 }): Promise<{ payments: Payment[]; total: number }> {
-  const query: any = {};
+const query: FilterQuery<PaymentDoc> = {};
   if (status) query.status = status;
 
   const skip = (page - 1) * limit;

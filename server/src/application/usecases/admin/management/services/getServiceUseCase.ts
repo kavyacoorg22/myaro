@@ -1,4 +1,3 @@
-import { Service } from "../../../../../domain/entities/service";
 import { AppError } from "../../../../../domain/errors/appError";
 import { IServiceRepository } from "../../../../../domain/repositoryInterface/IServiceRepository";
 import { generalMessages } from "../../../../../shared/constant/message/generalMessage";

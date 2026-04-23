@@ -6,7 +6,6 @@ import { User } from "../../domain/entities/User";
 import { getTimeAgo } from "../../utils/schedule/dateHelper";
 import { BeauticianDashboardDto, ChartPointDto, DashboardStatsDto, EarningsSummaryDto, IBeauticianDTO, IBeauticianProfileDTO, IBeauticianViewEditProfileDTO, IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto, ISearchBeauticianResultDto, IUpdateRegistrationDTO, IVerificationStatusDto, RecentPayoutDto } from "../dtos/beautician";
 import { IRecentSearchDto } from "../dtos/user";
-import { IGetBeauticianPostOutPut } from "../interfaceType/beauticianType";
 
 
 export function toVerificationStatusOutputDto(beautician:Beautician): IVerificationStatusDto {

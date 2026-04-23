@@ -65,7 +65,7 @@ async findById(id: string): Promise<Service | null> {
 
   
 protected map(doc:ServiceDoc):Service{
- const base=super.map(doc) as any
+ const base=super.map(doc)
  return{
   id:base.id,
   name:doc.name,

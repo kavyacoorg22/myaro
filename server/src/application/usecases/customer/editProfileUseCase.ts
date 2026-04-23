@@ -1,6 +1,5 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
-import { authMessages } from "../../../shared/constant/message/authMessages";
 import { generalMessages } from "../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { ICustomerEditProfileUseCase } from "../../interface/customer/IEditProfileUseCase";

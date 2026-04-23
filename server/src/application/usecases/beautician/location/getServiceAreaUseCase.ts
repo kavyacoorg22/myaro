@@ -1,4 +1,3 @@
-import { IBeauticianRepository } from "../../../../domain/repositoryInterface/IBeauticianRepository";
 import { IServiceAreaRepository } from "../../../../domain/repositoryInterface/IBeauticianServiceAreaRepository";
 import { IGetServiceAreaUseCase } from "../../../interface/beautician/location/IGetServiceAreaUseCase";
 import { IGetServiceAreaResponse } from "../../../interfaceType/beauticianType";

@@ -54,7 +54,7 @@ export class ServiceAreaRepository
   }
 
   protected map(doc: ServiceAreaDoc): ServiceArea {
-    const base = super.map(doc) as any;
+    const base = super.map(doc)
     return {
       id: base.id,
       beauticianId: doc.beauticianId.toString(),

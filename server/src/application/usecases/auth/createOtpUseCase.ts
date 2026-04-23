@@ -1,5 +1,4 @@
 import { generateOtp } from "../../../utils/otpUtils";
-import { NodemailerOtpService } from "../../../infrastructure/service/sendEmail";
 import { IOtpService } from "../../serviceInterface/IOtpService";
 import { ICreateOtpUseCase } from "../../interface/auth/ICreateOtpUseCase";
 import { ISendOtpInput } from "../../interfaceType/authtypes";

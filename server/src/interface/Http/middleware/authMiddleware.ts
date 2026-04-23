@@ -18,6 +18,14 @@ declare module "express-serve-static-core" {
   }
 }
 
+// ✅ Added type (only typing fix)
+type AccessTokenPayload = {
+  userId: string;
+  email: string;
+  role: UserRole;
+  isActive: boolean;
+};
+
 export const authMiddleware =
   (
     jwtService: ITokenService,
@@ -25,12 +33,6 @@ export const authMiddleware =
     allowedRoles: Array<"customer" | "beautician" | "admin">,
   ): RequestHandler =>
   async (req: Request, res: Response, next: NextFunction) => {
-    const token =
-      req.cookies.accessToken ||
-      req.cookies.access_token ||
-      req.cookies.token ||
-      req.cookies.jwt;
-
     try {
       const token =
         req.cookies.accessToken ||
@@ -53,27 +55,38 @@ export const authMiddleware =
         );
       }
 
-      let payload;
+      // ✅ FIXED (removed implicit any)
+      let payload: AccessTokenPayload | null;
+
       try {
-        payload = jwtService.verifyAccessToken(token);
-      } catch (jwtError: any) {
-        if (jwtError.name === "TokenExpiredError") {
-          throw new AppError(
-            authMessages.ERROR.TOKEN_EXPIRED,
-            HttpStatus.UNAUTHORIZED,
-          );
-        }
-        if (jwtError.name === "JsonWebTokenError") {
-          throw new AppError(
-            authMessages.ERROR.INVALID_TOKEN,
-            HttpStatus.UNAUTHORIZED,
-          );
-        }
-        if (jwtError.name === "NotBeforeError") {
-          throw new AppError(
-            authMessages.ERROR.INVALID_TOKEN,
-            HttpStatus.UNAUTHORIZED,
-          );
+payload = jwtService.verifyAccessToken(token) as AccessTokenPayload;      } catch (jwtError: unknown) { // ✅ removed `any`
+        if (
+          typeof jwtError === "object" &&
+          jwtError !== null &&
+          "name" in jwtError
+        ) {
+          const errorName = (jwtError as { name?: string }).name;
+
+          if (errorName === "TokenExpiredError") {
+            throw new AppError(
+              authMessages.ERROR.TOKEN_EXPIRED,
+              HttpStatus.UNAUTHORIZED,
+            );
+          }
+
+          if (errorName === "JsonWebTokenError") {
+            throw new AppError(
+              authMessages.ERROR.INVALID_TOKEN,
+              HttpStatus.UNAUTHORIZED,
+            );
+          }
+
+          if (errorName === "NotBeforeError") {
+            throw new AppError(
+              authMessages.ERROR.INVALID_TOKEN,
+              HttpStatus.UNAUTHORIZED,
+            );
+          }
         }
 
         throw new AppError(
@@ -89,7 +102,6 @@ export const authMiddleware =
         );
       }
 
-      //check us4r blocked
       const userBlocked = await blacklistService.isUserBlocked(payload.userId);
       if (userBlocked) {
         throw new AppError(
@@ -145,18 +157,16 @@ export const optionalAuthMiddleware =
         req.cookies.token ||
         req.cookies.jwt;
 
-      // No token = guest, just continue
       if (!token) return next();
 
-      // Blacklisted = treat as guest
       const tokenBlacklisted = await blacklistService.isTokenBlacklisted(token);
       if (tokenBlacklisted) return next();
 
-      let payload;
+      // ✅ FIXED (removed implicit any)
+      let payload: AccessTokenPayload | null;
+
       try {
-        payload = jwtService.verifyAccessToken(token);
-      } catch {
-        // Expired or invalid = treat as guest
+payload = jwtService.verifyAccessToken(token) as AccessTokenPayload;      } catch {
         return next();
       }
 
@@ -164,13 +174,11 @@ export const optionalAuthMiddleware =
         return next();
       }
 
-      // Blocked user = treat as guest
       const userBlocked = await blacklistService.isUserBlocked(payload.userId);
       if (userBlocked) return next();
 
       if (payload.isActive === false) return next();
 
-      // ✅ Valid user — attach and continue
       req.user = {
         id: payload.userId,
         email: payload.email,
@@ -180,7 +188,6 @@ export const optionalAuthMiddleware =
 
       next();
     } catch (err) {
-      // Any unexpected error — just treat as guest, never block the request
-      next();
+      next(err);
     }
   };

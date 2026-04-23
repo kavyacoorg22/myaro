@@ -57,7 +57,7 @@ export class CategoryRepository extends GenericRepository<Category,CategoryDoc> 
 
 
   protected map(doc:CategoryDoc):Category{
-   const base=super.map(doc) as any
+   const base=super.map(doc)
    return {
     id:base.id,
     name:doc.name,

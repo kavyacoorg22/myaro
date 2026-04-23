@@ -111,8 +111,7 @@ export function validateCreateBooking(
 
   const rawPhone = body.phoneNumber.trim();
 
-  // Strip optional leading + and country code, then check digits
-  const digitsOnly = rawPhone.replace(/^\+?(\d{1,3})?/, "").replace(/\D/g, "");
+
 
   // Full digit string (with country code) for format check
   const allDigits = rawPhone.replace(/\D/g, "");
@@ -140,7 +139,7 @@ export function validateCreateBooking(
     return res.status(400).json({ error: "slot is required" });
   }
 
-  const { date, time, startMinutes, endMinutes } = body.slot;
+  const { date, time } = body.slot;
 
   // date
   if (!date) {

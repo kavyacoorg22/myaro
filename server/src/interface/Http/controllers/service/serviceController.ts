@@ -18,10 +18,10 @@ export class ServiceController {
     getAllServiceUC: IGetServicesUseCase,
     toggleActiveStatusUC: ITogggleActiveStatusUseCase,
   ) {
-    ((this._addServiceUC = addServiceUC),
-      (this._updateServiceUC = updateServiceUC),
-      (this._getAllServiceUC = getAllServiceUC),
-      (this._toggleActiveStatusUC = toggleActiveStatusUC));
+    this._addServiceUC = addServiceUC
+      this._updateServiceUC = updateServiceUC
+      this._getAllServiceUC = getAllServiceUC
+      this._toggleActiveStatusUC = toggleActiveStatusUC
   }
 
   addService = async (req: Request, res: Response, next: NextFunction) => {

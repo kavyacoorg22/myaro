@@ -3,7 +3,7 @@ import { User } from "../../domain/entities/User";
 import { UserModel, UserDoc } from "../database/models/user/UserModel";
 import { SortFilter } from "../../domain/enum/sortFilterEnum";
 import { UserRole, UserRoleFilter } from "../../domain/enum/userEnum";
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import { GenericRepository } from "./genericRepository";
 import { IToggleActiveStatusRepository } from "../../domain/repositoryInterface/IToggleActiveRepository";
 import { UserGrowthDto } from "../../application/dtos/repo";
@@ -71,8 +71,7 @@ export class MongoUserRepository
     skip: number;
     limit: number;
   }): Promise<User[]> {
-    const filter: any = {};
-
+  const filter: FilterQuery<User> = {};
     if (params.role && params.role !== "all") {
       filter.role = params.role;
     }
@@ -96,8 +95,7 @@ export class MongoUserRepository
     search?: string;
     role?: UserRoleFilter;
   }): Promise<number> {
-    const filter: any = {};
-
+  const filter: FilterQuery<User> = {};
     if (params?.role && params.role !== "all") {
       filter.role = params.role;
     }
@@ -153,7 +151,7 @@ export class MongoUserRepository
       return null;
     }
 
-    const updateData: any = { ...data };
+    const updateData: Partial<User> = { ...data };
 
     delete updateData.id;
     delete updateData.createdAt;
@@ -289,7 +287,7 @@ export class MongoUserRepository
     });
   }
   protected map(doc: UserDoc): User {
-    const base = super.map(doc) as any;
+    const base = super.map(doc);
     return {
       id: base.id,
       email: doc.email,

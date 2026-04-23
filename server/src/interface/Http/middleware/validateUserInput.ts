@@ -109,8 +109,7 @@ export function validateChangePassword(
   res: Response,
   next: NextFunction,
 ) {
-  console.log(req.body);
-  const { oldPassword, newPassword, confirmPassword } = req.body.input;
+  const {  newPassword, confirmPassword } = req.body.input;
   const regexPassword =
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
   if (!regexPassword.test(newPassword)) {

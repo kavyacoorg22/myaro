@@ -28,8 +28,15 @@ export class GetAllCustomServiceUSeCase implements IGetAllCustomServiceUseCase {
     filter: CustomServiceFilter,
   ): Promise<IGetAllCustomServiceResponse> {
     const skip = (page - 1) * limit;
-
-    const query: any = {
+    type QueryType = {
+      status: CustomServiceStatus;
+      createdAt?: {
+        $gte?: Date;
+        $lte?: Date;
+        $lt?: Date;
+      };
+    };
+    const query: QueryType = {
       status: CustomServiceStatus.PENDING,
     };
 

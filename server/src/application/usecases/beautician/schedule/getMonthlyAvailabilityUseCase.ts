@@ -1,6 +1,4 @@
 import { ScheduleType } from "../../../../domain/enum/beauticianEnum";
-import { IReccuringScheduleRepository } from "../../../../domain/repositoryInterface/beautician/IRecurringScheduleRepository";
-import { IScheduleRepository } from "../../../../domain/repositoryInterface/beautician/IScheduleRepository";
 import { IGetmonthlyAvailabilityDto } from "../../../dtos/beautician";
 import { IGetAvailbilityUseCase } from "../../../interface/beautician/schedule/IGetAvailabilityUseCase";
 import { IGetMonthlyAvailabilityUSeCase } from "../../../interface/beautician/schedule/IGetMonthlyAvailabilityUseCase";

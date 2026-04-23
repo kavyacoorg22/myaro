@@ -1,6 +1,5 @@
 import { Server as HttpServer } from "http";
 import { Server as SocketServer } from "socket.io";
-import { SocketIOEmitter } from "../service/socketIOEmitter";
 import { registerChatHandlers } from "./chatSocketHandler";
 import { registerUserHandlers } from "./userSocketHandler";
 import { buildChatUseCases, socketEmitter } from "../config/di";

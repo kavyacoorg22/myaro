@@ -18,7 +18,8 @@ export class UpsertBeauticianService implements IUpsertBeauticianServiceUseCase 
     categoryRepo: ICategoryRepository,
   ) {
     this._beauticianServiceRepo = beauticianServiceRepo;
-    ((this._serviceRepo = serviceRepo), (this._categoryRepo = categoryRepo));
+    this._serviceRepo = serviceRepo
+    this._categoryRepo = categoryRepo;
   }
 
   async execute(input: IUpsertBeauticianServiceRequest): Promise<void> {

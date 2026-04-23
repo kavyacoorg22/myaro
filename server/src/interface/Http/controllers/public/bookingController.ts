@@ -154,6 +154,7 @@ export class BookingController{
    }
   }
   lockSlot=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+    try{
    const userId = req.user?.id;
     const { beauticianId, date, startTime, endTime } = req.body;
     if(!userId)
@@ -169,6 +170,10 @@ export class BookingController{
       message: "Slot reserved",
       data: result,  
     });
+  }catch(err)
+  {
+    next(err)
+  }
   }
    
   requestRefund = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

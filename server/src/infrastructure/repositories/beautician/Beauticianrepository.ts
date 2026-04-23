@@ -9,6 +9,7 @@ import {
 } from "../../database/models/beautician/BeauticianModel";
 import { GenericRepository } from "../genericRepository";
 import { ObjectId } from "mongodb";
+import { FilterQuery } from "mongoose";
 
 export function toObjectId(id: string): Types.ObjectId | null {
   return Types.ObjectId.isValid(id) ? new Types.ObjectId(id) : null;
@@ -44,7 +45,7 @@ export class mongoBeauticianRepository
     skip: number;
     limit: number;
   }): Promise<Beautician[]> {
-    const filter: any = {};
+     const filter: FilterQuery<Beautician> = {};
     if (params.verificationStatus && params.verificationStatus !== "all") {
       filter.verificationStatus = params.verificationStatus;
     }
@@ -63,7 +64,7 @@ export class mongoBeauticianRepository
   async countAll(params?: {
     verificationStatus?: VerificationStatusFilter;
   }): Promise<number> {
-    const filter: any = {};
+     const filter: FilterQuery<Beautician> = {};
 
     if (params?.verificationStatus && params.verificationStatus !== "all") {
       filter.verificationStatus = params.verificationStatus;
@@ -187,7 +188,7 @@ export class mongoBeauticianRepository
    }
   
   protected map(doc: BeauticianDoc): Beautician {
-    const base = super.map(doc) as any;
+    const base = super.map(doc)
     return {
       id: base.id,
       userId: doc.userId.toString(),

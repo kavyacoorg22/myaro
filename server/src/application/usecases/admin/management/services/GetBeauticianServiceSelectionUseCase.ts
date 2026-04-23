@@ -16,15 +16,15 @@ export class GetBeauticianServiceSelectionUseCase implements IGetBeauticianServi
   private _categoryRepo: ICategoryRepository;
   private _beauticianServiceRepo: IBeauticianServiceRepository;
 
-  constructor(
-    serverRepo: IServiceRepository,
-    categoryRepo: ICategoryRepository,
-    beauticianServiceRepo: IBeauticianServiceRepository,
-  ) {
-    ((this._serviceRepo = serverRepo),
-      (this._categoryRepo = categoryRepo),
-      (this._beauticianServiceRepo = beauticianServiceRepo));
-  }
+constructor(
+  serviceRepo: IServiceRepository,
+  categoryRepo: ICategoryRepository,
+  beauticianServiceRepo: IBeauticianServiceRepository,
+) {
+  this._serviceRepo = serviceRepo;
+  this._categoryRepo = categoryRepo;
+  this._beauticianServiceRepo = beauticianServiceRepo;
+}
 
   async execute(
     beauticianId: string,

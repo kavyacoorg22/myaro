@@ -1,4 +1,3 @@
-import { IPostRepository } from "../../../../domain/repositoryInterface/beautician/IPostRepository";
 import { IUserRepository } from "../../../../domain/repositoryInterface/IUserRepository";
 import { CommentRepository } from "../../../../infrastructure/repositories/user/commetRepository";
 import { IGetPostCommentsDto } from "../../../dtos/likeCommet";

@@ -1,4 +1,4 @@
-import { UserRole } from "../../../../domain/enum/userEnum";
+import { PostType, UserRole } from "../../../../domain/enum/userEnum";
 import { AppError } from "../../../../domain/errors/appError";
 import { IPostRepository } from "../../../../domain/repositoryInterface/beautician/IPostRepository";
 import { IUserRepository } from "../../../../domain/repositoryInterface/IUserRepository";
@@ -52,7 +52,7 @@ export class CreatePostUseCase implements ICreatePostUSeCase {
     await this._postRepo.create({
       beauticianId,
       description: input.description,
-      postType: input.postType as any,
+      postType: input.postType as PostType,
       media: finalMediaUrls,
       location: input.location,
       likesCount: 0,

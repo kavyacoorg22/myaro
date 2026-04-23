@@ -155,13 +155,14 @@ export class BeauticianController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const {id,role} = req?.user!;
-      if (!id) {
-        throw new AppError(
-          authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
+       if (!req.user) {
+      throw new AppError(
+        authMessages.ERROR.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+      const {id,role} = req.user;
+     
         if (role === "customer") {
     const result = await this._customerViewProfileUseCase.execute(id);
      res.status(HttpStatus.OK).json({ data: result });

@@ -4,7 +4,7 @@ import { CommentDoc } from "../../database/models/user/CommentModal";
 import { GenericRepository } from "../genericRepository";
 import { CommentModal } from "../../database/models/user/CommentModal";
 import { Types } from "mongoose";
-import { CommentType, PostType } from "../../../domain/enum/userEnum";
+import { CommentType } from "../../../domain/enum/userEnum";
 
 export class CommentRepository extends GenericRepository<Comment,CommentDoc> implements ICommentRepository{
 

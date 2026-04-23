@@ -31,7 +31,7 @@ export class PaymentController{
       })
     }catch(err)
     {
-      next()
+      next(err)
     }
   }
 
@@ -48,7 +48,7 @@ export class PaymentController{
     res.status(HttpStatus.OK).json({ success: true, message: "payment verified",data:result.data });
     }catch(err)
     {
-      next()
+      next(err)
     }
   }
   processRefund=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{

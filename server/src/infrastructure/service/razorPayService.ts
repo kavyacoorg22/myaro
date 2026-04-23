@@ -3,6 +3,7 @@ import { IPaymentService } from "../../application/serviceInterface/IPaymentServ
 import { appConfig } from "../config/config";
 import { RazorpayOrder, RazorpayVerifyInput } from "../../application/interfaceType/paymentType";
 import crypto from "crypto";
+import logger from "../../utils/logger";
 
 export class RazorPayService implements IPaymentService{
   private razorPay:Razorpay
@@ -53,6 +54,7 @@ async releasePayout(
   amount: number
 ): Promise<{ id: string; status: string }> {
   await new Promise(res => setTimeout(res, 800));// dealayy addedd just to represent realism.......
+  logger.log(beauticianId,amount)
   return {
     id: "payout_demo_" + Date.now(),
     status: "processed",

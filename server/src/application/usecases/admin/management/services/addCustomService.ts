@@ -23,9 +23,9 @@ export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase
     categoryRepo: ICategoryRepository,
     beauticianServiceRepo: IBeauticianServiceRepository,
   ) {
-    ((this._customServiceRepo = customServiceRepo),
-      (this._categoryRepo = categoryRepo));
-    this._beauticianServiceRepo = beauticianServiceRepo;
+    this._customServiceRepo = customServiceRepo
+      this._categoryRepo = categoryRepo
+    this._beauticianServiceRepo = beauticianServiceRepo
   }
   async execute(input: IAddCustomServiceRequest): Promise<void> {
     const { beauticianId, category,service} = input;

@@ -42,7 +42,7 @@ router.get('/chat/:chatId/messages',authenticateUser,chatController.getMessageBy
 //booking
 router.post('/bookings/lock-slot', authenticateCustomer, bookingController.lockSlot);
 router.get('/bookings/:bookingId',authenticateUser,bookingController.getBookingById)
-router.post('/bookings',validateCreateBooking,authenticateCustomer,bookingController.createBooking),
+router.post('/bookings',validateCreateBooking,authenticateCustomer,bookingController.createBooking)
 router.patch('/bookings/:bookingId/status',authenticateUser,bookingController.updateBookingStatus)
 
 //payment

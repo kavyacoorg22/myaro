@@ -6,7 +6,6 @@ import { AppError } from "../../../domain/errors/appError";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
-import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 import { BookingHistoryService } from "../../services/bookingHistoryService";
 import { BookingValidatorService } from "../../services/bookingValidatorService";
 import { PaymentLookupService } from "../../services/paymentLookupService";

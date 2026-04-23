@@ -32,10 +32,10 @@ export const appConfig = {
             'SIGNUP_TOKEN_SECRET',
             process.env.JWT_SECRET,
         ),
-        accessTokenExpireTime:required(
+        accessTokenExpireTime:Number(required(
             'ACCESS_TOKEN_EXPIRETIME',
        process.env.ACCESS_TOKEN_EXPIRETIME
-        ) ,
+        )) ,
          refreshTokenExpireTime:required(
             'REFRESH_TOKEN_EXPIRETIME',
        process.env.REFRESH_TOKEN_EXPIRETIME

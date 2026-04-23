@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, model, Schema, Types } from "mongoose";
+import mongoose, { Document, Model, Schema, Types } from "mongoose";
 import { MessageType } from "../../../../domain/enum/messageEnum";
 import { BookingStatus } from "../../../../domain/enum/bookingEnum";
 

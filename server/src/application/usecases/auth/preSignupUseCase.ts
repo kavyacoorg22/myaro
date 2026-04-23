@@ -24,11 +24,15 @@ export class PreSignupUseCase implements IPresignupUseCase {
       throw new ConflictError("User Name already taken");
     }
 
-    const signupToken = jwt.sign(
-      { email, userName, fullName, password },
-      this.jwtSecret,
-      { expiresIn: `${appConfig.jwt.accessTokenExpireTime}m` } as any
-    );
+  const options: SignOptions = {
+  expiresIn: `${appConfig.jwt.accessTokenExpireTime}m`,
+};
+
+const signupToken = jwt.sign(
+  { email, userName, fullName, password },
+  this.jwtSecret,
+  options
+);
 
     return { signupToken };
   }

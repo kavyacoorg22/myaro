@@ -1,5 +1,4 @@
 import { RevenueStatsDto } from "../../../../application/dtos/repo";
-import { Booking } from "../../../entities/booking";
 import { Payment } from "../../../entities/payment";
 import { PaymentStatus } from "../../../enum/paymentEnum";
 

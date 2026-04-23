@@ -1,5 +1,4 @@
 import { Booking } from "../../domain/entities/booking";
-import { BookingHistory } from "../../domain/entities/bookingHistory";
 import { Payment } from "../../domain/entities/payment";
 import { Payout } from "../../domain/entities/payout";
 import { Refund } from "../../domain/entities/refund";
@@ -150,7 +149,7 @@ export function toAdminRefundDetail(
 }
 
 
-const formatINR = (amount: number): string => {
+export const formatINR = (amount: number): string => {
   if (amount >= 100_000) return `₹${(amount / 100_000).toFixed(1)}L`;
   if (amount >= 1_000)   return `₹${Math.round(amount / 1_000)}k`;
   return `₹${amount}`;

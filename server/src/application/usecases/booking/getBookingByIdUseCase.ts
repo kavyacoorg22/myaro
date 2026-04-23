@@ -1,4 +1,3 @@
-import { Booking } from "../../../domain/entities/booking";
 import { AppError } from "../../../domain/errors/appError";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";

@@ -1,9 +1,9 @@
 import express from 'express';
 const router=express.Router();
 import { authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, beauticianServiceController, bookingController, customServiceController, followController, likeCommentController, postController, scheduleController } from '../../../infrastructure/config/di'
-import { uploadFields, uploadMediaArray, uploadSingle } from '../middleware/multer';
+import { uploadFields, uploadSingle } from '../middleware/multer';
 import { validateBeauticianFiles } from '../validator/validateFileUpload';
-import { validatePaymentDetails,validateBeauticianData, validateAddCustomServiceInput, validateCreatePostInput } from '../middleware/validateBeauticianINput';
+import { validatePaymentDetails,validateBeauticianData, validateAddCustomServiceInput } from '../middleware/validateBeauticianINput';
 import { validateAddAvailability, validateRecurringSchedule } from '../validator/validateScheduleInput';
 import { validatePamphletUpload } from '../validator/valiadtePampletUpload';
 import { ValidateComment } from '../middleware/validateUserInput';

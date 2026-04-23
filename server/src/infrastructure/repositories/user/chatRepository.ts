@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
-import { IGetChatByParticipants } from "../../../application/interface/chat/IGetChatByParticipants";
 import { IGetChatByParticipantsInput } from "../../../application/interfaceType/chatType";
 import { Chat } from "../../../domain/entities/chat";
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
 import { ChatDoc, ChatModel } from "../../database/models/user/chatModal";
 import { GenericRepository } from "../genericRepository";
+import { FilterQuery } from "mongoose";
 
 export class ChatRepository
   extends GenericRepository<Chat, ChatDoc>
@@ -60,8 +60,9 @@ export class ChatRepository
     limit = 21,
     cursor?: string,
   ): Promise<Chat[]> {
-    const query: any = { participants: new Types.ObjectId(userId) };
-
+const query: FilterQuery<ChatDoc> = {
+  participants: new Types.ObjectId(userId),
+};
     if (cursor) {
       query.lastMessageAt = { $lt: new Date(cursor) };
     }

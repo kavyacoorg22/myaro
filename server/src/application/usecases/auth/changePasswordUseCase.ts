@@ -25,7 +25,7 @@ export class ChangePasswordUseCase implements IChangePasswordUseCase{
   }
 
   
-    let isPassswordCorrect=await bcrypt.compare(oldPassword,user?.passwordHash)
+    const isPassswordCorrect=await bcrypt.compare(oldPassword,user?.passwordHash)
      
     if(!isPassswordCorrect)
     {

@@ -1,5 +1,5 @@
 import { Slot } from "../../domain/entities/schedule";
-import { ScheduleEndType, scheduleSourceType, ScheduleType } from "../../domain/enum/beauticianEnum";
+import { ScheduleEndType, ScheduleType } from "../../domain/enum/beauticianEnum";
 import { IGetAvailabilitySlotDto, IGetmonthlyAvailabilityDto } from "../dtos/beautician";
 
 export interface IAddAvailabilityRequest {

@@ -1,4 +1,4 @@
-import { IGetHomeServiceCommentsOutPut, IGetPostCommentsOutPut } from "../../../interfaceType/commetLike";
+import { IGetHomeServiceCommentsOutPut } from "../../../interfaceType/commetLike";
 
 
 export interface IGetHomeServiceCommetsUseCase{

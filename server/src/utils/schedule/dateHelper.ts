@@ -55,7 +55,9 @@ export function timeToMinutes(time: string): number {
 
   // 12hr format: "09:00 AM", "06:00 PM"
   const [timePart, modifier] = trimmed.split(' ');
-  let [hours, minutes] = timePart.split(':').map(Number);
+
+let hours = Number(timePart.split(':')[0]);   
+const minutes = Number(timePart.split(':')[1]); 
   if (modifier === 'PM' && hours !== 12) hours += 12;
   if (modifier === 'AM' && hours === 12) hours = 0;
   return hours * 60 + minutes;

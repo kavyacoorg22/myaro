@@ -3,7 +3,7 @@ import { IPostRepository } from "../../../../domain/repositoryInterface/beautici
 import { ILikeRepository } from "../../../../domain/repositoryInterface/User/ILikeRepository";
 import { IGetBeauticianPostUSeCase } from "../../../interface/beautician/post/IGetbeauticianPostUseCase";
 import { IGetBeauticianPostOutPut } from "../../../interfaceType/beauticianType";
-import { toGetBeauticianPostDto, toGetFeedDto } from "../../../mapper/beauticianMapper";
+import { toGetBeauticianPostDto } from "../../../mapper/beauticianMapper";
 
 
 export class GetBeauticianPostUseCase implements IGetBeauticianPostUSeCase{

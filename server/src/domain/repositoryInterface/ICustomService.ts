@@ -1,3 +1,4 @@
+import { FilterQuery } from "mongoose";
 import { CustomService } from "../entities/customService";
 
 
@@ -7,7 +8,7 @@ export interface ICustomServiceRepository {
   ): Promise<CustomService>;
   findById(id: string): Promise<CustomService | null>;
   fetchAllService(
-    query: any,
+    query: FilterQuery<CustomService>,
     skip: number,
     limit: number,
   ): Promise<{ data: CustomService[]; total: number }>;

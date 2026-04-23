@@ -20,7 +20,7 @@ export class MongoAdminRepository extends GenericRepository<Admin,AdminDoc> impl
   }
 
   protected map(doc: AdminDoc): Admin {
-    const base = super.map(doc) as any;
+    const base = super.map(doc) ;
     
     const validRoles = (Object.values(UserRole) as string[]);
     const role = validRoles.includes(String(doc.role)) ? (doc.role as unknown as UserRole) : UserRole.ADMIN;

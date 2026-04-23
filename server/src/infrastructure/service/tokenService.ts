@@ -1,6 +1,17 @@
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import { ITokenService } from "../../application/serviceInterface/ItokenService";
 import { appConfig } from "../config/config";
+
+type TokenPayload = {
+  userId: string;
+  role: string;
+  email: string;
+  isActive: boolean;
+};
+
+type AccessTokenPayload = TokenPayload & {
+  exp: number;
+};
 
 export class JwtTokenService implements ITokenService {
   private _accessTokenSecret: string;
@@ -17,10 +28,14 @@ export class JwtTokenService implements ITokenService {
     email: string,
     isActive: boolean,
   ): string {
+    const options: SignOptions = {
+      expiresIn: appConfig.jwt.accessTokenExpireTime * 60,
+    };
+
     return jwt.sign(
       { userId, role, email, isActive },
       this._accessTokenSecret,
-      { expiresIn: `${appConfig.jwt.accessTokenExpireTime}m` } as any,
+      options
     );
   }
 
@@ -30,39 +45,30 @@ export class JwtTokenService implements ITokenService {
     email: string,
     isActive: boolean,
   ): string {
+    const options: SignOptions = {
+      expiresIn: Number(appConfig.jwt.refreshTokenExpireTime) * 24 * 60 * 60,
+    };
+
     return jwt.sign(
       { userId, role, email, isActive },
       this._refreshTokenSecret,
-      { expiresIn: `${appConfig.jwt.refreshTokenExpireTime}d` } as any,
+      options
     );
   }
 
-  verifyRefreshToken(
-    token: string,
-  ): { userId: string; role: string; email: string; isActive: boolean } | null {
-    return jwt.verify(token, this._refreshTokenSecret) as {
-      userId: string;
-      role: string;
-      email: string;
-      isActive: boolean;
-    };
+  verifyRefreshToken(token: string): TokenPayload | null {
+    try {
+      return jwt.verify(token, this._refreshTokenSecret) as TokenPayload;
+    } catch {
+      return null;
+    }
   }
 
-  verifyAccessToken(
-    token: string,
-  ): {
-    userId: string;
-    email: string;
-    role: string;
-    isActive: boolean;
-    exp: number;
-  } | null {
-    return jwt.verify(token, this._accessTokenSecret) as {
-      userId: string;
-      role: string;
-      email: string;
-      isActive: boolean;
-      exp: number;
-    };
+  verifyAccessToken(token: string): AccessTokenPayload | null {
+    try {
+      return jwt.verify(token, this._accessTokenSecret) as AccessTokenPayload;
+    } catch {
+      return null;
+    }
   }
 }

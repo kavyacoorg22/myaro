@@ -29,7 +29,7 @@ async findByBeauticianAndDate(id: string, date: Date): Promise<Schedule | null> 
    const normalizedDate = new Date(date);
   normalizedDate.setUTCHours(0, 0, 0, 0);
   
-    const startOfDay = new Date(normalizedDate);
+    // const startOfDay = new Date(normalizedDate);
   const endOfDay = new Date(normalizedDate);
   endOfDay.setUTCHours(23, 59, 59, 999);
 
@@ -49,7 +49,7 @@ async deleteById(id: string): Promise<boolean> {
   return !!doc;
 }
   protected map(doc:ScheduleDoc):Schedule{
-    const base=super.map(doc) as any
+    const base=super.map(doc)
     return{
       id:base.id,
       beauticianId:doc.beauticianId.toString(),

@@ -4,7 +4,6 @@ import { Category } from "../../domain/entities/category";
 import { CustomService } from "../../domain/entities/customService";
 import { Service } from "../../domain/entities/service";
 import { User } from "../../domain/entities/User";
-import { CustomServiceStatus } from "../../domain/enum/serviceEnum";
 import { ICategoryServiceSelectionDto, IGetBeauticianServicesListDto, IGetCategoryDto, IGetCustomServiceDto, IGetPamphletDto, IGetServiceDto, IServiceSelectionDto } from "../dtos/services";
 
 export function toGetServicesOutputDto(service:Service):IGetServiceDto{

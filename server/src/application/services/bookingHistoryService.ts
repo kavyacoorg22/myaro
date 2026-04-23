@@ -1,4 +1,4 @@
-import { BookingAction, BookingStatus } from "../../domain/enum/bookingEnum";
+import { BookingAction } from "../../domain/enum/bookingEnum";
 import { UserRole } from "../../domain/enum/userEnum";
 import { IBookingHistoryRepository } from "../../domain/repositoryInterface/User/booking/IBookingHistoryRepository";
  

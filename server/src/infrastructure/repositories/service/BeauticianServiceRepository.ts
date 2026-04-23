@@ -98,7 +98,7 @@ export class BeauticianServiceRepository
   }
 
   protected map(doc: BeauticianServiceDoc): BeauticianService {
-    const base = super.map(doc) as any;
+    const base = super.map(doc)
     return {
       id: base.id,
       beauticianId: doc.beauticianId.toString(),

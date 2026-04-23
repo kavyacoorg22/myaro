@@ -1,4 +1,4 @@
-import { BookingAction, BookingStatus } from "../../../domain/enum/bookingEnum";
+import { BookingAction } from "../../../domain/enum/bookingEnum";
 import { PaymentStatus } from "../../../domain/enum/paymentEnum";
 import { UserRole } from "../../../domain/enum/userEnum";
 import { AppError } from "../../../domain/errors/appError";

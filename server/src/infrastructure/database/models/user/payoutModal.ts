@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Mongoose, Schema, Types } from "mongoose";
+import mongoose, { Document, Model,  Schema, Types } from "mongoose";
 import { PayoutStatus } from "../../../../domain/enum/paymentEnum";
 
 export type PayoutDoc=Document&{

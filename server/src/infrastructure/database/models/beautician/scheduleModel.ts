@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema, SchemaType, Types } from "mongoose";
+import mongoose, { Document, Model, Schema, Types } from "mongoose";
 import { ScheduleType } from "../../../../domain/enum/beauticianEnum";
 
 export type ScheduleDoc=Document & {

@@ -26,9 +26,9 @@ export class ScheduleController {
     private _deleteRecurringSlotUC: IDeleteRecurringAvailabilitySlotUseCase,
     private _getMonthlyAvailabilityUC: IGetMonthlyAvailabilityUSeCase,
   ) {
-    ((this._addAvailabilityUC = addAvailabilityUC),
-      (this._deleteAvailabilitySlotUC = deleteAvailabilitySlotUC),
-      (this._getAvailabilityUC = getAvailabilityUC));
+  this._addAvailabilityUC = addAvailabilityUC
+      this._deleteAvailabilitySlotUC = deleteAvailabilitySlotUC
+      this._getAvailabilityUC = getAvailabilityUC
   }
 
   addAvailability = async (
@@ -64,7 +64,7 @@ export class ScheduleController {
     try {
       const beauticianId = req.user?.id;
       const scheduleId = req.params.id;
-      const { slotToDelete, source } = req.body;
+      const { slotToDelete} = req.body;
       if (!beauticianId) {
         throw new AppError(
           authMessages.ERROR.UNAUTHORIZED,

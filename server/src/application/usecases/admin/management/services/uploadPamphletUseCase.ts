@@ -1,6 +1,5 @@
 import { AppError } from "../../../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../../../domain/repositoryInterface/IBeauticianRepository";
-import { IUserRepository } from "../../../../../domain/repositoryInterface/IUserRepository";
 import { IFileUploader } from "../../../../serviceInterface/IFileUploadService";
 import { authMessages } from "../../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
@@ -36,9 +35,10 @@ export class UploadPamphletUseCase implements IUploadPamphletUseCase {
       pamphletUrl = await this._uploadService.uploadPamphletImage(pamphletImg);
     } catch (err) {
       throw new AppError(
-        "Failed to upload pamphlet image",
+    err instanceof Error ? err.message : "Failed to upload pamphlet image",
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+      
     }
 
     const beauticianData = await this._beauticianRepo.updateByUserId(id, {

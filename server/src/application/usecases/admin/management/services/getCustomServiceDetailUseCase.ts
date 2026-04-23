@@ -1,4 +1,3 @@
-import { CustomServiceFilter } from "../../../../../domain/enum/serviceEnum";
 import { AppError } from "../../../../../domain/errors/appError";
 import { ICustomServiceRepository } from "../../../../../domain/repositoryInterface/ICustomService";
 import { IUserRepository } from "../../../../../domain/repositoryInterface/IUserRepository";
