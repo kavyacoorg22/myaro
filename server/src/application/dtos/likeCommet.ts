@@ -10,7 +10,9 @@ export interface IGetHomeServiceCommentsDto{
   userName:string,
   fullName:string,
   profileImg?:string,
+    rating?: number;
   createdAt:string
+
 }
 
 

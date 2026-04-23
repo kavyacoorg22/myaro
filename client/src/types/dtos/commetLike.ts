@@ -9,6 +9,7 @@ commentId:string,
   isDeleted:boolean,
   userName:string,
   fullName:string,
+    rating?: number;
   profileImg?:string,
   createdAt:string
 }

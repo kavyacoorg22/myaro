@@ -8,6 +8,7 @@ export type CommentDoc=Document &{
   beauticianId?:Types.ObjectId,
   parentId?:Types.ObjectId|null,
     replyCount?:number,
+    rating?:number
   text:string,
   type:CommentType,
   isDeleted:boolean,
@@ -19,6 +20,7 @@ const CommentSchema=new Schema<CommentDoc>({
    userId:{type:Schema.Types.ObjectId,required:true},
    postId:{type:Schema.Types.ObjectId},
    beauticianId:{type:Schema.Types.ObjectId},
+   rating:{type:Number,min:1,max:5},
    parentId:{type:Schema.Types.ObjectId},
    text:{type:String,required:true},
    type:{type:String,enum:Object.values(CommentType)},

@@ -98,13 +98,14 @@ export class LikeCommetController {
 
     const postId = req.params.postId;             
     const beauticianId = req.params.beauticianId; 
-    const { text,parentId } = req.body;                   
-
+    const { text,parentId,rating } = req.body;                   
+    console.log(rating)
     const input: IAddCommentInput = {
       userId,
       postId,
       beauticianId,
       text,
+      rating,
       type: postId ? CommentType.POST : CommentType.HOME,
       ...(parentId && {parentId})
     };

@@ -25,6 +25,7 @@ export const ChatWindow = ({
     handleSend,
     handleTyping,
     loadMore,
+    staleBookingIds
   } = useChat(chatId, userId, participant);
 
   const isBeautician = participant?.role === "beautician";
@@ -48,6 +49,7 @@ export const ChatWindow = ({
         loading={loading}
         hasMore={hasMore}
         onLoadMore={loadMore}
+         staleBookingIds={staleBookingIds}
       />
 
       <MessageInput

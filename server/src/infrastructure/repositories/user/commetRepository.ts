@@ -104,6 +104,33 @@ async findHomeServiceComments(beauticianId: string, limit: number = 10,
    async delete(id: string): Promise<void> {
   await CommentModal.findByIdAndUpdate(id, { isDeleted: true });
 }
+
+async getRatingSummary(beauticianId: string) {
+  const result = await CommentModal.aggregate([
+    {
+      $match: {
+        beauticianId: new Types.ObjectId(beauticianId),
+        type: CommentType.HOME,
+        isDeleted: false,
+        rating: { $exists: true },  
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        avgRating: { $avg: "$rating" },
+        totalReviews: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const summary = result[0];
+
+  return {
+    avgRating: summary ? Math.round(summary.avgRating * 10) / 10 : 0,
+    totalReviews: summary?.totalReviews ?? 0,
+  };
+}
    protected map(doc:CommentDoc):Comment
    {
     const base=super.map(doc)
@@ -112,6 +139,7 @@ async findHomeServiceComments(beauticianId: string, limit: number = 10,
       userId:doc.userId.toString(),
       postId:doc.postId?.toString(),
       beauticianId:doc.beauticianId?.toString(),
+      rating:doc.rating,
       parentId:doc.parentId?.toString(),
       replyCount: doc.replyCount ?? 0, 
       text:doc.text,

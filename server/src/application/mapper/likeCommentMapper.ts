@@ -16,6 +16,7 @@ export function toGetHomeServiceCommentDto(cm:Comment,user:User):IGetHomeService
      userName:user.userName,
      fullName:user.fullName,
      profileImg:user.profileImg,
+     rating:cm.rating,
      createdAt:user.createdAt.toISOString()
   }
 }

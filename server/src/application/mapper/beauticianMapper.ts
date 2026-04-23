@@ -160,6 +160,8 @@ export function toBeauticianDashboardDto(raw: {
   weeklyChart:   ChartPointDto[];
   monthlyChart:  ChartPointDto[];
   recentPayouts: RecentPayoutDto[];
+    avgRating:     number;    
+  totalReviews:  number; 
 }): BeauticianDashboardDto {
   return {
     stats:         raw.stats,
@@ -167,5 +169,7 @@ export function toBeauticianDashboardDto(raw: {
     weeklyChart:   raw.weeklyChart,
     monthlyChart:  raw.monthlyChart,
     recentPayouts: raw.recentPayouts,
+        avgRating:     raw.avgRating,    
+    totalReviews:  raw.totalReviews, 
   };
 }

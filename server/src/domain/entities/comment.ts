@@ -7,6 +7,7 @@ export interface Comment{
    beauticianId?:string,
    parentId?:string|null,
    replyCount?:number,
+   rating?:number,
    text:string,
    type:CommentType,
    isDeleted:boolean,

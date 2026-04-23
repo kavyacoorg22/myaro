@@ -27,6 +27,7 @@ interface MessageListProps {
   loading:     boolean;
   hasMore:     boolean;
   onLoadMore:  () => void;
+   staleBookingIds: string[];
 }
 
 export const MessageList = ({
@@ -38,6 +39,7 @@ export const MessageList = ({
   loading,
   hasMore,
   onLoadMore,
+  staleBookingIds
 }: MessageListProps) => {
   const navigate  = useNavigate();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -104,6 +106,20 @@ export const MessageList = ({
         });
     });
   }, [messages]);
+
+    useEffect(() => {
+    if (staleBookingIds.length === 0) return;
+
+    staleBookingIds.forEach((id) => {
+      BookingApi.getBookingByid(id)
+        .then((res) => {
+          const data = res.data?.data?.data;
+          bookingCacheRef.current[id] = data ?? null;
+          setBookingCache((prev) => ({ ...prev, [id]: data ?? null }));
+        })
+        .catch(() => {});
+    });
+  }, [staleBookingIds]);
 
   const isBeautician   = participant?.role === "beautician";
   const hasHomeService = participant?.serviceModes?.includes("HOME");

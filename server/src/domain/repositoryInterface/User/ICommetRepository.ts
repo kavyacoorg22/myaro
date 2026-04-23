@@ -10,5 +10,6 @@ export interface ICommentRepository{
   incrementReplyCount(commentId: string): Promise<void>
    decrementReplyCount(commentId: string): Promise<void>
   findHomeServiceComments(beauticianId:string,limit:number,cursor?:string|null):Promise<{comments:Comment[];nextCursor:string|null}>
+getRatingSummary(beauticianId: string): Promise<{ avgRating: number; totalReviews: number }>;
 
 }

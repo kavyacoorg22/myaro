@@ -124,4 +124,5 @@ export interface IGetPostSearchResult{
 
 export interface IGetBeauticianDashboardOutPut{
   data:BeauticianDashboardDto
+          
 }

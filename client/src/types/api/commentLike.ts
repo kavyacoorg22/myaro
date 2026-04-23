@@ -9,6 +9,8 @@ export interface IGetPostCommentsOutPutData{
 export interface IGetHomeServiceCommentsOutPutData{
 comments:IGetHomeServiceCommentsDto[]
 nextCursor:string|null
+   avgRating: number;       
+  totalReviews: number;
 }
 
 export interface IGetRepliesOutputData {

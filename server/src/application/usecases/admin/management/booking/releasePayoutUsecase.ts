@@ -35,7 +35,7 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
 
   async execute(input: IReleasePayoutInput): Promise<IReleasePayoutOutPut> {
     const { bookingId, adminId, adminNote } = input;
-
+    
 
     const booking = await this._bookingValidator.getAndValidateStatusOnly(
       bookingId,
@@ -45,7 +45,7 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
     const isDispute = booking.status === BookingStatus.DISPUTE;
 
     const payment = await this._paymentLookup.getAndValidateStatus(bookingId, [
-      PaymentStatus.PAID,
+       PaymentStatus.READY_TO_RELEASE, 
       PaymentStatus.REFUND_DISPUTED,
     ]);
 

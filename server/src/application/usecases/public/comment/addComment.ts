@@ -8,7 +8,7 @@ export class AddCommentUseCase implements IAddCommentUSeCase {
   constructor(
     private _commentRepo: ICommentRepository,
     private _postRepo: IPostRepository,
-    private _beauticianRepo: IBeauticianRepository
+    private _beauticianRepo: IBeauticianRepository,
   ) {}
 
   async execute(input: IAddCommentInput): Promise<void> {
@@ -26,8 +26,16 @@ export class AddCommentUseCase implements IAddCommentUSeCase {
     }
 
     if (input.beauticianId) {
-      const beautician = await this._beauticianRepo.findByUserId(input.beauticianId);
+      const beautician = await this._beauticianRepo.findByUserId(
+        input.beauticianId,
+      );
       if (!beautician) throw new Error("Beautician not found");
+    }
+
+    if (input.beauticianId) {
+      if (input.rating === undefined || input.rating < 1 || input.rating > 5) {
+        throw new Error("Rating (1–5) is required for home service reviews");
+      }
     }
 
     if (input.parentId) {
@@ -39,7 +47,8 @@ export class AddCommentUseCase implements IAddCommentUSeCase {
 
       if (
         (input.postId && parentComment.postId?.toString() !== input.postId) ||
-        (input.beauticianId && parentComment.beauticianId?.toString() !== input.beauticianId)
+        (input.beauticianId &&
+          parentComment.beauticianId?.toString() !== input.beauticianId)
       ) {
         throw new Error("Invalid reply: mismatched parent");
       }
@@ -47,17 +56,18 @@ export class AddCommentUseCase implements IAddCommentUSeCase {
 
     await this._commentRepo.create({
       userId: input.userId,
-      postId: input.postId ,
-      beauticianId: input.beauticianId ,
+      postId: input.postId,
+      beauticianId: input.beauticianId,
       text: input.text,
-      type: input.type, 
-      parentId: input.parentId??null,
+      type: input.type,
+      parentId: input.parentId ?? null,
       isDeleted: false,
+      rating: input.beauticianId ? input.rating : undefined,
     });
-   
+
     if (input.parentId) {
-  await this._commentRepo.incrementReplyCount(input.parentId);
-}
+      await this._commentRepo.incrementReplyCount(input.parentId);
+    }
     if (input.postId && !input.parentId) {
       await this._postRepo.incrementCommentsCount(input.postId);
     }

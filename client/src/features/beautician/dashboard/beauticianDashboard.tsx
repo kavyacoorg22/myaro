@@ -4,9 +4,9 @@ import { BeauticianApi } from "../../../services/api/beautician";
 import { DashboardStatsRow } from "./dashBoardStatsRow";
 import { EarningsChart } from "./earningChart";
 import { EarningsSummaryCard } from "./earningSummeryCard";
-import { RatingPlaceholder } from "./ratingPlaceHolder";
 import { RecentPayouts } from "./recentPayouts";
 import { SaidBar } from "../../user/component/saidBar/saidbar";
+import { RatingCard } from "./ratingPlaceHolder";
 
 const BeauticianDashboard: React.FC = () => {
   const [data,    setData]    = useState<BeauticianDashboardDto | null>(null);
@@ -34,26 +34,31 @@ const BeauticianDashboard: React.FC = () => {
 
   return (
     <div>
-      <SaidBar/>
-    <div className="flex flex-col gap-4 p-6 ml-60">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Overview</p>
+      <SaidBar />
+      <div className="flex flex-col gap-4 p-6 ml-60">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          Overview
+        </p>
 
-      <DashboardStatsRow stats={data.stats} />
+        <DashboardStatsRow stats={data.stats} />
 
-      <EarningsChart
-        weeklyChart={data.weeklyChart}
-        monthlyChart={data.monthlyChart}
-      />
+        <EarningsChart
+          weeklyChart={data.weeklyChart}
+          monthlyChart={data.monthlyChart}
+        />
 
-      <div className="grid grid-cols-2 gap-4">
-        <EarningsSummaryCard earnings={data.earnings} />
-        <RatingPlaceholder />
+        <div className="grid grid-cols-2 gap-4">
+          <EarningsSummaryCard earnings={data.earnings} />
+          <RatingCard
+            avgRating={data.avgRating}
+            totalReviews={data.totalReviews}
+          />
+        </div>
+
+        <RecentPayouts payouts={data.recentPayouts} />
       </div>
-
-      <RecentPayouts payouts={data.recentPayouts} />
-    </div>
     </div>
   );
 };
 
-export  default BeauticianDashboard
+export default BeauticianDashboard;

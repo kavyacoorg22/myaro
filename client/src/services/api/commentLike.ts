@@ -29,9 +29,9 @@ export const CommentLikeApi={
       .replace(':commentId', commentId)
   ))
   },
-  addHomeServiceComment:async(text:string,beauticianId:string)=>{
+  addHomeServiceComment:async(text:string,beauticianId:string,rating:number)=>{
     return await axiosWrapper<BackendResponse>(api.post(customerApiRoute.addHomeServiceComment.replace(':beauticianId',beauticianId),
-  {text}
+  {text,rating}
   ))
   },
    getHomeServiceComment:async(beauticianId:string,limit:number=10,cursor?:string|null)=>{

@@ -152,4 +152,6 @@ export interface BeauticianDashboardDto {
   weeklyChart:   ChartPointDto[];
   monthlyChart:  ChartPointDto[];
   recentPayouts: RecentPayoutDto[];
+  avgRating:     number;   
+  totalReviews:  number;
 }

@@ -105,7 +105,7 @@ export const LikeListModal = ({ postId, onClose }: LikeListModalProps) => {
         }
 
         // ✅ Fix: nextCursor lives inside data, not res.data
-        const next = res.data.nextCursor ?? null;
+        const next = res.data.nextCursor?? null;
 
         setUsers((prev) => [...prev, ...data]);
         setCursor(next);

@@ -6,16 +6,20 @@ interface WriteReviewModalProps {
   onClose: () => void;
 }
 
+const RATING_LABELS = ["", "Terrible", "Poor", "Okay", "Good", "Excellent"];
+
 export const WriteReviewModal = ({ beauticianId, onClose }: WriteReviewModalProps) => {
   const [text, setText]       = useState("");
+  const [rating, setRating]   = useState(0);
+  const [hovered, setHovered] = useState(0);
   const [loading, setLoading] = useState(false);
   const [done, setDone]       = useState(false);
 
   const handleSubmit = async () => {
-    if (!text.trim()) return;
+    if (!text.trim() || rating === 0) return;
     setLoading(true);
     try {
-      await CommentLikeApi.addHomeServiceComment(text.trim(), beauticianId);
+      await CommentLikeApi.addHomeServiceComment(text.trim(), beauticianId, rating);
       setDone(true);
     } catch (err) {
       console.error(err);
@@ -58,6 +62,31 @@ export const WriteReviewModal = ({ beauticianId, onClose }: WriteReviewModalProp
               <p className="text-sm text-gray-500 mt-1">How was your experience with the beautician?</p>
             </div>
 
+            {/* Star Rating */}
+            <div className="w-full">
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Your Rating
+              </label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHovered(star)}
+                    onMouseLeave={() => setHovered(0)}
+                    className="text-3xl leading-none transition-colors focus:outline-none"
+                    style={{ color: star <= (hovered || rating) ? "#f59e0b" : "#d1d5db" }}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-1 h-4">
+                {rating > 0 ? RATING_LABELS[rating] : ""}
+              </p>
+            </div>
+
             {/* Textarea */}
             <div className="w-full">
               <label className="text-sm font-semibold text-gray-700 mb-2 block">
@@ -66,7 +95,7 @@ export const WriteReviewModal = ({ beauticianId, onClose }: WriteReviewModalProp
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Tell us about your experience with beautician"
+                placeholder="Tell us about your experience with the beautician"
                 rows={4}
                 className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-300 transition resize-none"
               />
@@ -82,7 +111,7 @@ export const WriteReviewModal = ({ beauticianId, onClose }: WriteReviewModalProp
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={loading || !text.trim()}
+                disabled={loading || !text.trim() || rating === 0}
                 className="flex-1 bg-gray-800 hover:bg-gray-900 text-white font-semibold text-sm rounded-xl py-3 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Submitting…" : "Submit Review"}

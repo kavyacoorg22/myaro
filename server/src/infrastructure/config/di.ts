@@ -272,7 +272,8 @@ const getServiceAreaUC=new getServiceAreaUseCase(serviceAreaRepo)
 const customerViewEditProfile=new CustomerViewProfileUseCase(userRepo)
 const customerEditProfileUseCase=new CustomerEditProfileUseCase(userRepo)
 const payoutRepo=new PayoutRepository()
-const getBeauticianDashboardUC=new GetBeauticianDashboardUseCase(bookingRepo,payoutRepo,userRepo)
+const commentRepo=new CommentRepository()
+const getBeauticianDashboardUC=new GetBeauticianDashboardUseCase(bookingRepo,payoutRepo,userRepo,commentRepo)
 const beauticianController=new BeauticianController(beauticianRegisterUC,beauticianVerificationStatusUC,
   beauticianUpdateRegistartionUC,beauticianViewEditProfileUC,
   beauticianEditProfileUC,searchResultUC,getServiceAreaUC,addServiceAreaUC,customerViewEditProfile,customerEditProfileUseCase,getBeauticianDashboardUC)
@@ -410,7 +411,6 @@ export const bookingController=new BookingController(getBeauticianBookingsUC,cre
 //like comment
 
 const likeRepo=new LikeRepository()
-const commentRepo=new CommentRepository()
 //post
 
 const postRepo=new PostRepository()

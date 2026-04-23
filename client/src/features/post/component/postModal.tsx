@@ -6,7 +6,6 @@ import type {
   IGetPostCommentsDto,
   IGetReplyDto,
 } from "../../../types/dtos/commetLike";
-import { LikeListModal } from "../../models/likedUserList";
 
 interface ModalUser {
   userName: string;
@@ -20,6 +19,7 @@ export const PostModal = ({
   onClose,
   postId,
   currentUser,
+  onShowLikes, // ← lifted up; PostFeed owns the LikeListModal
 }: {
   post: {
     media: string[];
@@ -32,6 +32,7 @@ export const PostModal = ({
   onClose: () => void;
   postId: string;
   currentUser: ModalUser;
+  onShowLikes: (postId: string) => void; // ← NEW prop
 }) => {
   const mediaList = post.media ?? [];
   const [mediaIndex, setMediaIndex] = useState(0);
@@ -43,9 +44,7 @@ export const PostModal = ({
   const [submitting, setSubmitting] = useState(false);
   const [liked, setLiked] = useState(false);
   const [localLikes, setLocalLikes] = useState(post.likesCount ?? 0);
-  const [showLikes, setShowLikes] = useState(false);
-   console.log(showLikes)
-  // reply state — keyed by parentCommentId
+
   const [replyingTo, setReplyingTo] = useState<{
     commentId: string;
     userName: string;
@@ -95,7 +94,7 @@ export const PostModal = ({
     fetchComments(null, true);
   }, [postId]);
 
-  // ── Fetch replies for a comment (lazy, on click) ────────────────
+  // ── Fetch replies ───────────────────────────────────────────────
   const fetchReplies = async (commentId: string, loadMore = false) => {
     const existing = repliesMap[commentId];
     if (existing?.loading) return;
@@ -113,14 +112,8 @@ export const PostModal = ({
     }));
 
     try {
-      const res = await CommentLikeApi.getCommentReply(
-        commentId,
-        5,
-        nextCursor,
-      );
-      if (!res) {
-        throw new Error("not available");
-      }
+      const res = await CommentLikeApi.getCommentReply(commentId, 5, nextCursor);
+      if (!res) throw new Error("not available");
       const { replies: newReplies, nextCursor: next } = res.data?.data ?? {};
 
       setRepliesMap((prev) => ({
@@ -291,12 +284,18 @@ export const PostModal = ({
     </div>
   );
 
-return (
+  // ── Render ──────────────────────────────────────────────────────
+  return createPortal(
     <>
-      {/* ── Backdrop ── */}
+      {/* Backdrop */}
+      {/* onClickCapture stops ALL clicks inside the portal from bubbling UP   */}
+      {/* through React's component tree to PostCard's handleLike / onFollow.  */}
+      {/* Without this, React synthetic events escape the portal and reach     */}
+      {/* ancestor handlers even though the portal is outside the DOM tree.   */}
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm"
         onClick={onClose}
+        onClickCapture={(e) => e.stopPropagation()}
       >
         <div
           className="relative bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
@@ -360,6 +359,7 @@ return (
 
           {/* ── Info panel ── */}
           <div className="flex flex-col flex-1 min-w-0" style={{ minHeight: 360 }}>
+
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
               <Avatar src={user?.profileImg} name={displayName} size={9} />
@@ -465,14 +465,19 @@ return (
                                     : ""}
                                 </p>
                                 <button
-                                  onClick={() => startReply(cm.commentId, r.user?.name ?? "")}
+                                  onClick={() =>
+                                    startReply(cm.commentId, r.user?.name ?? "")
+                                  }
                                   className="text-xs text-gray-400 hover:text-blue-500 transition-colors font-medium"
                                 >
                                   Reply
                                 </button>
-                                {(r.user?.id === currentUser?.userName || isPostOwner) && (
+                                {(r.user?.id === currentUser?.userName ||
+                                  isPostOwner) && (
                                   <button
-                                    onClick={() => handleDeleteReply(cm.commentId, r.id)}
+                                    onClick={() =>
+                                      handleDeleteReply(cm.commentId, r.id)
+                                    }
                                     className="text-xs text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                                   >
                                     Delete
@@ -510,16 +515,33 @@ return (
             </div>
 
             {/* ── Likes + actions ── */}
-            <div className="px-4 py-2 border-t border-gray-100 flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                {/* Heart — like/unlike ONLY */}
+            <div className="px-4 py-2 border-t border-gray-100">
+
+              {/* Row 1: likes count — stopPropagation prevents bubbling to onLike */}
+              <div className="mb-1">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onShowLikes(postId); // ← delegate to PostFeed
+                  }}
+                  className="text-sm font-semibold text-gray-800 hover:underline"
+                >
+                  {localLikes} {localLikes === 1 ? "like" : "likes"}
+                </button>
+              </div>
+
+              {/* Row 2: action icons */}
+              <div className="flex items-center gap-4">
+                {/* Heart */}
                 <button
                   type="button"
                   onClick={handleLike}
-                  className="transition-transform active:scale-90 flex-shrink-0"
+                  className="transition-transform active:scale-90"
                 >
                   <svg
-                    className={`w-5 h-5 transition-colors ${
+                    className={`w-6 h-6 transition-colors ${
                       liked ? "fill-rose-500 text-rose-500" : "text-gray-700"
                     }`}
                     fill={liked ? "currentColor" : "none"}
@@ -535,37 +557,23 @@ return (
                   </svg>
                 </button>
 
-                {/* Count — opens like list ONLY, never triggers like */}
-                {localLikes > 0 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      setShowLikes(true);
-                    }}
-                    className="text-sm font-medium text-gray-700 hover:underline flex-shrink-0"
-                  >
-                    {localLikes}
-                  </button>
-                )}
+                {/* Comment */}
+                <button
+                  type="button"
+                  onClick={() => inputRef.current?.focus()}
+                  className="text-gray-700 hover:text-blue-400 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                  </svg>
+                </button>
               </div>
 
-              {/* Comment icon */}
-              <button
-                type="button"
-                onClick={() => inputRef.current?.focus()}
-                className="text-gray-700 hover:text-blue-400 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
-                </svg>
-              </button>
             </div>
 
             {/* ── Comment input ── */}
@@ -611,16 +619,13 @@ return (
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* ── LikeListModal portal ── */}
-      {showLikes &&
-        createPortal(
-          <LikeListModal postId={postId} onClose={() => setShowLikes(false)} />,
-          document.body,
-        )}
-    </>
+          </div>{/* end info panel */}
+        </div>{/* end modal card */}
+      </div>{/* end backdrop */}
+
+      {/* LikeListModal is NO LONGER rendered here — PostFeed owns it */}
+    </>,
+    document.body,
   );
 };

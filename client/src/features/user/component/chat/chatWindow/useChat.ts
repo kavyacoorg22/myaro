@@ -16,6 +16,7 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [lastSeen, setLastSeen] = useState<Date | null>(null);
+const [staleBookingIds, setStaleBookingIds] = useState<string[]>([]);
 
 
   const loadingRef       = useRef<boolean>(false);
@@ -80,13 +81,21 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
 
   // ── socket listeners ──────────────────────────────────────────────────────
   useEffect(() => {
-    const handleNewMessage = (msg: MessageDto) => {
-      if (msg.chatId !== chatId) return;
-      setMessages((prev) => [...prev, msg]);
-      if (document.hasFocus() && msg.senderId !== userId) {
-        emitMarkSeen(chatId, userId, msg.senderId);
-      }
-    };
+  const handleNewMessage = (msg: MessageDto) => {
+  if (msg.chatId !== chatId) return;
+  setMessages((prev) => [...prev, msg]);
+
+  if (msg.type === "booking" && msg.bookingId) {
+    // Force MessageList to re-fetch this booking
+    setStaleBookingIds((prev) =>
+      prev.includes(msg.bookingId!) ? prev : [...prev, msg.bookingId!]
+    );
+  }
+
+  if (document.hasFocus() && msg.senderId !== userId) {
+    emitMarkSeen(chatId, userId, msg.senderId);
+  }
+};
 
     // ✅ all handlers use ref — no participant in deps
     const handleOnline  = ({ userId: uid }: { userId: string }) => {
@@ -165,5 +174,6 @@ export const useChat = (chatId: string, userId: string, participant: ChatPartici
     handleTyping,
     loadMore,
     reload,
+    staleBookingIds
   };
 };
