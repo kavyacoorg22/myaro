@@ -80,49 +80,68 @@ export const LikeListModal = ({ postId, onClose }: LikeListModalProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Use refs to avoid stale closure issues in useCallback
+  const loadingRef = useRef(false);
+  const hasMoreRef = useRef(true);
+  const cursorRef = useRef<string | null>(null);
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const fetchUsers = useCallback(
     async (nextCursor: string | null) => {
-      if (loading || !hasMore) return;
+      if (loadingRef.current || !hasMoreRef.current) return;
 
+      loadingRef.current = true;
       setLoading(true);
       setError(null);
 
-      const res = await CommentLikeApi.getUserLikeList(postId, LIMIT, nextCursor);
-      if (!res.data.data) return;
-      if (res.data.data) {
-        setUsers((prev) => [...prev, ...res.data?.data]);
-        setCursor(res.data.nextCursor);
-        setHasMore(res.data.nextCursor !== null);
-      } else {
-        setError("Failed to load likes. Please try again.");
-      }
+      try {
+        const res = await CommentLikeApi.getUserLikeList(postId, LIMIT, nextCursor);
+        const data = res.data?.data;
+        if (!data) {
+          setError("Failed to load likes. Please try again.");
+          return;
+        }
 
-      setLoading(false);
+        // ✅ Fix: nextCursor lives inside data, not res.data
+        const next = res.data.nextCursor ?? null;
+
+        setUsers((prev) => [...prev, ...data]);
+        setCursor(next);
+        cursorRef.current = next;
+
+        const more = next !== null;
+        setHasMore(more);
+        hasMoreRef.current = more;
+      } catch {
+        setError("Failed to load likes. Please try again.");
+      } finally {
+        loadingRef.current = false;
+        setLoading(false);
+      }
     },
-    [postId, loading, hasMore]
+    [postId], // ✅ No loading/hasMore in deps — using refs instead
   );
 
   useEffect(() => {
     fetchUsers(null);
   }, [postId]);
 
+  // ✅ Infinite scroll — stable because fetchUsers is stable
   useEffect(() => {
     if (!sentinelRef.current || !hasMore) return;
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) fetchUsers(cursor);
+        if (entries[0].isIntersecting) fetchUsers(cursorRef.current);
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     observerRef.current.observe(sentinelRef.current);
-
     return () => observerRef.current?.disconnect();
-  }, [cursor, hasMore, fetchUsers]);
+  }, [hasMore, fetchUsers]);
 
   const handleUserClick = (userId: string) => {
     navigate(publicFrontendRoutes.profileByid.replace(":id", userId));
@@ -137,7 +156,6 @@ export const LikeListModal = ({ postId, onClose }: LikeListModalProps) => {
   }, []);
 
   return (
-    // z-[200] ensures this renders above PostModal's z-50 (= z-index: 50)
     <div
       className="fixed inset-0 z-[200] flex items-center justify-center bg-black/45"
       onClick={onClose}
@@ -160,7 +178,9 @@ export const LikeListModal = ({ postId, onClose }: LikeListModalProps) => {
         {/* List */}
         <div className="overflow-y-auto max-h-80">
           {users.length === 0 && !loading && (
-            <p className="text-center text-sm text-gray-400 py-8">No likes yet.</p>
+            <p className="text-center text-sm text-gray-400 py-8">
+              No likes yet.
+            </p>
           )}
 
           {users.map((user, i) => (

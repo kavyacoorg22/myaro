@@ -12,27 +12,34 @@ export class GetBeauticianDashboardUseCase implements IGetBeauticianDashboardUse
     private readonly payoutRepo:  IPayoutRepository,
     private readonly userRepo:    IUserRepository,
   ) {}
+async execute(beauticianId: string): Promise<IGetBeauticianDashboardOutPut> {
+  const beautician = await this.userRepo.findByUserId(beauticianId);
 
-  async execute(beauticianId: string): Promise<IGetBeauticianDashboardOutPut> {
-    const beautician = await this.userRepo.findByUserId(beauticianId);
+  const [stats, weeklyChart, monthlyChart, payoutSummary, totalEarnings, recentPayouts] =
+    await Promise.all([
+      this.bookingRepo.getDashboardStats(beauticianId),
+      this.bookingRepo.getWeeklyEarnings(beauticianId),
+      this.bookingRepo.getMonthlyEarnings(beauticianId),
+      this.payoutRepo.getEarningsSummary(beauticianId, beautician?.createdAt ?? new Date()),
+      this.bookingRepo.getTotalEarnings(beauticianId), 
+      this.payoutRepo.getRecent(beauticianId, 5),
+    ]);
 
-    const [stats, weeklyChart, monthlyChart, earnings, recentPayouts] =
-      await Promise.all([
-        this.bookingRepo.getDashboardStats(beauticianId),
-        this.bookingRepo.getWeeklyEarnings(beauticianId),
-        this.bookingRepo.getMonthlyEarnings(beauticianId),
-        this.payoutRepo.getEarningsSummary(beauticianId, beautician?.createdAt ?? new Date()),
-        this.payoutRepo.getRecent(beauticianId, 5),
-      ]);
+  const earnings = {
+    totalEarnings,                                              
+    withdrawableAmount: Math.max(0, totalEarnings - payoutSummary.totalEarnings), // earned minus paid out by admin
+    pendingAmount: payoutSummary.pendingAmount,                  // admin approved but not yet completed
+    joinedSince: payoutSummary.joinedSince,
+  };
 
-    const data= toBeauticianDashboardDto({
-      stats,
-      earnings,
-      weeklyChart,
-      monthlyChart,
-      recentPayouts,
-    });
+  const data = toBeauticianDashboardDto({
+    stats,
+    earnings,
+    weeklyChart,
+    monthlyChart,
+    recentPayouts,
+  });
 
-    return {data}
-  }
+  return { data };
+}
 }

@@ -40,7 +40,7 @@ export class BeauticianController {
     addServiceAreaUC: IAddServiceAreaUseCase,
     viewProfileUC:IViewEditProfileUseCase,
     customerEditProfile:ICustomerEditProfileUseCase,
-    private _BeauticianDashboard:IGetBeauticianDashboardUseCase
+    private _beauticianDashboard:IGetBeauticianDashboardUseCase
   ) {
     this._beauticianRegistrationUC = beauticianRegistrationUC;
     this._beauticianVerificationStatusUseCase = verificationStatusUC;
@@ -336,7 +336,7 @@ export class BeauticianController {
     }
   };
 
-   async getDashboard(req: Request, res: Response,next:NextFunction): Promise<void> {
+    getDashboard=async(req: Request, res: Response,next:NextFunction): Promise<void>=>{
     try{
     const beauticianId = req.user?.id;
     if(!beauticianId)
@@ -347,7 +347,7 @@ export class BeauticianController {
         );
     }
 
-    const result= await this._BeauticianDashboard.execute(beauticianId);
+    const result= await this._beauticianDashboard.execute(beauticianId);
 
     res.status(HttpStatus.OK).json({
       success: true,

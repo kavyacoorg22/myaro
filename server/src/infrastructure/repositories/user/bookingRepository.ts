@@ -301,6 +301,24 @@ async getMonthlyEarnings(beauticianId: string): Promise<ChartPointDto[]> {
   return result;
 }
 
+async getTotalEarnings(beauticianId: string): Promise<number> {
+  const raw = await BookingModel.aggregate([
+    {
+      $match: {
+        beauticianId: new Types.ObjectId(beauticianId),
+        status: BookingStatus.COMPLETED,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: "$totalPrice" },
+      },
+    },
+  ]);
+
+  return raw[0]?.total ?? 0;
+}
   protected map(doc:BookingDoc):Booking {
    const base=super.map(doc)
    return{

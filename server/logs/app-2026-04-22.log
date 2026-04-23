@@ -223,3 +223,27 @@
     at Socket._onTimeout (node:net:604:8)
     at listOnTimeout (node:internal/timers:605:17)
     at processTimers (node:internal/timers:541:7)
+2026-04-22 19:49:46 error: TypeError: Cannot read properties of undefined (reading '_BeauticianDashboard')
+    at getDashboard (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\beautician\beauticianController.ts:350:30)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:121:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-04-22 19:49:57 error: TypeError: Cannot read properties of undefined (reading '_BeauticianDashboard')
+    at getDashboard (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\beautician\beauticianController.ts:350:30)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:121:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-04-22 19:53:16 error: TypeError: Cannot read properties of undefined (reading '_beauticianDashboard')
+    at getDashboard (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\beautician\beauticianController.ts:350:30)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:121:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-04-22 19:53:25 error: TypeError: Cannot read properties of undefined (reading '_beauticianDashboard')
+    at getDashboard (C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\controllers\beautician\beauticianController.ts:350:30)
+    at Layer.handleRequest (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\User\Desktop\completed\week23\myaro\server\node_modules\router\lib\route.js:157:13)
+    at C:\Users\User\Desktop\completed\week23\myaro\server\src\interface\Http\middleware\authMiddleware.ts:121:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)

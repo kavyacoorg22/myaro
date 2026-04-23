@@ -3,5 +3,6 @@ export const beauticianFrontendRoutes={
   aggrement:"/aggrement",
   editProfile:'/beautician/profile',
   serviceList:'/services',
-  Location:'/services/location'
+  Location:'/services/location',
+  dashboard:'/dashboard'
 }

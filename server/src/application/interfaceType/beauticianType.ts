@@ -1,4 +1,3 @@
-import { ChildProcessWithoutNullStreams } from "child_process";
 import { ShopAddressVO } from "../../domain/entities/Beautician";
 import { LocationVO } from "../../domain/entities/beauticianServiceAres";
 import { ServiceModes, VerificationStatus } from "../../domain/enum/beauticianEnum";

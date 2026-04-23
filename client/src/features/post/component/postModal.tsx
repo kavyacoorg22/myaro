@@ -291,9 +291,9 @@ export const PostModal = ({
     </div>
   );
 
-  return (
+return (
     <>
-      {/* ── PostModal backdrop ── */}
+      {/* ── Backdrop ── */}
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm"
         onClick={onClose}
@@ -324,6 +324,7 @@ export const PostModal = ({
                 style={{ maxHeight: "92vh" }}
               />
             )}
+
             {mediaList.length > 1 && (
               <>
                 <button
@@ -428,6 +429,7 @@ export const PostModal = ({
                             </button>
                           )}
                         </div>
+
                         {((cm.replyCount ?? 0) > 0 || replyState?.loaded) && (
                           <button
                             onClick={() => toggleReplies(cm.commentId)}
@@ -463,19 +465,14 @@ export const PostModal = ({
                                     : ""}
                                 </p>
                                 <button
-                                  onClick={() =>
-                                    startReply(cm.commentId, r.user?.name ?? "")
-                                  }
+                                  onClick={() => startReply(cm.commentId, r.user?.name ?? "")}
                                   className="text-xs text-gray-400 hover:text-blue-500 transition-colors font-medium"
                                 >
                                   Reply
                                 </button>
-                                {(r.user?.id === currentUser?.userName ||
-                                  isPostOwner) && (
+                                {(r.user?.id === currentUser?.userName || isPostOwner) && (
                                   <button
-                                    onClick={() =>
-                                      handleDeleteReply(cm.commentId, r.id)
-                                    }
+                                    onClick={() => handleDeleteReply(cm.commentId, r.id)}
                                     className="text-xs text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                                   >
                                     Delete
@@ -485,6 +482,7 @@ export const PostModal = ({
                             </div>
                           </div>
                         ))}
+
                         {replyState.nextCursor && (
                           <button
                             onClick={() => fetchReplies(cm.commentId, true)}
@@ -511,16 +509,14 @@ export const PostModal = ({
               )}
             </div>
 
-            {/* Likes + actions */}
+            {/* ── Likes + actions ── */}
             <div className="px-4 py-2 border-t border-gray-100 flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                {/* Heart — ONLY toggles like, stopPropagation to be safe */}
+              <div className="flex items-center gap-2">
+                {/* Heart — like/unlike ONLY */}
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleLike();
-                  }}
-                  className="transition-transform active:scale-90"
+                  type="button"
+                  onClick={handleLike}
+                  className="transition-transform active:scale-90 flex-shrink-0"
                 >
                   <svg
                     className={`w-5 h-5 transition-colors ${
@@ -539,27 +535,25 @@ export const PostModal = ({
                   </svg>
                 </button>
 
-                {/* Count — ONLY opens LikeListModal, does NOT trigger like */}
+                {/* Count — opens like list ONLY, never triggers like */}
                 {localLikes > 0 && (
                   <button
                     type="button"
-                    onMouseDown={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
                       setShowLikes(true);
                     }}
-                    className="text-sm font-medium text-gray-700 hover:underline"
+                    className="text-sm font-medium text-gray-700 hover:underline flex-shrink-0"
                   >
                     {localLikes}
                   </button>
                 )}
               </div>
 
+              {/* Comment icon */}
               <button
+                type="button"
                 onClick={() => inputRef.current?.focus()}
                 className="text-gray-700 hover:text-blue-400 transition-colors"
               >
@@ -574,7 +568,7 @@ export const PostModal = ({
               </button>
             </div>
 
-            {/* Comment input */}
+            {/* ── Comment input ── */}
             <div className="px-4 py-3 border-t border-gray-100">
               {replyingTo && (
                 <div className="flex items-center justify-between mb-2 px-2 py-1 bg-blue-50 rounded-lg">
@@ -590,6 +584,7 @@ export const PostModal = ({
                   </button>
                 </div>
               )}
+
               <div className="flex items-center gap-3">
                 <input
                   ref={inputRef}
@@ -607,6 +602,7 @@ export const PostModal = ({
                   className="flex-1 text-sm text-gray-800 placeholder-gray-400 bg-transparent outline-none"
                 />
                 <button
+                  type="button"
                   disabled={!comment.trim() || submitting}
                   onClick={handleAddComment}
                   className="text-sm font-semibold text-rose-500 disabled:opacity-30 hover:text-rose-600 transition-colors"
@@ -619,7 +615,7 @@ export const PostModal = ({
         </div>
       </div>
 
-      {/* ── LikeListModal — rendered via portal directly into document.body ── */}
+      {/* ── LikeListModal portal ── */}
       {showLikes &&
         createPortal(
           <LikeListModal postId={postId} onClose={() => setShowLikes(false)} />,

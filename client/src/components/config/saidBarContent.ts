@@ -7,7 +7,7 @@ import { SquarePlusIcon } from "lucide-react";
 import { Wrench } from "lucide-react";
 import { CreditCard, AlertTriangle, RotateCcw,Wallet } from "lucide-react";
 import { customerFrontendRoutes } from "../../constants/frontendRoutes/customerFrontendRoutes";
-
+import { LayoutDashboard } from "lucide-react";
 
 
 
@@ -40,6 +40,7 @@ export const saidBarContent:SidebarContentType[]=[
             {label:"Dispute",icon:AlertTriangle,path:adminFrontendRoute.dispute,roles:['admin']},
                   {label:"Payment",icon:CreditCard,path:adminFrontendRoute.booking,roles:['admin']},
       {label:"Wallet",icon:Wallet,path:customerFrontendRoutes.wallet,roles:['customer']},
+      {label:"Dashboard",icon:LayoutDashboard,path:beauticianFrontendRoutes.dashboard,roles:['beautician']},
 
 
 
