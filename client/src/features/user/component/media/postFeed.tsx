@@ -83,6 +83,7 @@ export const PostFeed: React.FC<PostFeedProps> = ({
             location: selectedPost.location,
             likesCount: selectedPost.likesCount,
             timeAgo: selectedPost.timeAgo,
+             isLiked: selectedPost.isLiked,
           }}
           postId={selectedPostId}
           user={{
@@ -96,7 +97,6 @@ export const PostFeed: React.FC<PostFeedProps> = ({
           onClose={() => setSelectedPostId(null)}
           // ← Pass handler down; PostModal calls this instead of managing its
           //   own showLikes state. Keeps LikeListModal as a sibling portal here.
-          onShowLikes={(postId) => setLikesPostId(postId)}
         />
       )}
 

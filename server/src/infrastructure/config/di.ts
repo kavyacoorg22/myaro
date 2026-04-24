@@ -418,7 +418,7 @@ const createPostUseCase=new CreatePostUseCase(postRepo,userRepo,fileStorage)
 const getHomefeedUC=new GetHomeFeedUseCase(postRepo,userRepo,likeRepo)
 const getTipsRentFeedUC=new GetTipsRentFeedUseCase(postRepo,userRepo,likeRepo)
 const getBeauticianPostUC=new GetBeauticianPostUseCase(postRepo,likeRepo)
-const getPostSearchResult=new SearchPostUseCase(userRepo,postRepo)
+const getPostSearchResult=new SearchPostUseCase(userRepo,postRepo,likeRepo)
 const getSignedUrlUC=new GetSignedUploadUrlsUseCase(fileStorage)
 const postController=new PostController(createPostUseCase,getHomefeedUC,getTipsRentFeedUC,getBeauticianPostUC,getPostSearchResult,getSignedUrlUC)
 

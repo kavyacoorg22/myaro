@@ -23,11 +23,11 @@ export interface IGetRepliesInput {
     cursor?: string | null
 }
 
-export interface IGetLikedUserListResponse{
+export interface IGetLikedUserListResponseData{
   data:IGetLikedUserListDto[],
   nextCursor: string | null;
 }
 export type IGetPostCommentsOutPut=BackendResponse<IGetPostCommentsOutPutData>
 export type IGetHomeServiceCommentsOutPut=BackendResponse<IGetHomeServiceCommentsOutPutData>
 export type IGetRepliesOutput=BackendResponse<IGetRepliesOutputData>
-// export type IGetLikedUserListResponse=BackendResponse<IGetLikedUserListResponseData>
+export type IGetLikedUserListResponse=BackendResponse<IGetLikedUserListResponseData>
