@@ -438,6 +438,8 @@ export class BookingRepository
 
     return raw[0]?.total ?? 0;
   }
+
+
   protected map(doc: BookingDoc): Booking {
     const base = super.map(doc);
     return {

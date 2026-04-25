@@ -121,7 +121,6 @@ export class AdminUserManagementController {
         data: result,
       });
     } catch (error) {
-      console.error("❌ Controller error:", error);
       next(error);
     }
   };
@@ -146,7 +145,6 @@ export class AdminUserManagementController {
         data: result,
       });
     } catch (error) {
-      console.error("❌ Controller error:", error);
       next(error);
     }
   };
