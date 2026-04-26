@@ -24,7 +24,6 @@ export const validateBeauticianData = (
       shopPincode,
   
     } = req.body;
- console.log('body service mode',req.body.serviceModes)
 const rawModes = req.body.serviceModes;
 const serviceMode = (
   Array.isArray(rawModes) ? rawModes : rawModes ? [rawModes] : []

@@ -132,7 +132,6 @@ export class AdminUserManagementController {
     const userId = req.params.id;
     const adminId = req.user?.id || undefined;
     const rejectionReason=req.body.rejectionReason
-    console.log('controller rejectionReason',rejectionReason)
     if (!userId) {
       throw new AppError(
         userMessages.ERROR.MISSING_PARAMETERS,

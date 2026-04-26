@@ -23,7 +23,6 @@ export class RejectBeauticianUseCase implements IRejectBeauticianUseCase {
     rejectionReason?:string
   }): Promise<IResponse> {
     const { userId, adminId ,rejectionReason} = input;
-   console.log(rejectionReason)
     if (!userId) {
       throw new AppError(
         userMessages.ERROR.MISSING_PARAMETERS,
