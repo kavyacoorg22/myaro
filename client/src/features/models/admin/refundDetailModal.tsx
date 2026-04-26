@@ -118,8 +118,8 @@ const RefundDetailModal: React.FC<RefundDetailModalProps> = ({ refundId, onClose
               </p>
               <div className="space-y-3 mb-6">
                 {[
-                  { label: "Refund ID:",  value: `#${refundIdVal}` },
-                  { label: "Booking ID:", value: bookingIdVal ? `#${bookingIdVal}` : "—" },
+                { label: "Refund ID:",  value: `REF-${refundIdVal?.slice(-4).toUpperCase()}` },
+{ label: "Booking ID:", value: bookingIdVal ? `BK-${bookingIdVal?.slice(-4).toUpperCase()}` : "—" },
                   { label: "Customer:",   value: customerVal  ?? "—" },
                   { label: "Amount:",     value: amountVal != null ? `₹${amountVal}` : "—" },
                 ].map(({ label, value }) => (

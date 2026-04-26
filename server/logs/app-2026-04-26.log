@@ -6,3 +6,9 @@
 2026-04-26 12:54:34 info: ✅ Server running on http://localhost:4323
 2026-04-26 12:54:34 info: ✅ CORS enabled for: http://localhost:5173
 2026-04-26 12:54:34 info: ✅ Socket.io ready
+2026-04-26 13:43:51 info: ✅ Redis connected
+2026-04-26 13:43:51 info: ✅ Server running on http://localhost:4323
+2026-04-26 13:43:51 info: ✅ CORS enabled for: http://localhost:5173
+2026-04-26 13:43:51 info: ✅ Socket.io ready
+2026-04-26 14:59:20 error: Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) | {"errno":-4077,"code":"ECONNRESET","syscall":"read"}

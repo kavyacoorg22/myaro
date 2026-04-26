@@ -121,8 +121,8 @@ const DisputeDetailModal: React.FC<DisputeDetailModalProps> = ({ bookingId, onCl
               </p>
               <div className="space-y-3 mb-6">
                 {[
-                  { label: "Dispute ID:",    value: `#${detail.disputeId  ?? bookingId}` },
-                  { label: "Booking ID:",    value: `#${detail.bookingId}`                },
+               { label: "Dispute ID:",    value: `DIS-${detail.disputeId?.slice(-4).toUpperCase() ?? "—"}` },
+{ label: "Booking ID:",    value: `BK-${detail.bookingId?.slice(-4).toUpperCase()}`          },
                   { label: "Customer:",      value: detail.customerName   ?? "—"          },
                   { label: "Beautician:",    value: detail.beauticianName ?? "—"          },
                   { label: "Amount:",        value: detail.amount != null ? `₹${detail.amount}` : "—" },

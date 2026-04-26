@@ -172,8 +172,7 @@ const BookingPaymentDetailModal: React.FC<BookingPaymentDetailModalProps> = ({
                 Booking Information
               </p>
               <div className="space-y-3">
-                <Row label="Booking ID:"   value={`#${detail.bookingId}`}                 mono />
-                <Row label="Beautician:"  value={detail.beauticianName}                  bold />
+<Row label="Booking ID:"   value={`BK-${detail.bookingId?.slice(-4).toUpperCase()}`} />                <Row label="Beautician:"  value={detail.beauticianName}                  bold />
                 <Row label="Customer:"    value={detail.customerName}                    bold />
                 <Row label="Amount:"      value={`₹${detail.amount?.toLocaleString()}`} bold />
                 <Row
@@ -201,8 +200,7 @@ const BookingPaymentDetailModal: React.FC<BookingPaymentDetailModalProps> = ({
               {detail.paymentId && (
                 <div className="mt-4 border border-gray-200 rounded-xl px-4 py-3 space-y-2.5 bg-gray-50/60">
                   <p className="text-xs font-semibold text-gray-500 mb-1">Payment Info</p>
-                  <Row label="Transaction ID:" value={detail.paymentId}          mono small />
-                  <Row label="Method:"         value={detail.method ?? "—"}      small />
+<Row label="Transaction ID:" value={`TXN-${detail.paymentId?.slice(-6).toUpperCase()}`} small />                  <Row label="Method:"         value={detail.method ?? "—"}      small />
                   <Row label="Received on:"    value={formatDate(detail.paidAt)} small />
                 </div>
               )}

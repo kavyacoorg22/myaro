@@ -102,7 +102,7 @@ export default function UsersList(props: UsersDetailDesignProps) {
               : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
           }`}
         >
-          beautician
+          Beautician
         </button>
         <button
           onClick={() => setRoleFilter("customer")}
@@ -112,7 +112,7 @@ export default function UsersList(props: UsersDetailDesignProps) {
               : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
           }`}
         >
-          customer
+          Customer
         </button>
       </div>
 
@@ -134,10 +134,10 @@ export default function UsersList(props: UsersDetailDesignProps) {
             </TableHeader>
             <TableBody>
             
-              {pageData.map((user) => (
+              {pageData.map((user,index) => (
                 <TableRow key={user.id}>
                  
-                  <TableCell>{user.id}</TableCell>
+                  <TableCell>{(page - 1) * pageData.length + index + 1}</TableCell>
                   <TableCell>{user.userName}</TableCell>
                   <TableCell>{user.fullName}</TableCell>
                    <TableCell>{user.email}</TableCell>
