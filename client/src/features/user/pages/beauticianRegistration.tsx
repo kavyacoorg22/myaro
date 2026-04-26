@@ -16,6 +16,7 @@ import { beauticianFrontendRoutes } from "../../../constants/frontendRoutes/beau
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "../../../redux/userSlice/userSlice";
 import type { RootState } from "../../../redux/appStore";
+import type { ServiceModesType } from "../../../constants/types/beautician";
 
 interface RegistrationData {
   step1?: Step1Data;
@@ -45,67 +46,57 @@ export default function BeauticianRegistration() {
     setCurrentStep(2);
   };
 
-  const handleStep2Complete = async (
-    data: Step2Data, 
-    files: {
-      portfolioFiles: File[];
-      certificateFiles: File[];
-      shopPhotos?: File[];
-      licenseFiles?: File[];
+ // ✅ Fix — add serviceModes parameter and append to formData
+const handleStep2Complete = async (
+  data: Step2Data,
+  files: {
+    portfolioFiles: File[];
+    certificateFiles: File[];
+    shopPhotos?: File[];
+    licenseFiles?: File[];
+  },
+  serviceModes: ServiceModesType[]   
+) => {
+  setRegistrationData(prev => ({ ...prev, step2: data }));
+  setIsSubmitting(true);
+
+  try {
+    const formData = new FormData();
+
+    formData.append('yearsOfExperience', registrationData.step1!.yearsOfExperience.toString());
+    formData.append('about', registrationData.step1!.about);
+    formData.append('hasShop', data.hasShop.toString());
+
+    // ✅ Append service modes
+    serviceModes.forEach((mode) => {
+      formData.append('serviceModes', mode);
+    });
+
+    files.portfolioFiles.forEach(file => formData.append('portfolioImage', file));
+    files.certificateFiles.forEach(file => formData.append('certificateImage', file));
+
+    if (data.hasShop && data.shop) {
+      formData.append('shopName', data.shop.shopName);
+      formData.append('shopAddress', data.shop.address);
+      formData.append('shopCity', data.shop.city);
+      formData.append('shopPincode', data.shop.pincode);
+      files.shopPhotos?.forEach(file => formData.append('shopPhotos', file));
+      files.licenseFiles?.forEach(file => formData.append('shopLicence', file));
     }
-  ) => {
-    setRegistrationData(prev => ({ ...prev, step2: data }));
-    setIsSubmitting(true);
 
-    try {
-      const formData = new FormData();
-
-      formData.append('yearsOfExperience', registrationData.step1!.yearsOfExperience.toString());
-      formData.append('about', registrationData.step1!.about);
-
- 
-      formData.append('hasShop', data.hasShop.toString());
-
-      files.portfolioFiles.forEach((file) => {
-        formData.append('portfolioImage', file);
-      });
-
-      files.certificateFiles.forEach((file) => {
-        formData.append('certificateImage', file);
-      });
-
-      if (data.hasShop && data.shop) {
-        formData.append('shopName', data.shop.shopName);
-        formData.append('shopAddress', data.shop.address);
-        formData.append('shopCity', data.shop.city);
-        formData.append('shopPincode', data.shop.pincode);
-
-        files.shopPhotos?.forEach((file) => {
-          formData.append('shopPhotos', file);
-        });
-
-        files.licenseFiles?.forEach((file) => {
-          formData.append('shopLicence', file);
-        });
-      }
-
-      
-      const response = await BeauticianApi.beauticianRegister(formData);
-
-      
+    const response = await BeauticianApi.beauticianRegister(formData);
     setShowReviewModal(true);
-    } catch (error: any) {
-      console.error('❌ Registration failed:', error);
-      
-      if (error.status) {
-        alert(error.body?.message || `Error ${error.status}: Registration failed`);
-      } else {
-        alert(error.message || 'Registration failed. Please try again.');
-      }
-    } finally {
-      setIsSubmitting(false);
+  } catch (error: any) {
+    console.error('❌ Registration failed:', error);
+    if (error.status) {
+      alert(error.body?.message || `Error ${error.status}: Registration failed`);
+    } else {
+      alert(error.message || 'Registration failed. Please try again.');
     }
-  };
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleStep3Complete = async (data: Step3Data) => {
     setRegistrationData(prev => ({ ...prev, step3: data }));
@@ -114,7 +105,6 @@ export default function BeauticianRegistration() {
     try {
       
       const response=await BeauticianApi.updateRegister(data);
-     
         if (response.data?.data) {
       dispatch(setCurrentUser({
         userId: response.data.data.userId,

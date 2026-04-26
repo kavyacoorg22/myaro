@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { BeauticianList } from '../component/BeauticianList';
 import { type IBeauticianDTO, type IBeauticianProfileResponseData } from '../../../types/api/admin';
 import { type BeauticianStatusFilterType } from '../../../constants/types/beautician';
@@ -10,49 +9,35 @@ import { adminApi } from '../../../services/api/admin';
 import { toast } from 'react-toastify';
 import { handleApiError } from '../../../lib/utils/handleApiError';
 
- const BeauticianListPage = () => {
+const BeauticianListPage = () => {
   const navigate = useNavigate();
   const [beauticians, setBeauticians] = useState<IBeauticianDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState<BeauticianStatusFilterType>('pending');
-   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  
-  
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   const [selectedBeautician, setSelectedBeautician] = useState<IBeauticianProfileResponseData | null>(null);
   const [selectedVerificationStatus, setSelectedVerificationStatus] = useState<'pending' | 'verified' | 'rejected'>('pending');
 
-  // Fetch beauticians from API
   useEffect(() => {
     const fetchBeauticians = async () => {
       setLoading(true);
       try {
-        
-        
-        // Pass pagination and filter parameters to the API
         const params = {
           page: currentPage,
-          limit: 10, 
+          limit: 10,
           verificationStatus: statusFilter !== 'all' ? statusFilter : undefined,
         };
-        
-     
-        
+
         const response = await adminApi.getBeautician(params);
-        
 
         if (response.data?.data) {
-         
-          const beauticianData = 
-            response.data.data.beautician ||  [];
-          
-    
-          
+          const beauticianData = response.data.data.beautician || [];
           setBeauticians(Array.isArray(beauticianData) ? beauticianData : []);
           setTotalPages(response.data.data.totalPages || 1);
         } else {
-          console.warn('⚠️ No data found in response');
           setBeauticians([]);
           setTotalPages(1);
         }
@@ -66,7 +51,7 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
     };
 
     fetchBeauticians();
-  }, [currentPage, statusFilter,refreshTrigger]); 
+  }, [currentPage, statusFilter, refreshTrigger]);
 
   const handleStatusFilterChange = (status: BeauticianStatusFilterType) => {
     setStatusFilter(status);
@@ -79,34 +64,30 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
 
   const handleApprove = async (userId: string) => {
     try {
-        const response = await adminApi.approveBeautician(userId);
-      
-        if(response.data?.data)
-        {
-          toast.success(response.data.message)
-        }
-      setRefreshTrigger(prev => prev + 1);
-      
+      const response = await adminApi.approveBeautician(userId);
+      if (response.data?.data) {
+        toast.success(response.data.message);
+      }
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
       console.error('Error approving beautician:', error);
-      handleApiError(error)
+      handleApiError(error);
     } finally {
       setSelectedBeautician(null);
     }
   };
 
-  const handleReject = async (userId: string) => {
+  // ← now accepts rejectionReason as second argument
+  const handleReject = async (userId: string, rejectionReason: string) => {
     try {
-      const response = await adminApi.rejectBeautician(userId);
-      
-        if(response.data?.data)
-        {
-          toast.success(response.data.message)
-        }
-      setRefreshTrigger(prev => prev + 1);
+      const response = await adminApi.rejectBeautician(userId, rejectionReason);
+      if (response.data?.data) {
+        toast.success(response.data.message);
+      }
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
       console.error('Error rejecting beautician:', error);
-      handleApiError(error)
+      handleApiError(error);
     } finally {
       setSelectedBeautician(null);
     }
@@ -114,18 +95,13 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
 
   const handleViewProfile = async (userId: string) => {
     try {
-      
-      // Find the verification status from the current list
-      const beauticianInList = beauticians.find(b => b.userId=== userId);
+      const beauticianInList = beauticians.find((b) => b.userId === userId);
       if (beauticianInList) {
         const status = beauticianInList.verificationStatus.toLowerCase() as 'pending' | 'verified' | 'rejected';
         setSelectedVerificationStatus(status);
       }
-      
-    
+
       const response = await adminApi.viewProfile(userId);
-      
-      
       if (response.data?.data) {
         setSelectedBeautician(response.data.data);
       } else {
@@ -137,12 +113,10 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
     }
   };
 
-  
-
   if (loading && beauticians.length === 0) {
     return (
       <>
-        <SaidBar/>
+        <SaidBar />
         <div className="flex justify-center items-center min-h-screen ml-60">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
@@ -155,8 +129,8 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
 
   return (
     <>
-      <SaidBar/>
-      
+      <SaidBar />
+
       <BeauticianList
         beauticians={beauticians}
         currentPage={currentPage}
@@ -169,7 +143,6 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
         onViewProfile={handleViewProfile}
       />
 
-      {/* Profile Modal */}
       {selectedBeautician && (
         <BeauticianProfileModal
           isOpen={!!selectedBeautician}
@@ -184,4 +157,4 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
   );
 };
 
-export default BeauticianListPage
+export default BeauticianListPage;

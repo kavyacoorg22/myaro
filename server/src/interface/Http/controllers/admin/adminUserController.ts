@@ -131,7 +131,8 @@ export class AdminUserManagementController {
   rejectBeautician = async (req: Request, res: Response): Promise<void> => {
     const userId = req.params.id;
     const adminId = req.user?.id || undefined;
-
+    const rejectionReason=req.body.rejectionReason
+    console.log('controller rejectionReason',rejectionReason)
     if (!userId) {
       throw new AppError(
         userMessages.ERROR.MISSING_PARAMETERS,
@@ -145,7 +146,7 @@ export class AdminUserManagementController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    await this._rejectBeauticianUseCase.execute({ userId, adminId });
+    await this._rejectBeauticianUseCase.execute({ userId, adminId ,rejectionReason});
 
     res.status(HttpStatus.OK).json({
       success: true,

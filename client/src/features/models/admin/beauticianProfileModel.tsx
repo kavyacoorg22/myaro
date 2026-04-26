@@ -10,25 +10,23 @@ interface BeauticianProfileModalProps {
   beautician: IBeauticianProfileResponseData;
   verificationStatus: 'pending' | 'verified' | 'rejected';
   onApprove?: (id: string) => void;
-  onReject?: (id: string) => void;
+  onReject?: (id: string, rejectionReason: string) => void; // ← updated signature
 }
 
-
-const ScrollArea: React.FC<{ children: React.ReactNode; className?: string }> = ({ 
-  children, 
-  className 
+const ScrollArea: React.FC<{ children: React.ReactNode; className?: string }> = ({
+  children,
+  className,
 }) => (
   <div className={`relative overflow-auto ${className || ''}`}>
     {children}
   </div>
 );
 
-// Image Viewer Modal
-const ImageViewerModal: React.FC<{ 
-  imageUrl: string; 
-  onClose: () => void 
-}> = ({ imageUrl, onClose }) => (
-  <div 
+const ImageViewerModal: React.FC<{ imageUrl: string; onClose: () => void }> = ({
+  imageUrl,
+  onClose,
+}) => (
+  <div
     className="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4"
     onClick={onClose}
   >
@@ -38,16 +36,15 @@ const ImageViewerModal: React.FC<{
     >
       <X className="w-6 h-6" />
     </button>
-    <img 
-      src={imageUrl} 
-      alt="Full size" 
+    <img
+      src={imageUrl}
+      alt="Full size"
       className="max-w-full max-h-full object-contain"
       onClick={(e) => e.stopPropagation()}
     />
   </div>
 );
 
-// Main Modal Component
 export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
   isOpen,
   onClose,
@@ -57,12 +54,9 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
   onReject,
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  
-  // ✅ ADD THIS STATE
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     type: 'approve' | 'reject';
-    action: () => void;
   } | null>(null);
 
   if (!isOpen) return null;
@@ -71,38 +65,26 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
 
   const formatAddress = (address?: ShopAddressVO) => {
     if (!address) return null;
-    const parts = [
-      address.address,
-      address.city,
-      address.pincode,
-    ].filter(Boolean);
-    return parts.join(', ');
+    return [address.address, address.city, address.pincode].filter(Boolean).join(', ');
   };
 
-  // ✅ ADD THESE HANDLER FUNCTIONS
-  const handleApproveClick = () => {
-    setConfirmDialog({
-      isOpen: true,
-      type: 'approve',
-      action: () => onApprove?.(beautician.userId)
-    });
-  };
+  const handleApproveClick = () => setConfirmDialog({ isOpen: true, type: 'approve' });
+  const handleRejectClick = () => setConfirmDialog({ isOpen: true, type: 'reject' });
 
-  const handleRejectClick = () => {
-    setConfirmDialog({
-      isOpen: true,
-      type: 'reject',
-      action: () => onReject?.(beautician.userId)
-    });
+  // Receives optional rejectionReason from ValidationAlert
+  const handleConfirm = (rejectionReason?: string) => {
+    if (confirmDialog?.type === 'approve') {
+      onApprove?.(beautician.userId);
+    } else if (confirmDialog?.type === 'reject' && rejectionReason) {
+      onReject?.(beautician.userId, rejectionReason);
+    }
+    setConfirmDialog(null);
   };
 
   return (
     <>
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} />
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -131,7 +113,7 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
               {/* Profile Section */}
               <div className="flex items-start gap-4 pb-4 border-b">
                 <img
-                  src={beautician.profileImg }
+                  src={beautician.profileImg}
                   alt={beautician.userName}
                   className="w-20 h-20 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity border-4 border-purple-100 shadow-md"
                   onClick={() => beautician.profileImg && setSelectedImage(beautician.profileImg)}
@@ -198,19 +180,17 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
               {/* Portfolio Images */}
               {beautician.portfolioImage && beautician.portfolioImage.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Portfolio Images ({beautician.portfolioImage.length})</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">
+                    Portfolio Images ({beautician.portfolioImage.length})
+                  </h4>
                   <div className="grid grid-cols-3 gap-3">
                     {beautician.portfolioImage.map((url, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border-2 border-gray-200 hover:border-purple-400"
                         onClick={() => setSelectedImage(url)}
                       >
-                        <img
-                          src={url}
-                          alt={`Portfolio ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={url} alt={`Portfolio ${index + 1}`} className="w-full h-full object-cover" />
                       </div>
                     ))}
                   </div>
@@ -220,19 +200,17 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
               {/* Shop Photos */}
               {beautician.shopPhotos && beautician.shopPhotos.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Shop Photos ({beautician.shopPhotos.length})</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">
+                    Shop Photos ({beautician.shopPhotos.length})
+                  </h4>
                   <div className="grid grid-cols-3 gap-3">
                     {beautician.shopPhotos.map((url, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border-2 border-gray-200 hover:border-purple-400"
                         onClick={() => setSelectedImage(url)}
                       >
-                        <img
-                          src={url}
-                          alt={`Shop ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={url} alt={`Shop ${index + 1}`} className="w-full h-full object-cover" />
                       </div>
                     ))}
                   </div>
@@ -247,7 +225,7 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
                   </h4>
                   <div className="space-y-2">
                     {beautician.certificateImage.map((url, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer border border-gray-200 hover:border-purple-400 transition-colors"
                         onClick={() => setSelectedImage(url)}
@@ -267,27 +245,23 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
                 </div>
               )}
 
-              {/* Empty state if no documents */}
-              {(!beautician.portfolioImage || beautician.portfolioImage.length === 0) && 
-               (!beautician.shopPhotos || beautician.shopPhotos.length === 0) && 
-               (!beautician.certificateImage || beautician.certificateImage.length === 0) && (
-                <div className="text-center py-8 bg-gray-50 rounded-lg">
-                  <File className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">No documents uploaded yet</p>
-                </div>
-              )}
+              {/* Empty state */}
+              {(!beautician.portfolioImage || beautician.portfolioImage.length === 0) &&
+                (!beautician.shopPhotos || beautician.shopPhotos.length === 0) &&
+                (!beautician.certificateImage || beautician.certificateImage.length === 0) && (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                    <File className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">No documents uploaded yet</p>
+                  </div>
+                )}
 
-              {/* Admin Verification Status */}
+              {/* Pending Warning */}
               {isPending && (
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
                   <div className="flex">
-                    <div className="flex-shrink-0">
-                      <span className="text-2xl">⚠️</span>
-                    </div>
+                    <span className="text-2xl">⚠️</span>
                     <div className="ml-3">
-                      <p className="text-sm font-medium text-yellow-800">
-                        Awaiting Admin Verification
-                      </p>
+                      <p className="text-sm font-medium text-yellow-800">Awaiting Admin Verification</p>
                       <p className="text-sm text-yellow-700 mt-1">
                         Please review all information and documents carefully before approving or rejecting this application.
                       </p>
@@ -298,10 +272,9 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
             </div>
           </ScrollArea>
 
-          {/* Footer with Actions */}
+          {/* Footer Actions */}
           {isPending && onApprove && onReject && (
             <div className="border-t px-6 py-4 bg-gray-50 rounded-b-2xl flex gap-3">
-              {/* ✅ CHANGE THESE BUTTONS */}
               <button
                 onClick={handleApproveClick}
                 className="flex-1 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
@@ -321,24 +294,22 @@ export const BeauticianProfileModal: React.FC<BeauticianProfileModalProps> = ({
         </div>
       </div>
 
-      {/* Image Viewer Modal */}
+      {/* Image Viewer */}
       {selectedImage && (
-        <ImageViewerModal
-          imageUrl={selectedImage}
-          onClose={() => setSelectedImage(null)}
-        />
+        <ImageViewerModal imageUrl={selectedImage} onClose={() => setSelectedImage(null)} />
       )}
 
-      {/* ✅ ADD THIS CONFIRMATION DIALOG */}
+      {/* Confirm Dialog */}
       {confirmDialog && (
         <ValidationAlert
           isOpen={confirmDialog.isOpen}
           onClose={() => setConfirmDialog(null)}
-          onConfirm={confirmDialog.action}
+          onConfirm={handleConfirm}
           type={confirmDialog.type}
-          message={confirmDialog.type === 'approve'
-            ? 'Are you sure you want to approve this beautician? They will gain access to the platform.'
-            : 'Are you sure you want to reject this application? This action cannot be undone.'
+          message={
+            confirmDialog.type === 'approve'
+              ? 'Are you sure you want to approve this beautician? They will gain access to the platform.'
+              : 'Are you sure you want to reject this application? Please provide a reason below.'
           }
         />
       )}

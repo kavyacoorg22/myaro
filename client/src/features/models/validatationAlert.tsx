@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { AlertTriangle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -11,20 +13,23 @@ import {
 interface ValidationAlertProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (rejectionReason?: string) => void; // ← updated signature
   title?: string;
   message: string;
   type?: 'error' | 'warning' | 'info' | 'approve' | 'reject';
 }
 
-export function ValidationAlert({ 
-  isOpen, 
-  onClose, 
+export function ValidationAlert({
+  isOpen,
+  onClose,
   onConfirm,
   title,
   message,
   type = 'error'
 }: ValidationAlertProps) {
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [touched, setTouched] = useState(false);
+
   const config = {
     error: {
       icon: '❌',
@@ -70,9 +75,33 @@ export function ValidationAlert({
 
   const currentConfig = config[type];
   const isConfirmType = type === 'approve' || type === 'reject';
+  const isReject = type === 'reject';
+
+  const isReasonEmpty = rejectionReason.trim() === '';
+  const showError = isReject && touched && isReasonEmpty;
+
+  const handleConfirm = () => {
+    if (isReject) {
+      setTouched(true);
+      if (isReasonEmpty) return; // block — don't close or call onConfirm
+    }
+    onConfirm?.(isReject ? rejectionReason.trim() : undefined);
+    handleReset();
+    onClose();
+  };
+
+  const handleReset = () => {
+    setRejectionReason('');
+    setTouched(false);
+  };
+
+  const handleClose = () => {
+    handleReset();
+    onClose();
+  };
 
   return (
-   <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialog open={isOpen} onOpenChange={handleClose}>
       <AlertDialogContent className="max-w-md bg-white">
         <AlertDialogHeader>
           {/* Icon */}
@@ -91,32 +120,59 @@ export function ValidationAlert({
               {message}
             </p>
           </div>
+
+          {/* Rejection Reason — only for reject type */}
+          {isReject && (
+            <div className="mt-4 text-left space-y-1">
+              <label className="text-sm font-semibold text-gray-700">
+                Reason for Rejection
+                <span className="text-red-500 ml-1">*</span>
+              </label>
+              <textarea
+                rows={3}
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                onBlur={() => setTouched(true)}
+                placeholder="Explain why this application is being rejected..."
+                className={`w-full text-sm px-3 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 transition-colors ${
+                  showError
+                    ? 'border-red-400 focus:ring-red-300 bg-red-50 placeholder-red-300'
+                    : 'border-gray-300 focus:ring-red-200 placeholder-gray-400'
+                }`}
+              />
+              {showError && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+                  Please provide a reason before rejecting.
+                </p>
+              )}
+            </div>
+          )}
         </AlertDialogHeader>
 
         <AlertDialogFooter className="mt-6">
           {isConfirmType ? (
-            // Two buttons for approve/reject
+            // Two buttons for approve / reject
             <div className="flex gap-3 w-full sm:flex-row flex-col-reverse">
               <AlertDialogCancel
-                onClick={onClose}
+                onClick={handleClose}
                 className="flex-1 bg-gray-200 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors border-0"
               >
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => {
-                  onConfirm?.();
-                  onClose();
-                }}
+              {/* Plain button so we can block the dialog from closing on validation failure */}
+              <button
+                type="button"
+                onClick={handleConfirm}
                 className={`flex-1 ${currentConfig.buttonBg} text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-sm`}
               >
-                OK
-              </AlertDialogAction>
+                {isReject ? 'Reject' : 'Approve'}
+              </button>
             </div>
           ) : (
-            // Single button for error/warning/info
+            // Single button for error / warning / info
             <AlertDialogAction
-              onClick={onClose}
+              onClick={handleClose}
               className={`w-full ${currentConfig.buttonBg} text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-sm`}
             >
               Got it

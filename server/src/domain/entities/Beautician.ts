@@ -33,6 +33,7 @@ export interface Beautician {
   certificateImage?: string[];
   bankDetails?: BankDetailsVO;
   verificationStatus: VerificationStatus;
+  rejectionReason?:string,
   verifiedBy?: ID;
   verifiedAt?: Date;
   homeserviceCount: number;

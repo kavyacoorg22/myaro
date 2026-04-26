@@ -1,6 +1,13 @@
 import { FormProvider } from "react-hook-form";
 import { FormField, FormMessage } from "../../../../components/ui/form";
 import { ValidationAlert } from "../../../models/validatationAlert";
+import { ServiceModes, type ServiceModesType } from "../../../../constants/types/beautician";
+
+const SERVICE_MODE_OPTIONS = [
+  { value: ServiceModes.HOME, label: "🏠 Home Service", desc: "You visit the customer's home" },
+  { value: ServiceModes.EVENT, label: "🎉 Event", desc: "Bridal, parties & special occasions" },
+  { value: ServiceModes.CONSULTATION, label: "💬 Consultation", desc: "Online or in-person advice" },
+] as const;
 
 export function Step2UI({
   methods,
@@ -17,13 +24,21 @@ export function Step2UI({
   handleSubmit,
   onBack,
   validationAlert,
-  closeValidationAlert
+  closeValidationAlert,
+  serviceModes,
+  setServiceModes,
 }: any) {
   const { register } = methods;
-  
+
+  const toggleMode = (mode: ServiceModesType) => {
+    setServiceModes((prev: ServiceModesType[]) =>
+      prev.includes(mode) ? prev.filter((m: ServiceModesType) => m !== mode) : [...prev, mode]
+    );
+  };
+
   return (
     <FormProvider {...methods}>
-          <ValidationAlert
+      <ValidationAlert
         isOpen={validationAlert.isOpen}
         onClose={closeValidationAlert}
         message={validationAlert.message}
@@ -41,6 +56,40 @@ export function Step2UI({
           <div className="h-1 w-16 bg-purple-500 rounded"></div>
           <div className="h-1 w-16 bg-purple-500 rounded"></div>
           <div className="h-1 w-16 bg-gray-300 rounded"></div>
+        </div>
+
+        {/* ── Service Modes Section ── */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-purple-500">🛵</span>
+            <h3 className="font-medium">Other Services You Offer</h3>
+          </div>
+          <p className="text-xs text-gray-600 mb-3">
+            Select all the ways you can serve customers (apart from shop)
+          </p>
+          <div className="flex flex-col gap-2">
+            {SERVICE_MODE_OPTIONS.map(({ value, label, desc }) => {
+              const selected = (serviceModes ?? []).includes(value);
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => toggleMode(value)}
+                  className={`flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg border-2 transition ${
+                    selected
+                      ? 'border-purple-500 bg-purple-50 text-purple-800'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+                  }`}
+                >
+                  <span className="text-lg">{selected ? '✓' : '○'}</span>
+                  <div>
+                    <p className="text-sm font-medium">{label}</p>
+                    <p className="text-xs text-gray-500">{desc}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Portfolio Section */}

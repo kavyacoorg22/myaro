@@ -20,6 +20,7 @@ export interface IBeauticianRegistrationInput {
   shopName?: string;
   shopAddress?: ShopAddressVO;
   files: BeauticianFiles;
+  serviceModes:ServiceModes[]
 }
 
 export interface IBeauticianRegistartionOutput {

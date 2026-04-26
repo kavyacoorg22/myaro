@@ -10,7 +10,7 @@ import {
 interface BeauticianCardProps {
   beautician: IBeauticianDTO;
   onApprove: (id: string) => void;
-  onReject: (id: string) => void;
+onReject: (id: string, rejectionReason: string) => void;
   onViewProfile: (id: string) => void;
 }
 

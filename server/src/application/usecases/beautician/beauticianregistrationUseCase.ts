@@ -91,6 +91,7 @@ export class BeauticianRegistrationUseCase implements IBeauticianRegisterUseCase
       shopLicence: shopLicencePaths,
       verificationStatus: VerificationStatus.PENDING,
       homeserviceCount: 0,
+      serviceModes:data.serviceModes
     };
 
     const oldFiles = existing

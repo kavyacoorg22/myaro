@@ -46,6 +46,7 @@ export class BeauticianController {
       );
     }
     const dto = req.body.validatedData;
+    console.log(dto)
 
     if (!dto) {
       throw new AppError(

@@ -20,9 +20,10 @@ export class RejectBeauticianUseCase implements IRejectBeauticianUseCase {
   async execute(input: {
     userId: string;
     adminId?: string;
+    rejectionReason?:string
   }): Promise<IResponse> {
-    const { userId, adminId } = input;
-
+    const { userId, adminId ,rejectionReason} = input;
+   console.log(rejectionReason)
     if (!userId) {
       throw new AppError(
         userMessages.ERROR.MISSING_PARAMETERS,
@@ -42,6 +43,7 @@ export class RejectBeauticianUseCase implements IRejectBeauticianUseCase {
       verificationStatus: VerificationStatus.REJECTED,
       verifiedBy: adminId,
       verifiedAt: new Date(),
+      rejectionReason:rejectionReason??'',
     };
 
     const updated = await this._beauticianRepo.updateVerificationByUserId(

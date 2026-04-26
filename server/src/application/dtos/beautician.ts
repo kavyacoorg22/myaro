@@ -7,6 +7,7 @@ import { location } from "../interfaceType/beauticianType";
 
 export interface IVerificationStatusDto {
   verificationStatus: VerificationStatus;
+  rejectionReason?:string
 }
 
 export interface IBeauticianDTO {

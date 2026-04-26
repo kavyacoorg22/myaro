@@ -37,8 +37,10 @@ export const adminApi={
     approveBeautician:async(id:string)=>{
     return await axiosWrapper<IApproveResponse>(api.patch(adminApiRoute.approveBeautician.replace(':id',id)));
   },
-    rejectBeautician:async(id:string)=>{
-    return await axiosWrapper<IRejectResponse>(api.patch(adminApiRoute.rejectBeautician.replace(':id',id)) );
+    rejectBeautician:async(id:string,rejectionReason:string)=>{
+    return await axiosWrapper<IRejectResponse>(api.patch(adminApiRoute.rejectBeautician.replace(':id',id),
+    {rejectionReason}
+  ) );
   },
   //services
   addCategory:async(data:IAddCategoryRequest)=>{

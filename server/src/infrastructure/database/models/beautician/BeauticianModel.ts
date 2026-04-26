@@ -33,7 +33,7 @@ export type BeauticianDoc =Document & {
     bankName: string;
     upiId: string;
   };
-
+    rejectionReason?:string,
   verificationStatus: VerificationStatus;
   verifiedBy?: Types.ObjectId;
   verifiedAt?: Date;
@@ -86,7 +86,7 @@ const BeauticianSchema = new Schema<BeauticianDoc>(
     certificateImage: [{ type: String }],
 
     bankDetails: { type: BankDetailsSchema },
-
+    rejectionReason:{type:String},
     verificationStatus: {
       type: String,
       enum: Object.values(VerificationStatus),

@@ -65,6 +65,7 @@ export interface IViewBeauticianResponse{
 export interface IVerificationRequest{
     userId:string,
     adminId:string,
+    rejectionReason?:string
 }
 
 export interface IProcessRefundInput {

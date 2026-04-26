@@ -24,7 +24,8 @@ export interface IRegisterRequest{
 }
 
 export interface IVerificationStatusResponseData{
-  verificationStatus:BeauticianStatusType
+  verificationStatus:BeauticianStatusType,
+  rejectionReason?:string
 }
 
 export interface IBeauticianPaymentDeatilRequest{

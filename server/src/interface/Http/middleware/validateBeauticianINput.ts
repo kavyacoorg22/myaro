@@ -5,6 +5,7 @@ import { BeauticianFiles, IBeauticianEditProfileInput, IBeauticianRegistrationIn
 import { ShopAddressVO } from "../../../domain/entities/Beautician";
 import { PostType } from "../../../domain/enum/userEnum";
 import { fileMessages } from "../../../shared/constant/message/fileMessages";
+import { ServiceModes } from "../../../domain/enum/beauticianEnum";
 
 export const validateBeauticianData = (
   req: Request,
@@ -21,8 +22,13 @@ export const validateBeauticianData = (
       shopAddress,
       shopCity,
       shopPincode,
+  
     } = req.body;
-
+ console.log('body service mode',req.body.serviceModes)
+const rawModes = req.body.serviceModes;
+const serviceMode = (
+  Array.isArray(rawModes) ? rawModes : rawModes ? [rawModes] : []
+) as ServiceModes[];
   
   
     if (!yearsOfExperience || isNaN(Number(yearsOfExperience))) {
@@ -88,6 +94,7 @@ const normalized: Partial<IBeauticianRegistrationInput>= {
       shopName: shopName?.trim(),
       shopAddress: shopAddressVO,
       files: beauticianFiles,
+      serviceModes:serviceMode
     };
     req.body.validatedData = normalized
     next()

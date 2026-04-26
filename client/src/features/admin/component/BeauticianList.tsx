@@ -20,7 +20,7 @@ interface BeauticianListProps {
   onStatusFilterChange: (status: BeauticianStatusFilterType) => void;
   onPageChange: (page: number) => void;
   onApprove: (id: string) => void;
-  onReject: (id: string) => void;
+  onReject: (id: string, rejectionReason: string) => void; // ← updated
   onViewProfile: (id: string) => void;
 }
 

@@ -27,6 +27,7 @@ export function toVerificationStatusOutputDto(
 ): IVerificationStatusDto {
   return {
     verificationStatus: beautician.verificationStatus,
+    rejectionReason:beautician.rejectionReason??''
   };
 }
 
@@ -42,6 +43,7 @@ export function toBeauticianDeatilDto(
     yearsOfExperience: beautician.yearsOfExperience,
     shopName: beautician.shopName,
     city: beautician.shopAddress?.city,
+    
   };
 }
 

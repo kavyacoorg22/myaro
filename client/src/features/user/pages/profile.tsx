@@ -34,6 +34,7 @@ import { FollowingModal } from "../../models/followListModel";
 interface BeauticianInfo {
   isBeautician: boolean;
   verificationStatus?: BeauticianStatusType;
+  rejectionReason?:string
 }
 
 type ActiveTab = "posts" | "tips" | "rent";
@@ -155,6 +156,8 @@ const ProfilePage = () => {
       setBeauticianInfo({
         isBeautician: true,
         verificationStatus: response.data?.data?.verificationStatus,
+              rejectionReason: response.data?.data?.rejectionReason
+
       });
     } catch (error: any) {
       if (error.status === 404) {
@@ -382,6 +385,7 @@ const ProfilePage = () => {
           <div className="px-6 mt-4">
             <VerificationStatusBanner
               status={beauticianInfo.verificationStatus}
+              rejectionReason={beauticianInfo.rejectionReason}
               onCompleteSetup={handleCompleteSetup}
               onResubmit={handleResubmit}
             />

@@ -98,6 +98,10 @@ export class mongoBeauticianRepository
       setFields.verifiedBy = new ObjectId(update.verifiedBy);
     }
 
+     if (update.rejectionReason !== undefined) {
+    setFields.rejectionReason = update.rejectionReason;
+  }
+
     const updatedDoc = await BeauticianModel.findOneAndUpdate(
       filter,
       { $set: setFields },
@@ -207,7 +211,6 @@ export class mongoBeauticianRepository
             pincode: doc.shopAddress.pincode,
           }
         : undefined,
-
       shopPhotos: doc.shopPhotos ?? [],
       shopLicence: doc.shopLicence ?? [],
       portfolioImage: doc.portfolioImage ?? [],
@@ -222,14 +225,12 @@ export class mongoBeauticianRepository
             upiId: doc.bankDetails.upiId,
           }
         : undefined,
-
       verificationStatus: doc.verificationStatus,
       verifiedBy: doc.verifiedBy?.toString(),
       verifiedAt: doc.verifiedAt,
-
+      rejectionReason:doc.rejectionReason,
       homeserviceCount: doc.homeserviceCount ?? 0,
       pamphletUrl: doc.pamphletUrl,
-
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

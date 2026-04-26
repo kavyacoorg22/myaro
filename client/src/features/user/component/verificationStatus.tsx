@@ -1,16 +1,17 @@
 import React from 'react';
-import { Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import {type BeauticianStatusType,BeauticianStatus } from '../../../constants/types/beautician';
-
+import { Clock, CheckCircle, XCircle, AlertCircle, MessageSquare } from 'lucide-react';
+import { type BeauticianStatusType, BeauticianStatus } from '../../../constants/types/beautician';
 
 interface VerificationStatusBannerProps {
   status: BeauticianStatusType;
+  rejectionReason?: string; 
   onCompleteSetup?: () => void;
   onResubmit?: () => void;
 }
 
 export const VerificationStatusBanner: React.FC<VerificationStatusBannerProps> = ({
   status,
+  rejectionReason,
   onCompleteSetup,
   onResubmit,
 }) => {
@@ -47,7 +48,7 @@ export const VerificationStatusBanner: React.FC<VerificationStatusBannerProps> =
 
           {/* Footer */}
           <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg px-1 flex justify-center gap-2">
-            <Clock className="w-5 h-5 text-yellow-600 " />
+            <Clock className="w-5 h-5 text-yellow-600" />
             <span className="text-yellow-800 text-sm text-center">Estimated review time: 12-24 hrs</span>
           </div>
         </div>
@@ -55,7 +56,7 @@ export const VerificationStatusBanner: React.FC<VerificationStatusBannerProps> =
     );
   }
 
-  // verified Status
+  // VERIFIED Status
   if (status === BeauticianStatus.VERIFIED) {
     return (
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-green-200">
@@ -123,6 +124,17 @@ export const VerificationStatusBanner: React.FC<VerificationStatusBannerProps> =
               Please review your details and submit again with accurate information. 📝
             </p>
           </div>
+
+          {/* Rejection Reason from Admin */}
+          {rejectionReason && (
+            <div className="mt-4 bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <MessageSquare className="w-4 h-4 text-orange-600 flex-shrink-0" />
+                <span className="text-sm font-semibold text-orange-800">Reason from Admin</span>
+              </div>
+              <p className="text-sm text-orange-700 leading-relaxed">{rejectionReason}</p>
+            </div>
+          )}
 
           {/* Footer */}
           <div className="mt-6 space-y-3">

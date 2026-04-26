@@ -9,6 +9,7 @@ export interface IVerificationUpdate {
   verificationStatus?: VerificationStatus;
   verifiedBy?: string;
   verifiedAt?: Date;
+  rejectionReason?:string
 }
 
 export interface IBeauticianRepository {

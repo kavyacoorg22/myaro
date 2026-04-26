@@ -43,6 +43,7 @@ export class ApproveBeauticianUseCase implements IApproveBeauticianUseCase {
       verificationStatus: VerificationStatus.VERIFIED,
       verifiedBy: adminId,
       verifiedAt: new Date(),
+      rejectionReason:''
     };
 
     const updated = await this._beauticianRepo.updateVerificationByUserId(
