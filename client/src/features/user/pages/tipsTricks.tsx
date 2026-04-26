@@ -86,8 +86,8 @@ export const TipsAndTricksPage = () => {
           <PostFeed
             posts={posts}
             height="calc(100vh - 130px)"
-            onFollow={(userId) => console.log("follow", userId)}
-            onLike={(postId, liked) => console.log("like", postId, liked)}
+            onFollow={() => {}}
+            onLike={() => {}}
             onLoadMore={fetchPosts}
             hasMore={hasMore}
             isLoading={isLoading}

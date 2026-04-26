@@ -33,8 +33,8 @@ export interface PostCardProps {
 
 export interface PostFeedProps {
   posts: PostCardProps["post"][];
-  onFollow?: (userId: string) => void;
-  onLike?: (postId: string, liked: boolean) => void;
+  onFollow?: () => void;
+  onLike?: () => void;
   onLoadMore?: () => void;
   hasMore?: boolean;
   isLoading?: boolean;
