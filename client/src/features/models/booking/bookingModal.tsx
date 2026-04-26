@@ -206,7 +206,6 @@ export default function BookingModal({
        clientNote:data.notes?.trim()||undefined
       });
 
-      console.log(data.notes)
 
       setSubmitted(true); 
       setLockTtl(null);

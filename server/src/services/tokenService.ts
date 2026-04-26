@@ -1,5 +1,6 @@
 
 import jwt from "jsonwebtoken";
+import logger from "../utils/logger";
 
 export type SignupTokenPayload = {
   email: string;
@@ -22,7 +23,10 @@ export function verifySignupToken(token: string): SignupTokenPayload | null {
     }
     return null;
   } catch (err) {
-    console.log(err)
+    logger.warn("Invalid or expired signup token", {
+      error: err instanceof Error ? err.message : err,
+    });
+
     return null;
   }
 }

@@ -26,7 +26,7 @@ export class RejectBeauticianUseCase implements IRejectBeauticianUseCase {
     if (!userId) {
       throw new AppError(
         userMessages.ERROR.MISSING_PARAMETERS,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -34,7 +34,7 @@ export class RejectBeauticianUseCase implements IRejectBeauticianUseCase {
     if (!beautician) {
       throw new AppError(
         userMessages.ERROR.USER_NOT_FOUND,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -46,21 +46,19 @@ export class RejectBeauticianUseCase implements IRejectBeauticianUseCase {
 
     const updated = await this._beauticianRepo.updateVerificationByUserId(
       userId,
-      update
+      update,
     );
 
     if (!updated) {
       throw new AppError(
-        userMessages.ERROR.UPDATE_FAILED ?? "Failed to update verification",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        userMessages.ERROR.UPDATE_FAILED,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
     return {
       success: true,
-      message:
-        generalMessages.SUCCESS.OPERATION_SUCCESS ??
-        "Beautician verified successfully",
+      message: generalMessages.SUCCESS.OPERATION_SUCCESS,
     };
   }
 }

@@ -18,7 +18,6 @@ export function useStep3Logic(onNext: (data: Step3Data) => void) {
 
   const handleSubmit = () => {
     methods.handleSubmit((data) => {
-      console.log('Step 3 data:', data);
       onNext(data);
     })();
   };

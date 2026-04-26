@@ -15,7 +15,6 @@ export const Step1Component: React.FC<{ onNext: (data: Step1Data) => void }> = (
   });
 
   const currentUser=useSelector((store:RootState)=>store.user.currentUser)
-  console.log(currentUser)
 
   const handleSubmit = () => {
     methods.handleSubmit((data) => {

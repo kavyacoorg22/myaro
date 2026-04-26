@@ -8,26 +8,30 @@ import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IDeleteRecurringAvailabilitySlotUseCase } from "../../../interface/beautician/schedule/IDeleteRecurringAvailabilitySlotUseCase";
 import { IDeleteRecursionScheduleInput } from "../../../interfaceType/scheduleType";
 
+export class DeleteRecurringAvailabilityUseCase implements IDeleteRecurringAvailabilitySlotUseCase {
+  constructor(
+    private _userRepo: IUserRepository,
+    private _recurringExceptionRepo: IRecurringExceptionRepository,
+    private _recurringScheduleRepo: IReccuringScheduleRepository,
+  ) {}
 
-export class DeleteRecurringAvailabilityUseCase implements IDeleteRecurringAvailabilitySlotUseCase{
-  constructor(private _userRepo:IUserRepository,
-    private _recurringExceptionRepo:IRecurringExceptionRepository,
-    private _recurringScheduleRepo:IReccuringScheduleRepository
-  ){}
-
-  async execute(beauticianId: string, input: IDeleteRecursionScheduleInput): Promise<void> {
-    const {recurringId,date}=input
-    const beautician=await this._userRepo.findByUserId(beauticianId)
-    if(!beautician)
-    {
-      throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
+  async execute(
+    beauticianId: string,
+    input: IDeleteRecursionScheduleInput,
+  ): Promise<void> {
+    const { recurringId, date } = input;
+    const beautician = await this._userRepo.findByUserId(beauticianId);
+    if (!beautician) {
+      throw new AppError(
+        authMessages.ERROR.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-      const rule = await this._recurringScheduleRepo.findById(recurringId);
+    const rule = await this._recurringScheduleRepo.findById(recurringId);
     if (!rule || rule.beauticianId !== beauticianId) {
       throw new AppError(generalMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-   
     await this._recurringExceptionRepo.create({
       recurringId,
       beauticianId,

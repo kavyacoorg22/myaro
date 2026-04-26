@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { userMessages } from "../../../../shared/constant/message/userMessage";
 import { AppError } from "../../../../domain/errors/appError";
@@ -8,70 +8,52 @@ import { IOwnProfileUseCase } from "../../../../application/interface/public/IPr
 import { IProfileImageChangeUseCase } from "../../../../application/interface/public/IProfileImageChangeUseCase";
 
 export class ProfileController {
-  private _ownProfileUC: IOwnProfileUseCase;
-  private _profileImageChangeUC: IProfileImageChangeUseCase;
   constructor(
-    ownProfileUC: IOwnProfileUseCase,
-    profileImageChange: IProfileImageChangeUseCase
-  ) {
-    this._ownProfileUC = ownProfileUC;
-    this._profileImageChangeUC = profileImageChange;
-  }
+    private _ownProfileUseCase: IOwnProfileUseCase,
+    private _profileImageChangeUseCase: IProfileImageChangeUseCase,
+  ) {}
 
- ownProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const targetId = req.params.id || req.user?.id; 
-    const requesterId = req.user?.id;               
+  ownProfile = async (req: Request, res: Response): Promise<void> => {
+    const targetId = req.params.id || req.user?.id;
+    const requesterId = req.user?.id;
 
     if (!targetId) {
       throw new Error("User ID is required");
     }
 
-    const user = await this._ownProfileUC.execute(targetId, requesterId);
+    const user = await this._ownProfileUseCase.execute(targetId, requesterId);
 
     res.status(HttpStatus.OK).json({
       success: true,
       message: userMessages.SUCCESS.PROFILE_FETCHED,
       data: user,
     });
-  } catch (error) {
-    next(error);
-  }
-};
+  };
 
-  changeProfileImage = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-   
-      const id = req.user?.id;
-      const profileImg = req.file;
-   
-      if (!id) {
-        throw new AppError(
-          authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED
-        );
-      }
+  changeProfileImage = async (req: Request, res: Response): Promise<void> => {
+    const id = req.user?.id;
+    const profileImg = req.file;
 
-      if (!profileImg) {
-        throw new AppError(
-          generalMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-
-      const user = await this._profileImageChangeUC.execute(id, profileImg);
-
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
-        data: user.profileImg,
-      });
-    } catch (err) {
-      next(err);
+    if (!id) {
+      throw new AppError(
+        authMessages.ERROR.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
+      );
     }
+
+    if (!profileImg) {
+      throw new AppError(
+        generalMessages.ERROR.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const user = await this._profileImageChangeUseCase.execute(id, profileImg);
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+      data: user.profileImg,
+    });
   };
 }

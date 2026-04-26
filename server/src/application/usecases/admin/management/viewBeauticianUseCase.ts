@@ -1,21 +1,20 @@
 import { AppError } from "../../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../../domain/repositoryInterface/IUserRepository";
+import { beauticianMessages } from "../../../../shared/constant/message/beauticianMessage";
 import { userMessages } from "../../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IBeauticianProfileDTO } from "../../../dtos/beautician";
 import { IViewBeauticianDetailsUseCase } from "../../../interface/admin/management/IViewBeauticianDetailsUseCase";
 import { toBeauticianProfileDto } from "../../../mapper/beauticianMapper";
 
-export class ViewBeauticianDetailUseCase
-  implements IViewBeauticianDetailsUseCase
-{
+export class ViewBeauticianDetailUseCase implements IViewBeauticianDetailsUseCase {
   private _beauticianRepo: IBeauticianRepository;
   private _userRepo: IUserRepository;
 
   constructor(
     beauticianRepo: IBeauticianRepository,
-    userRepo: IUserRepository
+    userRepo: IUserRepository,
   ) {
     this._beauticianRepo = beauticianRepo;
     this._userRepo = userRepo;
@@ -25,7 +24,10 @@ export class ViewBeauticianDetailUseCase
     const beautician = await this._beauticianRepo.findByUserId(userId);
 
     if (!beautician) {
-      throw new AppError("Beautician not found", HttpStatus.NOT_FOUND);
+      throw new AppError(
+        beauticianMessages.ERROR.BEAUTICIAN_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const user = await this._userRepo.findByUserId(beautician.userId);
@@ -33,7 +35,7 @@ export class ViewBeauticianDetailUseCase
     if (!user) {
       throw new AppError(
         userMessages.ERROR.USER_NOT_FOUND,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       );
     }
     return toBeauticianProfileDto(beautician, user);

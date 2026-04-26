@@ -7,11 +7,11 @@ import { toDashboardOverviewDto } from "../../../mapper/adminMapper";
 
 export class GetDashboardOverviewUC implements IGetDashboardOverviewUseCase {
   constructor(
-    private readonly _userRepo:    IUserRepository,
+    private readonly _userRepo: IUserRepository,
     private readonly _paymentRepo: IPaymentRepository,
-    private readonly _beauticianRepo:IBeauticianRepository
+    private readonly _beauticianRepo: IBeauticianRepository,
   ) {}
- 
+
   async execute(): Promise<IDashboardOverviewOutput> {
     const [
       totalUsers,
@@ -30,7 +30,7 @@ export class GetDashboardOverviewUC implements IGetDashboardOverviewUseCase {
       this._paymentRepo.getHeldPayments(),
       this._paymentRepo.getDisputesCount(),
     ]);
- 
+
     return toDashboardOverviewDto({
       totalUsers,
       totalBeauticians,

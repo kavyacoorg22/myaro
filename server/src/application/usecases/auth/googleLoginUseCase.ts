@@ -11,6 +11,7 @@ import { ILoginOutputDto } from "../../dtos/user";
 import { IGoogleLoginUseCase } from "../../interface/auth/IGoogleLoginUseCase";
 import { IGoogleLoginInput } from "../../interfaceType/authtypes";
 import { toLoginOutputDto } from "../../mapper/userMapper";
+import { generalMessages } from "../../../shared/constant/message/generalMessage";
 
 export class GoogleLoginUseCase implements IGoogleLoginUseCase {
   private _tokenService: ITokenService;
@@ -54,8 +55,11 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
       if (!user.googleId) {
         user = await this._userRepo.update(user.id!, { googleId });
       }
-      if (!user) throw new Error("User not found");
-
+      if (!user)
+        throw new AppError(
+          generalMessages.ERROR.NOT_FOUND,
+          HttpStatus.NOT_FOUND,
+        );
 
       if (picture && picture !== user?.profileImg) {
         user = await this._userRepo.update(user.id, { profileImg: picture });

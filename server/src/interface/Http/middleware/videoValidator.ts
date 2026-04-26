@@ -115,7 +115,6 @@ export async function validateVideoFromS3(
   try {
     tmpPath = await downloadFromS3(s3Key);
     const meta = await probeVideo(tmpPath);
-    console.log(`[videoValidator] ${s3Key}:`, meta);
     assertVideoMetadata(meta, trimEnd);
     return meta;
   } finally {

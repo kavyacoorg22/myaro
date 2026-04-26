@@ -6,6 +6,7 @@ import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IProfileImageChangeUseCase } from "../../interface/public/IProfileImageChangeUseCase";
 import { IProfileImageChangeOutput } from "../../interfaceType/publicType";
 import { toProfileImageChangeDto } from "../../mapper/userMapper";
+import logger from "../../../utils/logger";
 
 export class ProfileImageChangeUseCase implements IProfileImageChangeUseCase {
   private _userRepo: IUserRepository;
@@ -30,9 +31,9 @@ export class ProfileImageChangeUseCase implements IProfileImageChangeUseCase {
     try {
       profilePath = await this._uploadService.uploadProfileImage(profileImg);
     } catch (err) {
-      console.log(err);
+      logger.error(err)
       throw new AppError(
-        "Failed to upload profile image",
+        userMessages.ERROR.UPDATE_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -44,7 +45,7 @@ export class ProfileImageChangeUseCase implements IProfileImageChangeUseCase {
 
     if (!userData) {
       throw new AppError(
-        "Failed to update user profile",
+        userMessages.ERROR.UPDATE_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

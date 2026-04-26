@@ -4,8 +4,8 @@ export const adminMessages = {
         KYC_REJECTED: 'KYC rejected successfully',
         SERVICE_CREATED: 'Service created successfully',
         SERVICE_DELETED: 'Service deleted successfully',
-        FETCHED_BEAUTICIANS: 'psychologists fetched successfully',
-        FETCHED_BEAUTICIAN: 'Psychologist has been fetched successfully',
+        FETCHED_BEAUTICIANS: 'Beauticans fetched successfully',
+        FETCHED_BEAUTICIAN: 'Beautican has been fetched successfully',
         FETCHED_SERVICES: 'Services fetched successfully',
         FETCHED_USERS: 'Users fetched successfully',
         FETCHED_SLOTS: 'Slots fetched successfully',
@@ -14,17 +14,17 @@ export const adminMessages = {
         STATS_FETCHED: 'Revenue stats fetched successfully',
         USER_TREND_FETCHED: 'User trends stats fetched successfully',
         BOOKING_TREND_FETCHED: 'Booking trend fetched successfully',
-        
+        VERIFIED_BEAUTICIAN:'Verified beautician'
     },
     ERROR: {    
-        PSYCHOLOGIST_ID_REQUIRED: 'Psychologist ID is required',
+        BEAUTICIAN_ID_REQUIRED: 'Beautican ID is required',
         USER_ID_REQUIRED: 'User ID is required',
-        BEAUTICIAN_NOT_FOUND: 'Psychologist not found',
+        BEAUTICIAN_NOT_FOUND: 'Beautican not found',
         SERVICE_BANNER_REQUIRED: 'Service banner image is required',
         SERVICE_NOT_FOUND: 'Service not found',
         SERVICE_ID_REQUIRED: 'Service id is required',
         KYC_REASON_REQUIRED: 'Reason is required to reject the KYC',
-        KYC_NOT_FOUND: 'No KYC record found for the specified psychologist',
+        KYC_NOT_FOUND: 'No KYC record found for the specified Beautican',
         SERVICE_ALREADY_EXISTS: 'Service with this name already exists',
         UPDATION_FAILED:"updation failed"
     },

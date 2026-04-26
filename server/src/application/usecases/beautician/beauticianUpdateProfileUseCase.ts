@@ -8,7 +8,7 @@ import { ServiceModes } from "../../../domain/enum/beauticianEnum";
 import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
-import { generalMessages } from "../../../shared/constant/message/generalMessage";
+import { beauticianMessages } from "../../../shared/constant/message/beauticianMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IBeauticianEditProfileUseCase } from "../../interface/beautician/IBeauticianEditProfileUseCase";
 import { IResponse } from "../../interfaceType/authtypes";
@@ -20,16 +20,10 @@ type BeauticianUpdateDto = Partial<
 >;
 
 export class BeauticianEditProfileUseCase implements IBeauticianEditProfileUseCase {
-  private _beauticianRepo: IBeauticianRepository;
-  private _userRepo: IUserRepository;
-
   constructor(
-    beauticianRepo: IBeauticianRepository,
-    userRepo: IUserRepository,
-  ) {
-    this._beauticianRepo = beauticianRepo;
-    this._userRepo = userRepo;
-  }
+    private _beauticianRepo: IBeauticianRepository,
+    private _userRepo: IUserRepository,
+  ) {}
 
   async execute(
     userId: string,
@@ -37,7 +31,10 @@ export class BeauticianEditProfileUseCase implements IBeauticianEditProfileUseCa
   ): Promise<IResponse> {
     const existing = await this._beauticianRepo.findByUserId(userId);
     if (!existing) {
-      throw new AppError("Beautician not found", HttpStatus.NOT_FOUND);
+      throw new AppError(
+        beauticianMessages.ERROR.BEAUTICIAN_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const userUpdate: UserUpdateDto = {};
@@ -62,11 +59,10 @@ export class BeauticianEditProfileUseCase implements IBeauticianEditProfileUseCa
     if (data.serviceModes !== undefined) {
       if (!Array.isArray(data.serviceModes)) {
         throw new AppError(
-          "serviceMode must be an array",
+          beauticianMessages.ERROR.INVALID_SERVICE_MODE_ARRAY,
           HttpStatus.BAD_REQUEST,
         );
       }
-
       const validModes = Object.values(ServiceModes);
 
       const isValid = data.serviceModes.every((mode) =>
@@ -74,7 +70,10 @@ export class BeauticianEditProfileUseCase implements IBeauticianEditProfileUseCa
       );
 
       if (!isValid) {
-        throw new AppError("Invalid service mode", HttpStatus.BAD_REQUEST);
+        throw new AppError(
+          beauticianMessages.ERROR.INVALID_SERVICE_MODE,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       if (
         data.serviceModes?.includes(ServiceModes.SHOP) &&
@@ -82,7 +81,7 @@ export class BeauticianEditProfileUseCase implements IBeauticianEditProfileUseCa
         !existing.shopName
       ) {
         throw new AppError(
-          "Shop name required for SHOP service",
+          beauticianMessages.ERROR.SHOP_NAME_REQUIRED,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -120,7 +119,7 @@ export class BeauticianEditProfileUseCase implements IBeauticianEditProfileUseCa
 
     return {
       success: true,
-      message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+      message: beauticianMessages.SUCCESS.PROFILE_UPDATED,
     };
   }
 }

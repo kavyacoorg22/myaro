@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { IAddServiceUseCase } from "../../../../application/interface/beauticianService/IAddService";
 import { IGetServicesUseCase } from "../../../../application/interface/beauticianService/IGetServices";
 import { ITogggleActiveStatusUseCase } from "../../../../application/interface/beauticianService/IToggleActiveStatus";
@@ -6,119 +6,103 @@ import { IUpdateServiceUseCase } from "../../../../application/interface/beautic
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { AppError } from "../../../../domain/errors/appError";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
+import { serviceMessages } from "../../../../shared/constant/message/serviceMessage";
 
 export class ServiceController {
-  private _addServiceUC: IAddServiceUseCase;
-  private _updateServiceUC: IUpdateServiceUseCase;
-  private _getAllServiceUC: IGetServicesUseCase;
-  private _toggleActiveStatusUC: ITogggleActiveStatusUseCase;
   constructor(
-    addServiceUC: IAddServiceUseCase,
-    updateServiceUC: IUpdateServiceUseCase,
-    getAllServiceUC: IGetServicesUseCase,
-    toggleActiveStatusUC: ITogggleActiveStatusUseCase,
-  ) {
-    this._addServiceUC = addServiceUC
-      this._updateServiceUC = updateServiceUC
-      this._getAllServiceUC = getAllServiceUC
-      this._toggleActiveStatusUC = toggleActiveStatusUC
-  }
+    private _addServiceUseCase: IAddServiceUseCase,
+    private _updateServiceUseCase: IUpdateServiceUseCase,
+    private _getAllServiceUseCase: IGetServicesUseCase,
+    private _toggleActiveStatusUseCase: ITogggleActiveStatusUseCase,
+  ) {}
 
-  addService = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { name, categoryId } = req.body;
-      
+  addService = async (req: Request, res: Response): Promise<void> => {
+    const { name, categoryId } = req.body;
 
-      if (!name || !categoryId) {
-        throw new AppError(
-          generalMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-        if (typeof categoryId !== 'string') {
-    throw new AppError('categoryId must be a string', HttpStatus.BAD_REQUEST);
-  }
-
-      const input = { name, categoryId };
-      await this._addServiceUC.execute(input);
-
-      res.status(HttpStatus.CREATED).json({
-        success: true,
-        message: "Service added",
-      });
-    } catch (err) {
-      next(err);
+    if (!name || !categoryId) {
+      throw new AppError(
+        generalMessages.ERROR.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+
+    if (typeof categoryId !== "string") {
+      throw new AppError(
+        serviceMessages.ERROR.INVALID_CATEGORY_ID,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const input = { name, categoryId };
+    await this._addServiceUseCase.execute(input);
+
+    res.status(HttpStatus.CREATED).json({
+      success: true,
+      message: serviceMessages.SUCCESS.ADDED,
+    });
   };
 
-  updateService = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { name } = req.body;
-      const id = req.params.id;
-      if (!id) {
-        throw new AppError(
-          generalMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      await this._updateServiceUC.execute(id, name);
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: "service updated",
-      });
-    } catch (err) {
-      next(err);
-    }
-  };
-  getServices = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const categoryId= req.params.categoryId;
-        
-      if (!categoryId) {
-        throw new AppError(
-          generalMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      const result = await this._getAllServiceUC.execute(categoryId);
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: "services fetched",
-        data: result,
-      });
-    } catch (err) {
-      next(err);
-    }
-  };
-  toggleServiceStatus = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const { isActive } = req.body;
-      const id = req.params.id;
-      if (!id) {
-        throw new AppError(
-          generalMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+  updateService = async (req: Request, res: Response): Promise<void> => {
+    const { name } = req.body;
+    const id = req.params.id;
 
-      if (typeof isActive !== "boolean") {
-        throw new AppError(
-          generalMessages.ERROR.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      await this._toggleActiveStatusUC.execute(id, isActive);
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: "Status Changed",
-      });
-    } catch (err) {
-      next(err);
+    if (!id) {
+      throw new AppError(
+        generalMessages.ERROR.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+
+    await this._updateServiceUseCase.execute(id, name);
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: serviceMessages.SUCCESS.UPDATED,
+    });
+  };
+
+  getServices = async (req: Request, res: Response): Promise<void> => {
+    const categoryId = req.params.categoryId;
+
+    if (!categoryId) {
+      throw new AppError(
+        generalMessages.ERROR.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const result = await this._getAllServiceUseCase.execute(categoryId);
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: serviceMessages.SUCCESS.FETCHED,
+      data: result,
+    });
+  };
+
+  toggleServiceStatus = async (req: Request, res: Response): Promise<void> => {
+    const { isActive } = req.body;
+    const id = req.params.id;
+
+    if (!id) {
+      throw new AppError(
+        generalMessages.ERROR.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (typeof isActive !== "boolean") {
+      throw new AppError(
+        generalMessages.ERROR.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await this._toggleActiveStatusUseCase.execute(id, isActive);
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: serviceMessages.SUCCESS.STATUS_CHANGED,
+    });
   };
 }

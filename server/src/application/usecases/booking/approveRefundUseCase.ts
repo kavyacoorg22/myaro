@@ -14,7 +14,6 @@ import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { BookingHistoryService } from "../../services/bookingHistoryService";
 import { BookingValidatorService } from "../../services/bookingValidatorService";
 import { PaymentLookupService } from "../../services/paymentLookupService";
-import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { ChatMessageService } from "../../services/chatMessageService";
 import { MessageType } from "../../../domain/enum/messageEnum";
@@ -31,12 +30,12 @@ import {
   NotificationCategory,
   NotificationType,
 } from "../../../domain/enum/notificationEnum";
+import { userMessages } from "../../../shared/constant/message/userMessage";
 
 export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundUseCase {
   constructor(
     private _bookingRepo: IBookingRepository,
     private _paymentRepo: IPaymentRepository,
-    private _socketEmitter: ISocketEmitter,
     private _bookingValidator: BookingValidatorService,
     private _bookingHistory: BookingHistoryService,
     private _paymentLookup: PaymentLookupService,
@@ -83,7 +82,7 @@ export class BeauticianApproveRefundUseCase implements IBeauticianApproveRefundU
 
     if (!updatedBooking) {
       throw new AppError(
-        "Failed to update booking",
+        userMessages.ERROR.UPDATE_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

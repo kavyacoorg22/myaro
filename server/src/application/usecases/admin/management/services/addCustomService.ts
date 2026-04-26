@@ -8,33 +8,27 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { IBeauticianServiceRepository } from "../../../../../domain/repositoryInterface/IBeauticianServiceRepository";
 import { ICategoryRepository } from "../../../../../domain/repositoryInterface/ICategoryRepository";
 import { ICustomServiceRepository } from "../../../../../domain/repositoryInterface/ICustomService";
+import { serviceMessages } from "../../../../../shared/constant/message/serviceMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IAddCustomServiceUseCase } from "../../../../interface/beauticianService/IAddCustomService";
 import { IAddCustomServiceRequest } from "../../../../interfaceType/serviceType";
 
-
 export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase {
-  private _customServiceRepo: ICustomServiceRepository;
-  private _categoryRepo: ICategoryRepository;
-  private _beauticianServiceRepo: IBeauticianServiceRepository;
-
   constructor(
-    customServiceRepo: ICustomServiceRepository,
-    categoryRepo: ICategoryRepository,
-    beauticianServiceRepo: IBeauticianServiceRepository,
-  ) {
-    this._customServiceRepo = customServiceRepo
-      this._categoryRepo = categoryRepo
-    this._beauticianServiceRepo = beauticianServiceRepo
-  }
+    private _customServiceRepo: ICustomServiceRepository,
+    private _categoryRepo: ICategoryRepository,
+    private _beauticianServiceRepo: IBeauticianServiceRepository,
+  ) {}
   async execute(input: IAddCustomServiceRequest): Promise<void> {
-    const { beauticianId, category,service} = input;
+    const { beauticianId, category, service } = input;
 
-    const existingService=await this._beauticianServiceRepo.findByServiceName(beauticianId,service.name)
+    const existingService = await this._beauticianServiceRepo.findByServiceName(
+      beauticianId,
+      service.name,
+    );
 
-    if(existingService)
-    {
-      throw new AppError("service is already added",HttpStatus.CONFLICT)
+    if (existingService) {
+      throw new AppError(serviceMessages.ERROR.SERVICE_ALREADY_EXISTS, HttpStatus.CONFLICT);
     }
 
     let categoryName = category?.name;
@@ -45,15 +39,15 @@ export class AddCustomServiceCategoryUseCase implements IAddCustomServiceUseCase
       );
 
       if (existingCategory === null) {
-        throw new AppError("category not exists", HttpStatus.CONFLICT);
+        throw new AppError(serviceMessages.ERROR.CATEGORY_NOT_FOUND, HttpStatus.CONFLICT);
       }
       categoryName = existingCategory.name;
-    }else if(input.category.name){
-        const existingCategory = await this._categoryRepo.findByName(
-        input.category.name
+    } else if (input.category.name) {
+      const existingCategory = await this._categoryRepo.findByName(
+        input.category.name,
       );
-        if (existingCategory) {
-        throw new AppError("category already exists", HttpStatus.CONFLICT);
+      if (existingCategory) {
+        throw new AppError(serviceMessages.ERROR.CATEGORY_ALREADY_EXISTS, HttpStatus.CONFLICT);
       }
     }
 

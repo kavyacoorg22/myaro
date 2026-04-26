@@ -27,19 +27,14 @@ export const LoginForm=()=>{
   const location=useLocation()
   const isAdminLogin = location.pathname === adminFrontendRoute.login;
   
-  useEffect(() => {
-    console.log('Component rendered');
-  });
-
+ 
   
   
   const currentUser=useSelector((store:RootState)=>store.user.currentUser)
 
   useEffect(() => {
-    console.log('LoginForm - checking auth status:', currentUser);
     
     if (currentUser?.isAuthenticated && currentUser?.role) {
-      console.log('✅ User already logged in, redirecting...');
       
       if (currentUser.role === UserRole.ADMIN) {
         navigate(adminFrontendRoute.dashboard, { replace: true });
@@ -70,9 +65,7 @@ export const LoginForm=()=>{
           email: data.identifier,
           password: data.password,
         };
-        console.log('🚀 Sending admin login request');
         res = await adminApi.login(adminPayload);
-        console.log('✅ Admin login response:', res);
        
         if (!res.data?.data) {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
@@ -104,7 +97,6 @@ export const LoginForm=()=>{
 
       } else {
         res = await authApi.login(data);
-        console.log('✅ User login response:', res);
         
         if (!res.data?.data) {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);

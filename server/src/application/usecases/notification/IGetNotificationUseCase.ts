@@ -1,22 +1,22 @@
-import { INotificationRepository } from "../../../domain/repositoryInterface/User/INotificationRepository"
-import { IGetUserNotificationsUseCase } from "../../interface/notification/IGetNotification"
-import { IGetUserNotificationsOutput } from "../../interfaceType/notificationType"
-import { toNotificationDto } from "../../mapper/userMapper"
-
+import { INotificationRepository } from "../../../domain/repositoryInterface/User/INotificationRepository";
+import { IGetUserNotificationsUseCase } from "../../interface/notification/IGetNotification";
+import { IGetUserNotificationsOutput } from "../../interfaceType/notificationType";
+import { toNotificationDto } from "../../mapper/userMapper";
 
 export class GetUserNotificationsUseCase implements IGetUserNotificationsUseCase {
   constructor(private _notificationRepo: INotificationRepository) {}
 
   async execute(userId: string): Promise<IGetUserNotificationsOutput> {
-    const notifications = await this._notificationRepo.getUserNotifications(userId)
+    const notifications =
+      await this._notificationRepo.getUserNotifications(userId);
 
-    const active = notifications.filter(n => !n.isDeleted)
+    const active = notifications.filter((n) => !n.isDeleted);
 
-    const unreadCount = active.filter(n => !n.isRead).length
+    const unreadCount = active.filter((n) => !n.isRead).length;
 
     return {
       notifications: active.map(toNotificationDto),
       unreadCount,
-    }
+    };
   }
 }

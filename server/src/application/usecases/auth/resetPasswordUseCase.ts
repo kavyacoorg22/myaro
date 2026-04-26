@@ -1,6 +1,7 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { authMessages } from "../../../shared/constant/message/authMessages";
+import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IResetPasswordUseCase } from "../../interface/auth/IResetPasswordUseCase";
 import { IResetPasswordInput, IResponse } from "../../interfaceType/authtypes";
 import bcrypt from "bcrypt";
@@ -16,12 +17,12 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
     const { email, password } = data;
     const user = await this._userRepo.findByEmail(email);
     if (!user) {
-      throw new AppError(authMessages.ERROR.EMAIL_NOT_FOUND);
+      throw new AppError(authMessages.ERROR.EMAIL_NOT_FOUND,HttpStatus.NOT_FOUND);
     }
 
     const passwordHash = await bcrypt.hash(password, this.bcryptRound);
     await this._userRepo.updatePassword(user.email, passwordHash);
 
-    return { success: true, message: "Password Updated" };
+    return { success: true, message: authMessages.SUCCESS.PASSWORD_RESET };
   }
 }

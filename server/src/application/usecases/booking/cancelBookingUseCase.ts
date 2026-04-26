@@ -20,6 +20,8 @@ import {
   ACTION_TITLE,
   CHAT_ACTION_MESSAGE,
 } from "../../../domain/services/bookingStatusMachine";
+import { bookingMessages } from "../../../shared/constant/message/bookingMessage";
+import { paymentMessages } from "../../../shared/constant/message/paymentMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { ICancelBookingUseCase } from "../../interface/booking/ICancelBooking";
@@ -29,7 +31,6 @@ import {
 } from "../../interfaceType/booking";
 import { toCancelBookingDto } from "../../mapper/bookingMapper";
 import { IPaymentService } from "../../serviceInterface/IPaymentServie";
-import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 import { BookingHistoryService } from "../../services/bookingHistoryService";
 import { BookingValidatorService } from "../../services/bookingValidatorService";
 import { ChatMessageService } from "../../services/chatMessageService";
@@ -42,7 +43,6 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     private _paymentLookup: PaymentLookupService,
     private _bookingHistory: BookingHistoryService,
     private _chatMessage: ChatMessageService,
-    private _socketEmitter: ISocketEmitter,
     private _bookingRepo: IBookingRepository,
     private _paymentRepo: IPaymentRepository,
     private _refundRepo: IRefundRepository,
@@ -67,7 +67,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
 
     if (diffDays <= 3) {
       throw new AppError(
-        "Cancellation is not allowed within 3 days of the booking date.",
+        bookingMessages.ERROR.CANCLE_NOT_ALLOWED,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -79,7 +79,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
 
     if (!payment.razorpayPaymentId) {
       throw new AppError(
-        "Razorpay payment ID is missing. Cannot process refund.",
+        paymentMessages.ERROR.RAZORPAY_ID_MISSING,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -88,7 +88,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     const existing = await this._refundRepo.findByPaymentId(payment.id);
     if (existing) {
       throw new AppError(
-        "A refund for this booking already exists.",
+        paymentMessages.ERROR.REFUND_ALREDY_EXISTS,
         HttpStatus.CONFLICT,
       );
     }

@@ -5,12 +5,10 @@ import { IAddAvailbilityUseCase } from "../../../interface/beautician/schedule/I
 import { IAddAvailabilityRequest } from "../../../interfaceType/scheduleType";
 import { AppError } from "../../../../domain/errors/appError";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
+import { scheduleMessages } from "../../../../shared/constant/message/scheduleMessage";
 
 export class AddAvailabilityUseCase implements IAddAvailbilityUseCase {
-  private _scheduleRepo: IScheduleRepository;
-  constructor(scheduleRepo: IScheduleRepository) {
-    this._scheduleRepo = scheduleRepo;
-  }
+  constructor(private _scheduleRepo: IScheduleRepository) {}
 
   async execute(
     beauticianId: string,
@@ -31,7 +29,7 @@ export class AddAvailabilityUseCase implements IAddAvailbilityUseCase {
       if (existingSchedule) {
         if (existingSchedule.type === ScheduleType.LEAVE) {
           throw new AppError(
-            `Cannot add availability on ${dateStr} — it is marked as leave`,
+            scheduleMessages.ERROR.LEAVE_CONFLICT(dateStr),
             HttpStatus.CONFLICT,
           );
         }
@@ -63,7 +61,12 @@ export class AddAvailabilityUseCase implements IAddAvailbilityUseCase {
 
       if (current.endTime > next.startTime) {
         throw new AppError(
-          `Time slot ${current.startTime}–${current.endTime} overlaps with ${next.startTime}–${next.endTime}`,
+          scheduleMessages.ERROR.SLOT_OVERLAP(
+            current.startTime,
+            current.endTime,
+            next.startTime,
+            next.endTime,
+          ),
           HttpStatus.BAD_REQUEST,
         );
       }

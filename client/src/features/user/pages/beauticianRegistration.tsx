@@ -89,11 +89,9 @@ export default function BeauticianRegistration() {
         });
       }
 
-      console.log('📤 Submitting registration with FormData...');
       
       const response = await BeauticianApi.beauticianRegister(formData);
 
-      console.log('✅ Registration successful:', response);
       
     setShowReviewModal(true);
     } catch (error: any) {
@@ -114,11 +112,9 @@ export default function BeauticianRegistration() {
     setIsSubmitting(true);
 
     try {
-      console.log('📤 Submitting payment details...');
       
       const response=await BeauticianApi.updateRegister(data);
-       console.log("STEP 3 RESPONSE ROLE:", response.data.data?.role);
-console.log("BEFORE REFRESH:", currentUser.role);
+     
         if (response.data?.data) {
       dispatch(setCurrentUser({
         userId: response.data.data.userId,

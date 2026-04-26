@@ -15,6 +15,10 @@ import {
   ACTION_TITLE,
   CHAT_ACTION_MESSAGE,
 } from "../../../domain/services/bookingStatusMachine";
+import { beauticianMessages } from "../../../shared/constant/message/beauticianMessage";
+import { chatMessages } from "../../../shared/constant/message/chatMessage";
+import { generalMessages } from "../../../shared/constant/message/generalMessage";
+import { scheduleMessages } from "../../../shared/constant/message/scheduleMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import {
   timeToMinutes,
@@ -55,16 +59,20 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     // ── 1. Chat validation ─────────────────────────────────────────────────
     const chat = await this._chatRepo.findById(chatId);
-    if (!chat) throw new AppError("Chat not found.", HttpStatus.NOT_FOUND);
+    if (!chat)
+      throw new AppError(chatMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
     if (!chat.participants.includes(userId)) {
-      throw new AppError("Access denied", HttpStatus.FORBIDDEN);
+      throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
 
     // ── 2. Parse slot times ────────────────────────────────────────────────
     // slot.time = "11:00 AM – 01:00 PM"
     const [startStr, endStr] = slot.time.split(" – ");
     if (!startStr || !endStr) {
-      throw new AppError("Invalid slot time format", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        scheduleMessages.ERROR.INVALID_SLOT_TIME_FORMAT,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const startMinutes = timeToMinutes(startStr.trim());
@@ -78,7 +86,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     if (!availability.slots?.length) {
       throw new AppError(
-        "Beautician is not available on this date",
+        beauticianMessages.ERROR.BEAUTICIAN_NOT_AVAILABLE_ON_DATE,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -91,7 +99,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     if (!fitsInAvailability) {
       throw new AppError(
-        "Requested time is not within available hours",
+        beauticianMessages.ERROR.REQUESTED_TIME_NOT_AVAILABLE,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -102,7 +110,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     if (!lockedBy || lockedBy !== userId) {
       throw new AppError(
-        "Slot reservation expired. Please select the slot again.",
+        scheduleMessages.ERROR.SLOT_RESERVATION_EXPIRED,
         HttpStatus.CONFLICT,
       );
     }
@@ -116,8 +124,8 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     if (overlapping) {
       throw new AppError(
-        "This time slot is already booked",
-        HttpStatus.CONFLICT, // ✅ 409 — frontend catches this specifically
+        scheduleMessages.ERROR.SLOT_ALREADY_BOOKED,
+        HttpStatus.CONFLICT,
       );
     }
 

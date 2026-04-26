@@ -61,13 +61,10 @@ export const PaymentDetailModal = ({
 
       // ── Step 2: Create order on YOUR backend ──────────────────────────────
       const orderRes  = await PaymentApi.createOrder(booking.id);
-      console.log(orderRes.data.data)
       const { razorpayOrderId, amount, currency } = orderRes.data.data;
-      console.log('backed order datas'+razorpayOrderId, amount, currency )
 
       // ── Step 3: Open Razorpay checkout ────────────────────────────────────
       await new Promise<void>((resolve, reject) => {
-        console.log(import.meta.env.VITE_RAZORPAY_KEY_ID);
         const options = {
           key:      import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount,

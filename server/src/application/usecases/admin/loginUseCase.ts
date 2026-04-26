@@ -12,19 +12,11 @@ import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { UserRole } from "../../../domain/enum/userEnum";
 
 export class AdminLoginUseCase implements IAdminLoginUseCase {
-  private _adminRepository: IAdminRepository;
-  private _tokenService: ITokenService;
-  private _authService: IAuthService;
-
   constructor(
-    adminRepository: IAdminRepository,
-    tokenService: ITokenService,
-    authService: IAuthService,
-  ) {
-    this._adminRepository = adminRepository;
-    this._tokenService = tokenService;
-    this._authService = authService;
-  }
+    private _adminRepository: IAdminRepository,
+    private _tokenService: ITokenService,
+    private _authService: IAuthService,
+  ) {}
 
   async execute(request: IAdminLoginRequest): Promise<IAdminLoginResponse> {
     const admin = await this._adminRepository.findByEmail(request.email);

@@ -61,8 +61,7 @@ useEffect(() => {
 
   const profileErrors = profileMethods.formState.errors as FieldErrors<ProfileType>;
   const { register: registerProfile, formState: { isSubmitting: isSubmittingProfile } } = profileMethods;
-        console.log("serviceModes watch:", profileMethods.watch("serviceModes"));
-console.log("form errors:", profileMethods.formState.errors);
+     
   const selectedModes: ServiceModesType[] = profileMethods.watch("serviceModes") ?? [];
   const shopSelected = selectedModes.includes("SHOP");
 

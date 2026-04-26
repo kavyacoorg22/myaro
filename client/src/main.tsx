@@ -9,8 +9,8 @@ import {GoogleOAuthProvider} from '@react-oauth/google'
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-    onScriptLoadError={() => console.log('Error loading Google script')}
-      onScriptLoadSuccess={() => console.log('Google script loaded')}
+   onScriptLoadError={() => {}}
+onScriptLoadSuccess={() => {}}
     >
     <Provider store={AppStore}>
     <App />

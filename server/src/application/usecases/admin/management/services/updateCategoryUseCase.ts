@@ -2,6 +2,7 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { ICategoryRepository } from "../../../../../domain/repositoryInterface/ICategoryRepository";
 import { adminMessages } from "../../../../../shared/constant/message/adminMessages";
 import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
+import { serviceMessages } from "../../../../../shared/constant/message/serviceMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IUpdateCategoryUseCase } from "../../../../interface/beauticianService/IUpdateCategory";
 import { ICategoryRequest } from "../../../../interfaceType/serviceType";
@@ -24,7 +25,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
     const existingCategory = await this._categoryRepo.findByName(name);
    
        if (existingCategory) {
-         throw new AppError("category already exists", HttpStatus.CONFLICT);
+         throw new AppError(serviceMessages.ERROR.CATEGORY_ALREADY_EXISTS, HttpStatus.CONFLICT);
        }
     const result = await this._categoryRepo.updateCategoryById(id, input);
 

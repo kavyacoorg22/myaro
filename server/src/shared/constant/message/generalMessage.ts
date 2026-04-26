@@ -14,6 +14,7 @@ export const generalMessages = {
         INVALID_TOKEN: 'Token is invalid',
         NO_TOKEN: 'No token is provided',
         ROUTE_NOT_FOUND: 'Route not found',
+         INVALID_REQUEST: "Invalid request.", 
     },
     INFO: {
         PROCESSING: 'Your request is being processed',

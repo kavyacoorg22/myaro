@@ -1,6 +1,7 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { authMessages } from "../../../shared/constant/message/authMessages";
+import { userMessages } from "../../../shared/constant/message/userMessage";
 import { IForgotPasswordUseCase } from "../../interface/auth/IForgotPasswordUseCase";
 import { IForgotPasswordInput, IResponse } from "../../interfaceType/authtypes";
 
@@ -16,6 +17,6 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
     if (!user) {
       throw new AppError(authMessages.ERROR.EMAIL_NOT_FOUND);
     }
-    return { success: true, message: "User exists" };
+    return { success: true, message: userMessages.SUCCESS.USER_EXISTS };
   }
 }

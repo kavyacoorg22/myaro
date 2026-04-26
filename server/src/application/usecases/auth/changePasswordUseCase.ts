@@ -4,38 +4,39 @@ import { authMessages } from "../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IChangePasswordUseCase } from "../../interface/auth/IChangePassword";
 import { IChangePasswordInput } from "../../interfaceType/authtypes";
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
 
-export class ChangePasswordUseCase implements IChangePasswordUseCase{
-  constructor(private readonly _userRespository:IUserRepository){
-
-  }
+export class ChangePasswordUseCase implements IChangePasswordUseCase {
+  constructor(private readonly _userRespository: IUserRepository) {}
 
   async execute(id: string, input: IChangePasswordInput): Promise<void> {
-    const {oldPassword,newPassword}=input
-    const user=await this._userRespository.findByUserId(id)
+    const { oldPassword, newPassword } = input;
+    const user = await this._userRespository.findByUserId(id);
 
-    if(!user)
-    {
-      throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
+    if (!user) {
+      throw new AppError(
+        authMessages.ERROR.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-     if (!user.passwordHash) {
-    throw new AppError("You haven't added a password", HttpStatus.FORBIDDEN);
-  }
-
-  
-    const isPassswordCorrect=await bcrypt.compare(oldPassword,user?.passwordHash)
-     
-    if(!isPassswordCorrect)
-    {
-      throw new AppError("The current password you entered is incorrect",HttpStatus.BAD_REQUEST)
+    if (!user.passwordHash) {
+      throw new AppError(authMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
 
-    const passwordHash=await bcrypt.hash(newPassword,10)
-    await this._userRespository.updateByUserId(id,{passwordHash})
-    
+    const isPassswordCorrect = await bcrypt.compare(
+      oldPassword,
+      user?.passwordHash,
+    );
 
-    
+    if (!isPassswordCorrect) {
+      throw new AppError(
+        authMessages.ERROR.INVALID_CREDENTIALS,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await this._userRespository.updateByUserId(id, { passwordHash });
   }
 }

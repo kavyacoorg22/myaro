@@ -12,19 +12,11 @@ import {
 } from "../../../../mapper/serviceMapper";
 
 export class GetBeauticianServiceSelectionUseCase implements IGetBeauticianServiceSelectionUseCase {
-  private _serviceRepo: IServiceRepository;
-  private _categoryRepo: ICategoryRepository;
-  private _beauticianServiceRepo: IBeauticianServiceRepository;
-
-constructor(
-  serviceRepo: IServiceRepository,
-  categoryRepo: ICategoryRepository,
-  beauticianServiceRepo: IBeauticianServiceRepository,
-) {
-  this._serviceRepo = serviceRepo;
-  this._categoryRepo = categoryRepo;
-  this._beauticianServiceRepo = beauticianServiceRepo;
-}
+  constructor(
+    private _serviceRepo: IServiceRepository,
+    private _categoryRepo: ICategoryRepository,
+    private _beauticianServiceRepo: IBeauticianServiceRepository,
+  ) {}
 
   async execute(
     beauticianId: string,

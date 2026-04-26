@@ -21,14 +21,10 @@ export default function SubmissionsPage() {
   const fetchSubmissions = async (tab: TabType, page: number) => {
     try{
     const response = await adminApi.getAllCustomService(tab,page);
-       console.log('Full response:', response);
-    console.log('response.data:', response.data);
-    console.log('response.data.data:', response.data.data)
-    console.log('response.data.data.customService',response.data.data?.customService)
+  
     if(response.data.data)
     {
       setSubmissions(response.data.data.customService||[]);
-      console.log(submissions)
     setTotalPages(response.data.data?.pagination?.totalPages||0);
     }
   }catch(err)
@@ -39,7 +35,6 @@ export default function SubmissionsPage() {
   };
 
   const handleReview = async (id: string) => {
-    console.log('Review:', id);
   };
 
   const handleApprove = async (id: string) => {

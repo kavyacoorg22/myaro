@@ -1,0 +1,4 @@
+2026-04-26 12:43:36 info: ✅ Redis connected
+2026-04-26 12:43:36 info: ✅ Server running on http://localhost:4323
+2026-04-26 12:43:36 info: ✅ CORS enabled for: http://localhost:5173
+2026-04-26 12:43:36 info: ✅ Socket.io ready

@@ -24,6 +24,7 @@ import {
   CHAT_ACTION_MESSAGE,
 } from "../../../domain/services/bookingStatusMachine";
 import { NotificationDispatchService } from "../../services/notificationDispatchService";
+import { userMessages } from "../../../shared/constant/message/userMessage";
 
 export class DisputeRefundUseCase implements IDisputeRefundUseCase {
   constructor(
@@ -64,7 +65,7 @@ export class DisputeRefundUseCase implements IDisputeRefundUseCase {
 
     if (!updatedBooking) {
       throw new AppError(
-        "Failed to update booking",
+        userMessages.ERROR.UPDATE_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

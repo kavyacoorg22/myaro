@@ -7,6 +7,7 @@ export const userMessages = {
         PROFILE_FETCHED: 'User profile fetched successfully',
         PASSWORD_UPDATED: 'Password updated successfully',
         EMAIL_VERIFIED: 'Email verified successfully',
+        USER_EXISTS:'User exists'
     },
 
     ERROR: {
@@ -22,7 +23,7 @@ export const userMessages = {
         NO_TOKEN: 'No token is provided',
         ROUTE_NOT_FOUND: 'Route not found',
         UPDATE_FAILED:"Failed to update ",
-
+   
         // 🔥 User-specific errors
         USER_NOT_FOUND: 'User not found',
         USER_BLOCKED: 'User account is blocked',
@@ -32,6 +33,7 @@ export const userMessages = {
         INVALID_CREDENTIALS: 'Invalid login credentials',
         INVALID_PASSWORD: 'Incorrect password',
         UNAUTHORIZED_ACCESS: 'Unauthorized access attempt',
+        USER_NAME_TAKEN:'User name alredy taken'
     },
 
     INFO: {

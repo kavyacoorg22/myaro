@@ -12,16 +12,10 @@ import {
 } from "../../interfaceType/beauticianType";
 
 export class BeauticianRegistrationUseCase implements IBeauticianRegisterUseCase {
-  private _beauticianRepo: IBeauticianRepository;
-  private _fileUploader: IFileUploader;
-
   constructor(
-    beauticianRepo: IBeauticianRepository,
-    fileUploder: IFileUploader,
-  ) {
-    this._beauticianRepo = beauticianRepo;
-    this._fileUploader = fileUploder;
-  }
+    private _beauticianRepo: IBeauticianRepository,
+    private _fileUploader: IFileUploader,
+  ) {}
 
   async execute(
     data: IBeauticianRegistrationInput,

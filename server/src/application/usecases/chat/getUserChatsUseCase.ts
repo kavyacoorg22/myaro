@@ -1,8 +1,11 @@
 import { Beautician } from "../../../domain/entities/Beautician";
+import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
 import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
+import { generalMessages } from "../../../shared/constant/message/generalMessage";
+import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IChatListDto } from "../../dtos/chat";
 import { IGetUserChatsUseCase } from "../../interface/chat/IGetUserChatUseCase";
 import {
@@ -16,11 +19,19 @@ export class GetUserChatsUseCase implements IGetUserChatsUseCase {
     private _chatRepo: IChatRepository,
     private _userRepo: IUserRepository,
     private _messageRepo: IMessageRepository,
-    private _beauticianRepo: IBeauticianRepository, 
+    private _beauticianRepo: IBeauticianRepository,
   ) {}
 
-  async execute({ userId, limit = 20, cursor }: IGetUserChatsInput): Promise<IGetUserChatsOutput> {
-    if (!userId) throw new Error("userId is required");
+  async execute({
+    userId,
+    limit = 20,
+    cursor,
+  }: IGetUserChatsInput): Promise<IGetUserChatsOutput> {
+    if (!userId)
+      throw new AppError(
+        generalMessages.ERROR.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
 
     const chats = await this._chatRepo.findByUserId(userId, limit + 1, cursor);
     const hasMore = chats.length > limit;
@@ -51,7 +62,7 @@ export class GetUserChatsUseCase implements IGetUserChatsUseCase {
         beauticianUsers.map(async (u) => {
           const b = await this._beauticianRepo.findByUserId(u.id);
           if (b) beauticianMap.set(u.id, b);
-        })
+        }),
       );
     }
 
@@ -68,7 +79,7 @@ export class GetUserChatsUseCase implements IGetUserChatsUseCase {
         return toGetUserChats(chat, user, unreadCounts[index], beautician);
       })
       .filter((c): c is IChatListDto => c !== null)
-        .filter((c) => c.lastMessage !== "");
+      .filter((c) => c.lastMessage !== "");
     return { chats: chatsFiltered, nextCursor, hasMore };
   }
 }

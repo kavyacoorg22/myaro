@@ -3,54 +3,45 @@ import { IUserRepository } from "../../../domain/repositoryInterface/IUserReposi
 import { IRecentSearchUseCase } from "../../interface/public/IRecentSearchUseCase";
 import { IRecentSearchOutput } from "../../interfaceType/publicType";
 import { AppError } from "../../../domain/errors/appError";
-import { userMessages } from "../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
-import { generalMessages } from "../../../shared/constant/message/generalMessage";
 import { toRecentSearchHistoryResultDtos } from "../../mapper/beauticianMapper";
+import { searchHistoryMessages } from "../../../shared/constant/message/searchHistoryMessage";
 
 export class RecentSearchesUseCase implements IRecentSearchUseCase {
-  private _searchHistoryRepo: ISearchHistoryRepository;
-  private _userRepo: IUserRepository;
-
   constructor(
-    searchHistoryRepo: ISearchHistoryRepository,
-    userRepo: IUserRepository
-  ) {
-    this._searchHistoryRepo = searchHistoryRepo;
-    this._userRepo = userRepo;
-  }
+    private _searchHistoryRepo: ISearchHistoryRepository,
+    private _userRepo: IUserRepository,
+  ) {}
 
   async execute(userId: string): Promise<IRecentSearchOutput> {
     if (!userId || !userId.trim()) {
       throw new AppError(
-        userMessages.ERROR.BAD_REQUEST,
-        HttpStatus.BAD_REQUEST
+        searchHistoryMessages.ERROR.INVALID_USER_ID,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
     try {
-      const searchHistories = await this._searchHistoryRepo.getRecentSearches(
-        userId
-      );
+      const searchHistories =
+        await this._searchHistoryRepo.getRecentSearches(userId);
 
       if (searchHistories.length === 0) {
         return {
           success: true,
-          message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+          message: searchHistoryMessages.SUCCESS.EMPTY,
           data: [],
         };
       }
 
       const beauticianIds = searchHistories.map((sh) => sh.beauticianId);
 
-      const beauticians = await this._userRepo.getBeauticiansById(
-        beauticianIds
-      );
+      const beauticians =
+        await this._userRepo.getBeauticiansById(beauticianIds);
 
       if (!beauticians || beauticians.length === 0) {
         return {
           success: true,
-          message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+          message: searchHistoryMessages.SUCCESS.EMPTY,
           data: [],
         };
       }
@@ -59,19 +50,19 @@ export class RecentSearchesUseCase implements IRecentSearchUseCase {
 
       const dtos = toRecentSearchHistoryResultDtos(
         searchHistories,
-        beauticianMap
+        beauticianMap,
       );
 
       return {
         success: true,
-        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+        message: searchHistoryMessages.SUCCESS.FETCHED,
         data: dtos,
       };
     } catch (err) {
       if (err instanceof AppError) throw err;
       throw new AppError(
-        generalMessages.ERROR.INTERNAL_SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR
+        searchHistoryMessages.ERROR.INTERNAL_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

@@ -22,6 +22,8 @@ import {
   NotificationType,
 } from "../../../domain/enum/notificationEnum";
 import { toDateOnly } from "../../../utils/schedule/dateHelper";
+import { paymentMessages } from "../../../shared/constant/message/paymentMessage";
+import { bookingMessages } from "../../../shared/constant/message/bookingMessage";
 
 export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
   constructor(
@@ -41,7 +43,10 @@ export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
       await this._paymentRepo.updateByRazorpayOrderId(data.razorpay_order_id, {
         status: PaymentStatus.FAILED,
       });
-      throw new AppError("Invalid payment signature", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        paymentMessages.ERROR.INVALID_PAYMENT_SIGNATURE,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const payment = await this._paymentRepo.updateByRazorpayOrderId(
@@ -53,9 +58,10 @@ export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
       },
     );
     if (!payment)
-      throw new AppError("Payment record not found", HttpStatus.NOT_FOUND);
+      throw new AppError(paymentMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
     const booking = await this._bookingRepo.findById(payment.bookingId);
-    if (!booking) throw new AppError("Booking not found", HttpStatus.NOT_FOUND);
+    if (!booking)
+      throw new AppError(bookingMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
 
     const lockKey = `payment_lock:${payment.bookingId}`;
     const storedValue = await redisClient.get(lockKey);
@@ -78,44 +84,39 @@ export class VerifyPaymentUsecase implements IVerifyPaymentUsecase {
       endTime: endTime.trim(),
     });
 
-const bookingDate = toDateOnly(new Date(booking.slot.date));
-// toDateOnly uses Date.UTC internally → always UTC midnight ✅
+    const bookingDate = toDateOnly(new Date(booking.slot.date));
+    // toDateOnly uses Date.UTC internally → always UTC midnight ✅
 
-bookingDate.setUTCHours(
-  Math.floor(booking.slot.startMinutes / 60),
-  booking.slot.startMinutes % 60,
-  0, 0
-);
+    bookingDate.setUTCHours(
+      Math.floor(booking.slot.startMinutes / 60),
+      booking.slot.startMinutes % 60,
+      0,
+      0,
+    );
 
-const scheduledFor = new Date(
-  bookingDate.getTime() - 24 * 60 * 60 * 1000
-);
+    const scheduledFor = new Date(bookingDate.getTime() - 24 * 60 * 60 * 1000);
 
-console.log('[Reminder] scheduledFor:', scheduledFor);
-console.log('[Reminder] now:', new Date());
-console.log('[Reminder] will schedule?', scheduledFor > new Date());
+    if (scheduledFor > new Date()) {
+      await this._scheduleNotification.execute({
+        userId: booking.userId,
+        type: NotificationType.REMINDER,
+        category: NotificationCategory.SYSTEM,
+        title: "Upcoming Appointment",
+        message: `Your appointment is tomorrow at ${startTime.trim()}`,
+        metadata: { bookingId: booking.id },
+        scheduledFor,
+      });
 
-if (scheduledFor > new Date()) {
-  await this._scheduleNotification.execute({
-    userId:      booking.userId,
-    type:        NotificationType.REMINDER,
-    category:    NotificationCategory.SYSTEM,
-    title:       'Upcoming Appointment',
-    message:     `Your appointment is tomorrow at ${startTime.trim()}`,
-    metadata:    { bookingId: booking.id },
-    scheduledFor,
-  });
-
-  await this._scheduleNotification.execute({
-    userId:      booking.beauticianId,
-    type:        NotificationType.REMINDER,
-    category:    NotificationCategory.SYSTEM,
-    title:       'Upcoming Appointment',
-    message:     `You have an appointment tomorrow at ${startTime.trim()}`,
-    metadata:    { bookingId: booking.id },
-    scheduledFor,
-  });
-}
+      await this._scheduleNotification.execute({
+        userId: booking.beauticianId,
+        type: NotificationType.REMINDER,
+        category: NotificationCategory.SYSTEM,
+        title: "Upcoming Appointment",
+        message: `You have an appointment tomorrow at ${startTime.trim()}`,
+        metadata: { bookingId: booking.id },
+        scheduledFor,
+      });
+    }
     const dto = toVerifyPayment(payment, true);
     return { data: dto };
   }

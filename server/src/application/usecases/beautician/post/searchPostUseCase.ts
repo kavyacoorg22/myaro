@@ -34,7 +34,6 @@ export class SearchPostUseCase implements ISearchPostUSeCase {
         ? await this._postRepo.findByBeauticianIds(beauticianIds, cursor, SEARCH_LIMIT + 1)
         : [];
 
-    // Deduplicate
     const seen = new Set<string>();
     const merged: Post[] = [];
 
@@ -70,7 +69,6 @@ export class SearchPostUseCase implements ISearchPostUSeCase {
       extraUsers.forEach((u) => userMap.set(u.id, u));
     }
 
-    // ✅ Only fetch likes if userId is present
     const likedSet = new Set<string>();
     if (userId) {
       const postIds = paginated.map((p) => p.id);

@@ -9,52 +9,44 @@ import { toUpdateRegistrationDto } from "../../mapper/beauticianMapper";
 import { IBeauticianPaymentDeatilOutput } from "../../interfaceType/beauticianType";
 import { BankDetailsVO } from "../../../domain/entities/Beautician";
 
-export class BeauticianUpdateRegistartionUseCase
-  implements IBeauticianUpdateRegistrationUseCase
-{
-  private _beauticianRepo: IBeauticianRepository;
-  private _userRepo: IUserRepository;
-
+export class BeauticianUpdateRegistartionUseCase implements IBeauticianUpdateRegistrationUseCase {
   constructor(
-    beauticianRepo: IBeauticianRepository,
-    userRepo: IUserRepository
-  ) {
-    this._beauticianRepo = beauticianRepo;
-    this._userRepo = userRepo;
-  }
+    private _beauticianRepo: IBeauticianRepository,
+    private _userRepo: IUserRepository,
+  ) {}
 
   async execute(
     userId: string,
-    payment: BankDetailsVO
+    payment: BankDetailsVO,
   ): Promise<IBeauticianPaymentDeatilOutput> {
     if (!userId || !payment) {
       throw new AppError(
         userMessages.ERROR.MISSING_PARAMETERS,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
     const updatedBeautician = await this._beauticianRepo.addPaymentDetails(
       userId,
-      { bankDetails: payment }
+      { bankDetails: payment },
     );
 
     if (!updatedBeautician) {
       throw new AppError(
         userMessages.ERROR.UPDATE_FAILED,
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
     const updatedUser = await this._userRepo.updateRoleAndVerification(
       userId,
       UserRole.BEAUTICIAN,
-      true
+      true,
     );
 
     if (!updatedUser) {
       throw new AppError(
-        "Failed to verify user",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        userMessages.ERROR.UPDATE_FAILED,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 

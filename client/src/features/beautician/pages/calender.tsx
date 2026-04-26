@@ -37,11 +37,11 @@ export const useCalendarLogic = (
 
       if (isEditable) {
         const res = await BeauticianApi.getMonthlyAvailability(month, year);
-        console.log(res)
+        
         dates = res.data?.data?.dates ?? [];
       } else if (beauticianId) {
         const res = await publicAPi.getMonthlyAvailabilityForUser(beauticianId, month, year);
-        console.log(res)
+       
         dates = res.data?.data?.dates ?? [];
       }
 

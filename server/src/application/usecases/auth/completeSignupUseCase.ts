@@ -8,6 +8,10 @@ import {
   IResponse,
 } from "../../interfaceType/authtypes";
 import { ICompleteSignupUseCase } from "../../interface/auth/ICompleteSignupUseCase";
+import { AppError } from "../../../domain/errors/appError";
+import { authMessages } from "../../../shared/constant/message/authMessages";
+import { HttpStatus } from "../../../shared/enum/httpStatus";
+import { userMessages } from "../../../shared/constant/message/userMessage";
 
 export class CompleteSignupUseCase implements ICompleteSignupUseCase {
   constructor(
@@ -17,12 +21,23 @@ export class CompleteSignupUseCase implements ICompleteSignupUseCase {
 
   async execute(input: ICompleteSignupInput): Promise<IResponse> {
     const { signupToken, otp } = input;
-    if (!signupToken) throw new Error("Missing signup token");
-    if (!otp) throw new Error("Missing otp");
+    if (!signupToken)
+      throw new AppError(
+        authMessages.ERROR.MISSING_SIGNUP_TOKEN,
+        HttpStatus.BAD_REQUEST,
+      );
+    if (!otp)
+      throw new AppError(
+        authMessages.ERROR.INVALID_OTP,
+        HttpStatus.BAD_REQUEST,
+      );
 
     const payload = verifySignupToken(signupToken);
     if (!payload || typeof payload !== "object" || !("email" in payload)) {
-      throw new Error("Invalid or expired signup token");
+      throw new AppError(
+        authMessages.ERROR.INVALID_SIGNUP_TOKEN,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     type SignupPayload = {
       email: string;
@@ -52,7 +67,7 @@ export class CompleteSignupUseCase implements ICompleteSignupUseCase {
 
     try {
       await this._registerUserUC.execute(registerInput);
-      return { success: true, message: "User created" };
+      return { success: true, message: userMessages.SUCCESS.USER_CREATED };
     } catch (err) {
       if (err instanceof ConflictError) throw err;
 

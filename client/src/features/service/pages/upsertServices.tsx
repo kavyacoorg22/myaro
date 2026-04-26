@@ -175,7 +175,6 @@ const handleAddTopLevelCustom = () => {
   {
     handleApiError(err)
   }
-  console.log('Save:', data);
 };
 
   const handleDeleteCustomService = async (categoryIndex: number, serviceIndex: number) => {

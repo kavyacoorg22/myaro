@@ -73,12 +73,7 @@ const BookingsPage: React.FC = () => {
           ? BookingApi.getBeauticianBookings
           : BookingApi.getCustomerBookings;
 
-      console.log(
-        "[BookingsPage] role:",
-        role,
-        "| calling:",
-        role === UserRole.BEAUTICIAN ? "beautician" : "customer"
-      );
+     
 
       const result = await fetchFn(status, page, LIMIT);
       if (result) {

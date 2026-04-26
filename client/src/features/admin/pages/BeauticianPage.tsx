@@ -28,11 +28,7 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
     const fetchBeauticians = async () => {
       setLoading(true);
       try {
-        console.log('🔍 Fetching beauticians:', { 
-          page: currentPage, 
-          statusFilter,
-          filterValue: statusFilter !== 'all' ? statusFilter : undefined 
-        });
+        
         
         // Pass pagination and filter parameters to the API
         const params = {
@@ -73,13 +69,11 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
   }, [currentPage, statusFilter,refreshTrigger]); 
 
   const handleStatusFilterChange = (status: BeauticianStatusFilterType) => {
-    console.log('🔄 Status filter changed to:', status);
     setStatusFilter(status);
     setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
-    console.log('📄 Page changed to:', page);
     setCurrentPage(page);
   };
 
@@ -120,24 +114,20 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
 
   const handleViewProfile = async (userId: string) => {
     try {
-      console.log('👤 Fetching profile for userId:', userId);
       
       // Find the verification status from the current list
       const beauticianInList = beauticians.find(b => b.userId=== userId);
       if (beauticianInList) {
         const status = beauticianInList.verificationStatus.toLowerCase() as 'pending' | 'verified' | 'rejected';
         setSelectedVerificationStatus(status);
-        console.log('✅ Set verification status:', status);
       }
       
     
       const response = await adminApi.viewProfile(userId);
       
-      console.log('📦 Profile response:', response);
       
       if (response.data?.data) {
         setSelectedBeautician(response.data.data);
-        console.log('✅ Opened profile modal');
       } else {
         console.error('❌ No profile data in response');
       }
@@ -147,12 +137,7 @@ import { handleApiError } from '../../../lib/utils/handleApiError';
     }
   };
 
-  console.log('🎨 Render state:', { 
-    beauticiansCount: beauticians.length, 
-    statusFilter, 
-    currentPage, 
-    loading 
-  });
+  
 
   if (loading && beauticians.length === 0) {
     return (

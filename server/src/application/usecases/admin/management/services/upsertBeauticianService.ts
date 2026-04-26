@@ -3,24 +3,17 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { IBeauticianServiceRepository } from "../../../../../domain/repositoryInterface/IBeauticianServiceRepository";
 import { ICategoryRepository } from "../../../../../domain/repositoryInterface/ICategoryRepository";
 import { IServiceRepository } from "../../../../../domain/repositoryInterface/IServiceRepository";
+import { serviceMessages } from "../../../../../shared/constant/message/serviceMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IUpsertBeauticianServiceUseCase } from "../../../../interface/beauticianService/IUpsertBeauticianService";
 import { IUpsertBeauticianServiceRequest } from "../../../../interfaceType/serviceType";
 
 export class UpsertBeauticianService implements IUpsertBeauticianServiceUseCase {
-  private _beauticianServiceRepo: IBeauticianServiceRepository;
-  private _serviceRepo: IServiceRepository;
-  private _categoryRepo: ICategoryRepository;
-
   constructor(
-    beauticianServiceRepo: IBeauticianServiceRepository,
-    serviceRepo: IServiceRepository,
-    categoryRepo: ICategoryRepository,
-  ) {
-    this._beauticianServiceRepo = beauticianServiceRepo;
-    this._serviceRepo = serviceRepo
-    this._categoryRepo = categoryRepo;
-  }
+    private _beauticianServiceRepo: IBeauticianServiceRepository,
+    private _serviceRepo: IServiceRepository,
+    private _categoryRepo: ICategoryRepository,
+  ) {}
 
   async execute(input: IUpsertBeauticianServiceRequest): Promise<void> {
     const { beauticianId, serviceId, categoryId, isHomeServiceAvailable } =
@@ -28,12 +21,18 @@ export class UpsertBeauticianService implements IUpsertBeauticianServiceUseCase 
     const existingCategory = await this._categoryRepo.findById(categoryId);
 
     if (existingCategory === null) {
-      throw new AppError("category not found", HttpStatus.NOT_FOUND);
+      throw new AppError(
+        serviceMessages.ERROR.CATEGORY_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const existingService = await this._serviceRepo.findById(serviceId);
     if (existingService === null) {
-      throw new AppError("Service not found", HttpStatus.NOT_FOUND);
+      throw new AppError(
+        serviceMessages.ERROR.SERVICE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const beauticianServiceDto: Omit<

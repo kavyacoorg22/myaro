@@ -8,6 +8,7 @@ import { IBookingHistoryRepository } from "../../../domain/repositoryInterface/U
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository"; // ✅ use interface
 import { ACTION_MESSAGE, ACTION_TO_STATUS, VALID_TRANSITIONS } from "../../../domain/services/bookingStatusMachine";
+import { bookingMessages } from "../../../shared/constant/message/bookingMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { IUpdateBookingStatusUseCase } from "../../interface/booking/IUpdateBookingStatusUSeCase";
@@ -29,13 +30,13 @@ export class UpdateBookingStatusUseCase implements IUpdateBookingStatusUseCase {
 
     // 1. find booking
     const booking = await this._bookingRepo.findById(bookingId);
-    if (!booking) throw new AppError("Booking not found.", HttpStatus.NOT_FOUND);
+    if (!booking) throw new AppError(bookingMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
 
     // 2. validate transition
     const allowedActions = VALID_TRANSITIONS[booking.status];
-    if (!allowedActions.includes(action)) {
+   if (!allowedActions.includes(action)) {
       throw new AppError(
-        `Cannot ${action} a booking that is ${booking.status}.`,
+        bookingMessages.ERROR.INVALID_TRANSITION(action, booking.status),
         HttpStatus.BAD_REQUEST,
       );
     }

@@ -10,7 +10,7 @@ import { LocationVO } from "../../../../domain/entities/beauticianServiceAres";
 export class AddServiceAreaUseCase implements IAddServiceAreaUseCase {
   constructor(
     private readonly _beauticianRepo: IBeauticianRepository,
-    private readonly _serviceAreaRepo: IServiceAreaRepository, // ← add this
+    private readonly _serviceAreaRepo: IServiceAreaRepository, 
   ) {}
 
   async execute(

@@ -52,7 +52,6 @@ const [show,setShow]=useState(false)
 
      //send otp
      const otpRes=await authApi.sendOtp({email,signupToken})
-     console.log(otpRes)
      toast.success(otpRes.data?.message)
      navigate(publicFrontendRoutes.verifyOtp,{state:{email,signupToken}})
     }catch(err)

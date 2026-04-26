@@ -5,10 +5,10 @@ import { toBookingTrendDto } from "../../../mapper/adminMapper";
 
 export class GetBookingTrendUC implements IGetBookingTrendUSeCase {
   constructor(private readonly _bookingRepo: IBookingRepository) {}
- 
+
   async execute(year?: number): Promise<IBookingTrendOutPut> {
     const result = await this._bookingRepo.getBookingTrendByMonth(year);
-    const data=  result.map((t)=>toBookingTrendDto(t));
-    return{data}
+    const data = result.map((t) => toBookingTrendDto(t));
+    return { data };
   }
 }

@@ -8,7 +8,6 @@ export function validateRequestRefund(
   next: NextFunction
 ) {
   const { refundReason } = req.body;
-  console.log(req.body)
 
   if (
     refundReason === undefined ||

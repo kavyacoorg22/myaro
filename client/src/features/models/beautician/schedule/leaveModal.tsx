@@ -57,7 +57,6 @@ const handleSave = async () => {
 
     const res = await BeauticianApi.addRecurringSchedule(requestData);
     toast.success(res.data.message);
-    console.log('✅ Recurring leave saved:', requestData);
     if (onSave) await onSave(payload);
     onClose();
   } catch (err: any) {

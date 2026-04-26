@@ -69,7 +69,6 @@ export function validateUserInput(
 
 export function validateEmail(req: Request, res: Response, next: NextFunction) {
   const { email } = req.body;
-  console.log(email);
 
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!email) {

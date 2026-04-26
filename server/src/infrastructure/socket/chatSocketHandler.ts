@@ -25,10 +25,8 @@ export function registerChatHandlers(socket: Socket, useCases: ChatUseCases): vo
         chatId,
         userId,
       });
-        console.log("🟢 JOIN_CHAT received, room:", chatId);
       socket.data.chatId = chatId;
       socket.data.userId = userId;
-        console.log("🟢 Socket rooms:", socket.rooms);
     } catch (err) {
       socket.emit(EV.ERROR, { message: toMessage(err) });
     }

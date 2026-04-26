@@ -4,17 +4,15 @@ import { IFileUploader } from "../../../../serviceInterface/IFileUploadService";
 import { authMessages } from "../../../../../shared/constant/message/authMessages";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IUploadPamphletUseCase } from "../../../../interface/beauticianService/IPamphletUploadUseCase";
+import { serviceMessages } from "../../../../../shared/constant/message/serviceMessage";
+import { userMessages } from "../../../../../shared/constant/message/userMessage";
+import logger from "../../../../../utils/logger";
 
 export class UploadPamphletUseCase implements IUploadPamphletUseCase {
-  private _beauticianRepo: IBeauticianRepository;
-  private _uploadService: IFileUploader;
   constructor(
-    beauticianRepo: IBeauticianRepository,
-    fileUploadService: IFileUploader,
-  ) {
-    this._beauticianRepo = beauticianRepo;
-    this._uploadService = fileUploadService;
-  }
+    private _beauticianRepo: IBeauticianRepository,
+    private _uploadService: IFileUploader,
+  ) {}
   async execute(id: string, pamphletImg: Express.Multer.File): Promise<void> {
     const beautician = await this._beauticianRepo.findByUserId(id);
     if (!beautician) {
@@ -29,16 +27,18 @@ export class UploadPamphletUseCase implements IUploadPamphletUseCase {
         try {
           await this._uploadService.deletePamphletImage(beautician.pamphletUrl);
         } catch (err) {
-          console.log(err);
+              logger.warn("Failed to delete old pamphlet image", { err });
+
         }
       }
       pamphletUrl = await this._uploadService.uploadPamphletImage(pamphletImg);
     } catch (err) {
       throw new AppError(
-    err instanceof Error ? err.message : "Failed to upload pamphlet image",
+        err instanceof Error
+          ? err.message
+          : serviceMessages.ERROR.PAMPHLET_UPLOAD_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-      
     }
 
     const beauticianData = await this._beauticianRepo.updateByUserId(id, {
@@ -46,7 +46,7 @@ export class UploadPamphletUseCase implements IUploadPamphletUseCase {
     });
     if (!beauticianData) {
       throw new AppError(
-        "Failed to update beautician data",
+        userMessages.ERROR.UPDATE_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

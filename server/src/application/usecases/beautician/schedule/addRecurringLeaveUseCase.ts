@@ -10,35 +10,42 @@ import { IAddRecurringLeaveScheduleUseCase } from "../../../interface/beautician
 
 import { IAddRecursionScheduleInput } from "../../../interfaceType/scheduleType";
 
-export class AddRecurringLeaveUseCase implements IAddRecurringLeaveScheduleUseCase{
+export class AddRecurringLeaveUseCase implements IAddRecurringLeaveScheduleUseCase {
   constructor(
     private readonly _recurringScheduleRepo: IReccuringScheduleRepository,
-    private readonly _userRepo: IUserRepository
+    private readonly _userRepo: IUserRepository,
   ) {}
 
-  async execute(beauticianId: string, input: IAddRecursionScheduleInput): Promise<void> {
+  async execute(
+    beauticianId: string,
+    input: IAddRecursionScheduleInput,
+  ): Promise<void> {
     const user = await this._userRepo.findByUserId(beauticianId);
     if (!user || user.role !== UserRole.BEAUTICIAN) {
       throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
 
-    const startDateStr = input.startDate instanceof Date
-      ? input.startDate.toISOString().split("T")[0]
-      : input.startDate;
+    const startDateStr =
+      input.startDate instanceof Date
+        ? input.startDate.toISOString().split("T")[0]
+        : input.startDate;
 
-    const endDateStr = input.endDate instanceof Date
-      ? input.endDate.toISOString().split("T")[0]
-      : input.endDate;
+    const endDateStr =
+      input.endDate instanceof Date
+        ? input.endDate.toISOString().split("T")[0]
+        : input.endDate;
 
     const newEnd = getEffectiveEndDate({
-      endType:   input.endType,
-      endDate:   endDateStr,
-      endCount:  input.endCount,
+      endType: input.endType,
+      endDate: endDateStr,
+      endCount: input.endCount,
       startDate: startDateStr,
-      rrule:     input.rrule,
+      rrule: input.rrule,
     });
 
-    const existing = await this._recurringScheduleRepo.findByBeauticianId(beauticianId) ?? [];
+    const existing =
+      (await this._recurringScheduleRepo.findByBeauticianId(beauticianId)) ??
+      [];
 
     // Leave overrides everything — split both availability and leave rules that overlap
     for (const rule of existing) {
@@ -53,14 +60,14 @@ export class AddRecurringLeaveUseCase implements IAddRecurringLeaveScheduleUseCa
     // Save the new leave rule as-is
     await this._recurringScheduleRepo.create({
       beauticianId,
-      rrule:     input.rrule,
-      timeFrom:  input.timeFrom,
-      timeTo:    input.timeTo,
-      type:      input.type,
+      rrule: input.rrule,
+      timeFrom: input.timeFrom,
+      timeTo: input.timeTo,
+      type: input.type,
       startDate: input.startDate,
-      endType:   input.endType,
-      endDate:   input.endDate,
-      endCount:  input.endCount,
+      endType: input.endType,
+      endDate: input.endDate,
+      endCount: input.endCount,
     });
   }
 }

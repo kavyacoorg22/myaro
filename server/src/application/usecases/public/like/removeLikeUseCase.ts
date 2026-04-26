@@ -1,6 +1,7 @@
 import { AppError } from "../../../../domain/errors/appError";
 import { IPostRepository } from "../../../../domain/repositoryInterface/beautician/IPostRepository";
 import { ILikeRepository } from "../../../../domain/repositoryInterface/User/ILikeRepository";
+import { likeCommentMessages } from "../../../../shared/constant/message/likeCommetMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IRemoveLikeUSeCase } from "../../../interface/public/like/IRemoveLikeUseCase";
 
@@ -16,7 +17,10 @@ export class RemoveLikeUseCase implements IRemoveLikeUSeCase {
       postId,
     );
     if (!existingLike) {
-      throw new AppError("Like not found", HttpStatus.NOT_FOUND);
+      throw new AppError(
+        likeCommentMessages.ERROR.LIKE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     await this._likeRepo.delete(userId, postId);

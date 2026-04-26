@@ -1,4 +1,8 @@
+import { AppError } from "../../../../domain/errors/appError";
 import { IFollowRepository } from "../../../../domain/repositoryInterface/User/IFollowRepository";
+import { followMessages } from "../../../../shared/constant/message/followMessage";
+import { generalMessages } from "../../../../shared/constant/message/generalMessage";
+import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IUnFollowBeauticianUseCase } from "../../../interface/public/follow/IUnFollowBeauticianUseCase";
 
 export class UnFollowBeauticianUseCase implements IUnFollowBeauticianUseCase {
@@ -9,7 +13,10 @@ export class UnFollowBeauticianUseCase implements IUnFollowBeauticianUseCase {
     beauticianId: string,
   ): Promise<{ isFollowing: boolean }> {
     if (userId === beauticianId) {
-      throw new Error("Invalid request.");
+      throw new AppError(
+        generalMessages.ERROR.INVALID_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const isFollowing = await this._followRepo.checkFollowing(
@@ -18,7 +25,10 @@ export class UnFollowBeauticianUseCase implements IUnFollowBeauticianUseCase {
     );
 
     if (!isFollowing) {
-      throw new Error("You are not following this beautician.");
+      throw new AppError(
+        followMessages.ERROR.NOT_FOLLOWING,
+        HttpStatus.CONFLICT,
+      );
     }
 
     await this._followRepo.unFollow(userId, beauticianId);

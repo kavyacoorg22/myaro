@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { IGetBookingTrendUSeCase } from "../../../../application/interface/admin/management/dashboard/getBookingTrendUseCase";
 import { IGetRevenueUSeCase } from "../../../../application/interface/admin/management/dashboard/getRevenueStatus";
 import { IGetUserGrowthUSeCase } from "../../../../application/interface/admin/management/dashboard/getUserGrowthUseCase";
@@ -7,62 +7,40 @@ import { HttpStatus } from "../../../../shared/enum/httpStatus";
 
 export class DashboardController {
   constructor(
-    private readonly _getOverviewUC:IGetDashboardOverviewUseCase,
-    private readonly _getUserGrowthUC:IGetUserGrowthUSeCase,
-    private readonly _getBookingTrendUC:IGetBookingTrendUSeCase,
-    private readonly _getRevenueUC: IGetRevenueUSeCase,
+    private readonly _getOverviewUseCase: IGetDashboardOverviewUseCase,
+    private readonly _getUserGrowthUseCase: IGetUserGrowthUSeCase,
+    private readonly _getBookingTrendUseCase: IGetBookingTrendUSeCase,
+    private readonly _getRevenueUseCase: IGetRevenueUSeCase,
   ) {}
 
-  getOverView=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-     try{
-         const result=await this._getOverviewUC.execute()
-         res.status(HttpStatus.OK).json({
-          sucess:true,
-          data:result.data
-         })
-
-     }catch(err)
-     {
-      next(err)
-     }
-  }
-   getUserGrowth=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-     try{
-      const year=Number(req.query?.year)
-         const result=await this._getUserGrowthUC.execute(year)
-         res.status(HttpStatus.OK).json({
-          sucess:true,
-          data:result.data
-         })
-
-     }catch(err)
-     {
-      next(err)
-     }
-  }
-   getBookingTrend=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-     try{
-    const year=Number(req.query?.year)
-         const result=await this._getBookingTrendUC.execute(year)
-         res.status(HttpStatus.OK).json({
-          sucess:true,
-          data:result.data
-         })
-     }catch(err)
-     {
-      next(err)
-     }
-  }
-   getRevenue=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
-     try{
-         const result=await this._getRevenueUC.execute()
-         res.status(HttpStatus.OK).json({
-          sucess:true,
-          data:result.data
-         })
-     }catch(err)
-     {
-      next(err)
-     }
-  }
+  getOverView = async (req: Request, res: Response): Promise<void> => {
+    const result = await this._getOverviewUseCase.execute();
+    res.status(HttpStatus.OK).json({
+      sucess: true,
+      data: result.data,
+    });
+  };
+  getUserGrowth = async (req: Request, res: Response): Promise<void> => {
+    const year = Number(req.query?.year);
+    const result = await this._getUserGrowthUseCase.execute(year);
+    res.status(HttpStatus.OK).json({
+      sucess: true,
+      data: result.data,
+    });
+  };
+  getBookingTrend = async (req: Request, res: Response): Promise<void> => {
+    const year = Number(req.query?.year);
+    const result = await this._getBookingTrendUseCase.execute(year);
+    res.status(HttpStatus.OK).json({
+      sucess: true,
+      data: result.data,
+    });
+  };
+  getRevenue = async (req: Request, res: Response): Promise<void> => {
+    const result = await this._getRevenueUseCase.execute();
+    res.status(HttpStatus.OK).json({
+      sucess: true,
+      data: result.data,
+    });
+  };
 }

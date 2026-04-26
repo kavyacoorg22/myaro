@@ -37,7 +37,6 @@ export default function UsersList(props: UsersDetailDesignProps) {
 
   return (
     <>
-      {console.log(`pageData`,pageData)}
    <SaidBar/>
     <div className="min-h-screen bg-gray-50 p-6 ml-60">
       {/* Header */}

@@ -25,7 +25,6 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
 
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
-      console.log(`🚀 Google ${mode} success, sending credential to backend`)
       
       if (!credentialResponse.credential) {
         toast.error(`Google ${mode} failed. No credential received.`)
@@ -44,7 +43,6 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       
       const res = await authApi.googleLogin(payload)
 
-      console.log(`✅ Google ${mode} response:`, res)
 
       if (!res.data?.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR)
@@ -76,13 +74,11 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       navigate(publicFrontendRoutes.landing, { replace: true })
 
     } catch (err) {
-      console.log(`❌ Google ${mode} error:`, err)
       handleApiError(err)
     }
   }
 
   const handleGoogleError = () => {
-    console.log(`❌ Google ${mode} failed`)
     toast.error(`Google ${mode} failed. Please try again.`)
   }
 

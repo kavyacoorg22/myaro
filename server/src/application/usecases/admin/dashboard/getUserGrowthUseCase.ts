@@ -4,11 +4,11 @@ import { IUserGrowthOutPut } from "../../../interfaceType/adminType";
 import { toUserGrowthDto } from "../../../mapper/adminMapper";
 
 export class GetUserGrowthUseCae implements IGetUserGrowthUSeCase {
-  constructor(private readonly _userRepo:IUserRepository) {}
- 
+  constructor(private readonly _userRepo: IUserRepository) {}
+
   async execute(year?: number): Promise<IUserGrowthOutPut> {
     const result = await this._userRepo.getUserGrowthByMonth(year);
-    const data= result.map((d)=>toUserGrowthDto(d));
-    return {data}
+    const data = result.map((d) => toUserGrowthDto(d));
+    return { data };
   }
 }

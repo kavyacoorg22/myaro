@@ -72,7 +72,6 @@ export function rruleCoversDate(
       ? rule.rrule
       : `DTSTART:${dtstart}\nRRULE:${rule.rrule}`;
 
-    console.log('[rruleCoversDate] rruleStr:', rruleStr, '| checking date:', date.toISOString());
 
     const rrule = rrulestr(rruleStr, { forceset: false });
 

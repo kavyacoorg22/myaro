@@ -18,7 +18,6 @@ export function registerUserHandlers(socket: Socket, useCases: UserUseCases): vo
       
       socket.join(`user:${userId}`);
       socket.data.userId = userId;
-      console.log(`${userId} → room user:${userId}`);
     } catch (err) {
       socket.emit(EV.ERROR, { message: toMessage(err) });
     }
@@ -31,7 +30,6 @@ export function registerUserHandlers(socket: Socket, useCases: UserUseCases): vo
 
   socket.on("disconnect", () => {
     const { userId, chatId } = socket.data;
-    console.log(`Disconnected: ${socket.id} userId:${userId} chatId:${chatId}`);
     if (userId) {
       useCases.userOnlineStatusUC.userOffline({
         socketId: socket.id,

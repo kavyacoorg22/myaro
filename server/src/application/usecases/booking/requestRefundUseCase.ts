@@ -11,7 +11,6 @@ import { BookingHistoryService } from "../../services/bookingHistoryService";
 import { BookingValidatorService } from "../../services/bookingValidatorService";
 import { ChatMessageService } from "../../services/chatMessageService";
 import { PaymentLookupService } from "../../services/paymentLookupService";
-import { ISocketEmitter } from "../../serviceInterface/ISocketEmitter";
 import { IRequestRefundUseCase } from "../../interface/booking/IRequestRefundUC";
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { IRequestRefundInput } from "../../interfaceType/booking";
@@ -25,12 +24,12 @@ import {
   NotificationType,
 } from "../../../domain/enum/notificationEnum";
 import { NotificationDispatchService } from "../../services/notificationDispatchService";
+import { userMessages } from "../../../shared/constant/message/userMessage";
 
 export class RequestRefundUseCase implements IRequestRefundUseCase {
   constructor(
     private _bookingRepo: IBookingRepository,
     private _paymentRepo: IPaymentRepository,
-    private _socketEmitter: ISocketEmitter,
     private _bookingValidator: BookingValidatorService,
     private _bookingHistory: BookingHistoryService,
     private _chatMessage: ChatMessageService,
@@ -64,7 +63,7 @@ export class RequestRefundUseCase implements IRequestRefundUseCase {
 
     if (!updatedBooking) {
       throw new AppError(
-        "Failed to update booking",
+        userMessages.ERROR.UPDATE_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

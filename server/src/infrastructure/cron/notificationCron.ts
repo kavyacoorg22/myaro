@@ -20,12 +20,6 @@ export class NotificationCron {
       if (!due.length) return;
 
 
-  console.log('[Cron] Due notifications:', due.map(n => ({
-    id: n.id,
-    scheduledFor: n.scheduledFor,
-    isSent: n.isSent,
-    title: n.title,
-  })));
 
 
       for (const notif of due) {
@@ -35,7 +29,6 @@ export class NotificationCron {
     const nowTime = now.getTime();
     
     if (nowTime - scheduledTime > 2 * 60 * 1000) {
-      console.log('[Cron] Skipping stale notification:', notif.id, 'scheduledFor:', notif.scheduledFor);
       await this.notificationRepo.markAsSent(notif.id);
       continue;
     }
@@ -63,7 +56,6 @@ export class NotificationCron {
         await this.notificationRepo.markAsSent(notif.id);
       }
 
-      console.log(`[NotificationCron] Sent ${due.length} notification(s)`);
     });
   }
 }

@@ -4,6 +4,8 @@ import { IBookingRepository } from "../../../domain/repositoryInterface/User/boo
 import { IPaymentRepository } from "../../../domain/repositoryInterface/User/booking/IPaymentRepository";
 import { appConfig } from "../../../infrastructure/config/config";
 import redisClient from "../../../infrastructure/redis/redisClient";
+import { bookingMessages } from "../../../shared/constant/message/bookingMessage";
+import { paymentMessages } from "../../../shared/constant/message/paymentMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { ICreateOrderUsecase } from "../../interface/payment/ICreateOrderUseCase";
 import {
@@ -26,7 +28,10 @@ export class CreateOrderUsecase implements ICreateOrderUsecase {
   }: ICreateOrderUsecaseInput): Promise<ICreateOrderOutput> {
     const existingPaid = await this._paymentRepo.findPaidByBookingId(bookingId);
     if (existingPaid) {
-      throw new AppError("Booking Already paid", HttpStatus.CONFLICT);
+      throw new AppError(
+        bookingMessages.ERROR.ALREADY_PAID,
+        HttpStatus.CONFLICT,
+      );
     }
 
     const lockKey = `payment_lock:${bookingId}`;
@@ -37,34 +42,39 @@ export class CreateOrderUsecase implements ICreateOrderUsecase {
     });
 
     if (!lock) {
-      throw new AppError("Payment already in progress", HttpStatus.CONFLICT);
+      throw new AppError(
+        paymentMessages.ERROR.PAYMENT_IN_PROGRESS,
+        HttpStatus.CONFLICT,
+      );
     }
 
-      const paidInsideLock = await this._paymentRepo.findPaidByBookingId(bookingId);
-  if (paidInsideLock) {
-    throw new AppError("Booking already paid", HttpStatus.CONFLICT);
-  }
-    
-    
-      const booking = await this._bookingRepo.findById(bookingId);
-      if (!booking) {
-        throw new AppError("booking not found", HttpStatus.NOT_FOUND);
-      }
+    const paidInsideLock =
+      await this._paymentRepo.findPaidByBookingId(bookingId);
+    if (paidInsideLock) {
+      throw new AppError(
+        bookingMessages.ERROR.ALREADY_PAID,
+        HttpStatus.CONFLICT,
+      );
+    }
 
-      const order = await this._paymentService.createOrder(booking.totalPrice);
+    const booking = await this._bookingRepo.findById(bookingId);
+    if (!booking) {
+      throw new AppError(bookingMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
 
-      await this._paymentRepo.create({
-        bookingId,
-        userId: booking.userId,
-        razorpayOrderId: order.id,
-        amount: booking.totalPrice,
-        currency: order.currency,
-        status: PaymentStatus.PENDING,
-        mode: PaymentMode.RAZORPAY,
-      });
+    const order = await this._paymentService.createOrder(booking.totalPrice);
 
-      const data = toCreateOrder(order);
-      return { data };
-   
+    await this._paymentRepo.create({
+      bookingId,
+      userId: booking.userId,
+      razorpayOrderId: order.id,
+      amount: booking.totalPrice,
+      currency: order.currency,
+      status: PaymentStatus.PENDING,
+      mode: PaymentMode.RAZORPAY,
+    });
+
+    const data = toCreateOrder(order);
+    return { data };
   }
 }

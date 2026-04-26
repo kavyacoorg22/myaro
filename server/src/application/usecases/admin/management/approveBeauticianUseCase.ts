@@ -4,7 +4,8 @@ import {
   IBeauticianRepository,
   IVerificationUpdate,
 } from "../../../../domain/repositoryInterface/IBeauticianRepository";
-import { generalMessages } from "../../../../shared/constant/message/generalMessage";
+import { adminMessages } from "../../../../shared/constant/message/adminMessages";
+import { beauticianMessages } from "../../../../shared/constant/message/beauticianMessage";
 import { userMessages } from "../../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IApproveBeauticianUseCase } from "../../../interface/admin/management/IApproveBeauticianUseCase";
@@ -26,7 +27,7 @@ export class ApproveBeauticianUseCase implements IApproveBeauticianUseCase {
     if (!userId) {
       throw new AppError(
         userMessages.ERROR.MISSING_PARAMETERS,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -34,7 +35,7 @@ export class ApproveBeauticianUseCase implements IApproveBeauticianUseCase {
     if (!beautician) {
       throw new AppError(
         userMessages.ERROR.USER_NOT_FOUND,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -46,21 +47,19 @@ export class ApproveBeauticianUseCase implements IApproveBeauticianUseCase {
 
     const updated = await this._beauticianRepo.updateVerificationByUserId(
       userId,
-      update
+      update,
     );
 
     if (!updated) {
       throw new AppError(
-        userMessages.ERROR.UPDATE_FAILED ?? "Failed to update verification",
-        HttpStatus.INTERNAL_SERVER_ERROR
+        beauticianMessages.ERROR.FAILED_TO_UPDATE,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
     return {
       success: true,
-      message:
-        generalMessages.SUCCESS.OPERATION_SUCCESS ??
-        "Beautician verified successfully",
+      message: adminMessages.SUCCESS.VERIFIED_BEAUTICIAN,
     };
   }
 }

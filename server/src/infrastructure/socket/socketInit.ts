@@ -6,7 +6,6 @@ import { buildChatUseCases, socketEmitter } from "../config/di";
 import { UserOnlineStatusUseCase } from "../../application/usecases/chat/userOnlineStatusUSeCase";
 
 export function initSocket(httpServer: HttpServer, corsOrigin: string): SocketServer {
-    console.log("🔧 Socket CORS origin:", corsOrigin); 
 
 
   const io = new SocketServer(httpServer, {
@@ -22,7 +21,6 @@ socketEmitter.setIO(io);
 const userOnlineStatusUSeCase= new UserOnlineStatusUseCase(socketEmitter)
 
   io.on("connection", (socket) => {
-    console.log(`🔌 Connected: ${socket.id}`);
     registerUserHandlers(socket,{userOnlineStatusUC:userOnlineStatusUSeCase})
     registerChatHandlers(socket,useCases);
   });

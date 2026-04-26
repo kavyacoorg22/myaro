@@ -35,7 +35,6 @@ const onSubmit=async (data:ForgotPasswordInput)=>{
 
      //send otp
      const otpRes=await authApi.sendOtp({email})
-     console.log(otpRes)
      toast.success(otpRes.data?.message)
      navigate(publicFrontendRoutes.verifyOtp,{state:{email}})
     }catch(err)

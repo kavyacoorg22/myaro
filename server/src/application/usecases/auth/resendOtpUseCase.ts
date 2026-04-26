@@ -3,6 +3,7 @@ import { IOtpService } from "../../serviceInterface/IOtpService";
 import { IResendOtpUseCase } from "../../interface/auth/IResendOtpUseCase";
 import { IResponse, ISendOtpInput } from "../../interfaceType/authtypes";
 import { ISendMailService } from "../../serviceInterface/mailService";
+import { authMessages } from "../../../shared/constant/message/authMessages";
 
 export class ResendOtpUseCase implements IResendOtpUseCase {
   constructor(
@@ -16,7 +17,10 @@ export class ResendOtpUseCase implements IResendOtpUseCase {
     const canResend = await this._otpService.resendOtp(email);
 
     if (!canResend) {
-      return { success: false, message: "Resend limit reached. Try later." };
+      return {
+        success: false,
+        message: authMessages.ERROR.RESEND_LIMIT_REACHED,
+      };
     }
 
     const otp = generateOtp(4);
@@ -24,6 +28,6 @@ export class ResendOtpUseCase implements IResendOtpUseCase {
 
     await this._mailService.sendOtp(email, otp);
 
-    return { success: true, message: "OTP resent" };
+    return { success: true, message: authMessages.SUCCESS.OTP_RESENT };
   }
 }

@@ -60,7 +60,6 @@ const loadServices = async (
   filter = selectedFilter, 
   priceFilter = selectedPriceFilter
 ) => {
-  console.log('🔍 loadServices called with:', { filter, priceFilter, mode, beauticianId });
   setLoading(true);
   setError(null);
   
@@ -96,12 +95,10 @@ const loadServices = async (
   }
 };
 const handleFilterChange = (newFilter: string) => {
-    console.log('🎛️ filter changed to:', newFilter);
   setSelectedFilter(newFilter);
   loadServices(newFilter, selectedPriceFilter); 
 }
 const handlePriceFilterChange = (newFilter: PriceFilter) => {
-    console.log('🎛️ filter changed to price:', newFilter);
   setSelectedPriceFilter(newFilter);
   loadServices(selectedFilter, newFilter); 
 };

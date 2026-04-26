@@ -3,6 +3,7 @@ import { IOtpService } from "../../serviceInterface/IOtpService";
 import { ICreateOtpUseCase } from "../../interface/auth/ICreateOtpUseCase";
 import { ISendOtpInput } from "../../interfaceType/authtypes";
 import { ISendMailService } from "../../serviceInterface/mailService";
+import { authMessages } from "../../../shared/constant/message/authMessages";
 
 export class CreateOtpUseCase implements ICreateOtpUseCase {
   constructor(
@@ -19,6 +20,6 @@ export class CreateOtpUseCase implements ICreateOtpUseCase {
 
     await this._mailService.sendOtp(email, otp);
 
-    return { success: true, message: "OTP sent" };
+    return { success: true, message: authMessages.SUCCESS.OTP_SENT };
   }
 }

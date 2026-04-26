@@ -8,17 +8,13 @@ export function handleApiError<T extends FieldValues = FieldValues>(
   err: unknown,
   setError?: UseFormSetError<T>
 ) {
-  console.log('🔍 handleApiError called with:', err); 
   const showToast = (msg?: string) => {
     const text = msg ?? "Something went wrong";
     toast.error(text);
   };
 
   if (err instanceof ApiError) {
-     console.log('✅ Is ApiError');
-  console.log('📦 err.body:', err.body);
-  console.log('📦 err.status:', err.status);
-  console.log('📦 typeof err.body:', typeof err.body);
+   
     const body = err.body;
     
     const maybeErrors: BackendFieldError[] | undefined =
@@ -39,7 +35,6 @@ export function handleApiError<T extends FieldValues = FieldValues>(
       (body && (body as any).message) ||(body && (body as any).error) || (body && (body as any).data && (body as any).data.message)|| (body && (body as any).data && (body as any).data.error);
    
 
-    console.log('📨 Extracted message:', maybeMessage);
     if (maybeMessage) {
       showToast(maybeMessage);
       return;
@@ -78,6 +73,5 @@ export function handleApiError<T extends FieldValues = FieldValues>(
   }
 
 
-  console.log('❌ Not an ApiError');
   showToast("An unknown error occurred");
 }

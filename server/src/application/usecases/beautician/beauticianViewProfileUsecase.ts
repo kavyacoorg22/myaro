@@ -7,24 +7,14 @@ import { IBeauticianViewEditProfileUseCase } from "../../interface/beautician/IB
 import { IBeauticianViewEditProfileOutput } from "../../interfaceType/beauticianType";
 import { toBeauticianEditProfileDto } from "../../mapper/beauticianMapper";
 
-export class BeauticianViewEditProfileUseCase
-  implements IBeauticianViewEditProfileUseCase
-{
-  private _beauticianRepo: IBeauticianRepository;
-  private _userRepo: IUserRepository;
-
+export class BeauticianViewEditProfileUseCase implements IBeauticianViewEditProfileUseCase {
   constructor(
-    beauticianRepo: IBeauticianRepository,
-    userRepo: IUserRepository
-  ) {
-    this._beauticianRepo = beauticianRepo;
-    this._userRepo = userRepo;
-  }
+    private _beauticianRepo: IBeauticianRepository,
+    private _userRepo: IUserRepository,
+  ) {}
 
   async execute(userId: string): Promise<IBeauticianViewEditProfileOutput> {
     const beautician = await this._beauticianRepo.findByUserId(userId);
-
-    
 
     if (!beautician) {
       throw new AppError(generalMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);

@@ -5,22 +5,20 @@ import {
 import { AppError } from "../../../../../domain/errors/appError";
 import { ICustomServiceRepository } from "../../../../../domain/repositoryInterface/ICustomService";
 import { IUserRepository } from "../../../../../domain/repositoryInterface/IUserRepository";
-import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
+import { serviceMessages } from "../../../../../shared/constant/message/serviceMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IGetAllCustomServiceUseCase } from "../../../../interface/beauticianService/IGetCustomService";
 import { IGetAllCustomServiceResponse } from "../../../../interfaceType/serviceType";
 import { toGetAllCustomServiceDto } from "../../../../mapper/serviceMapper";
 
 export class GetAllCustomServiceUSeCase implements IGetAllCustomServiceUseCase {
-  private _customserviceRepo: ICustomServiceRepository;
-  private _userRepo: IUserRepository;
+
 
   constructor(
-    customServiceRepo: ICustomServiceRepository,
-    userRepo: IUserRepository,
+   private _customserviceRepo: ICustomServiceRepository,
+  private _userRepo: IUserRepository,
   ) {
-    this._customserviceRepo = customServiceRepo;
-    this._userRepo = userRepo;
+ 
   }
   async execute(
     page: number,
@@ -81,7 +79,7 @@ export class GetAllCustomServiceUSeCase implements IGetAllCustomServiceUseCase {
       limit,
     );
     if (!data) {
-      throw new AppError(generalMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+      throw new AppError(serviceMessages.ERROR.CUSTOM_SERVICE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     const BeauticianData = await this._userRepo.findUsersByIds(

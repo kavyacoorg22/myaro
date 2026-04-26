@@ -1,6 +1,8 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
 import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
+import { chatMessages } from "../../../shared/constant/message/chatMessage";
+import { generalMessages } from "../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IGetMessagesByChatUseCase } from "../../interface/chat/IGetMessagesByChat";
 import {
@@ -21,10 +23,10 @@ export class GetMessagesByChatUseCase implements IGetMessagesByChatUseCase {
   }: IGetMessagesByChatInput): Promise<IGetMessagesByChatOutput> {
     const chat = await this._chatRepo.findById(chatId);
     if (!chat)
-      throw new AppError(`Chat ${chatId} not found.`, HttpStatus.NOT_FOUND);
+      throw new AppError(chatMessages.ERROR.NOT_FOUND_WITH_ID(chatId), HttpStatus.NOT_FOUND);
 
     if (!chat.participants.some((p) => p.toString() === userId)) {
-      throw new AppError(`Access denied.`, HttpStatus.FORBIDDEN);
+      throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
     const messages = await this._messageRepo.findByChatId(
       chatId,

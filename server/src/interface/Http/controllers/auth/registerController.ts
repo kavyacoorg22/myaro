@@ -1,38 +1,24 @@
 import { Request, Response } from "express";
-import { ConflictError } from "../../../../domain/errors/systemError";
 import { IRegisterUserUseCase } from "../../../../application/interface/auth/IRegisterUserUseCase";
+import { HttpStatus } from "../../../../shared/enum/httpStatus";
 
 export class RegisterUserController {
   constructor(private _registerUserUseCase: IRegisterUserUseCase) {}
 
   async handle(req: Request, res: Response) {
-    try {
-      const { ...input } = req.body;
+    const { ...input } = req.body;
 
-      const user = await this._registerUserUseCase.execute(input);
+    const user = await this._registerUserUseCase.execute(input);
 
-      res.setHeader(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, private"
-      );
-      res.setHeader("Pragma", "no-cache");
-      res.setHeader("Expires", "0");
-      return res.status(201).json({
-        success: true,
-        data: user,
-      });
-    } catch (err) {
-      if (err instanceof ConflictError) {
-        return res.status(409).json({
-          success: false,
-          error: err.message,
-        });
-      }
-
-      return res.status(500).json({
-        success: false,
-        error: "Internal server error",
-      });
-    }
+    res.setHeader(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, private",
+    );
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    return res.status(HttpStatus.CREATED).json({
+      success: true,
+      data: user,
+    });
   }
 }

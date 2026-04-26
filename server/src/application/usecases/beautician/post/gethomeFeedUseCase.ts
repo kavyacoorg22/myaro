@@ -35,7 +35,6 @@ export class GetHomeFeedUseCase implements IGetHomeFeedUseCase {
 
     const enrichedPosts = posts.map((post) => {
       const user = userMap.get(post.beauticianId);
-      console.log(likedSet.has(post.id));
       return toGetFeedDto(post, user!, likedSet.has(post.id));
     });
 

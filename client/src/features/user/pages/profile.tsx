@@ -157,7 +157,6 @@ const ProfilePage = () => {
         verificationStatus: response.data?.data?.verificationStatus,
       });
     } catch (error: any) {
-      console.log("❌ Not a beautician or error:", error);
       if (error.status === 404) {
         setBeauticianInfo({ isBeautician: false });
       }
@@ -168,7 +167,6 @@ const ProfilePage = () => {
     request: IAddAvailabilityRequest,
   ): Promise<void> => {
     try {
-      console.log("📤 Sending to API:", request);
       const response = await BeauticianApi.addAvailabilitySchedule(request);
       toast.success("Availability saved successfully!");
     } catch (error) {
@@ -180,7 +178,6 @@ const ProfilePage = () => {
 
   const handleDeleteSlot = async (slotToDelete: TimeSlot): Promise<void> => {
     try {
-      console.log("🗑️ Deleting slot:", slotToDelete);
       const scheduleId = slotToDelete.scheduleId;
 
       if (!scheduleId) {
@@ -198,7 +195,6 @@ const ProfilePage = () => {
         slotsToDelete,
         scheduleId,
       );
-      console.log("✅ Slot deleted successfully:", response);
       toast.success("Slot deleted successfully!");
     } catch (error) {
       console.error("❌ Error deleting slot:", error);

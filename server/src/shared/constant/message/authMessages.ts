@@ -11,6 +11,8 @@ export const authMessages = {
         OTP_SENT: 'OTP has been sent to your email',
         OTP_VERIFIED: 'OTP verified successfully',
         LOGOUT: 'Logged out successfully',
+        OTP_RESENT: "OTP has been resent to your email",
+
     },
     ERROR: {
         INVALID_CREDENTIALS: 'Invalid email or password',
@@ -20,6 +22,7 @@ export const authMessages = {
         EMAIL_ALREADY_EXISTS: 'Email is already registered',
         EMAIL_NOT_FOUND: 'Email not found',
         INVALID_OTP: 'Invalid OTP provided',
+        MISSING_SIGNUP_TOKEN:'Missing signUp token',
         PENDING_SIGNUP_NOT_FOUND: 'Pending signup not found',
         USER_CREATION_FAILED: 'Failed to create user',
         OTP_EXPIRED: 'OTP has expired, please request a new one',
@@ -40,6 +43,7 @@ export const authMessages = {
         REFRESH_TOKEN_FAILED: 'Failed to refresh token',
         REFRESH_TOKEN_REQUIRED: 'You need to log in again to continue',
         BLOCKED_USER: 'Your account has been blocked by the administrator',
+        RESEND_LIMIT_REACHED:'Resend Limit Reached',
         EMAIL_REQUIRED: 'Email is required',
     },
     INFO: {

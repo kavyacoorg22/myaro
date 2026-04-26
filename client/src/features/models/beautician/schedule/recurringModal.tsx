@@ -57,7 +57,6 @@ const handleSave = async () => {
 
       await BeauticianApi.addRecurringSchedule(requestData);
 
-      console.log('✅ Recurring availability saved:', requestData);
 
       if (onSave) await onSave(payload);
       onClose();

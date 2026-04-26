@@ -7,10 +7,7 @@ import { IGetPamphletResponse } from "../../../../interfaceType/serviceType";
 import { toGetPamphletDto } from "../../../../mapper/serviceMapper";
 
 export class GetPamphletUseCase implements IGetPamphletUseCase {
-  private _beauticianRepo: IBeauticianRepository;
-  constructor(beauticianRepo: IBeauticianRepository) {
-    this._beauticianRepo = beauticianRepo;
-  }
+  constructor(private _beauticianRepo: IBeauticianRepository) {}
   async execute(beauticianId: string): Promise<IGetPamphletResponse> {
     const beautician = await this._beauticianRepo.findByUserId(beauticianId);
     if (!beautician) {

@@ -1,20 +1,24 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { appConfig } from "../../../infrastructure/config/config";
+import { scheduleMessages } from "../../../shared/constant/message/scheduleMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { timeToMinutes } from "../../../utils/schedule/dateHelper";
 import { ILockSlotUSeCase } from "../../interface/booking/ILockSlotUseCase";
 import { ILockSlotInput } from "../../interfaceType/booking";
 import { ILockSlotService } from "../../serviceInterface/ILockSlotService";
 
-export class LockSlotUseCase implements ILockSlotUSeCase{
-  constructor(private _bookingRepo:IBookingRepository,private _lockSlotService:ILockSlotService){}
+export class LockSlotUseCase implements ILockSlotUSeCase {
+  constructor(
+    private _bookingRepo: IBookingRepository,
+    private _lockSlotService: ILockSlotService,
+  ) {}
 
-  async execute(input: ILockSlotInput): Promise<{ ttl: number; }> {
-        const { beauticianId, date, startTime, endTime, userId } = input;
+  async execute(input: ILockSlotInput): Promise<{ ttl: number }> {
+    const { beauticianId, date, startTime, endTime, userId } = input;
 
     const startMinutes = timeToMinutes(startTime);
-    const endMinutes   = timeToMinutes(endTime);
+    const endMinutes = timeToMinutes(endTime);
     //checks overlap
     const overlapping = await this._bookingRepo.findOverlapping({
       beauticianId,
@@ -24,12 +28,14 @@ export class LockSlotUseCase implements ILockSlotUSeCase{
     });
 
     if (overlapping) {
-      throw new AppError("This slot is already booked", HttpStatus.CONFLICT);
+      throw new AppError(
+        scheduleMessages.ERROR.SLOT_ALREADY_BOOKED,
+        HttpStatus.CONFLICT,
+      );
     }
 
-  
-const key = `lock:${beauticianId}:${date}:${startTime}-${endTime}`;
-    const ttl = appConfig.redis.redisLockSlotTtl * 60; 
+    const key = `lock:${beauticianId}:${date}:${startTime}-${endTime}`;
+    const ttl = appConfig.redis.redisLockSlotTtl * 60;
 
     const acquired = await this._lockSlotService.setNX(key, userId, ttl);
 
@@ -41,10 +47,12 @@ const key = `lock:${beauticianId}:${date}:${startTime}-${endTime}`;
         await this._lockSlotService.expire(key, ttl);
         return { ttl };
       }
-      throw new AppError("Slot is temporarily reserved by another user", HttpStatus.CONFLICT);
+      throw new AppError(
+        scheduleMessages.ERROR.SLOT_RESERVED,
+        HttpStatus.CONFLICT,
+      );
     }
 
     return { ttl };
   }
-
 }

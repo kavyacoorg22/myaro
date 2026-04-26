@@ -61,9 +61,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
       
        const response = await publicAPi.getSearchResult(query);
       
-      
-      console.log('Searching for:', query);
-      console.log('backend response... frontend',response.data?.data?.beautician)
+
       setSearchResults(response.data?.data?.beautician ||[]);
     } catch (error) {
       console.error('Search failed:', error);
@@ -95,13 +93,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   const handleResultClick = async (result: ISearchResult) => {
     try {
-      console.log(`search history result id ${result.beauticianId}`)
       navigate(publicFrontendRoutes.profileByid.replace(':id',result.beauticianId))
       
       
        await publicAPi.addSearchHistory(result.beauticianId);
       
-      console.log('Clicked on:', result.userName);
       onClose();
     } catch (error) {
       console.error('Failed to handle result click:', error);

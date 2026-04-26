@@ -1,24 +1,17 @@
 import { Request, Response } from "express";
 import { IPresignupUseCase } from "../../../../application/interface/auth/IPreSignupUsecase";
-import { getErrorMessage } from "../../../../domain/errors/systemError";
+import { HttpStatus } from "../../../../shared/enum/httpStatus";
 
 export class PreSignupController {
   constructor(private _preSignupUseCase: IPresignupUseCase) {}
 
   async handle(req: Request, res: Response) {
-    try {
-      const input = req.body;
-      const result = await this._preSignupUseCase.execute(input);
+    const input = req.body;
+    const result = await this._preSignupUseCase.execute(input);
 
-      return res.status(200).json({
-        success: true,
-        data: result,
-      });
-    } catch (err: unknown) {
-      return res.status(400).json({
-        success: false,
-        error: getErrorMessage(err),
-      });
-    }
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      data: result,
+    });
   }
 }

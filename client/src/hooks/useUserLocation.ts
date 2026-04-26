@@ -39,7 +39,6 @@ export const useUserLocation = () => {
 
       } catch (gpsError) {
         // 3. Fallback to IP
-        console.log('GPS failed, using IP location...');
         const ipLocation = await locationService.getLocationByIP();
 
         localStorage.setItem(CACHE_KEY, JSON.stringify({ data: ipLocation, timestamp: Date.now() }));

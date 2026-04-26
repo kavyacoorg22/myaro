@@ -3,23 +3,27 @@ import { AppError } from "../../../../domain/errors/appError";
 import { IPostRepository } from "../../../../domain/repositoryInterface/beautician/IPostRepository";
 import { ICommentRepository } from "../../../../domain/repositoryInterface/User/ICommetRepository";
 import { generalMessages } from "../../../../shared/constant/message/generalMessage";
+import { likeCommentMessages } from "../../../../shared/constant/message/likeCommetMessage";
 import { HttpStatus } from "../../../../shared/enum/httpStatus";
 import { IdeleteCommentUseCase } from "../../../interface/public/comment/IdeleteCommentUSeCase";
 
 export class DeleteCommentUseCase implements IdeleteCommentUseCase {
   constructor(
     private _commentRepo: ICommentRepository,
-    private _postRepo: IPostRepository
+    private _postRepo: IPostRepository,
   ) {}
 
   async execute(
     userId: string,
     commentId: string,
-    postId: string | null
+    postId: string | null,
   ): Promise<void> {
     const comment = await this._commentRepo.findById(commentId);
     if (!comment) {
-      throw new AppError("Comment not exists", HttpStatus.NOT_FOUND);
+      throw new AppError(
+        likeCommentMessages.ERROR.Comment_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const isCommentOwner = userId === comment.userId;

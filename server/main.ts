@@ -14,7 +14,8 @@ import redisClient from "./src/infrastructure/redis/redisClient";
 import adminRoutes from "./src/interface/Http/routes/adminRoutes";
 import { createServer } from "http";
 import { initSocket } from "./src/infrastructure/socket/socketInit";
-import "./src/infrastructure/config/ffmpegSetup.ts";
+import "./src/infrastructure/config/ffmpegSetup";
+import logger from './src/utils/logger';
 
 const app = express();
 
@@ -52,40 +53,40 @@ async function startServer() {
 
     try {
       await redisClient.connect();
-      console.log("✅ Redis connected");
+      logger.info("✅ Redis connected");
     } catch (err) {
-      console.warn("⚠️ Redis unavailable, continuing without it:", err);
+      logger.warn("⚠️ Redis unavailable, continuing without it:", err);
     }
 
     initSocket(httpServer, process.env.FRONTEND_URL || 'http://localhost:5173');
 
     const port = process.env.PORT || 4323;
     httpServer.listen(port, () => {
-      console.log(`✅ Server running on http://localhost:${port}`);
-      console.log(`✅ CORS enabled for: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
-      console.log(`✅ Socket.io ready`);
+      logger.info(`✅ Server running on http://localhost:${port}`);
+      logger.info(`✅ CORS enabled for: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+      logger.info(`✅ Socket.io ready`);
     });
 
     process.on('SIGTERM', gracefulShutdown);
     process.on('SIGINT', gracefulShutdown);
 
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    logger.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 }
 
 async function gracefulShutdown(signal: string) {
-  console.log(`\n${signal} received. Closing server gracefully...`);
+  logger.info(`\n${signal} received. Closing server gracefully...`);
 
   httpServer.close(async () => {
-    console.log('🔄 HTTP server closed');
+    logger.info('🔄 HTTP server closed');
 
     try {
       await redisClient.quit();
-      console.log('🔄 Redis connection closed');
+      logger.info('🔄 Redis connection closed');
     } catch (err) {
-      console.error('Error closing Redis:', err);
+      logger.error('Error closing Redis:', err);
     }
 
     process.exit(0);

@@ -3,25 +3,19 @@ import { IGetCategoryUseCase } from "../../../../interface/beauticianService/IGe
 import { IGetCategoryResponse } from "../../../../interfaceType/serviceType";
 import { toGetCategoryDto } from "../../../../mapper/serviceMapper";
 
-export class GetCategoryUseCase implements IGetCategoryUseCase{
-  private _categoryRepo:ICategoryRepository
-  constructor(categoryRepo:ICategoryRepository)
-  {
-    this._categoryRepo=categoryRepo
-  }
+export class GetCategoryUseCase implements IGetCategoryUseCase {
+  constructor(private _categoryRepo: ICategoryRepository) {}
   async execute(): Promise<IGetCategoryResponse> {
-    const category=await this._categoryRepo.findAllActive()
-    if(category===null)
-    {
-      return{
-        category:[]
-      }
+    const category = await this._categoryRepo.findAllActive();
+    if (category === null) {
+      return {
+        category: [],
+      };
     }
 
-    const mapped=category.map((ca)=>toGetCategoryDto(ca))
-    return{
-      category:mapped
-    }
-
+    const mapped = category.map((ca) => toGetCategoryDto(ca));
+    return {
+      category: mapped,
+    };
   }
 }

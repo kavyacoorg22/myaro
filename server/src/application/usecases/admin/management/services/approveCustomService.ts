@@ -6,39 +6,35 @@ import { AppError } from "../../../../../domain/errors/appError";
 import { ICategoryRepository } from "../../../../../domain/repositoryInterface/ICategoryRepository";
 import { ICustomServiceRepository } from "../../../../../domain/repositoryInterface/ICustomService";
 import { IServiceRepository } from "../../../../../domain/repositoryInterface/IServiceRepository";
-import { generalMessages } from "../../../../../shared/constant/message/generalMessage";
+import { serviceMessages } from "../../../../../shared/constant/message/serviceMessage";
 import { HttpStatus } from "../../../../../shared/enum/httpStatus";
 import { IApproveCustomServiceUseCase } from "../../../../interface/beauticianService/IApproveCustomServiceUseCase";
 
 export class ApproveCustomServiceUseCase implements IApproveCustomServiceUseCase {
-  private _customServiceRepo: ICustomServiceRepository;
-  private _serviceRepo: IServiceRepository;
-  private _categoryRepo: ICategoryRepository;
   constructor(
-    customServicerepo: ICustomServiceRepository,
-    serviceRepo: IServiceRepository,
-    categoryRepo: ICategoryRepository,
-  ) {
-    this._customServiceRepo = customServicerepo;
-    this._serviceRepo = serviceRepo;
-    this._categoryRepo = categoryRepo;
-  }
+    private _customServiceRepo: ICustomServiceRepository,
+    private _serviceRepo: IServiceRepository,
+    private _categoryRepo: ICategoryRepository,
+  ) {}
   async execute(adminId: string, customServiceId: string): Promise<void> {
     const customService =
       await this._customServiceRepo.findById(customServiceId);
     if (!customService) {
-      throw new AppError(generalMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+      throw new AppError(
+        serviceMessages.ERROR.CUSTOM_SERVICE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (customService.status === CustomServiceStatus.APPROVED) {
       throw new AppError(
-        "Custom service is already approved",
+        serviceMessages.ERROR.CUSTOM_SERVICE_ALREADY_APPROVED,
         HttpStatus.CONFLICT,
       );
     }
 
     if (customService.status === CustomServiceStatus.REJECTED) {
       throw new AppError(
-        "Rejected custom service cannot be approved",
+        serviceMessages.ERROR.CUSTOM_SERVICE_REJECTED_CANNOT_APPROVE,
         HttpStatus.CONFLICT,
       );
     }

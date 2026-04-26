@@ -1,38 +1,19 @@
 import { Request, Response } from "express";
-import { ConflictError, getErrorMessage } from "../../../../domain/errors/systemError";
+
 import { ICompleteSignupUseCase } from "../../../../application/interface/auth/ICompleteSignupUseCase";
-import { error } from "console";
+import { generalMessages } from "../../../../shared/constant/message/generalMessage";
+import { HttpStatus } from "../../../../shared/enum/httpStatus";
 
 export class CompleteSignupController {
-  constructor(private _completeSignupUC: ICompleteSignupUseCase) {}
+  constructor(private _completeSignupUseCase: ICompleteSignupUseCase) {}
 
   async handle(req: Request, res: Response) {
-    try {
-      const { signupToken, otp } = req.body;
-      const user = await this._completeSignupUC.execute({ signupToken, otp });
+    const { signupToken, otp } = req.body;
+    const user = await this._completeSignupUseCase.execute({
+      signupToken,
+      otp,
+    });
 
-      return res.status(201).json({ success: true, data: user });
-    } catch (err: unknown) {
-      if (err instanceof ConflictError) {
-        return res.status(409).json({ success: false, error: err.message });
-      }
-     
-       const msg = getErrorMessage(error) ?? "Server error";
-     
-     
-      const isClientError = [
-        "Invalid OTP",
-        "OTP expired",
-        "No pending OTP found",
-        "Too many attempts — please start again",
-        "Invalid or expired signup token",
-        "Missing signup token",
-        "Missing otp",
-      ].includes(msg);
-
-      return res
-        .status(isClientError ? 400 : 500)
-        .json({ success: false, error: msg });
-    }
+    return res.status(HttpStatus.CREATED).json({ success: true, message:generalMessages.SUCCESS.OPERATION_SUCCESS,data: user });
   }
 }

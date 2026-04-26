@@ -25,7 +25,6 @@ export const ResetPasswordForm=()=>{
   const location=useLocation()
 
   const {email}=(location.state||{})
-  console.log(email)
 
   const {register,watch,handleSubmit,formState:{isSubmitting,errors}}=methods
   const watchAll=watch()

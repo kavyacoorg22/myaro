@@ -14,11 +14,7 @@ const PrivateRoute = ({ allowedRoles, children }: Props) => {
   const { userId, role,isAuthenticated } = useSelector((store:RootState)=>store.user.currentUser)
   
 const location = useLocation();
-console.log('PrivateRoute start ->', { path: location.pathname, userId, role, isAuthenticated, allowedRoles });
 
-
-    console.log('PrivateRoute currentUser:', userId,role,isAuthenticated);
-  console.log('allowedRoles:', allowedRoles, 'location:', location.pathname);
 const isAdminPath = location.pathname.includes("/admin");
 
 if (isAuthenticated === undefined) {

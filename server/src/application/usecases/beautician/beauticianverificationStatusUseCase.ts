@@ -5,13 +5,8 @@ import { IBeauticianVerificationUseCase } from "../../interface/beautician/Ibeau
 import { IBeauticianStatusOutPut } from "../../interfaceType/beauticianType";
 import { toVerificationStatusOutputDto } from "../../mapper/beauticianMapper";
 
-export class BeauticianVerificationStatusUseCase
-  implements IBeauticianVerificationUseCase
-{
-  private _beauticianRepo: IBeauticianRepository;
-  constructor(beauticianRepo: IBeauticianRepository) {
-    this._beauticianRepo = beauticianRepo;
-  }
+export class BeauticianVerificationStatusUseCase implements IBeauticianVerificationUseCase {
+  constructor(private _beauticianRepo: IBeauticianRepository) {}
 
   async execute(userId: string): Promise<IBeauticianStatusOutPut> {
     const beautician = await this._beauticianRepo.findByUserId(userId);

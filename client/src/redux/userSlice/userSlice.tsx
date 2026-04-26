@@ -54,7 +54,6 @@ const UserSlice = createSlice({
       };
         try {
         localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
-        console.log(`localstoreage ${localStorage.getItem("currentUser")}`)
       } catch (error) {
         console.error('Error saving user to localStorage:', error);
       }

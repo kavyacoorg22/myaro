@@ -68,7 +68,6 @@ export const AvailabilityModal: React.FC<AvailabilityModalProps> = ({
 
         if (response?.data?.data?.availability) {
           const { scheduleId, slots, type, source } = response.data.data.availability;
-          console.log('📦 Frontend received:', { scheduleId, type, source, slots });
 
           setCurrentScheduleId(scheduleId);
           setScheduleSource(source === 'recurring' ? 'recurring' : 'manual');

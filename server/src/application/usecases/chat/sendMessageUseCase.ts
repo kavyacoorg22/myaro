@@ -2,6 +2,8 @@ import { MessageType } from "../../../domain/enum/messageEnum";
 import { AppError } from "../../../domain/errors/appError";
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
 import { IMessageRepository } from "../../../domain/repositoryInterface/User/chat/IMessageRepository";
+import { chatMessages } from "../../../shared/constant/message/chatMessage";
+import { generalMessages } from "../../../shared/constant/message/generalMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { SOCKET_EVENTS } from "../../events/socketEvents";
 import { ISendMessageUSeCase } from "../../interface/chat/ISendMesageUseCase";
@@ -19,10 +21,13 @@ export class SendMessageUseCase implements ISendMessageUSeCase {
     const type = input.type ?? MessageType.TEXT;
     const chat = await this._chatRepo.findById(chatId);
     if (!chat)
-      throw new AppError(`Chat ${chatId} not found.`, HttpStatus.NOT_FOUND);
+      throw new AppError(
+        chatMessages.ERROR.NOT_FOUND_WITH_ID(chatId),
+        HttpStatus.NOT_FOUND,
+      );
 
     if (!chat.participants.includes(senderId)) {
-      throw new AppError(`Access denied.`, HttpStatus.FORBIDDEN);
+      throw new AppError(generalMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
 
     const saved = await this._messageRepo.create({
@@ -32,17 +37,21 @@ export class SendMessageUseCase implements ISendMessageUSeCase {
       message,
       type,
       bookingId,
-      seen: false
+      seen: false,
     });
 
     await this._chatRepo.updateLastMessage(chatId, message, saved.createdAt);
 
-   this._socketEmitter.emitToRoom(chatId, SOCKET_EVENTS.NEW_MESSAGE, saved);
+    this._socketEmitter.emitToRoom(chatId, SOCKET_EVENTS.NEW_MESSAGE, saved);
 
-   this._socketEmitter.emitToRoom(`user:${receiverId}`, SOCKET_EVENTS.NEW_NOTIFICATION, {
-  chatId,
-  lastMessage:   message,
-  lastMessageAt: saved.createdAt,
-});
+    this._socketEmitter.emitToRoom(
+      `user:${receiverId}`,
+      SOCKET_EVENTS.NEW_NOTIFICATION,
+      {
+        chatId,
+        lastMessage: message,
+        lastMessageAt: saved.createdAt,
+      },
+    );
   }
 }

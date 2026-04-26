@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { IGetAllUserUseCase } from "../../../../application/interface/admin/management/IGetAllUsersUsecase";
 import { SortFilter } from "../../../../domain/enum/sortFilterEnum";
 import { UserFilterRole } from "../../../../domain/enum/userEnum";
@@ -16,204 +16,140 @@ import { IRejectBeauticianUseCase } from "../../../../application/interface/admi
 import { authMessages } from "../../../../shared/constant/message/authMessages";
 
 export class AdminUserManagementController {
-  private _getAllUsersUC: IGetAllUserUseCase;
-  private _toggleUserStatusUC: IToggleUserStatusUseCase;
-  private _getAllbeauticianUC: IGetAllBeauticianUseCase;
-  private _viewBeauticianUC: IViewBeauticianDetailsUseCase;
-  private _approveBeauticianUC: IApproveBeauticianUseCase;
-  private _rejectBeauticianUC: IRejectBeauticianUseCase;
-
   constructor(
-    getAllUsersUC: IGetAllUserUseCase,
-    toggleUserUSeCase: IToggleUserStatusUseCase,
-    getAllBeauticianUC: IGetAllBeauticianUseCase,
-    viewprofile: IViewBeauticianDetailsUseCase,
-    approveBeautician: IApproveBeauticianUseCase,
-    rejectBeautician: IRejectBeauticianUseCase
-  ) {
-    this._getAllUsersUC = getAllUsersUC;
-    this._toggleUserStatusUC = toggleUserUSeCase;
-    this._getAllbeauticianUC = getAllBeauticianUC;
-    this._viewBeauticianUC = viewprofile;
-    this._approveBeauticianUC = approveBeautician;
-    this._rejectBeauticianUC = rejectBeautician;
-  }
+    private _getAllUsersUseCase: IGetAllUserUseCase,
+    private _toggleUserStatusUseCase: IToggleUserStatusUseCase,
+    private _getAllbeauticianUseCase: IGetAllBeauticianUseCase,
+    private _viewBeauticianUseCase: IViewBeauticianDetailsUseCase,
+    private _approveBeauticianUseCase: IApproveBeauticianUseCase,
+    private _rejectBeauticianUseCase: IRejectBeauticianUseCase,
+  ) {}
 
-  getAllUsers = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || 10;
+  getAllUsers = async (req: Request, res: Response): Promise<void> => {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
 
-      const result = await this._getAllUsersUC.execute({
-        search: req.query.search as string,
-        sort: req.query.sort as SortFilter,
-        role: req.query.role as UserFilterRole,
-        page,
-        limit,
-      });
+    const result = await this._getAllUsersUseCase.execute({
+      search: req.query.search as string,
+      sort: req.query.sort as SortFilter,
+      role: req.query.role as UserFilterRole,
+      page,
+      limit,
+    });
 
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: adminMessages.SUCCESS.FETCHED_USERS,
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: adminMessages.SUCCESS.FETCHED_USERS,
+      data: result,
+    });
   };
 
-  toggleUserStatus = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = req.params.id;
-      const { status } = req.body;
+  toggleUserStatus = async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.id;
+    const { status } = req.body;
 
-      if (!["active", "inactive"].includes(status)) {
-        throw new AppError(
-          generalMessages.ERROR.INVALID_STATUS,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-
-      await this._toggleUserStatusUC.execute(id, status);
-
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: userMessages.SUCCESS.OPERATION_SUCCESS,
-      });
-      return;
-    } catch (error) {
-      next(error);
+    if (!["active", "inactive"].includes(status)) {
+      throw new AppError(
+        generalMessages.ERROR.INVALID_STATUS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+
+    await this._toggleUserStatusUseCase.execute(id, status);
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: userMessages.SUCCESS.OPERATION_SUCCESS,
+    });
+    return;
   };
 
-  getAllBeautician = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || 10;
-      const verificationStatus = req.query
-        .verificationStatus as VerificationStatusFilter;
-      const sort = req.query.sort as SortFilter;
+  getAllBeautician = async (req: Request, res: Response): Promise<void> => {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const verificationStatus = req.query
+      .verificationStatus as VerificationStatusFilter;
+    const sort = req.query.sort as SortFilter;
 
-      const input = {
-        sort: sort,
-        verificationStatus: verificationStatus,
-        page,
-        limit,
-      };
+    const input = {
+      sort: sort,
+      verificationStatus: verificationStatus,
+      page,
+      limit,
+    };
 
-      const result = await this._getAllbeauticianUC.execute(input);
+    const result = await this._getAllbeauticianUseCase.execute(input);
 
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: adminMessages.SUCCESS.FETCHED_USERS,
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: adminMessages.SUCCESS.FETCHED_USERS,
+      data: result,
+    });
   };
 
-  getBeauticianProfile = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const userId = req.params.id;
+  getBeauticianProfile = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.params.id;
 
-      if (!userId) {
-        throw new AppError("User ID is required", HttpStatus.BAD_REQUEST);
-      }
-
-      const result = await this._viewBeauticianUC.execute(userId);
-
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: "Beautician profile fetched successfully",
-        data: result,
-      });
-    } catch (error) {
-      next(error);
+    if (!userId) {
+      throw new AppError("User ID is required", HttpStatus.BAD_REQUEST);
     }
+
+    const result = await this._viewBeauticianUseCase.execute(userId);
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: adminMessages.SUCCESS.FETCHED_BEAUTICIAN,
+      data: result,
+    });
   };
 
-  approveBeautician = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const userId = req.params.id;
-      const adminId = req.user?.id || undefined;
+  approveBeautician = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.params.id;
+    const adminId = req.user?.id || undefined;
 
-      if (!userId) {
-        throw new AppError(
-          userMessages.ERROR.MISSING_PARAMETERS,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-
-      if (!adminId) {
-        throw new AppError(
-          authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED
-        );
-      }
-      await this._approveBeauticianUC.execute({ userId, adminId });
-
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
-      });
-    } catch (error) {
-      console.error("❌ Controller error:", error);
-      next(error);
+    if (!userId) {
+      throw new AppError(
+        userMessages.ERROR.MISSING_PARAMETERS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+
+    if (!adminId) {
+      throw new AppError(
+        authMessages.ERROR.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    await this._approveBeauticianUseCase.execute({ userId, adminId });
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+    });
   };
 
-  rejectBeautician = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const userId = req.params.id;
-      const adminId = req.user?.id || undefined;
+  rejectBeautician = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.params.id;
+    const adminId = req.user?.id || undefined;
 
-      if (!userId) {
-        throw new AppError(
-          userMessages.ERROR.MISSING_PARAMETERS,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-
-      if (!adminId) {
-        throw new AppError(
-          authMessages.ERROR.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED
-        );
-      }
-      await this._rejectBeauticianUC.execute({ userId, adminId });
-
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: generalMessages.SUCCESS.OPERATION_SUCCESS,
-      });
-    } catch (error) {
-      console.error("❌ Controller error:", error);
-      next(error);
+    if (!userId) {
+      throw new AppError(
+        userMessages.ERROR.MISSING_PARAMETERS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+
+    if (!adminId) {
+      throw new AppError(
+        authMessages.ERROR.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    await this._rejectBeauticianUseCase.execute({ userId, adminId });
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: generalMessages.SUCCESS.OPERATION_SUCCESS,
+    });
   };
 }

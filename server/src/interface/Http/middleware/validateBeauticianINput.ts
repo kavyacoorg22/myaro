@@ -90,7 +90,6 @@ const normalized: Partial<IBeauticianRegistrationInput>= {
       files: beauticianFiles,
     };
     req.body.validatedData = normalized
-    console.log(req.body.validatedData)
     next()
 
   } catch (err) {
