@@ -204,7 +204,7 @@ const [booking, setBooking] = useState<IGetBookingByIdDto | null>(initialBooking
                 <Pill
                   label="Completed"
                   variant="success"
-                  // disabled={!completeEnabled || loading}
+                  disabled={!completeEnabled || loading}
                   onClick={() => setShowCompletionModal(true)}
                 />
               </>

@@ -120,7 +120,7 @@ export class ProcessRefundUseCase {
     }
     const bookingStatus =
       refundStatus === RefundStatus.SUCCESS
-        ? BookingStatus.CLOSED
+        ? BookingStatus.REFUNDED
         : booking.status;
 
     if (refundStatus === RefundStatus.SUCCESS) {

@@ -19,10 +19,10 @@ export const EarningsSummaryCard: React.FC<Props> = ({ earnings }) => {
         <p className="text-xs text-gray-400 mt-0.5">Since joined · {joinedDate}</p>
       </div>
       <div className="border-t border-gray-100 pt-3 flex flex-col gap-1.5">
-        <div className="flex justify-between text-sm">
+        {/* <div className="flex justify-between text-sm">
           <span className="text-gray-500">Withdrawable</span>
           <span className="font-medium text-gray-800">{formatINR(earnings.withdrawableAmount)}</span>
-        </div>
+        </div> */}
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Pending</span>
           <span className="font-medium text-amber-600">{formatINR(earnings.pendingAmount)}</span>

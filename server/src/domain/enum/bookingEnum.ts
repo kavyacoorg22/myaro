@@ -8,9 +8,10 @@ export enum BookingStatus{
   DISPUTE='dispute',
   REFUND_REQUESTED='refund_requested',
   REFUND_APPROVED='refund_approved',
-  CLOSED='closed'
+  CLOSED='closed',
+  REFUNDED = "refunded",  
+PAID_OUT = "paid_out",   
 }
-
 export enum BookingAction{
   REQUEST='request',
   ACCEPT='accept',
@@ -22,5 +23,6 @@ export enum BookingAction{
   APPROVE_REFUND='approve_refund',
   DISPUTE = 'dispute',
   PROCESS_REFUND = "process_refund",
-  RELEASE_PAYOUT='release_payout'
+  RELEASE_PAYOUT='release_payout',
+
 }

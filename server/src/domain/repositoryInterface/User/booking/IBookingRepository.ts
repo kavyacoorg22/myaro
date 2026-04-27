@@ -38,4 +38,5 @@ getDashboardStats(beauticianId: string): Promise<DashboardStatsDto>;
 getWeeklyEarnings(beauticianId: string): Promise<ChartPointDto[]>;
 getMonthlyEarnings(beauticianId: string): Promise<ChartPointDto[]>;
 getTotalEarnings(beauticianId: string): Promise<number> 
+getPendingEarnings(beauticianId: string): Promise<number>
 }

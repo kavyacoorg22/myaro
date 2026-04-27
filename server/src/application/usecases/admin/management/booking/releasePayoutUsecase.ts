@@ -108,7 +108,7 @@ export class ReleasePayoutUseCase implements IReleasePayoutUSeCase {
     // ── 8. Update payment + booking conditionally ──────────────────────────
     const bookingStatus =
       payoutStatus === PayoutStatus.COMPLETED
-        ? BookingStatus.CLOSED
+        ? BookingStatus.PAID_OUT
         : booking.status;
 
     if (payoutStatus === PayoutStatus.COMPLETED) {

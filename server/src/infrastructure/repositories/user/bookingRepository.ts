@@ -224,16 +224,87 @@ export class BookingRepository
     return fillEmptyMonths(named, { completed: 0, cancelled: 0, refunded: 0 });
   }
 
-  async getDashboardStats(beauticianId: string): Promise<DashboardStatsDto> {
+async getDashboardStats(beauticianId: string): Promise<DashboardStatsDto> {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+  const todayEnd   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [todayAgg, monthAgg, todayEarningsAgg] = await Promise.all([
+    // today's bookings by slot date
+    BookingModel.aggregate([
+      {
+        $match: {
+          beauticianId: new Types.ObjectId(beauticianId),
+          "slot.date": { $gte: todayStart, $lte: todayEnd },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          completed: {
+            $sum: { $cond: [{ $eq: ["$status", BookingStatus.COMPLETED] }, 1, 0] },
+          },
+          upcoming: {
+            $sum: {
+              $cond: [
+                { $in: ["$status", [BookingStatus.CONFIRMED, BookingStatus.ACCEPTED]] },
+                1,
+                0,
+              ],
+            },
+          },
+          pending: {
+            $sum: { $cond: [{ $eq: ["$status", BookingStatus.REQUESTED] }, 1, 0] },
+          },
+        },
+      },
+    ]),
+
+    // monthly earnings — PAID_OUT by updatedAt
+    BookingModel.aggregate([
+      {
+        $match: {
+          beauticianId: new Types.ObjectId(beauticianId),
+          status: BookingStatus.PAID_OUT,  // ✅ fixed from COMPLETED
+          updatedAt: { $gte: monthStart, $lte: todayEnd },
+        },
+      },
+      {
+        $group: { _id: null, monthlyEarnings: { $sum: "$totalPrice" } },
+      },
+    ]),
+
+    // today's earnings — PAID_OUT by updatedAt (independent of slot date)
+    BookingModel.aggregate([
+      {
+        $match: {
+          beauticianId: new Types.ObjectId(beauticianId),
+          status: BookingStatus.PAID_OUT,  // ✅ admin released today
+          updatedAt: { $gte: todayStart, $lte: todayEnd },
+        },
+      },
+      {
+        $group: { _id: null, todayEarnings: { $sum: "$totalPrice" } },
+      },
+    ]),
+  ]);
+
+  const t = todayAgg[0];
+  return {
+    todayBookingsCount:   t?.total     ?? 0,
+    completedToday:       t?.completed ?? 0,
+    upcomingToday:        t?.upcoming  ?? 0,
+    pendingRequestsCount: t?.pending   ?? 0,
+    todayEarnings:        todayEarningsAgg[0]?.todayEarnings ?? 0,  // ✅ separate
+    monthlyEarnings:      monthAgg[0]?.monthlyEarnings       ?? 0,
+  };
+}
+
+  async getWeeklyEarnings(beauticianId: string): Promise<ChartPointDto[]> {
     const now = new Date();
-    const todayStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      0,
-      0,
-      0,
-    );
+
     const todayEnd = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -242,87 +313,6 @@ export class BookingRepository
       59,
       59,
     );
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    const [todayAgg, monthAgg] = await Promise.all([
-      BookingModel.aggregate([
-        {
-          $match: {
-            beauticianId: new Types.ObjectId(beauticianId),
-            "slot.date": { $gte: todayStart, $lte: todayEnd },
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            total: { $sum: 1 },
-            completed: {
-              $sum: {
-                $cond: [{ $eq: ["$status", BookingStatus.COMPLETED] }, 1, 0],
-              },
-            },
-            upcoming: {
-              $sum: {
-                $cond: [
-                  {
-                    $in: [
-                      "$status",
-                      [BookingStatus.CONFIRMED, BookingStatus.ACCEPTED],
-                    ],
-                  },
-                  1,
-                  0,
-                ],
-              },
-            },
-            pending: {
-              $sum: {
-                $cond: [{ $eq: ["$status", BookingStatus.REQUESTED] }, 1, 0],
-              },
-            },
-            todayEarnings: {
-              $sum: {
-                $cond: [
-                  { $eq: ["$status", BookingStatus.COMPLETED] },
-                  "$totalPrice",
-                  0,
-                ],
-              },
-            },
-          },
-        },
-      ]),
-
-      BookingModel.aggregate([
-        {
-          $match: {
-            beauticianId: new Types.ObjectId(beauticianId),
-            "slot.date": { $gte: monthStart, $lte: todayEnd },
-            status: BookingStatus.COMPLETED,
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            monthlyEarnings: { $sum: "$totalPrice" },
-          },
-        },
-      ]),
-    ]);
-
-    const t = todayAgg[0];
-    return {
-      todayBookingsCount: t?.total ?? 0,
-      completedToday: t?.completed ?? 0,
-      upcomingToday: t?.upcoming ?? 0,
-      pendingRequestsCount: t?.pending ?? 0,
-      todayEarnings: t?.todayEarnings ?? 0,
-      monthlyEarnings: monthAgg[0]?.monthlyEarnings ?? 0,
-    };
-  }
-
-  async getWeeklyEarnings(beauticianId: string): Promise<ChartPointDto[]> {
-    const now = new Date();
     const weekStart = new Date(now);
     weekStart.setDate(now.getDate() - 6);
     weekStart.setHours(0, 0, 0, 0);
@@ -331,8 +321,8 @@ export class BookingRepository
       {
         $match: {
           beauticianId: new Types.ObjectId(beauticianId),
-          status: BookingStatus.COMPLETED,
-          "slot.date": { $gte: weekStart },
+          status: BookingStatus.PAID_OUT,
+          updatedAt: { $gte: weekStart, $lte: todayEnd },
         },
       },
       {
@@ -367,21 +357,30 @@ export class BookingRepository
 
   async getMonthlyEarnings(beauticianId: string): Promise<ChartPointDto[]> {
     const now = new Date();
+
+    const todayEnd = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+    );
     const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
     const raw = await BookingModel.aggregate([
       {
         $match: {
           beauticianId: new Types.ObjectId(beauticianId),
-          status: BookingStatus.COMPLETED,
-          "slot.date": { $gte: sixMonthsAgo },
+          status: BookingStatus.PAID_OUT,
+          updatedAt: { $gte: sixMonthsAgo, $lte: todayEnd },
         },
       },
       {
         $group: {
           _id: {
-            year: { $year: "$slot.date" },
-            month: { $month: "$slot.date" },
+            year: { $year: "$updatedAt" },
+            month: { $month: "$updatedAt" },
           },
           earnings: { $sum: "$totalPrice" },
         },
@@ -421,11 +420,22 @@ export class BookingRepository
   }
 
   async getTotalEarnings(beauticianId: string): Promise<number> {
+    const now = new Date();
+
+    const todayEnd = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+    );
     const raw = await BookingModel.aggregate([
       {
         $match: {
           beauticianId: new Types.ObjectId(beauticianId),
-          status: BookingStatus.COMPLETED,
+          status: BookingStatus.PAID_OUT,
+          updatedAt: { $lte: todayEnd },
         },
       },
       {
@@ -439,7 +449,20 @@ export class BookingRepository
     return raw[0]?.total ?? 0;
   }
 
-
+  async getPendingEarnings(beauticianId: string): Promise<number> {
+  const raw = await BookingModel.aggregate([
+    {
+      $match: {
+        beauticianId: new Types.ObjectId(beauticianId),
+        status: BookingStatus.COMPLETED, 
+      },
+    },
+    {
+      $group: { _id: null, total: { $sum: "$totalPrice" } },
+    },
+  ]);
+  return raw[0]?.total ?? 0;
+}
   protected map(doc: BookingDoc): Booking {
     const base = super.map(doc);
     return {

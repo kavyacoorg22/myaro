@@ -62,7 +62,7 @@ async getEarningsSummary(beauticianId: string, joinedSince: Date): Promise<Earni
         _id:          null,
         totalEarnings:      { $sum: { $cond: [{ $eq: ["$status", PayoutStatus.COMPLETED]  }, "$amount", 0] } },
         withdrawableAmount: { $sum: { $cond: [{ $eq: ["$status", PayoutStatus.COMPLETED]  }, "$amount", 0] } },
-        pendingAmount:      { $sum: { $cond: [{ $in:  ["$status", [PayoutStatus.PENDING, PayoutStatus.PENDING]] }, "$amount", 0] } },
+        pendingAmount:      { $sum: { $cond: [{ $in:  ["$status", [PayoutStatus.PENDING]] }, "$amount", 0] } },
       },
     },
   ]);

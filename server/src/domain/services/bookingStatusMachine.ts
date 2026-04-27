@@ -10,7 +10,9 @@ export const VALID_TRANSITIONS: Record<BookingStatus, BookingAction[]> = {
   [BookingStatus.REFUND_REQUESTED]: [BookingAction.APPROVE_REFUND, BookingAction.DISPUTE],
   [BookingStatus.REFUND_APPROVED]:  [BookingAction.PROCESS_REFUND], // ← admin processes
   [BookingStatus.DISPUTE]:          [BookingAction.PROCESS_REFUND], // ← admin resolves
-  [BookingStatus.CLOSED]:           [],                             // ← terminal
+  [BookingStatus.CLOSED]:           [],   
+    [BookingStatus.PAID_OUT]:         [],   
+  [BookingStatus.REFUNDED]:         [],                        
 };
 
 export const ACTION_TO_STATUS: Record<BookingAction, BookingStatus> = {
@@ -23,8 +25,9 @@ export const ACTION_TO_STATUS: Record<BookingAction, BookingStatus> = {
   [BookingAction.REQUEST_REFUND]: BookingStatus.REFUND_REQUESTED,
   [BookingAction.APPROVE_REFUND]: BookingStatus.REFUND_APPROVED,
   [BookingAction.DISPUTE]:        BookingStatus.DISPUTE,
-  [BookingAction.PROCESS_REFUND]: BookingStatus.CLOSED,  
-  [BookingAction.RELEASE_PAYOUT]:BookingStatus.CLOSED          
+  [BookingAction.PROCESS_REFUND]: BookingStatus.REFUNDED,  
+  [BookingAction.RELEASE_PAYOUT]:BookingStatus.PAID_OUT,
+          
 };
 
 export const ACTION_TITLE: Record<BookingAction, string> = {

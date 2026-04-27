@@ -22,6 +22,7 @@ export class GetBeauticianDashboardUseCase implements IGetBeauticianDashboardUse
       monthlyChart,
       payoutSummary,
       totalEarnings,
+      pendingAmount,
       recentPayouts,
       { avgRating, totalReviews },
     ] = await Promise.all([
@@ -33,6 +34,7 @@ export class GetBeauticianDashboardUseCase implements IGetBeauticianDashboardUse
         beautician?.createdAt ?? new Date(),
       ),
       this._bookingRepo.getTotalEarnings(beauticianId),
+       this._bookingRepo.getPendingEarnings(beauticianId),  
       this._payoutRepo.getRecent(beauticianId, 5),
       this._commentRepo.getRatingSummary(beauticianId),
     ]);
@@ -42,8 +44,8 @@ export class GetBeauticianDashboardUseCase implements IGetBeauticianDashboardUse
       withdrawableAmount: Math.max(
         0,
         totalEarnings - payoutSummary.totalEarnings,
-      ), // earned minus paid out by admin
-      pendingAmount: payoutSummary.pendingAmount, // admin approved but not yet completed
+      ), 
+      pendingAmount:pendingAmount, 
       joinedSince: payoutSummary.joinedSince,
     };
 
