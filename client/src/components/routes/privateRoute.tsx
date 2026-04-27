@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { type RootState } from '../../redux/appStore';
-import { useEffect, useState, type ReactNode } from 'react';
+import {  type ReactNode } from 'react';
 import { UserRole, type UserRoleType } from '../../constants/types/User';
 import { publicFrontendRoutes } from '../../constants/frontendRoutes/publicFrontendRoutes';
 

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import type { BookingDto, IGetBookingByIdDto } from "../../../../types/dtos/booking";
+import type {  IGetBookingByIdDto } from "../../../../types/dtos/booking";
 import type { RootState } from "../../../../redux/appStore";
 import { UserRole } from "../../../../constants/types/User";
 import { BookingApi } from "../../../../services/api/booking";
 import { BookingDetailModal } from "./bookingDetailsModal";
 import { Pill } from "./pill";
 import type { Role } from "../../../../components/config/saidBarContent";
-import { BookingAction, type BookingActionType, type BookingStatusType } from "../../../../constants/types/booking";
+import { type BookingActionType, type BookingStatusType } from "../../../../constants/types/booking";
 import { PaymentDetailModal } from "../../../models/booking/paymentDetailModal";
 import { useNavigate } from "react-router";
 import { ServiceCompletionModal } from "../../../models/booking/refundDispute/serviceCompletionModal";
