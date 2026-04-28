@@ -18,7 +18,7 @@ router.delete('/search/history',authenticateUser,searchHistoryController.clearSe
 //categry and service
 router.get('/category/:categoryId/services',authenticateAll,serviceController.getServices)
 router.get('/category',authenticateAll,categoryController.getCategory)
-router.patch('/change-password',authenticateUser,validateChangePassword,(req:Request,res:Response,next:NextFunction)=>{changePasswordController.handle(req,res,next)})
+router.patch('/change-password',authenticateUser,validateChangePassword,(req:Request,res:Response)=>{changePasswordController.handle(req,res)})
 //feed
 router.post( '/posts', authenticateBeautician,validateCreatePostInput, postController.createPost
 );
