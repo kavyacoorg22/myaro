@@ -18,11 +18,7 @@ export class ApiError extends Error {
 
 
 //axios instance
-const isDev = import.meta.env.DEV;
-
-const API_BASE = isDev
-  ? ""
-  : import.meta.env.VITE_API_URL || "http://localhost:4323";
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 const api = axios.create({
   baseURL: `${API_BASE}/api`,
