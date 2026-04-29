@@ -1,33 +1,32 @@
 import { AppError } from "../../../domain/errors/appError";
 import { IBeauticianRepository } from "../../../domain/repositoryInterface/IBeauticianRepository";
 import { IUserRepository } from "../../../domain/repositoryInterface/IUserRepository";
+import { ICommentRepository } from "../../../domain/repositoryInterface/User/ICommetRepository";
 import { IFollowRepository } from "../../../domain/repositoryInterface/User/IFollowRepository";
 import { userMessages } from "../../../shared/constant/message/userMessage";
 import { HttpStatus } from "../../../shared/enum/httpStatus";
 import { IOwnProfileUseCase } from "../../interface/public/IProfileUsecase";
 import { IOwnProfileOutput } from "../../interfaceType/publicType";
 
-
 export class OwnProfileUseCase implements IOwnProfileUseCase {
-  private _userRepo: IUserRepository;
-  private _beauticianRepo: IBeauticianRepository;
-  private _followRepo: IFollowRepository; 
-
   constructor(
-    userRepo: IUserRepository,
-    beauticianRepo: IBeauticianRepository,
-    followRepo: IFollowRepository         
-  ) {
-    this._userRepo = userRepo;
-    this._beauticianRepo = beauticianRepo;
-    this._followRepo = followRepo;
-  }
+    private _userRepo: IUserRepository,
+    private _beauticianRepo: IBeauticianRepository,
+    private _followRepo: IFollowRepository,
+    private readonly _commentRepo: ICommentRepository,
+  ) {}
 
-  async execute(targetId: string, requesterId?: string): Promise<IOwnProfileOutput> {
+  async execute(
+    targetId: string,
+    requesterId?: string,
+  ): Promise<IOwnProfileOutput> {
     const user = await this._userRepo.findByUserId(targetId);
 
     if (!user) {
-      throw new AppError(userMessages.ERROR.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      throw new AppError(
+        userMessages.ERROR.USER_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const userDetail: IOwnProfileOutput = {
@@ -41,6 +40,8 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
 
     if (user.role === "beautician") {
       const beautician = await this._beauticianRepo.findByUserId(targetId);
+      const { avgRating, totalReviews } =
+        await this._commentRepo.getRatingSummary(targetId);
 
       if (beautician) {
         userDetail.beauticianData = {
@@ -52,6 +53,8 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
           serviceModes: beautician.serviceModes ?? [],
           homeservicecount: beautician.homeserviceCount ?? 0,
           verificationStatus: beautician.verificationStatus,
+          avgRating,
+          totalReviews,
         };
 
         const isOwnProfile = requesterId === targetId;
@@ -60,17 +63,17 @@ export class OwnProfileUseCase implements IOwnProfileUseCase {
           if (requester?.role === "customer") {
             userDetail.isFollowing = await this._followRepo.checkFollowing(
               requesterId,
-              targetId
+              targetId,
             );
           }
-          
         }
       }
     }
 
     if (user.role === "customer" && requesterId === targetId) {
-  userDetail.followingCount = await this._followRepo.followingCount(targetId);
-}
+      userDetail.followingCount =
+        await this._followRepo.followingCount(targetId);
+    }
 
     return userDetail;
   }

@@ -362,7 +362,8 @@ const ProfilePage = () => {
           isVerified={profileData.isVerified}
           isFollowing={isFollowing}
           followingCount={profileData.followingCount}
-          
+          avgRating={profileData.beauticianData?.avgRating}
+          totalReviews={profileData.beauticianData?.totalReviews}
           hideButtons={shouldHideButtons}
           onEditProfile={() => navigate(beauticianFrontendRoutes.editProfile)}
           onCalender={handleCalendarClick}

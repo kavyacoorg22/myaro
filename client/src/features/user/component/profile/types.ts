@@ -18,7 +18,8 @@ export interface ProfileData {
   isVerified?:boolean
   role?:UserRoleType| undefined,
   isFollowing?:boolean
-
+  avgRating?: number;
+  totalReviews?: number;
 
 }
 

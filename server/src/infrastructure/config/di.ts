@@ -249,8 +249,8 @@ export {registerController,preSignupController,otpController,completeSignupContr
   loginController,logoutController,refreshTokenController,resetPasswordController,googleLoginController};
 //profile
 const followRepo=new FollowRepository()
-
-const ownProfileUseCase=new OwnProfileUseCase(userRepo,beauticianRepo,followRepo)
+const commentRepo=new CommentRepository()
+const ownProfileUseCase=new OwnProfileUseCase(userRepo,beauticianRepo,followRepo,commentRepo)
 const profileImageChangeUseCase=new ProfileImageChangeUseCase(userRepo,fileUpload)
 export const profileController=new ProfileController(ownProfileUseCase,profileImageChangeUseCase)
 
@@ -272,7 +272,7 @@ const getServiceAreaUC=new getServiceAreaUseCase(serviceAreaRepo)
 const customerViewEditProfile=new CustomerViewProfileUseCase(userRepo)
 const customerEditProfileUseCase=new CustomerEditProfileUseCase(userRepo)
 const payoutRepo=new PayoutRepository()
-const commentRepo=new CommentRepository()
+
 const getBeauticianDashboardUC=new GetBeauticianDashboardUseCase(bookingRepo,payoutRepo,userRepo,commentRepo)
 const beauticianController=new BeauticianController(beauticianRegisterUC,beauticianVerificationStatusUC,
   beauticianUpdateRegistartionUC,beauticianViewEditProfileUC,

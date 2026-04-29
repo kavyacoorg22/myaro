@@ -24,6 +24,8 @@ export interface IUserProfile {
     serviceModes: ServiceModesType[];
     homeservicecount: number;
     verificationStatus: string;
+     avgRating?: number;
+  totalReviews?: number;
   };
 }
 

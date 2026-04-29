@@ -25,6 +25,8 @@ export interface IOwnProfileOutput{
     serviceModes:ServiceModes[],
     homeservicecount: number;
     verificationStatus: string;
+    avgRating?: number;
+  totalReviews?: number;
   };
 }
 
