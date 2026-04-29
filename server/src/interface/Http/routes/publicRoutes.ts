@@ -1,4 +1,4 @@
-import {  NextFunction, Request, Response, Router } from "express"
+import {   Request, Response, Router } from "express"
 import { authenticateAll, authenticateBeautician, authenticateCustomer, authenticateUser, beauticianController, bookingController, categoryController, changePasswordController, chatController, followController, likeCommentController, notificationController, optionalAuth, paymentController, postController, profileController, searchHistoryController, serviceController } from "../../../infrastructure/config/di";
 import {  uploadSingle } from "../middleware/multer";
 import { validateImageUpload } from "../validator/validateImageUpload";
