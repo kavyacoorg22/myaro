@@ -20,6 +20,8 @@ export interface profileResponseData {
       address: string;
       city: string;
       pincode: string;
+        avgRating?: number;
+  totalReviews?: number;
     };
     serviceModes: ServiceModesType[];
     homeservicecount: number;
