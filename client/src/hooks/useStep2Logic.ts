@@ -1,20 +1,29 @@
-
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Step2Schema, type Step2Data } from "../lib/validations/user/validateBeauticianRegiter";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { IBeauticianReRegistrationPrefillDto } from "../types/dtos/beautician";
 
-export function useStep2Logic(onNext: (data: Step2Data, files: {
-  portfolioFiles: File[];
-  certificateFiles: File[];
-  shopPhotos?: File[];
-  licenseFiles?: File[];
-}) => void) {
+export function useStep2Logic(
+  onNext: (data: Step2Data, files: {
+    portfolioFiles: File[];
+    certificateFiles: File[];
+    shopPhotos?: File[];
+    licenseFiles?: File[];
+  }) => void,
+  prefill?: IBeauticianReRegistrationPrefillDto | null // ✅ ADDED
+) {
   const methods = useForm<Step2Data>({
     resolver: zodResolver(Step2Schema),
     mode: 'onSubmit',
     defaultValues: {
-      hasShop: false,
+      hasShop: prefill?.hasShop ?? false, // ✅ ADDED
+      shop: {                              // ✅ ADDED
+        shopName: prefill?.shopName ?? '',
+        address: prefill?.shopAddress?.address ?? '',
+        city: prefill?.shopAddress?.city ?? '',
+        pincode: ''
+      },
       uploads: {
         portfolio: [],
         certificates: []
@@ -22,13 +31,38 @@ export function useStep2Logic(onNext: (data: Step2Data, files: {
     }
   });
 
-  const [hasShop, setHasShop] = useState<boolean | null>(null);
+  const [hasShop, setHasShop] = useState<boolean | null>(
+    prefill?.hasShop ?? null // ✅ ADDED
+  );
   const [portfolioFiles, setPortfolioFiles] = useState<File[]>([]);
   const [certificateFiles, setCertificateFiles] = useState<File[]>([]);
   const [shopPhotos, setShopPhotos] = useState<File[]>([]);
   const [licenseFiles, setLicenseFiles] = useState<File[]>([]);
-  
-  // Validation alert state
+useEffect(() => {
+  if (prefill) {
+    if (prefill.hasShop) {
+      methods.reset({
+        hasShop: true,
+        shop: {
+          shopName: prefill.shopName ?? '',
+          address: prefill.shopAddress?.address ?? '',
+          city: prefill.shopAddress?.city ?? '',
+          pincode: '',
+          photos: [],
+          license: undefined
+        },
+        uploads: { portfolio: [], certificates: undefined }
+      });
+    } else {
+      methods.reset({
+        hasShop: false,
+        uploads: { portfolio: [], certificates: undefined }
+      });
+    }
+    setHasShop(prefill.hasShop ?? null);
+  }
+}, [prefill]);
+
   const [validationAlert, setValidationAlert] = useState<{
     isOpen: boolean;
     message: string;
@@ -39,6 +73,8 @@ export function useStep2Logic(onNext: (data: Step2Data, files: {
     type: 'error'
   });
 
+
+  
   const showValidationError = (message: string, type: 'error' | 'warning' | 'info' = 'error') => {
     setValidationAlert({ isOpen: true, message, type });
   };
@@ -76,13 +112,12 @@ export function useStep2Logic(onNext: (data: Step2Data, files: {
   };
 
   const handleSubmit = async () => {
-    // Validation
     if (hasShop === null) {
       showValidationError('Please select whether you have a shop or not', 'warning');
       return;
     }
-
-    if (portfolioFiles.length < 3) {
+const existingPortfolioCount = prefill?.existingPortfolioImages?.length ?? 0;
+if (portfolioFiles.length < 3 && existingPortfolioCount < 3) {
       showValidationError(
         `Please upload at least 3 portfolio photos. You have uploaded ${portfolioFiles.length} photo${portfolioFiles.length !== 1 ? 's' : ''}. ${3 - portfolioFiles.length} more needed.`,
         'error'
@@ -98,7 +133,6 @@ export function useStep2Logic(onNext: (data: Step2Data, files: {
       return;
     }
 
-    // Validate shop details if hasShop is true
     if (hasShop) {
       const shopName = methods.getValues('shop.shopName');
       const address = methods.getValues('shop.address');
@@ -123,7 +157,6 @@ export function useStep2Logic(onNext: (data: Step2Data, files: {
       }
     }
 
-    // Create placeholder URLs for Zod validation only
     const portfolioUrls = portfolioFiles.map((_, i) => `https://placeholder.com/${i}`);
     const certificateUrls = certificateFiles.map((_, i) => `https://placeholder.com/${i}`);
 
@@ -161,7 +194,6 @@ export function useStep2Logic(onNext: (data: Step2Data, files: {
         return;
       }
 
-      // Pass validated data AND files to parent
       onNext(result.data, {
         portfolioFiles,
         certificateFiles,

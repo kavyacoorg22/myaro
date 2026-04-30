@@ -33,7 +33,7 @@ export const MessageInput = ({
         value={val}
         onChange={(e) => {
           setVal(e.target.value);
-          onTyping?.(); // ✅ emit typing on every keystroke
+          onTyping?.(); 
         }}
         onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
       />

@@ -17,6 +17,7 @@ import { IViewEditProfileUseCase } from "../../../../application/interface/custo
 import { ICustomerEditProfileUseCase } from "../../../../application/interface/customer/IEditProfileUseCase";
 import { IGetBeauticianDashboardUseCase } from "../../../../application/interface/beautician/IBeauticianDashBoardUseCase";
 import { beauticianMessages } from "../../../../shared/constant/message/beauticianMessage";
+import { IGetReRegistrationPrefillUseCase } from "../../../../application/interface/beautician/IBeauticianReRegistationPrefillUseCase";
 
 export class BeauticianController {
   constructor(
@@ -31,6 +32,7 @@ export class BeauticianController {
     private _customerViewProfileUseCase: IViewEditProfileUseCase,
     private _CustomerEditProfileUseCase: ICustomerEditProfileUseCase,
     private _beauticianDashboardUseCase: IGetBeauticianDashboardUseCase,
+    private _reRegisterPrefillUseCase:IGetReRegistrationPrefillUseCase
   ) {}
 
   beauticianRegistration = async (
@@ -63,7 +65,19 @@ export class BeauticianController {
       data: beautician,
     });
   };
+  reRegistrationPrefill=async(req:Request,res:Response)=>{
+      const userId=req.user?.id
+      if(!userId)
+      {
+        throw new AppError(authMessages.ERROR.UNAUTHORIZED,HttpStatus.UNAUTHORIZED)
+      }
 
+      const result=await this._reRegisterPrefillUseCase.execute(userId)
+      res.status(HttpStatus.OK).json({
+        success:true,
+        data:result.data
+      })
+  }
   verifiedStatus = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
 

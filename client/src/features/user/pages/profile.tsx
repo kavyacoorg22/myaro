@@ -212,7 +212,9 @@ const ProfilePage = () => {
   };
 
   const handleResubmit = () => {
-    navigate(customerFrontendRoutes.register);
+    navigate(customerFrontendRoutes.register, { 
+    state: { isReRegistration: true } 
+  });
   };
 
   const handleCalendarClick = () => {

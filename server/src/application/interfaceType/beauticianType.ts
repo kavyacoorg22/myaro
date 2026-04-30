@@ -2,7 +2,7 @@ import { ShopAddressVO } from "../../domain/entities/Beautician";
 import { LocationVO } from "../../domain/entities/beauticianServiceAres";
 import { ServiceModes, VerificationStatus } from "../../domain/enum/beauticianEnum";
 import { PostType, UserRole } from "../../domain/enum/userEnum";
-import { BeauticianDashboardDto, IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto } from "../dtos/beautician";
+import { BeauticianDashboardDto, IBeauticianReRegistrationPrefillDto, IGetAllPostsDto, IGetBeauticianPostsDto, IGetServiceAreaDto } from "../dtos/beautician";
 import { IMediaInput } from "./mediaType";
 
 export interface BeauticianFiles {
@@ -128,3 +128,6 @@ export interface IGetBeauticianDashboardOutPut{
           
 }
 
+export interface IBeauticianReRegistrationPrefilOutPut{
+  data:IBeauticianReRegistrationPrefillDto
+}

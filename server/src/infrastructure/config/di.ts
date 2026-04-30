@@ -187,6 +187,7 @@ import { FollowRepository } from "../repositories/user/followRepository";
 import { UnFollowBeauticianUseCase } from "../../application/usecases/public/follow/unFollowUseCase";
 import { GetFollowingListUseCase } from "../../application/usecases/public/follow/getFollowlist";
 import { FollowController } from "../../interface/Http/controllers/public/followController";
+import { GetReRegistrationPrefillUseCase } from "../../application/usecases/beautician/getReRegistartionPrefillUseCase";
 
 
 
@@ -272,11 +273,11 @@ const getServiceAreaUC=new getServiceAreaUseCase(serviceAreaRepo)
 const customerViewEditProfile=new CustomerViewProfileUseCase(userRepo)
 const customerEditProfileUseCase=new CustomerEditProfileUseCase(userRepo)
 const payoutRepo=new PayoutRepository()
-
+const getReRegistartionPrefillUseCase=new GetReRegistrationPrefillUseCase(beauticianRepo)
 const getBeauticianDashboardUC=new GetBeauticianDashboardUseCase(bookingRepo,payoutRepo,userRepo,commentRepo)
 const beauticianController=new BeauticianController(beauticianRegisterUC,beauticianVerificationStatusUC,
   beauticianUpdateRegistartionUC,beauticianViewEditProfileUC,
-  beauticianEditProfileUC,searchResultUC,getServiceAreaUC,addServiceAreaUC,customerViewEditProfile,customerEditProfileUseCase,getBeauticianDashboardUC)
+  beauticianEditProfileUC,searchResultUC,getServiceAreaUC,addServiceAreaUC,customerViewEditProfile,customerEditProfileUseCase,getBeauticianDashboardUC,getReRegistartionPrefillUseCase)
 
 export  {beauticianController}
 

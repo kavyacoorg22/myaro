@@ -4,23 +4,43 @@ import { FormControl, FormField, FormMessage } from "../../../../components/ui/f
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/appStore";
+import type { IBeauticianReRegistrationPrefillDto } from "../../../../types/dtos/beautician";
+import { useEffect } from "react";
 
-export const Step1Component: React.FC<{ onNext: (data: Step1Data) => void }> = ({ onNext }) => {
+export const Step1Component: React.FC<{
+  onNext: (data: Step1Data) => void;
+  prefill?: IBeauticianReRegistrationPrefillDto | null; // ✅ ADDED
+}> = ({ onNext, prefill }) => { // ✅ ADDED prefill
   const methods = useForm<Step1Data>({
-    resolver:zodResolver(Step1Schema),
+    resolver: zodResolver(Step1Schema),
     defaultValues: {
-      yearsOfExperience: 0,
-      about: ''
+      yearsOfExperience: prefill?.yearsOfExperience ?? 0, // ✅ ADDED
+      about: prefill?.about ?? ''                         // ✅ ADDED
     }
   });
 
-  const currentUser=useSelector((store:RootState)=>store.user.currentUser)
-
+  const currentUser = useSelector((store: RootState) => store.user.currentUser);
+  useEffect(() => {
+  if (prefill) {
+    methods.reset({
+      yearsOfExperience: prefill.yearsOfExperience,
+      about: prefill.about
+    });
+  }
+}, [prefill]);
   const handleSubmit = () => {
     methods.handleSubmit((data) => {
       onNext(data);
     })();
   };
+
+  // ✅ ADDED — show rejection reason banner if re-registering
+  const rejectionBanner = prefill?.rejectionReason ? (
+    <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-6">
+      <p className="text-xs font-medium text-red-700 mb-1">❌ Rejection reason</p>
+      <p className="text-sm text-red-600">{prefill.rejectionReason}</p>
+    </div>
+  ) : null;
 
   return (
     <FormProvider {...methods}>
@@ -37,6 +57,8 @@ export const Step1Component: React.FC<{ onNext: (data: Step1Data) => void }> = (
           <div className="h-1 w-16 bg-gray-300 rounded"></div>
           <div className="h-1 w-16 bg-gray-300 rounded"></div>
         </div>
+
+        {rejectionBanner} {/* ✅ ADDED */}
 
         <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-6 flex items-center gap-3">
           <div className="w-12 h-12 bg-purple-200 rounded-full flex items-center justify-center text-xl">
@@ -58,7 +80,7 @@ export const Step1Component: React.FC<{ onNext: (data: Step1Data) => void }> = (
                 type="number"
                 placeholder="Enter years of experience (e.g. 5 or 10)"
                 className="peer"
-                {...methods.register('yearsOfExperience', {valueAsNumber:true,
+                {...methods.register('yearsOfExperience', { valueAsNumber: true,
                   required: 'Years of experience is required'
                 })}
               />

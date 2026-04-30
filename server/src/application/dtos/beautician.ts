@@ -156,3 +156,23 @@ export interface BeauticianDashboardDto {
   avgRating:     number;   
   totalReviews:  number;
 }
+
+
+
+export interface IBeauticianReRegistrationPrefillDto {
+  yearsOfExperience: number;
+  about: string;
+  hasShop: boolean;
+  shopName?: string;
+  shopAddress?: {
+    address: string;
+    city: string;
+  };
+  serviceModes: string[];
+  rejectionReason: string;
+
+  existingPortfolioImages: string[];
+  existingCertificateImages: string[];
+  existingShopPhotos: string[];
+  existingShopLicences: string[];
+}

@@ -2,7 +2,7 @@ import { beauticianApi } from "../../constants/apiRoutes/beauticianRoutes";
 import { publicApiRoutes } from "../../constants/apiRoutes/publicApiRoute";
 import type { PostType } from "../../features/types/mediaType";
 import type { BackendResponse } from "../../types/api/api";
-import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse,  type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest, type IGetmonthlyAvailabilityReponse, type IGetBeauticianPostResponse, type IGetBeauticianPostResponseData, type IGetBeauticianDashboardResponse,  } from "../../types/api/beautician";
+import {type IGetServiceAreaResponse, type IAddAvailabilityRequest, type IAddServiceAreaRequest, type IBeauticianPaymentDeatilRequest, type IBeauticianPaymentDetailResponse, type IBeauticianProfileUpdate, type IEditProfileResponse, type IGetAvailabilitySlotResponse,  type IVerificationStatusResponse, type Slot, type IAddRecursionScheduleRequest, type IDeleteRecursionScheduleReuest, type IGetmonthlyAvailabilityReponse, type IGetBeauticianPostResponse, type IGetBeauticianPostResponseData, type IGetBeauticianDashboardResponse, type IBeauticianReRegistrationPrefilResponse,  } from "../../types/api/beautician";
 import type { ICreatePostInput } from "../../types/api/public";
 import { type IGetPamphletResponse, type IAddCustomServiceRequest, type IBeauticianServiceSelectionResponse, type IGetBeauticianServicesListResponse, type IUpsertBeauticianServiceRequest, type PriceFilter,} from "../../types/api/services";
 import api,{ axiosWrapper} from "../axiosWrapper";
@@ -10,6 +10,9 @@ import api,{ axiosWrapper} from "../axiosWrapper";
 export const BeauticianApi = {
   beauticianRegister: async (formData:FormData) => {
     return await axiosWrapper<BackendResponse>(api.post(beauticianApi.register,formData));
+  },
+  reRegiterPrefil:async()=>{
+      return await axiosWrapper<IBeauticianReRegistrationPrefilResponse>(api.get(beauticianApi.reRegistartionPrefil));
   },
   getStatus: async () => {
     return await axiosWrapper<IVerificationStatusResponse>(api.get(beauticianApi.getStatus));

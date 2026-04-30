@@ -11,6 +11,7 @@ import {
   EarningsSummaryDto,
   IBeauticianDTO,
   IBeauticianProfileDTO,
+  IBeauticianReRegistrationPrefillDto,
   IBeauticianViewEditProfileDTO,
   IGetAllPostsDto,
   IGetBeauticianPostsDto,
@@ -198,5 +199,29 @@ export function toBeauticianDashboardDto(raw: {
     recentPayouts: raw.recentPayouts,
     avgRating: raw.avgRating,
     totalReviews: raw.totalReviews,
+  };
+}
+
+
+
+export function toReRegistrationPrefillDto(
+  beautician: Beautician,
+): IBeauticianReRegistrationPrefillDto {
+  return {
+    yearsOfExperience: beautician.yearsOfExperience,
+    about: beautician.about ?? "",
+    hasShop: beautician.hasShop,
+    shopName: beautician.shopName,
+    shopAddress: {
+      address: beautician.shopAddress?.address ?? "",
+      city: beautician.shopAddress?.city ?? "",
+    },
+    serviceModes: beautician.serviceModes ?? [],
+    rejectionReason: beautician.rejectionReason ?? "",
+
+    existingPortfolioImages: beautician.portfolioImage ?? [],
+    existingCertificateImages: beautician.certificateImage ?? [],
+    existingShopPhotos: beautician.shopPhotos ?? [],
+    existingShopLicences: beautician.shopLicence ?? [],
   };
 }

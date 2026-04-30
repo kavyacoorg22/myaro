@@ -1,5 +1,6 @@
 export const beauticianApi = {
   register: "/beautician/register",
+  reRegistartionPrefil:'/beautician/register/prefill',
   getStatus: "/beautician/status",
   profile: "/beautician/profile",
   getServiceSelection: "/beautician/services/selection",

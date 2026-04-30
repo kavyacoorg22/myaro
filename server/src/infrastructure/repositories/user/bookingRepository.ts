@@ -178,7 +178,7 @@ export class BookingRepository
           },
           status: {
             $in: [
-              BookingStatus.COMPLETED, // 'completed'
+              BookingStatus.PAID_OUT, // 'completed'
               BookingStatus.CANCELLED, // 'cancelled'
               BookingStatus.REFUND_APPROVED, // 'refund_approved' ← closest to "refunded"
             ],

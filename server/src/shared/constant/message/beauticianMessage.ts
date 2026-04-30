@@ -34,5 +34,7 @@ export const beauticianMessages = {
       "Beautician is not available on this date",
     REQUESTED_TIME_NOT_AVAILABLE:
       "Requested time is not within available hours",
+      RE_REGISTRATION_NOT_ALLOWED:
+  "Re-registration prefill is only available for rejected applications",
   },
 };

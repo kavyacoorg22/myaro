@@ -9,6 +9,26 @@ const SERVICE_MODE_OPTIONS = [
   { value: ServiceModes.CONSULTATION, label: "💬 Consultation", desc: "Online or in-person advice" },
 ] as const;
 
+// ✅ ADDED — reusable image preview strip
+function ExistingImagesPreview({ urls, newFilesCount }: { urls: string[]; newFilesCount: number }) {
+  if (!urls?.length || newFilesCount > 0) return null;
+  return (
+    <div className="mt-2">
+      <p className="text-xs text-gray-500 mb-1">Previously uploaded:</p>
+      <div className="flex gap-2 flex-wrap">
+        {urls.map((url, i) => (
+          <img
+            key={i}
+            src={url}
+            className="w-16 h-16 object-cover rounded border border-gray-200 opacity-60"
+          />
+        ))}
+      </div>
+      <p className="text-xs text-orange-500 mt-1">⚠ Please re-upload your files</p>
+    </div>
+  );
+}
+
 export function Step2UI({
   methods,
   hasShop,
@@ -27,6 +47,7 @@ export function Step2UI({
   closeValidationAlert,
   serviceModes,
   setServiceModes,
+  prefill, // ✅ ADDED
 }: any) {
   const { register } = methods;
 
@@ -111,6 +132,12 @@ export function Step2UI({
               onChange={handlePortfolioUpload}
             />
           </label>
+
+          {/* ✅ ADDED — portfolio preview */}
+          <ExistingImagesPreview
+            urls={prefill?.existingPortfolioImages}
+            newFilesCount={portfolioFiles.length}
+          />
           
           {portfolioFiles.length > 0 && (
             <div className={`border rounded-lg p-2 mt-2 flex items-center gap-2 ${
@@ -152,6 +179,12 @@ export function Step2UI({
               onChange={handleCertificateUpload}
             />
           </label>
+
+          {/* ✅ ADDED — certificate preview */}
+          <ExistingImagesPreview
+            urls={prefill?.existingCertificateImages}
+            newFilesCount={certificateFiles.length}
+          />
           
           {certificateFiles.length > 0 && (
             <div className="bg-green-50 border border-green-300 rounded-lg p-2 mt-2 flex items-center gap-2">
@@ -237,6 +270,13 @@ export function Step2UI({
                     onChange={handleShopPhotoUpload}
                   />
                 </label>
+
+                {/* ✅ ADDED — shop photos preview */}
+                <ExistingImagesPreview
+                  urls={prefill?.existingShopPhotos}
+                  newFilesCount={shopPhotos.length}
+                />
+
                 {shopPhotos.length > 0 && (
                   <div className={`border rounded-lg p-2 mt-2 flex items-center gap-2 ${
                     shopPhotos.length >= 3 ? 'bg-green-50 border-green-300' : 'bg-orange-50 border-orange-300'
@@ -272,6 +312,13 @@ export function Step2UI({
                     onChange={handleLicenseUpload}
                   />
                 </label>
+
+                {/* ✅ ADDED — shop licence preview */}
+                <ExistingImagesPreview
+                  urls={prefill?.existingShopLicences}
+                  newFilesCount={licenseFiles.length}
+                />
+
                 {licenseFiles.length > 0 && (
                   <div className="bg-green-50 border border-green-300 rounded-lg p-2 mt-2 flex items-center gap-2">
                     <span className="text-green-600 text-lg">✓</span>
