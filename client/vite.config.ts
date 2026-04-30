@@ -7,6 +7,14 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss()],
+       base: '/', 
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: undefined  
+        }
+      }
+    },
     define: {
       'import.meta.env.VITE_API_URL': JSON.stringify(
         env.VITE_API_URL || 'https://api.myaro.shop'
