@@ -12,7 +12,7 @@ import { ValidateComment } from '../middleware/validateUserInput';
 router.get('/pamphlet/:id',authenticateUser,beauticianServiceController.getPamphletForCustomer)
 
 router.post('/register',authenticateCustomer,uploadFields(['portfolioImage', 'certificateImage', 'shopPhotos', 'shopLicence']),validateBeauticianFiles,validateBeauticianData,beauticianController.beauticianRegistration)
-router.get('/register/prefill',uploadFields(['portfolioImage', 'certificateImage', 'shopPhotos', 'shopLicence']),validateBeauticianFiles,validateBeauticianData, authenticateCustomer, beauticianController.reRegistrationPrefill)
+router.get('/register/prefill',authenticateCustomer, beauticianController.reRegistrationPrefill)
 router.get('/status', authenticateCustomer, beauticianController.verifiedStatus);
 router.patch('/register',authenticateCustomer,validatePaymentDetails,beauticianController.updateRegistration)
 router.get('/profile',authenticateUser,beauticianController.viewEditProfile)
