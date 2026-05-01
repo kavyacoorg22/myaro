@@ -6,6 +6,8 @@ import { MessageInput } from "../messageInput";
 import type { ChatWindowProps } from "../../../../types/chat";
 import { useState } from "react";
 import BookingModal from "../../../../models/booking/bookingModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../../redux/appStore";
 
 export const ChatWindow = ({
   chatId,
@@ -14,7 +16,8 @@ export const ChatWindow = ({
 }: ChatWindowProps) => {
   const navigate = useNavigate();
   const [showBooking, setShowBooking] = useState(false);
-  
+    const currentUserRole = useSelector((state: RootState) => state.user.currentUser.role); 
+
   const {
     messages,
     loading,
@@ -30,6 +33,8 @@ export const ChatWindow = ({
 
   const isBeautician = participant?.role === "beautician";
   const hasHomeService = participant?.serviceModes?.includes("HOME");
+    const currentUserIsBeautician = currentUserRole === "beautician"
+      const showBookingButton = isBeautician && hasHomeService && !currentUserIsBeautician;
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -55,7 +60,7 @@ export const ChatWindow = ({
       <MessageInput
         onSend={handleSend}
         onTyping={handleTyping}
-        showBooking={!!(isBeautician && hasHomeService)}
+        showBooking={showBookingButton}
         onBook={() => setShowBooking(true)}
       />
 

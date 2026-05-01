@@ -384,7 +384,7 @@ const ProfilePage = () => {
         />
 
         {/* ── Verification Banner ── */}
-        {beauticianInfo.isBeautician && beauticianInfo.verificationStatus && (
+        {isOwnProfile && beauticianInfo.isBeautician && beauticianInfo.verificationStatus && (
           <div className="px-6 mt-4">
             <VerificationStatusBanner
               status={beauticianInfo.verificationStatus}
