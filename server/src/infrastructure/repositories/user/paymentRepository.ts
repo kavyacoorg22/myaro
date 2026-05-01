@@ -138,9 +138,9 @@ async getRevenueStats(): Promise<RevenueStatsDto> {
     {
       $group: {
         _id: null,
-        completed: { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.RELEASED] }, "$amount", 0] } }, // ✅
-        refunded:  { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.REFUNDED] }, "$amount", 0] } }, // ✅
-        held:      { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.PAID]     }, "$amount", 0] } }, // ✅
+        completed: { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.RELEASED] }, "$amount", 0] } }, 
+        refunded:  { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.REFUNDED] }, "$amount", 0] } }, 
+        held:      { $sum: { $cond: [{ $eq: ["$status", PaymentStatus.PAID]     }, "$amount", 0] } }, 
       },
     },
   ]);

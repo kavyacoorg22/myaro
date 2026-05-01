@@ -180,7 +180,7 @@ export class BookingRepository
             $in: [
               BookingStatus.PAID_OUT, // 'completed'
               BookingStatus.CANCELLED, // 'cancelled'
-              BookingStatus.REFUND_APPROVED, // 'refund_approved' ← closest to "refunded"
+              BookingStatus.REFUNDED, // 'refund_approved' ← closest to "refunded"
             ],
           },
         },
@@ -191,7 +191,7 @@ export class BookingRepository
           _id: { $month: "$createdAt" },
           completed: {
             $sum: {
-              $cond: [{ $eq: ["$status", BookingStatus.COMPLETED] }, 1, 0],
+              $cond: [{ $eq: ["$status", BookingStatus.PAID_OUT] }, 1, 0],
             },
           },
           cancelled: {
@@ -202,7 +202,7 @@ export class BookingRepository
           refunded: {
             $sum: {
               $cond: [
-                { $eq: ["$status", BookingStatus.REFUND_APPROVED] },
+                { $eq: ["$status", BookingStatus.REFUNDED] },
                 1,
                 0,
               ],
