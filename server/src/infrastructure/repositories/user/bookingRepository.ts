@@ -463,6 +463,15 @@ async getDashboardStats(beauticianId: string): Promise<DashboardStatsDto> {
   ]);
   return raw[0]?.total ?? 0;
 }
+
+
+//rating >4 cancle<5
+
+async checkPremiumUser(userId:string):Promise<boolean>
+{
+    const doc=await BookingModel.countDocuments({userId:new Types.ObjectId(userId),beauticianId:new types.ObjectIdstatus:BookingStatus.CANCELLED})
+    return doc<5
+}
   protected map(doc: BookingDoc): Booking {
     const base = super.map(doc);
     return {

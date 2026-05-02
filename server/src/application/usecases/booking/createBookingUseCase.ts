@@ -10,6 +10,7 @@ import { UserRole } from "../../../domain/enum/userEnum";
 import { AppError } from "../../../domain/errors/appError";
 import { IBookingRepository } from "../../../domain/repositoryInterface/User/booking/IBookingRepository";
 import { IChatRepository } from "../../../domain/repositoryInterface/User/chat/IChatRepository";
+import { ICommentRepository } from "../../../domain/repositoryInterface/User/ICommetRepository";
 import {
   ACTION_MESSAGE,
   ACTION_TITLE,
@@ -42,6 +43,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     private _chatMessage: ChatMessageService,
     private _notificationService: NotificationDispatchService,
     private _bookingHistory: BookingHistoryService,
+    private _commentRepo:ICommentRepository
   ) {}
 
   async execute(input: ICreateBookingInput): Promise<Booking> {
@@ -128,6 +130,12 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
         HttpStatus.CONFLICT,
       );
     }
+
+   const isCancelled=await this._bookingRepo.checkPremiumUser(userId)
+
+   const {avgRating,totalReviews}=await this._commentRepo.getRatingSummary(beauticianId)
+
+   if(!isCancelled && avgRating>4)
 
     // ── 5. Create booking ──────────────────────────────────────────────────
     const booking = await this._bookingRepo.create({
