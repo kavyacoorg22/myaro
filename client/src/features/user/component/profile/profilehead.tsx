@@ -4,6 +4,8 @@ import {
   BeauticianOwnButtons,
   CustomerOwnButtons,
 } from "./profileActionButton";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/appStore";
 
 interface Props extends ProfileData, ProfileActions {
   viewMode: ViewMode;
@@ -28,6 +30,8 @@ export const ProfileHeader: React.FC<Props> = ({
   totalReviews,
   ...rest
 }) => {
+  const viewerRole = useSelector((state: RootState) => state.user.currentUser.role);
+
   return (
     <div className="bg-white">
       {/* Banner */}
@@ -206,6 +210,7 @@ export const ProfileHeader: React.FC<Props> = ({
         )}
 
         {/* view-beautician bottom CTA buttons */}
+      {/* view-beautician bottom CTA buttons */}
         {!hideButtons && viewMode === "view-beautician" && (
           <div className="flex gap-2 mt-4">
             <button
@@ -214,26 +219,31 @@ export const ProfileHeader: React.FC<Props> = ({
             >
               Message
             </button>
-            <button
-              onClick={rest.onFollow}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-all ${
-                isFollowing
-                  ? "bg-rose-700 text-white border-rose-700 hover:bg-rose-800"
-                  : "text-rose-700 border-rose-200 bg-rose-50 hover:bg-rose-100"
-              }`}
-            >
-              {isFollowing ? "Following" : "Follow"}
-            </button>
-            <button
-              onClick={rest.onBookService}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition-all"
-              style={{ background: "#9b1c3a" }}
-            >
-              Book service
-            </button>
+            {viewerRole !=='beautician' && (
+              <>
+                <button
+                  onClick={rest.onFollow}
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-all ${
+                    isFollowing
+                      ? "bg-rose-700 text-white border-rose-700 hover:bg-rose-800"
+                      : "text-rose-700 border-rose-200 bg-rose-50 hover:bg-rose-100"
+                  }`}
+                >
+                  {isFollowing ? "Following" : "Follow"}
+                </button>
+                <button
+                  onClick={rest.onBookService}
+                  className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition-all"
+                  style={{ background: "#9b1c3a" }}
+                >
+                  Book service
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
     </div>
   );
 };
+   
